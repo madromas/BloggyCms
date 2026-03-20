@@ -5,7 +5,7 @@
                 <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
                 Панель управления
             </h1>
-            <p class="dashboard-subtitle">Добро пожаловать в админ-панель</p>
+            <p class="dashboard-subtitle">Добро пожаловать в панель управления блога!</p>
         </div>
     </div>
 
