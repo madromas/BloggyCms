@@ -20,7 +20,7 @@ $dbConfig = $_SESSION['db_config'];
 
 <div class="summary-grid">
     <div class="summary-card">
-        <h4><i class="fas fa-globe"></i> Ваш сайт</h4>
+        <h4><i class="fas fa-globe"></i> Ваш блог</h4>
         <div class="summary-item">
             <span class="label">Название</span>
             <span class="value"><?php echo htmlspecialchars($siteConfig['site_name']); ?></span>

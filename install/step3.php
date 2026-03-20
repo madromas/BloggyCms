@@ -148,19 +148,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <h2><i class="fas fa-user-shield" style="color: var(--accent); margin-right: 8px;"></i> Администратор</h2>
 <p class="step-subtitle">Создайте учетную запись администратора</p>
-<?php if (!empty($errors)): ?>
-<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><div><strong>Ошибка</strong><ul style="margin-top:8px;margin-left:20px"><?php foreach($errors as $e): ?><li><?php echo htmlspecialchars($e); ?></li><?php endforeach; ?></ul></div></div>
-<?php endif; ?>
+
+<?php if (!empty($errors)) { ?>
+    <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><div><strong>Ошибка</strong><ul style="margin-top:8px;margin-left:20px"><?php foreach($errors as $e): ?><li><?php echo htmlspecialchars($e); ?></li><?php endforeach; ?></ul></div></div>
+<?php } ?>
 <form method="post" class="needs-validation" novalidate>
-    <h3><i class="fas fa-globe"></i> Настройки сайта</h3>
+    <h3><i class="fas fa-globe"></i> Настройки блога</h3>
     <div class="form-row">
         <div class="form-group">
-            <label class="form-label">Название сайта <span class="required">*</span></label>
+            <label class="form-label">Название блога <span class="required">*</span></label>
             <input type="text" name="site_name" class="form-input" value="<?php echo htmlspecialchars($siteConfig['site_name']); ?>" required placeholder="Мой блог">
             <div class="form-hint"><i class="fas fa-info-circle"></i> Как будет называться ваш блог</div>
         </div>
         <div class="form-group">
-            <label class="form-label">URL сайта <span class="required">*</span></label>
+            <label class="form-label">URL блога <span class="required">*</span></label>
             <input type="url" name="site_url" id="site_url" class="form-input" value="<?php echo htmlspecialchars($siteConfig['site_url']); ?>" required>
             <div class="form-hint"><i class="fas fa-info-circle"></i> Полный адрес без слеша в конце</div>
         </div>
@@ -214,40 +215,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </form>
+
 <script>
-document.querySelectorAll('.password-toggle').forEach(btn => btn.addEventListener('click', function() {
-    const input = this.previousElementSibling; const icon = this.querySelector('i');
-    if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
-    else { input.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
-}));
-const pwd = document.getElementById('admin_password');
-if (pwd) {
-    const bar = pwd.closest('.form-group').querySelector('.strength-bar');
-    const text = pwd.closest('.form-group').querySelector('.strength-text');
-    pwd.addEventListener('input', function() {
-        const p = this.value; let s = 0;
-        if (p.length >= 8) s++; if (p.length >= 12) s++;
-        if (/[A-Z]/.test(p)) s++; if (/[0-9]/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
-        bar.className = 'strength-bar';
-        if (s <= 1) { bar.classList.add('weak'); text.textContent = 'Слабый пароль'; }
-        else if (s === 2) { bar.classList.add('medium'); text.textContent = 'Средний пароль'; }
-        else { bar.classList.add('strong'); text.textContent = 'Надёжный пароль'; }
+    document.querySelectorAll('.password-toggle').forEach(btn => btn.addEventListener('click', function() {
+        const input = this.previousElementSibling; const icon = this.querySelector('i');
+        if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+        else { input.type = 'password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+    }));
+    const pwd = document.getElementById('admin_password');
+    if (pwd) {
+        const bar = pwd.closest('.form-group').querySelector('.strength-bar');
+        const text = pwd.closest('.form-group').querySelector('.strength-text');
+        pwd.addEventListener('input', function() {
+            const p = this.value; let s = 0;
+            if (p.length >= 8) s++; if (p.length >= 12) s++;
+            if (/[A-Z]/.test(p)) s++; if (/[0-9]/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
+            bar.className = 'strength-bar';
+            if (s <= 1) { bar.classList.add('weak'); text.textContent = 'Слабый пароль'; }
+            else if (s === 2) { bar.classList.add('medium'); text.textContent = 'Средний пароль'; }
+            else { bar.classList.add('strong'); text.textContent = 'Надёжный пароль'; }
+        });
+    }
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const p1 = document.getElementById('admin_password').value;
+        const p2 = document.getElementById('admin_password_confirm').value;
+        if (p1 !== p2) { e.preventDefault(); alert('❌ Пароли не совпадают'); return; }
+        if (p1.length < 6) { e.preventDefault(); alert('❌ Пароль минимум 6 символов'); return; }
+        const btn = document.getElementById('install-btn');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Установка...';
     });
-}
-document.querySelector('form').addEventListener('submit', function(e) {
-    const p1 = document.getElementById('admin_password').value;
-    const p2 = document.getElementById('admin_password_confirm').value;
-    if (p1 !== p2) { e.preventDefault(); alert('❌ Пароли не совпадают'); return; }
-    if (p1.length < 6) { e.preventDefault(); alert('❌ Пароль минимум 6 символов'); return; }
-    const btn = document.getElementById('install-btn');
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Установка...';
-});
-window.generatePassword = function() {
-    const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
-    let p = ''; for(let i=0;i<12;i++) p+=c.charAt(Math.floor(Math.random()*c.length));
-    document.getElementById('admin_password').value = p;
-    document.getElementById('admin_password_confirm').value = p;
-    if (pwd) pwd.dispatchEvent(new Event('input'));
-    alert('🎉 Пароль сгенерирован!');
-};
+    window.generatePassword = function() {
+        const c = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+        let p = ''; for(let i=0;i<12;i++) p+=c.charAt(Math.floor(Math.random()*c.length));
+        document.getElementById('admin_password').value = p;
+        document.getElementById('admin_password_confirm').value = p;
+        if (pwd) pwd.dispatchEvent(new Event('input'));
+        alert('🎉 Пароль сгенерирован!');
+    };
 </script>

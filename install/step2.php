@@ -49,11 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <h2><i class="fas fa-database" style="color: var(--accent); margin-right: 8px;"></i> База данных</h2>
 <p class="step-subtitle">Настройте подключение к MySQL</p>
-<?php if (!empty($errors)): ?>
-<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><div><strong>Ошибка</strong><ul style="margin-top:8px;margin-left:20px"><?php foreach($errors as $e): ?><li><?php echo htmlspecialchars($e); ?></li><?php endforeach; ?></ul></div></div>
-<?php endif; ?>
+
+<?php if (!empty($errors)) { ?>
+    <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><div><strong>Ошибка</strong><ul style="margin-top:8px;margin-left:20px"><?php foreach($errors as $e): ?><li><?php echo htmlspecialchars($e); ?></li><?php endforeach; ?></ul></div></div>
+<?php } ?>
+
 <form method="post" class="needs-validation" id="db-form" novalidate>
     <div class="form-row">
         <div class="form-group">
@@ -110,7 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <div class="alert alert-info" style="margin-top:24px"><i class="fas fa-info-circle"></i><div><strong>Важно:</strong> Пользователь должен иметь права на создание БД и таблиц</div></div>
+    <div class="alert alert-info" style="margin-top:24px">
+        <i class="fas fa-info-circle"></i>
+        <div><strong>Важно:</strong> Пользователь должен иметь права на создание БД и таблиц</div>
+    </div>
     <div class="mt-4 flex-between">
         <a href="?restart=1" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Назад</a>
         <div class="flex">
