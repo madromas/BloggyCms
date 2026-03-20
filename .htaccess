@@ -1,0 +1,31 @@
+RewriteEngine On
+
+# Если файл или директория существуют, используем их напрямую
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Защита системных директорий
+RewriteCond %{REQUEST_URI} ^/system/
+RewriteRule ^ index.php [L]
+
+# Перенаправляем все остальные запросы на index.php
+RewriteRule ^ index.php [QSA,L]
+
+# PHP настройки
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# Установка дефолтной кодировки
+AddDefaultCharset UTF-8
+
+# Защита от просмотра листинга директорий
+Options -Indexes
+
+# Защита файлов .htaccess и .htpasswd
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>

@@ -1,0 +1,122 @@
+<?php
+
+namespace posts\actions;
+
+/**
+ * Действие отображения всех постов с пагинацией (публичная часть)
+ * Отображает список всех опубликованных постов с учетом прав доступа,
+ * пагинацией, информацией о лайках, закладках и комментариях
+ * 
+ * @package posts\actions
+ * @extends PostAction
+ */
+class All extends PostAction {
+    
+    /**
+     * Метод выполнения отображения всех постов
+     * Получает номер страницы из GET-параметров, определяет группы пользователя,
+     * загружает посты с пагинацией, дополняет их информацией о лайках,
+     * закладках и комментариях, передает в шаблон для отображения
+     * 
+     * @return void
+     */
+    public function execute() {
+        try {
+
+            $this->addBreadcrumb('Главная', BASE_URL);
+            $this->addBreadcrumb('Все записи');
+            $this->setPageTitle('Все записи');
+
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $page = max(1, $page);
+            $userGroups = $this->getUserGroups();
+            $result = $this->postModel->getAllPaginated($page, null, $userGroups);
+            $categories = $this->categoryModel->getAll();
+            $postIds = array_column($result['posts'], 'id');
+            $commentsCount = [];
+            
+            if (!empty($postIds)) {
+                $commentsCount = $this->postModel->getCommentsCountForPosts($postIds);
+            }
+            
+            foreach ($result['posts'] as &$post) {
+                $postId = $post['id'];
+                $post['comments_count'] = $commentsCount[$postId] ?? 0;
+                
+                if (isset($_SESSION['user_id'])) {
+                    $post['userLiked'] = $this->postModel->hasUserLiked($post['id'], $_SESSION['user_id']);
+                    $post['userBookmarked'] = $this->postModel->hasBookmark($post['id'], $_SESSION['user_id']);
+                } else {
+                    $post['userLiked'] = false;
+                    $post['userBookmarked'] = false;
+                }
+                
+                $post['password_protected'] = $post['password_protected'] == 1;
+                
+                if (!isset($post['likes_count'])) {
+                    $post['likes_count'] = $post['likes_count'] ?? 0;
+                }
+            }
+            
+            $this->render('front/posts/index', [
+                'posts' => $result['posts'],
+                'total_posts' => $result['total'],
+                'total_pages' => $result['pages'],
+                'current_page' => $result['current_page'],
+                'categories' => $categories,
+                'pagination' => [
+                    'current_page' => $result['current_page'],
+                    'total_pages' => $result['pages'],
+                    'has_more' => $page < $result['pages'],
+                    'next_url' => $this->getNextPageUrl($page, $result['pages'])
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            \Notification::error('Ошибка при загрузке постов: ' . $e->getMessage());
+            $this->redirect(BASE_URL);
+        }
+    }
+    
+    /**
+     * Получить URL следующей страницы для пагинации
+     * 
+     * @param int $currentPage Текущая страница
+     * @param int $totalPages Всего страниц
+     * @return string|null URL следующей страницы или null
+     */
+    private function getNextPageUrl($currentPage, $totalPages) {
+        if ($currentPage < $totalPages) {
+            return BASE_URL . '/posts?page=' . ($currentPage + 1);
+        }
+        return null;
+    }
+    
+    /**
+     * Получает группы текущего пользователя для фильтрации видимости постов
+     * Всегда включает группу 'guest', добавляет группы пользователя если авторизован
+     * 
+     * @return array Массив групп пользователя
+     */
+    private function getUserGroups() {
+        $userGroups = [];
+        $userGroups[] = 'guest';
+        
+        if (isset($_SESSION['user_id'])) {
+            try {
+                $userModel = new \UserModel($this->db);
+                $userGroupIds = $userModel->getUserGroupIds($_SESSION['user_id']);
+                
+                if (!empty($userGroupIds)) {
+                    $userGroupIds = array_map('strval', $userGroupIds);
+                    $userGroups = array_merge($userGroups, $userGroupIds);
+                }
+                
+            } catch (\Exception $e) {}
+        }
+        
+        $userGroups = array_unique($userGroups);
+        
+        return $userGroups;
+    }
+}
