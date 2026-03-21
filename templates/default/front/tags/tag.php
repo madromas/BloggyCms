@@ -40,7 +40,7 @@ $tagPrefix = SettingsHelper::get('controller_tags', 'tag_prefix', '#');
                     <div class="tg-tag-meta">
                         <span class="tg-meta-item">
                             <?php echo bloggy_icon('bs', 'file-text', '14', 'currentColor', 'tg-mr-1'); ?>
-                            <?php echo $tag['posts_count'] ?? count($posts); ?> публикаций
+                            <?php echo ($total = (int)($tag['posts_count'] ?? count($posts ?? []))) . ' ' . plural($total, ['пост', 'поста', 'постов']); ?>
                         </span>
                         
                         <?php if (!empty($tag['created_at'])) { ?>

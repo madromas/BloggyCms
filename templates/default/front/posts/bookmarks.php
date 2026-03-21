@@ -16,7 +16,7 @@
                     <h1 class="tg-bookmarks-title">Мои закладки</h1>
                     <p class="tg-bookmarks-subtitle tg-text-muted">
                         <?php echo bloggy_icon('bs', 'bookmark', '14', 'currentColor', 'tg-mr-1'); ?>
-                        <?php echo $bookmarks_count ?? 0; ?> сохранённых публикаций
+                        <?php echo ($total = (int)($bookmarks_count ?? 0)) . ' ' . plural($total, ['сохранённый пост', 'сохранённых поста', 'сохранённых постов']); ?>
                     </p>
                 </div>
             </div>

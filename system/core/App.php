@@ -144,6 +144,7 @@ class App {
 
             $params = $route['params'] ?? [];
 
+
             $this->callControllerAction($controller, $actionName, $params);
         } else {
             header("HTTP/1.0 404 Not Found");

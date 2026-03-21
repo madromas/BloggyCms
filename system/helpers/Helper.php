@@ -380,9 +380,24 @@ function is_block_available_for_template($blockTemplate): bool {
  * @param array $titles Массив форм слова [именительный, родительный, множественный]
  * @return string Правильная форма слова
  * 
- * @example plural(5, ['комментарий', 'комментария', 'комментариев'])
+ * @example plural(5, ['комментарий', 'комментария', 'комментариев']) // "комментариев"
+ * @example plural(21, ['день', 'дня', 'дней']) // "день"
  */
 function plural($number, $titles) {
-    $cases = array(2, 0, 1, 1, 1, 2);
-    return $titles[($number % 100 > 4 && $number % 100 < 20) ? 2 : $cases[min($number % 10, 5)]];
+    $lastTwoDigits = abs($number) % 100;
+    $lastDigit = $lastTwoDigits % 10;
+    
+    // исключения (11-14)
+    if ($lastTwoDigits >= 11 && $lastTwoDigits <= 14) {
+        return $titles[2]; // множественная форма
+    }
+    
+    // Определяем форму по последней цифре
+    if ($lastDigit == 1) {
+        return $titles[0]; // именительный падеж (1, 21, 31...)
+    } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
+        return $titles[1]; // родительный падеж (2, 3, 4, 22, 23, 24...)
+    } else {
+        return $titles[2]; // множественная форма (5-20, 25-30...)
+    }
 }

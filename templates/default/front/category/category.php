@@ -39,7 +39,7 @@ $customFields = $fieldModel->getActiveByEntityType('post');
                     <div class="tg-category-meta">
                         <span class="tg-meta-item">
                             <?php echo bloggy_icon('bs', 'file-text', '14', 'currentColor', 'tg-mr-1'); ?>
-                            <?php echo $total_posts ?? count($posts ?? []); ?> публикаций
+                            <?php echo ($total = (int)($total_posts ?? count($posts ?? []))) . ' ' . plural($total, ['публикация', 'публикации', 'публикаций']); ?>
                         </span>
                         
                         <?php if (!empty($category['created_at'])): ?>

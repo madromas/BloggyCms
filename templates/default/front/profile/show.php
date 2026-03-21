@@ -72,22 +72,22 @@ $fieldModel = new FieldModel($this->db);
 
                 <div class="tg-card">
                     <div class="tg-card-body">
-                        <h3 class="tg-card-title">
+                        <h3 class="tg-card-title mb-3">
                             <?php echo bloggy_icon('bs', 'bar-chart', '18', 'currentColor', 'tg-mr-1'); ?>
                             Статистика
                         </h3>
                         <div class="tg-stats">
                             <div class="tg-stat">
                                 <span class="tg-stat-value"><?php echo $postsCount; ?></span>
-                                <span class="tg-stat-label">публикаций</span>
+                                <span class="tg-stat-label"><?php echo plural((int)$postsCount, ['пост', 'поста', 'постов']); ?></span>
                             </div>
                             <div class="tg-stat">
-                                <span class="tg-stat-value"><?php echo $commentsCount ?? 0; ?></span>
-                                <span class="tg-stat-label">комментариев</span>
+                                <span class="tg-stat-value"><?php echo $total = (int)($commentsCount ?? 0); ?></span>
+                                <span class="tg-stat-label"><?php echo plural($total, ['комментарий', 'комментария', 'комментариев']); ?></span>
                             </div>
                             <div class="tg-stat">
-                                <span class="tg-stat-value"><?php echo $daysSinceRegistration ?? 0; ?></span>
-                                <span class="tg-stat-label">дней</span>
+                                <span class="tg-stat-value"><?php echo $total = (int)($daysSinceRegistration ?? 0); ?></span>
+                                <span class="tg-stat-label"><?php echo plural($total, ['день', 'дня', 'дней']) . ' с нами'; ?></span>
                             </div>
                         </div>
                     </div>

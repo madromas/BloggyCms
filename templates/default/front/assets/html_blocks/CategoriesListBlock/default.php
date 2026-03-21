@@ -166,7 +166,7 @@ function renderCategory($category, $settings, $level = 0) {
             }
             
             if (!empty($settings['show_post_count'])) {
-                $html .= '<div class="category-count">' . ($category['posts_count'] ?? 0) . ' постов</div>';
+                $html .= '<div class="category-count">' . ($category['posts_count'] ?? 0) . ' ' . plural($category['posts_count'] ?? 0, ['пост', 'поста', 'постов']) . '</div>';
             }
             
             if(!empty($contentClass)) {

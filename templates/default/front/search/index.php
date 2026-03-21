@@ -172,8 +172,8 @@
                                 <?php echo bloggy_icon('bs', 'search', '16', 'var(--tg-primary)', 'tg-mr-2'); ?>
                                 <span>
                                     По запросу <strong>«<?php echo html($query); ?>»</strong> 
-                                    найдено <strong><?php echo $total; ?></strong> 
-                                    <?php echo plural_form($total, ['результат', 'результата', 'результатов']); ?>
+                                    <?php echo plural($total, ['найден', 'найдено', 'найдено']); ?> <strong><?php echo $total; ?></strong> 
+                                    <?php echo plural($total, ['результат', 'результата', 'результатов']); ?>
                                 </span>
                             </div>
                             <?php if (!empty($suggestedSearches) && is_array($suggestedSearches)) { ?>
@@ -272,7 +272,7 @@
                             $typeClass = 'success';
                             $metaInfo = '<span class="tg-search-result-count">' . 
                                 bloggy_icon('bs', 'folder', '12', 'currentColor', 'tg-mr-1') . 
-                                ($item['posts_count'] ?? 0) . ' постов' . 
+                                ($item['posts_count'] ?? 0) . ' ' . plural($item['posts_count'] ?? 0, ['пост', 'поста', 'постов']) . 
                                 '</span>';
                             $stats = '';
                             break;
@@ -283,7 +283,7 @@
                             $typeClass = 'warning';
                             $metaInfo = '<span class="tg-search-result-count">' . 
                                 bloggy_icon('bs', 'tag', '12', 'currentColor', 'tg-mr-1') . 
-                                ($item['posts_count'] ?? 0) . ' постов' . 
+                                ($item['posts_count'] ?? 0) . ' ' . plural($item['posts_count'] ?? 0, ['пост', 'поста', 'постов']) . 
                                 '</span>';
                             $stats = '';
                             break;
@@ -299,7 +299,7 @@
                             if (!empty($item['posts_count'])) {
                                 $metaInfo .= '<span class="tg-search-result-count">' . 
                                     bloggy_icon('bs', 'file-text', '12', 'currentColor', 'tg-mr-1') . 
-                                    $item['posts_count'] . ' постов' . 
+                                    $item['posts_count'] . ' ' . plural($item['posts_count'], ['пост', 'поста', 'постов']) . 
                                     '</span>';
                             }
                             $stats = '';

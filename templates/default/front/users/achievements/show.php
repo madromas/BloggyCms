@@ -37,8 +37,8 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                         
                         <div class="tg-achievement-stats">
                             <div class="tg-stat tg-stat-large">
-                                <span class="tg-stat-value"><?php echo $achievement['unlocked_count']; ?></span>
-                                <span class="tg-stat-label">пользователей получили</span>
+                                <span class="tg-stat-value"><?php echo $total = (int)($achievement['unlocked_count'] ?? 0); ?></span>
+                                <span class="tg-stat-label"><?php echo plural($total, ['пользователь получил', 'пользователя получили', 'пользователей получили']); ?></span>
                             </div>
                             
                             <div class="tg-stat tg-stat-large">

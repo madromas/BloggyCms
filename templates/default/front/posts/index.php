@@ -25,8 +25,8 @@
                         <?php echo bloggy_icon('bs', 'grid-3x3-gap', '18', 'currentColor'); ?>
                     </div>
                     <div class="tg-category-info">
-                        <span class="tg-category-name">Все публикации</span>
-                        <span class="tg-category-meta"><?php echo $total_posts ?? 'Все'; ?> публикаций</span>
+                        <span class="tg-category-name">Все посты</span>
+                        <span class="tg-category-meta"><?php echo ($total = (int)($total_posts ?? 0)) . ' ' . plural($total, ['пост', 'поста', 'постов']); ?></span>
                     </div>
                 </a>
 
@@ -52,7 +52,7 @@
                                 <?php echo bloggy_icon('bs', 'lock', '12', 'currentColor', 'tg-ml-1'); ?>
                             <?php } ?>
                         </span>
-                        <span class="tg-category-meta"><?php echo $category['posts_count'] ?? 0; ?> публикаций</span>
+                        <span class="tg-category-meta"><?php echo ($total = (int)($category['posts_count'] ?? 0)) . ' ' . plural($total, ['пост', 'поста', 'постов']); ?></span>
                     </div>
                 </a>
                 <?php } ?>

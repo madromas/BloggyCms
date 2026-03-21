@@ -40,10 +40,10 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                             </div>
                             <div>
                                 <div class="tg-stat-value" style="font-size: 24px; font-weight: 600; color: var(--tg-text); line-height: 1.2;">
-                                    <?php echo $totalUsers ?? 0; ?>
+                                    <?php echo $total = (int)($totalUsers ?? 0); ?>
                                 </div>
                                 <div class="tg-stat-label" style="font-size: 14px; color: var(--tg-text-secondary);">
-                                    Пользователей
+                                    <?php echo plural($total, ['Пользователь', 'Пользователя', 'Пользователей']); ?>
                                 </div>
                             </div>
                         </div>
