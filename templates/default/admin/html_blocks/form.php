@@ -77,8 +77,11 @@
                                         <select name="template" class="form-select" id="block-template-select">
                                             <?php foreach ($availableTemplates as $templateKey => $templateName) { ?>
                                                 <option value="<?php echo html($templateKey); ?>" 
-                                                        <?php echo ($selectedTemplate == $templateKey) ? 'selected' : ''; ?>>
-                                                    <?php echo html($templateName); ?>
+                                                    <?php echo ($selectedTemplate == $templateKey) ? 'selected' : ''; ?>>
+                                                    <?php 
+                                                    $displayName = preg_replace('/\s*\[.*?\]$/', '', $templateName);
+                                                    echo html($displayName); 
+                                                    ?>
                                                 </option>
                                             <?php } ?>
                                         </select>

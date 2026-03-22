@@ -113,7 +113,8 @@ class AdminEdit extends HtmlBlockAction {
                         'css_files' => $cssFiles,
                         'js_files' => $jsFiles,
                         'inline_css' => $_POST['inline_css'] ?? '',
-                        'inline_js' => $_POST['inline_js'] ?? ''
+                        'inline_js' => $_POST['inline_js'] ?? '',
+                        'template' => $_POST['template'] ?? ($block['template'] ?? 'default')
                     ];
                     
                     // Обновление блока в базе данных

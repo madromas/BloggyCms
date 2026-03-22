@@ -71,13 +71,13 @@ if(function_exists('bloggy_icon')) {
         <?php if(!empty($settings['badge']) || !empty($settings['title']) || !empty($settings['description'])) { ?>
             <div class="header">
                 <?php if(!empty($settings['badge'])) { ?>
-                <span class="section-badge"><?php echo html($settings['badge']); ?></span>
+                    <span class="section-badge"><?php echo html($settings['badge']); ?></span>
                 <?php } ?>
                 <?php if(!empty($settings['title'])) { ?>
-                <h2 class="section-title"><?php echo $settings['title']; ?></h2>
+                    <h2 class="section-title"><?php echo $settings['title']; ?></h2>
                 <?php } ?>
                 <?php if(!empty($settings['description'])) { ?>
-                <p class="section-description"><?php echo nl2br(html($settings['description'])); ?></p>
+                    <p class="section-description"><?php echo nl2br(html($settings['description'])); ?></p>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -89,13 +89,16 @@ if(function_exists('bloggy_icon')) {
                     <?php foreach($tags as $tag) {
                         $weight = $tag['weight'] ?? 3;
                     ?>
-                    <a href="/tag/<?php echo html($tag['slug']); ?>" 
-                    class="tag-pill weight-<?php echo $weight; ?>">
+                    <a href="/tag/<?php echo html($tag['slug']); ?>" class="tag-pill weight-<?php echo $weight; ?>">
+
                         <span class="tag-pill-hash">#</span>
+
                         <span class="tag-pill-name"><?php echo html($tag['name']); ?></span>
+
                         <?php if($showPostCount) { ?>
-                        <span class="tag-pill-count"><?php echo $tag['posts_count'] ?? 0; ?></span>
+                            <span class="tag-pill-count"><?php echo $tag['posts_count'] ?? 0; ?></span>
                         <?php } ?>
+                        
                     </a>
                     <?php } ?>
                 </div>
@@ -108,11 +111,11 @@ if(function_exists('bloggy_icon')) {
                     <a href="/tag/<?php echo html($tag['slug']); ?>" class="tag-card">
                         <div class="tag-card-body">
                             <?php if($hasImage && $imageStyle !== 'cover' && $imageStyle !== 'background') { ?>
-                            <div class="tag-card-media-small">
-                                <img src="<?php echo $imageUrl; ?>" alt="<?php echo html($tag['name']); ?>" loading="lazy">
-                            </div>
+                                <div class="tag-card-media-small">
+                                    <img src="<?php echo $imageUrl; ?>" alt="<?php echo html($tag['name']); ?>" loading="lazy">
+                                </div>
                             <?php } elseif($imageStyle === 'icon' && $showIcon) { ?>
-                            <div class="tag-card-icon"><?php echo $tagIcon; ?></div>
+                                <div class="tag-card-icon"><?php echo $tagIcon; ?></div>
                             <?php } ?>
                             
                             <h3 class="tag-card-title">
@@ -120,12 +123,12 @@ if(function_exists('bloggy_icon')) {
                             </h3>
                             
                             <?php if($showPostCount) { ?>
-                            <div class="tag-card-meta">
-                                <span class="tag-posts-count">
-                                    <?php echo $tag['posts_count'] ?? 0; ?> 
-                                    <?php echo plural_form($tag['posts_count'] ?? 0, ['пост', 'поста', 'постов']); ?>
-                                </span>
-                            </div>
+                                <div class="tag-card-meta">
+                                    <span class="tag-posts-count">
+                                        <?php echo $tag['posts_count'] ?? 0; ?> 
+                                        <?php echo plural_form($tag['posts_count'] ?? 0, ['пост', 'поста', 'постов']); ?>
+                                    </span>
+                                </div>
                             <?php } ?>
                         </div>
                         <div class="tag-card-arrow">
@@ -147,9 +150,9 @@ if(function_exists('bloggy_icon')) {
                     <a href="/tag/<?php echo html($tag['slug']); ?>" class="tag-list-item">
                         <div class="tag-list-media">
                             <?php if($imageStyle === 'thumbnail' || $imageStyle === 'side') { ?>
-                            <img src="<?php echo $imageUrl; ?>" alt="<?php echo html($tag['name']); ?>" loading="lazy">
+                                <img src="<?php echo $imageUrl; ?>" alt="<?php echo html($tag['name']); ?>" loading="lazy">
                             <?php } elseif($showIcon) { ?>
-                            <div class="tag-list-icon"><?php echo $tagIcon; ?></div>
+                                <div class="tag-list-icon"><?php echo $tagIcon; ?></div>
                             <?php } ?>
                         </div>
                         <div class="tag-list-content">
@@ -158,16 +161,11 @@ if(function_exists('bloggy_icon')) {
                             </h3>
                         </div>
                         <?php if($showPostCount) { ?>
-                        <div class="tag-list-count">
-                            <?php echo $tag['posts_count'] ?? 0; ?>
-                            <span class="label"><?php echo plural_form($tag['posts_count'] ?? 0, ['пост', 'поста', 'постов']); ?></span>
-                        </div>
+                            <div class="tag-list-count">
+                                <?php echo $tag['posts_count'] ?? 0; ?>
+                                <span class="label"><?php echo plural_form($tag['posts_count'] ?? 0, ['пост', 'поста', 'постов']); ?></span>
+                            </div>
                         <?php } ?>
-                        <div class="tag-list-arrow">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12h14M12 5l7 7-7 7"/>
-                            </svg>
-                        </div>
                     </a>
                     <?php } ?>
                 </div>
@@ -175,12 +173,15 @@ if(function_exists('bloggy_icon')) {
                 <div class="tags-compact">
                     <?php foreach($tags as $tag) { ?>
                     <a href="/tag/<?php echo html($tag['slug']); ?>" class="tag-chip">
+
                         <?php if($showIcon) { ?>
-                        <span class="tag-chip-icon"><?php echo $tagIcon; ?></span>
+                            <span class="tag-chip-icon"><?php echo $tagIcon; ?></span>
                         <?php } ?>
+
                         <span class="tag-chip-name"><?php echo html($tag['name']); ?></span>
+
                         <?php if($showPostCount) { ?>
-                        <span class="tag-chip-count"><?php echo $tag['posts_count'] ?? 0; ?></span>
+                            <span class="tag-chip-count"><?php echo $tag['posts_count'] ?? 0; ?></span>
                         <?php } ?>
                     </a>
                     <?php } ?>

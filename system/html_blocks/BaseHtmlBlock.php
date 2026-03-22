@@ -162,7 +162,6 @@ abstract class BaseHtmlBlock {
         $currentTemplate = get_current_template();
         $preferredTemplate = $this->getTemplate();
         
-        // Новая структура: /front/assets/html_blocks/BlockName/template.php
         if ($preferredTemplate && $preferredTemplate !== 'all') {
             $path = BASE_PATH . "/templates/{$preferredTemplate}/front/assets/html_blocks/{$systemName}/{$templateName}.php";
             if (file_exists($path)) {
@@ -180,7 +179,6 @@ abstract class BaseHtmlBlock {
             return $defaultPath;
         }
         
-        // Старая структура для обратной совместимости: /front/html_blocks/BlockName.php
         if ($preferredTemplate && $preferredTemplate !== 'all') {
             $legacyPath = BASE_PATH . "/templates/{$preferredTemplate}/front/html_blocks/{$systemName}.php";
             if (file_exists($legacyPath)) {
@@ -364,18 +362,16 @@ abstract class BaseHtmlBlock {
             foreach ($templateDirs as $templateDir) {
                 if ($templateDir === '.' || $templateDir === '..') continue;
                 
-                // Поиск в новой структуре
                 $blockDir = $templatesDir . '/' . $templateDir . '/front/assets/html_blocks/' . $systemName;
                 if (is_dir($blockDir)) {
                     $files = glob($blockDir . '/*.php');
                     foreach ($files as $file) {
                         $templateName = pathinfo($file, PATHINFO_FILENAME);
                         $description = $this->getTemplateDescription($templateName, $file);
-                        $templates[$templateName] = $description . ' [' . $templateDir . ']';
+                        $templates[$templateName] = $description;
                     }
                 }
                 
-                // Поиск в старой структуре (для обратной совместимости)
                 $legacyFile = $templatesDir . '/' . $templateDir . '/front/html_blocks/' . $systemName . '.php';
                 if (file_exists($legacyFile)) {
                     $description = $this->getTemplateDescription('default', $legacyFile);

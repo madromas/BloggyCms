@@ -143,11 +143,9 @@ class HtmlBlockModel implements ModelAPI {
      * @return bool Результат выполнения запроса
      */
     public function update($id, $data) {
-        // Генерация slug если он не передан
         if (empty($data['slug'])) {
             $slug = $this->createUniqueSlug($data['name'], $id);
         } else {
-            // Использование переданного slug с проверкой уникальности
             $slug = $this->createUniqueSlug($data['slug'], $id);
         }
 
