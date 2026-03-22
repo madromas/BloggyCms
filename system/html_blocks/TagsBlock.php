@@ -282,7 +282,6 @@ class TagsBlock extends BaseHtmlBlock {
     private function getTags($settings) {
         try {
             if (!API::hasModel('tags')) {
-                error_log('Tags model not available');
                 return [];
             }
 
@@ -367,7 +366,6 @@ class TagsBlock extends BaseHtmlBlock {
             return $filteredTags;
 
         } catch (Exception $e) {
-            error_log('Error getting tags: ' . $e->getMessage());
             return [];
         }
     }

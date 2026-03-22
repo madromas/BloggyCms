@@ -58,14 +58,24 @@ class Router {
         }
         
         uksort($allRoutes, function($a, $b) {
+            $aHasDynamic = strpos($a, '{') !== false;
+            $bHasDynamic = strpos($b, '{') !== false;
+            
+            if (!$aHasDynamic && $bHasDynamic) {
+                return -1;
+            }
+            if ($aHasDynamic && !$bHasDynamic) {
+                return 1;
+            }
+            
             $aParts = count(explode('/', $a));
             $bParts = count(explode('/', $b));
             
-            if ($aParts === $bParts) {
-                return strlen($b) - strlen($a);
+            if ($aParts !== $bParts) {
+                return $bParts - $aParts;
             }
             
-            return $bParts - $aParts;
+            return strlen($b) - strlen($a);
         });
         
         foreach ($allRoutes as $pattern => $route) {
@@ -123,8 +133,11 @@ class Router {
         $pattern = trim($pattern, '/');
         $uri = trim($uri, '/');
         
-        if ($pattern === $uri) {
-            return true;
+        if (strpos($pattern, '{') === false) {
+            if ($pattern === $uri) {
+                return true;
+            }
+            return false;
         }
         
         $regex = '#^' . preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?<$1>[^/]+)', $pattern) . '$#';

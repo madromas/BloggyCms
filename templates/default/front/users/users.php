@@ -4,6 +4,8 @@
  */
 
 $totalPosts = 0;
+$isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+
 if (!empty($users)) {
     foreach ($users as $user) {
         $totalPosts += $user['posts_count'] ?? 0;
@@ -23,24 +25,30 @@ if (!empty($users)) {
                             Участники сообщества
                         </h1>
                         <p class="tg-text-muted" style="margin-left: 36px;">
-                            <span style="font-weight: 600; color: #31b131;"><?php echo $online_count ?? 0 ?></span> онлайн
-                            из <span style="font-weight: 600; color: var(--tg-primary);"><?php echo $total_users ?? 0 ?></span> участников
+                            <span style="font-weight: 600; color: #31b131;"><?php echo $online = (int)($online_count ?? 0); ?></span> 
+                            <?php echo plural($online, ['онлайн', 'онлайн', 'онлайн']); ?>
+                            из <span style="font-weight: 600; color: var(--tg-primary);"><?php echo $total = (int)($total_users ?? 0); ?></span> 
+                            <?php echo plural($total, ['участник', 'участника', 'участников']); ?>
                         </p>
                     </div>
                     
+                    <?php if ($isAdmin) { ?>
                     <div class="tg-stats" style="gap: 12px;">
                         <div class="tg-stat" style="background: var(--tg-bg); padding: 8px 16px; border-radius: var(--tg-radius-md); min-width: 100px;">
-                            <span class="tg-stat-value" style="font-size: 20px;"><?php echo $totalPosts; ?></span>
-                            <span class="tg-stat-label">постов</span>
+                            <span class="tg-stat-value" style="font-size: 20px;"><?php echo $total = (int)($totalPosts ?? 0); ?></span>
+                            <span class="tg-stat-label"><?php echo plural($total, ['пост', 'поста', 'постов']); ?></span>
                         </div>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
 
         <div class="tg-users-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
             <?php if (!empty($users)) { ?>
-                <?php foreach ($users as $user) { ?>
+                <?php foreach ($users as $user) { 
+                    $isUserAdmin = ($user['role'] === 'admin' || !empty($user['is_admin']));
+                ?>
                     <div class="tg-card tg-user-card" style="display: flex; flex-direction: column; height: 100%; transition: var(--tg-transition);">
                         <div class="tg-card-body" style="flex: 1; display: flex; flex-direction: column;">
                             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
@@ -93,17 +101,19 @@ if (!empty($users)) {
                             <?php } ?>
                             
                             <div class="tg-stats" style="gap: 8px; margin-bottom: 12px; padding: 8px; background: var(--tg-bg); border-radius: var(--tg-radius-md);">
+                                <?php if ($isAdmin || $isUserAdmin) { ?>
                                 <div class="tg-stat" style="flex: 1; text-align: center;">
-                                    <span class="tg-stat-value" style="font-size: 16px;"><?php echo $user['posts_count'] ?? 0; ?></span>
-                                    <span class="tg-stat-label" style="font-size: 10px;">постов</span>
+                                    <span class="tg-stat-value" style="font-size: 16px;"><?php echo $total = (int)($user['posts_count'] ?? 0); ?></span>
+                                    <span class="tg-stat-label" style="font-size: 10px;"><?php echo plural($total, ['пост', 'поста', 'постов']); ?></span>
                                 </div>
+                                <?php } ?>
                                 <div class="tg-stat" style="flex: 1; text-align: center;">
                                     <span class="tg-stat-value" style="font-size: 16px;"><?php echo $user['comments_count'] ?? 0; ?></span>
                                     <span class="tg-stat-label" style="font-size: 10px;">коммент.</span>
                                 </div>
                                 <div class="tg-stat" style="flex: 1; text-align: center;">
-                                    <span class="tg-stat-value" style="font-size: 16px;"><?php echo $user['unlocked_achievements_count'] ?? 0; ?></span>
-                                    <span class="tg-stat-label" style="font-size: 10px;">ачивок</span>
+                                    <span class="tg-stat-value" style="font-size: 16px;"><?php echo $total = (int)($user['unlocked_achievements_count'] ?? 0); ?></span>
+                                    <span class="tg-stat-label" style="font-size: 10px;"><?php echo plural($total, ['ачивка', 'ачивки', 'ачивок']); ?></span>
                                 </div>
                             </div>
                             

@@ -291,7 +291,6 @@ class CategoriesListBlock extends BaseHtmlBlock {
     private function getCategories($settings) {
         try {
             if (!API::hasModel('categories')) {
-                error_log('Categories model not available');
                 return [];
             }
 
@@ -369,7 +368,6 @@ class CategoriesListBlock extends BaseHtmlBlock {
             return $filteredCategories;
 
         } catch (Exception $e) {
-            error_log('Error getting categories: ' . $e->getMessage());
             return [];
         }
     }

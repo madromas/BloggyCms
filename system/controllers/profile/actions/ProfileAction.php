@@ -120,16 +120,20 @@ abstract class ProfileAction {
     
     /**
      * Рендерит шаблон с переданными данными
-     * Использует контроллер для рендеринга, если он установлен
      * 
      * @param string $template Путь к шаблону относительно папки views
      * @param array $data Данные для передачи в шаблон
+     * @param int $statusCode HTTP статус код
      * @throws \Exception Если контроллер не установлен
      * @return void
      */
-    protected function render($template, $data = []) {
+    protected function render($template, $data = [], $statusCode = 200) {
         if (!$this->controller) {
             throw new \Exception('Controller not set for Action');
+        }
+        
+        if ($statusCode !== 200) {
+            http_response_code($statusCode);
         }
         
         if (!isset($data['breadcrumbs'])) {
@@ -139,7 +143,7 @@ abstract class ProfileAction {
         if (!isset($data['title']) && $this->pageTitle) {
             $data['title'] = $this->pageTitle;
         }
-        
+
         $this->controller->render($template, $data);
     }
     

@@ -63,8 +63,8 @@ class LinkField extends BaseField {
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">Не указана</span>';
         
-        $text = $this->config['link_text'] ?? $value;
-        $target = $this->config['new_tab'] ? 'target="_blank"' : '';
+        $text = (!empty($this->config['link_text'])) ? $this->config['link_text'] : $value;
+        $target = !empty($this->config['new_tab']) ? 'target="_blank"' : '';
         
         return "<a href='{$value}' {$target} class='field-link'>{$text}</a>";
     }
@@ -83,6 +83,25 @@ class LinkField extends BaseField {
         
         return "<a href='{$value}' target='_blank' class='text-decoration-none'>🔗</a>";
     }
+
+    /**
+     * Обрабатывает конфигурацию перед сохранением
+     */
+    public function processConfig(array $config): array {
+        if (isset($config['placeholder'])) {
+            $config['placeholder'] = trim($config['placeholder']);
+        }
+        if (isset($config['link_text'])) {
+            $config['link_text'] = trim($config['link_text']);
+        }
+        if (isset($config['default_value'])) {
+            $config['default_value'] = trim($config['default_value']);
+        }
+        
+        $config['new_tab'] = isset($config['new_tab']) && $config['new_tab'];
+        
+        return $config;
+    }
     
     /**
      * Возвращает HTML-форму для настройки поля в административной панели
@@ -91,7 +110,7 @@ class LinkField extends BaseField {
      * 
      * @return string HTML-код формы настроек
      */
-    public function getSettingsForm(): string {
+        public function getSettingsForm(): string {
         $placeholder = htmlspecialchars($this->config['placeholder'] ?? 'https://example.com');
         $linkText = htmlspecialchars($this->config['link_text'] ?? '');
         $newTab = isset($this->config['new_tab']) && $this->config['new_tab'] ? 'checked' : '';
@@ -122,7 +141,7 @@ class LinkField extends BaseField {
                 <div class='col-md-6'>
                     <div class='mb-3 pt-4'>
                         <div class='form-check'>
-                            <input class='form-check-input' type='checkbox' name='config[new_tab]' id='new_tab' {$newTab}>
+                            <input class='form-check-input' type='checkbox' name='config[new_tab]' id='new_tab' value='1' {$newTab}>
                             <label class='form-check-label' for='new_tab'>
                                 Открывать в новой вкладке
                             </label>

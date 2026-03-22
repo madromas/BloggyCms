@@ -179,17 +179,5 @@
                 </div>
             </div>
         </div>
-        
-        <?php if (!empty($config)) { ?>
-            <?php foreach ($config as $key => $value) { ?>
-                <?php if (is_array($value)) { ?>
-                    <?php foreach ($value as $subKey => $subValue) { ?>
-                        <input type="hidden" name="config[<?php echo html($key); ?>][<?php echo html($subKey); ?>]" value="<?php echo html($subValue); ?>">
-                    <?php } ?>
-                <?php } else { ?>
-                    <input type="hidden" name="config[<?php echo html($key); ?>]" value="<?php echo html($value); ?>">
-                <?php } ?>
-            <?php } ?>
-        <?php } ?>
     </form>
 </div>

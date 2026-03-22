@@ -1,7 +1,7 @@
 <?php
 /**
  * Profile Menu Template
- * Шаблон выпадающего меню профиля в стиле Telegram Desktop
+ * Шаблон выпадающего меню профиля
  * 
  */
 
@@ -44,7 +44,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
         ?>
         
         <?php if ($hasChildren) { ?>
-            <!-- Пункт с подменю -->
             <div class="<?php echo implode(' ', $itemClasses); ?>">
                 <a href="#" 
                    class="profile-menu-link profile-menu-parent" 
@@ -57,7 +56,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
                     <?php echo bloggy_icon('bs', 'chevron-right', '14 14', 'currentColor', 'profile-menu-arrow'); ?>
                 </a>
                 
-                <!-- Подменю первого уровня -->
                 <div class="profile-submenu">
                     <?php foreach ($item['children'] as $child) { ?>
                         <?php
@@ -94,7 +92,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
                         ?>
                         
                         <?php if ($childHasChildren) { ?>
-                            <!-- Пункт с подменю второго уровня -->
                             <div class="<?php echo implode(' ', $childClasses); ?>">
                                 <a href="#" 
                                    class="profile-submenu-link profile-menu-parent" 
@@ -107,7 +104,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
                                     <?php echo bloggy_icon('bs', 'chevron-right', '12 12', 'currentColor', 'profile-menu-arrow'); ?>
                                 </a>
                                 
-                                <!-- Подменю второго уровня -->
                                 <div class="profile-submenu profile-submenu-nested">
                                     <?php foreach ($child['children'] as $subchild) { ?>
                                         <?php
@@ -154,7 +150,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
                             </div>
                             
                         <?php } else { ?>
-                            <!-- Обычный пункт подменю -->
                             <div class="<?php echo implode(' ', $childClasses); ?>">
                                 <a href="<?php echo $childUrl; ?>" 
                                    class="profile-submenu-link <?php echo $childIsActive ? 'active' : ''; ?>"
@@ -171,7 +166,6 @@ $currentUrl = $_SERVER['REQUEST_URI'];
             </div>
             
         <?php } else { ?>
-            <!-- Обычный пункт меню -->
             <div class="<?php echo implode(' ', $itemClasses); ?>">
                 <a href="<?php echo $itemUrl; ?>" 
                    class="profile-menu-link <?php echo $isActive ? 'active' : ''; ?>"

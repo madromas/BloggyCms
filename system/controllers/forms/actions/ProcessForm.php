@@ -259,7 +259,6 @@ class ProcessForm extends FormAction {
                 }
                 
                 if (mb_strpos($value, $spamWord) !== false) {
-                    error_log('Spam detected: word="' . $spamWord . '" in field="' . $fieldName . '"');
                     return true;
                 }
             }
@@ -456,8 +455,5 @@ class ProcessForm extends FormAction {
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
-        if ($httpCode >= 400) {
-            error_log('Webhook error: HTTP ' . $httpCode . ' for form ' . $form['id']);
-        }
     }
 }

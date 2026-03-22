@@ -56,7 +56,6 @@ class FieldManager {
             $this->createDefaultFields();
             $this->loadCoreFields();
         }
-        
     }
     
     /**
@@ -158,7 +157,6 @@ class FieldManager {
      * @throws Exception При некорректных данных поля
      */
     public function processFieldValue($field, $postData, $filesData, $currentValues = []) {
-    
         $deleteKey = 'field_' . $field['system_name'] . '_delete';
 
         if (!is_array($field) || !isset($field['type']) || !isset($field['system_name'])) {
@@ -183,7 +181,6 @@ class FieldManager {
             $deleteKey = $fileKey . '_delete';
             
             if (isset($postData[$deleteKey])) {
-                
                 if ($postData[$deleteKey] == '1' || $postData[$deleteKey] === 'on') {
                     if (method_exists($fieldInstance, 'handleDelete')) {
                         $fieldInstance->handleDelete($currentValue);
@@ -195,8 +192,7 @@ class FieldManager {
             
             if (isset($filesData[$fileKey]) && !empty($filesData[$fileKey]['tmp_name'])) {
                 try {
-                    $result = $fieldInstance->processFileUpload($filesData[$fileKey], $currentValue);
-                    return $result;
+                    return $fieldInstance->processFileUpload($filesData[$fileKey], $currentValue);
                 } catch (Exception $e) {
                     throw $e;
                 }
@@ -208,13 +204,11 @@ class FieldManager {
 
             if ($fieldType === 'flag') {
                 $value = isset($postData[$postKey]) ? $postData[$postKey] : '0';
-                $processedValue = $fieldInstance->processValue($value);
-                return $processedValue;
+                return $fieldInstance->processValue($value);
             } 
             else if (isset($postData[$postKey])) {
                 $value = $postData[$postKey];
-                $processedValue = $fieldInstance->processValue($value);
-                return $processedValue;
+                return $fieldInstance->processValue($value);
             }
         }
         
@@ -576,7 +570,7 @@ class FieldManager {
      * @param string $className Имя класса
      */
     public function registerFieldType(string $type, string $className): void {
-        $this->fieldClasses[$type] = $className;
+        self::$fieldClasses[$type] = $className;
     }
     
     /**
@@ -787,7 +781,7 @@ class FieldManager {
      * @return array Массив типов полей
      */
     public function getRegisteredFieldTypes(): array {
-        return array_keys($this->fieldClasses);
+        return array_keys(self::$fieldClasses);
     }
     
     /**
@@ -797,7 +791,7 @@ class FieldManager {
      * @return bool Зарегистрирован ли тип
      */
     public function isFieldTypeRegistered(string $type): bool {
-        return isset($this->fieldClasses[$type]);
+        return isset(self::$fieldClasses[$type]);
     }
 
     /**

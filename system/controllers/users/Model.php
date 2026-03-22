@@ -205,27 +205,37 @@ class UserModel implements ModelAPI {
             $validFields = ['display_name', 'email', 'website', 'bio', 'avatar', 'password', 'username', 'role', 'status', 'last_login', 'last_admin_ip'];
             $filteredData = array_intersect_key($data, array_flip($validFields));
             
-            return $this->db->update('users', $filteredData, ['id' => $id]);
+            if (empty($filteredData)) {
+                return true;
+            }
+            
+            $result = $this->db->update('users', $filteredData, ['id' => $id]);
+            
+            return $result !== false;
+            
         } else {
             $fields = [];
             $values = [];
-
+            
+            $allowedFields = ['display_name', 'email', 'website', 'bio', 'avatar', 'password', 'username', 'role', 'status', 'last_login', 'last_admin_ip'];
+            
             foreach ($data as $field => $value) {
-                $allowedFields = ['display_name', 'email', 'website', 'bio', 'avatar', 'password', 'username', 'role', 'status', 'last_login', 'last_admin_ip'];
                 if (in_array($field, $allowedFields)) {
                     $fields[] = "{$field} = ?";
                     $values[] = $value;
                 }
             }
-
+            
             if (empty($fields)) {
-                return false;
+                return true;
             }
-
+            
             $values[] = $id;
-
+            
             $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = ?";
-            return $this->db->query($sql, $values);
+            $stmt = $this->db->query($sql, $values);
+            
+            return $stmt !== false;
         }
     }
 

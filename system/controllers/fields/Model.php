@@ -16,6 +16,7 @@ class FieldModel implements ModelAPI {
         'getActiveByEntityType',
         'getFieldBySystemName',
         'getFieldValue',
+        'getFieldValues',
         'getFieldTypes',
         'renderFieldDisplay',
         'renderFieldList'
@@ -116,31 +117,63 @@ class FieldModel implements ModelAPI {
     }
     
     /**
+     * Получение всех значений полей для конкретной сущности
+     * Возвращает ассоциативный массив, где ключ - системное имя поля, значение - значение поля
+     *
+     * @param int $entityId ID сущности
+     * @param string $entityType Тип сущности
+     * @return array Массив значений полей
+     */
+    public function getFieldValues($entityId, $entityType) {
+        $result = $this->db->fetchAll("
+            SELECT f.system_name, fv.value 
+            FROM field_values fv 
+            JOIN fields f ON fv.field_id = f.id 
+            WHERE fv.entity_type = ? AND fv.entity_id = ?
+        ", [$entityType, $entityId]);
+        
+        $values = [];
+        foreach ($result as $row) {
+            $values[$row['system_name']] = $row['value'];
+        }
+        
+        return $values;
+    }
+    
+    /**
+     * Получение значения поля для конкретной сущности
+     * Извлекает сохраненное значение поля по системному имени и идентификаторам сущности
+     *
+     * @param string $entityType Тип сущности
+     * @param int $entityId ID сущности
+     * @param string $fieldSystemName Системное имя поля
+     * @return mixed Значение поля или null если не найдено
+     */
+    public function getFieldValue($entityType, $entityId, $fieldSystemName) {
+        $result = $this->db->fetch("
+            SELECT fv.value 
+            FROM field_values fv 
+            JOIN fields f ON fv.field_id = f.id 
+            WHERE fv.entity_type = ? AND fv.entity_id = ? AND f.system_name = ?
+        ", [$entityType, $entityId, $fieldSystemName]);
+        
+        return $result ? $result['value'] : null;
+    }
+    
+    /**
      * Создание нового поля
      * Добавляет новое пользовательское поле в систему с проверкой уникальности
      *
-     * @param array $data Массив данных поля:
-     *                    - system_name: уникальное системное имя (обязательно)
-     *                    - entity_type: тип сущности (обязательно)
-     *                    - name: отображаемое имя
-     *                    - type: тип поля (string, text, select и т.д.)
-     *                    - description: описание поля
-     *                    - is_required: обязательность заполнения
-     *                    - is_active: активность поля
-     *                    - sort_order: порядок сортировки
-     *                    - config: конфигурация поля в JSON
-     *                    - show_in_post: показывать в полном просмотре
-     *                    - show_in_list: показывать в списках
+     * @param array $data Массив данных поля
      * @return int ID созданного поля
      * @throws Exception При ошибках валидации или дублировании системного имени
      */
     public function create($data) {
-        // Проверка обязательных полей
+
         if (!isset($data['system_name']) || !isset($data['entity_type'])) {
             throw new Exception('Отсутствуют обязательные поля system_name или entity_type');
         }
         
-        // Проверка уникальности системного имени
         $existing = $this->db->fetch(
             "SELECT COUNT(*) as count FROM fields WHERE system_name = ? AND entity_type = ?",
             [$data['system_name'], $data['entity_type']]
@@ -175,23 +208,20 @@ class FieldModel implements ModelAPI {
      * Изменяет данные поля с проверкой уникальности системного имени
      *
      * @param int $id ID обновляемого поля
-     * @param array $data Массив данных для обновления (аналогично create)
+     * @param array $data Массив данных для обновления
      * @return bool Результат выполнения запроса
      * @throws Exception При ошибках валидации или дублировании системного имени
      */
     public function update($id, $data) {
-        // Проверка наличия системного имени
         if (!isset($data['system_name'])) {
             throw new Exception('Отсутствует обязательное поле system_name');
         }
         
-        // Получение текущих данных поля
         $currentField = $this->getById($id);
         if (!$currentField) {
             throw new Exception('Поле не найдено');
         }
         
-        // Проверка уникальности системного имени
         $existing = $this->db->fetch(
             "SELECT COUNT(*) as count FROM fields WHERE system_name = ? AND entity_type = ? AND id != ?",
             [$data['system_name'], $currentField['entity_type'], $id]
@@ -230,9 +260,7 @@ class FieldModel implements ModelAPI {
      * @return bool Результат выполнения запроса
      */
     public function delete($id) {
-        // Сначала удаляем значения поля
         $this->db->query("DELETE FROM field_values WHERE field_id = ?", [$id]);
-        // Затем само поле
         return $this->db->query("DELETE FROM fields WHERE id = ?", [$id]);
     }
     
@@ -326,74 +354,55 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение значения поля для конкретной сущности
-     * Извлекает сохраненное значение поля по системному имени и идентификаторам сущности
-     *
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @param string $fieldSystemName Системное имя поля
-     * @return mixed Значение поля или null если не найдено
-     */
-    public function getFieldValue($entityType, $entityId, $fieldSystemName) {
-        $result = $this->db->fetch("
-            SELECT fv.value 
-            FROM field_values fv 
-            JOIN fields f ON fv.field_id = f.id 
-            WHERE fv.entity_type = ? AND fv.entity_id = ? AND f.system_name = ?
-        ", [$entityType, $entityId, $fieldSystemName]);
-        
-        return $result ? $result['value'] : null;
-    }
-
-    /**
      * Сохранение значения поля
      * Обрабатывает и сохраняет значение поля через FieldManager
      * Поддерживает обновление существующих значений и создание новых
      *
-     * @param int $fieldId ID поля
      * @param string $entityType Тип сущности
      * @param int $entityId ID сущности
+     * @param string $fieldSystemName Системное имя поля
      * @param mixed $value Сохраняемое значение
-     * @param string|null $fieldType Тип поля (для обработки значения)
-     * @param array $config Конфигурация поля
      * @return bool Результат выполнения запроса
      */
-    public function saveFieldValue($fieldId, $entityType, $entityId, $value, $fieldType = null, $config = []) {
-
+    public function saveFieldValue($entityType, $entityId, $fieldSystemName, $value) {
+        $field = $this->getFieldBySystemName($fieldSystemName, $entityType);
+        
+        if (!$field) {
+            return false;
+        }
+        
+        $fieldId = $field['id'];
+        
         $existing = $this->db->fetch(
             "SELECT id FROM field_values WHERE field_id = ? AND entity_type = ? AND entity_id = ?",
             [$fieldId, $entityType, $entityId]
         );
         
-        if ($value === null) {
-
+        if ($value === null || $value === '') {
             if ($existing) {
-                $result = $this->db->query(
+                return $this->db->query(
                     "DELETE FROM field_values WHERE field_id = ? AND entity_type = ? AND entity_id = ?",
                     [$fieldId, $entityType, $entityId]
                 );
-                return $result;
             }
             return true;
         }
         
         if ($existing) {
-            $result = $this->db->query(
+            return $this->db->query(
                 "UPDATE field_values SET value = ?, updated_at = CURRENT_TIMESTAMP 
                 WHERE field_id = ? AND entity_type = ? AND entity_id = ?",
                 [$value, $fieldId, $entityType, $entityId]
             );
-            return $result;
         } else {
-            $result = $this->db->query(
+            return $this->db->query(
                 "INSERT INTO field_values (field_id, entity_type, entity_id, value) 
                 VALUES (?, ?, ?, ?)",
                 [$fieldId, $entityType, $entityId, $value]
             );
-            return $result;
         }
     }
-
+    
     /**
      * Обработка конфигурации поля
      * Валидирует и форматирует конфигурацию поля через FieldManager
@@ -404,18 +413,5 @@ class FieldModel implements ModelAPI {
      */
     public function processFieldConfig($fieldType, $config) {
         return $this->fieldManager->processFieldConfig($fieldType, $config);
-    }
-
-    /**
-     * Валидация значения поля
-     * Проверяет корректность значения для конкретного типа поля
-     *
-     * @param string $fieldType Тип поля
-     * @param mixed $value Проверяемое значение
-     * @param array $config Конфигурация поля
-     * @return bool Результат валидации
-     */
-    public function validateFieldValue($fieldType, $value, $config = []): bool {
-        return $this->fieldManager->validateFieldValue($fieldType, $value, $config);
     }
 }

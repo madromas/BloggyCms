@@ -68,7 +68,6 @@ function render_html_block(string $slug): void {
 
     if ($block) {
         if (!isset($loaded_blocks[$slug])) {
-            // Загрузка CSS файлов
             if (!empty($block['css_files'])) {
                 $cssFiles = json_decode($block['css_files'], true);
                 if (is_array($cssFiles)) {
@@ -78,7 +77,6 @@ function render_html_block(string $slug): void {
                 }
             }
             
-            // Загрузка JS файлов
             if (!empty($block['js_files'])) {
                 $jsFiles = json_decode($block['js_files'], true);
                 if (is_array($jsFiles)) {
@@ -88,17 +86,14 @@ function render_html_block(string $slug): void {
                 }
             }
             
-            // Inline CSS
             if (!empty($block['inline_css'])) {
                 add_inline_css($block['inline_css']);
             }
             
-            // Inline JS
             if (!empty($block['inline_js'])) {
                 add_inline_js($block['inline_js']);
             }
 
-            // Ассеты типа блока
             if (!empty($block['block_type']) && $block['block_type'] !== 'DefaultBlock') {
                 $blockTypeManager = new HtmlBlockTypeManager($db);
                 $blockTypeManager->loadBlockFrontendAssets($block['block_type']);
@@ -109,19 +104,13 @@ function render_html_block(string $slug): void {
         
         $content = '';
         
-        // Декодируем настройки
         $settings = [];
         if (!empty($block['settings'])) {
             $settings = json_decode($block['settings'], true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('JSON decode error for block ' . $slug . ': ' . json_last_error_msg());
-            }
         }
         
-        // Определяем тип блока
         $blockType = $block['block_type'] ?? 'DefaultBlock';
         
-        // Рендеринг содержимого блока
         if ($blockType === 'DefaultBlock') {
             $content = $settings['html'] ?? '';
             

@@ -70,24 +70,60 @@ $fieldModel = new FieldModel($this->db);
                     </div>
                 </div>
 
+                <?php if (!empty($customFields)) { 
+                    $fieldValues = $fieldModel->getFieldValues($user['id'], 'user');
+                    $fieldManager = new \FieldManager($this->db);
+                ?>
+                <div class="tg-card">
+                    <div class="tg-card-body">
+                        <h3 class="tg-card-title">
+                            <?php echo bloggy_icon('bs', 'info-circle', '18', 'currentColor', 'tg-mr-1'); ?>
+                            Дополнительно
+                        </h3>
+                        <div class="tg-custom-fields-list">
+                            <?php foreach ($customFields as $field) { 
+                                $fieldValue = $fieldValues[$field['system_name']] ?? null;
+                                if (empty($fieldValue) && $fieldValue !== '0') {
+                                    continue;
+                                }
+                                $displayValue = $fieldManager->renderFieldDisplay(
+                                    $field['type'],
+                                    $fieldValue,
+                                    json_decode($field['config'] ?? '{}', true),
+                                    'user',
+                                    $user['id']
+                                );
+                            ?>
+                                <div class="tg-custom-field-item">
+                                    <div class="tg-custom-field-label"><?php echo html($field['name']); ?>:</div>
+                                    <div class="tg-custom-field-value"><?php echo $displayValue; ?></div>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <?php } ?>
+
                 <div class="tg-card">
                     <div class="tg-card-body">
                         <h3 class="tg-card-title mb-3">
                             <?php echo bloggy_icon('bs', 'bar-chart', '18', 'currentColor', 'tg-mr-1'); ?>
                             Статистика
                         </h3>
-                        <div class="tg-stats">
-                            <div class="tg-stat">
-                                <span class="tg-stat-value"><?php echo $postsCount; ?></span>
-                                <span class="tg-stat-label"><?php echo plural((int)$postsCount, ['пост', 'поста', 'постов']); ?></span>
+                        <div class="tg-stats" style="gap: 8px; margin-bottom: 12px; padding: 8px; background: var(--tg-bg); border-radius: var(--tg-radius-md);">
+                            <?php if ($isAdmin || $profileUserIsAdmin) { ?>
+                            <div class="tg-stat" style="flex: 1; text-align: center;">
+                                <span class="tg-stat-value" style="font-size: 16px;"><?php echo $total = (int)($postsCount ?? 0); ?></span>
+                                <span class="tg-stat-label" style="font-size: 10px;"><?php echo plural($total, ['пост', 'поста', 'постов']); ?></span>
                             </div>
-                            <div class="tg-stat">
-                                <span class="tg-stat-value"><?php echo $total = (int)($commentsCount ?? 0); ?></span>
-                                <span class="tg-stat-label"><?php echo plural($total, ['комментарий', 'комментария', 'комментариев']); ?></span>
+                            <?php } ?>
+                            <div class="tg-stat" style="flex: 1; text-align: center;">
+                                <span class="tg-stat-value" style="font-size: 16px;"><?php echo $commentsCount ?? 0; ?></span>
+                                <span class="tg-stat-label" style="font-size: 10px;">коммент.</span>
                             </div>
-                            <div class="tg-stat">
-                                <span class="tg-stat-value"><?php echo $total = (int)($daysSinceRegistration ?? 0); ?></span>
-                                <span class="tg-stat-label"><?php echo plural($total, ['день', 'дня', 'дней']) . ' с нами'; ?></span>
+                            <div class="tg-stat" style="flex: 1; text-align: center;">
+                                <span class="tg-stat-value" style="font-size: 16px;"><?php echo $total = (int)($unlockedCount ?? 0); ?></span>
+                                <span class="tg-stat-label" style="font-size: 10px;"><?php echo plural($total, ['ачивка', 'ачивки', 'ачивок']); ?></span>
                             </div>
                         </div>
                     </div>
@@ -178,15 +214,21 @@ $fieldModel = new FieldModel($this->db);
                                                         <?php echo html($post['title']); ?>
                                                     </a>
                                                 </h4>
-                                                <div class="tg-post-item-meta">
-                                                    <span class="tg-post-date">
+                                                <div class="tg-post-meta-info">
+                                                    <span class="tg-post-meta-date">
                                                         <?php echo bloggy_icon('bs', 'calendar', '12', 'currentColor', 'tg-mr-1'); ?>
                                                         <?php echo date('d.m.Y', strtotime($post['created_at'])); ?>
                                                     </span>
-                                                    <span class="tg-post-views">
+                                                    <span class="tg-post-meta-views">
                                                         <?php echo bloggy_icon('bs', 'eye', '12', 'currentColor', 'tg-mr-1'); ?>
                                                         <?php echo $post['views'] ?? 0; ?>
                                                     </span>
+                                                    <?php if (($post['likes_count'] ?? 0) > 0) { ?>
+                                                    <span class="tg-post-meta-likes">
+                                                        <?php echo bloggy_icon('bs', 'heart', '12', 'currentColor', 'tg-mr-1'); ?>
+                                                        <?php echo $post['likes_count'] ?? 0; ?>
+                                                    </span>
+                                                    <?php } ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -355,8 +397,8 @@ $fieldModel = new FieldModel($this->db);
 ob_start();
 ?>
 <script>
-window.baseUrl = '<?php echo BASE_URL; ?>';
-window.userLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    window.baseUrl = '<?php echo BASE_URL; ?>';
+    window.userLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
 </script>
 <?php front_bottom_js(ob_get_clean()); ?>
 <?php front_js('/templates/default/front/assets/js/user-action.js'); ?>

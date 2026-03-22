@@ -248,7 +248,6 @@ class FormSubmit extends FormAction {
                 }
                 
                 if (mb_strpos($value, $spamWord) !== false) {
-                    error_log('Spam detected: word="' . $spamWord . '" in field="' . $fieldName . '"');
                     return true;
                 }
             }
