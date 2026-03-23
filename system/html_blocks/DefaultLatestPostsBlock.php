@@ -19,6 +19,8 @@ class DefaultLatestPostsBlock extends BaseHtmlBlock {
     public function getTemplate(): string {
         return 'default';
     }
+
+    public $posts = [];
     
     private function getCategoriesOptions(): array {
         $options = ['' => '-- Все категории --'];

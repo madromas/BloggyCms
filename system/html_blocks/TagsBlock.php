@@ -22,6 +22,8 @@ class TagsBlock extends BaseHtmlBlock {
         return 'default';
     }
 
+    public $tags = [];
+
     public function getSettingsForm($currentSettings = []): string {
         
         $settings = array_merge([], $currentSettings);

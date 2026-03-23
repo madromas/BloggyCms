@@ -117,7 +117,7 @@ function getUserAvatarHtml(): string {
                 $avatarUrl = BASE_URL . '/' . $avatar;
             }
         } else {
-            $avatarUrl = BASE_URL . '/uploads/avatars/default.png';
+            $avatarUrl = BASE_URL . '/uploads/avatars/default.jpg';
         }
         
         return '<img src="' . $avatarUrl . '" alt="Avatar" class="tg-avatar">';

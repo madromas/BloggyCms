@@ -408,6 +408,12 @@ class QuoteBlock extends BasePostBlock {
         </div>
         <?php
         return ob_get_clean();
-}
+    }
+
+    public function getFrontendCss(): array {
+        return [
+            '/templates/default/front/assets/postblocks/quoteblock/qoute.css',
+        ];
+    }
 
 }

@@ -22,6 +22,8 @@ class CategoriesListBlock extends BaseHtmlBlock {
         return 'default';
     }
 
+    public $categories = [];
+
     public function getSettingsForm($currentSettings = []): string {
         
         $settings = array_merge([], $currentSettings);

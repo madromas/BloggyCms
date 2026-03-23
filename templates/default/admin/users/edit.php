@@ -337,52 +337,127 @@ $customFields = $fieldModel->getActiveByEntityType('user');
 
 <?php ob_start(); ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const changePasswordCheckbox = document.getElementById('change_password');
-    const passwordFields = document.querySelector('.password-fields');
-    
-    if (changePasswordCheckbox && passwordFields) {
-        changePasswordCheckbox.addEventListener('change', function() {
-            passwordFields.style.display = this.checked ? 'block' : 'none';
-        });
-    }
-    
-    const passwordInput = document.querySelector('input[name="password"]');
-    const confirmInput = document.querySelector('input[name="password_confirm"]');
-    const form = document.querySelector('form');
-    
-    function validatePasswords() {
-        if (passwordInput.value && passwordInput.value !== confirmInput.value) {
-            confirmInput.setCustomValidity('Пароли не совпадают');
-        } else {
-            confirmInput.setCustomValidity('');
-        }
-    }
-    
-    if (passwordInput && confirmInput) {
-        passwordInput.addEventListener('input', validatePasswords);
-        confirmInput.addEventListener('input', validatePasswords);
+    document.addEventListener('DOMContentLoaded', function() {
+        const changePasswordCheckbox = document.getElementById('change_password');
+        const passwordFields = document.querySelector('.password-fields');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const confirmInput = document.querySelector('input[name="password_confirm"]');
+        const form = document.querySelector('form');
         
-        passwordInput.addEventListener('input', function() {
-            if (this.value.length > 0 && this.value.length < 6) {
-                this.setCustomValidity('Пароль должен содержать минимум 6 символов');
-            } else {
-                this.setCustomValidity('');
+        function togglePasswordValidation(enable) {
+            if (passwordInput) {
+                passwordInput.disabled = !enable;
+                if (!enable) {
+                    passwordInput.removeAttribute('required');
+                    passwordInput.value = '';
+                }
             }
-        });
-    }
-    
-    form.addEventListener('submit', function(e) {
-        const submitBtn = form.querySelector('[type="submit"]');
-        const originalBtnHtml = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
+            if (confirmInput) {
+                confirmInput.disabled = !enable;
+                if (!enable) {
+                    confirmInput.removeAttribute('required');
+                    confirmInput.value = '';
+                }
+            }
+        }
         
-        setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnHtml;
-        }, 5000);
+        function validatePasswords() {
+            if (!changePasswordCheckbox || !changePasswordCheckbox.checked) {
+                return true;
+            }
+            
+            if (!passwordInput.value && !confirmInput.value) {
+                return true;
+            }
+            
+            if (passwordInput.value.length < 6) {
+                passwordInput.setCustomValidity('Пароль должен содержать минимум 6 символов');
+                return false;
+            } else {
+                passwordInput.setCustomValidity('');
+            }
+            
+            if (passwordInput.value !== confirmInput.value) {
+                confirmInput.setCustomValidity('Пароли не совпадают');
+                return false;
+            } else {
+                confirmInput.setCustomValidity('');
+            }
+            
+            return true;
+        }
+        
+        if (changePasswordCheckbox && passwordFields) {
+            if (!changePasswordCheckbox.checked) {
+                togglePasswordValidation(false);
+            } else {
+                togglePasswordValidation(true);
+            }
+            
+            changePasswordCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    passwordFields.style.display = 'block';
+                    togglePasswordValidation(true);
+                } else {
+                    passwordFields.style.display = 'none';
+                    togglePasswordValidation(false);
+                }
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                if (changePasswordCheckbox.checked) {
+                    if (this.value.length > 0 && this.value.length < 6) {
+                        this.setCustomValidity('Пароль должен содержать минимум 6 символов');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                    validatePasswords();
+                }
+            });
+            
+            confirmInput.addEventListener('input', function() {
+                if (changePasswordCheckbox.checked) {
+                    validatePasswords();
+                }
+            });
+        }
+        
+        if (form) {
+            let isSubmitting = false;
+            
+            form.addEventListener('submit', function(e) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                
+                if (changePasswordCheckbox && changePasswordCheckbox.checked) {
+                    if (!validatePasswords()) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                isSubmitting = true;
+                
+                if (submitBtn) {
+                    const originalHtml = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
+                    submitBtn.setAttribute('data-original-html', originalHtml);
+                }
+                
+                return true;
+            });
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn && submitBtn.disabled && submitBtn.getAttribute('data-original-html')) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.getAttribute('data-original-html');
+            }
+        }
     });
-});
 </script>
 <?php admin_bottom_js(ob_get_clean()); ?>

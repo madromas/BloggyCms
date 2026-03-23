@@ -102,15 +102,18 @@ abstract class BasePostBlock {
     }
 
     protected function getBlockSettings(): array {
-        static $settings = null;
+
+        static $cache = [];
         
-        if ($settings === null) {
+        $systemName = $this->getSystemName();
+        
+        if (!isset($cache[$systemName])) {
             try {
                 $db = Database::getInstance();
                 $model = new PostBlockModel($db);
-                $settings = $model->getBlockSettings($this->getSystemName());
+                $cache[$systemName] = $model->getBlockSettings($systemName);
             } catch (Exception $e) {
-                $settings = [
+                $cache[$systemName] = [
                     'enable_in_posts' => true,
                     'enable_in_pages' => true,
                     'template' => $this->getTemplateWithShortcodes()
@@ -118,7 +121,7 @@ abstract class BasePostBlock {
             }
         }
         
-        return $settings;
+        return $cache[$systemName];
     }
 
     /**

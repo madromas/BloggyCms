@@ -21,6 +21,10 @@ class DefaultFooterBlock extends BaseHtmlBlock {
         return 'default';
     }
 
+    public $categories = [];
+    public $recentPosts = [];
+    public $recentTags = [];
+
     public function getSettingsForm($currentSettings = []): string {
         $allMenus = MenuRenderer::getAllMenusForSelect();
         $settings = array_merge([], $currentSettings);

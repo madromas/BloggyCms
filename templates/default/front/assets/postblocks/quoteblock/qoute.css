@@ -1,0 +1,472 @@
+.card-1 {
+    background: #f3f3f3;
+    border-radius: 20px;
+    padding: 40px;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-1:hover {
+    transform: translateY(-10px);
+}
+
+.card-1::before {
+    content: '"';
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    font-family: 'Playfair Display', serif;
+    font-size: 120px;
+    color: #e0e7ff;
+    line-height: 1;
+    opacity: 0.5;
+}
+
+.card-1 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    line-height: 1.8;
+    color: #1f2937;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-1 .quote-author {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.card-1 .author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.card-1 .author-info {
+    flex: 1;
+}
+
+.card-1 .author-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.card-1 .quote-source {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.card-2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px;
+    padding: 45px;
+    box-shadow: 0 25px 70px rgba(102, 126, 234, 0.4);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.card-2:hover {
+    transform: scale(1.02);
+    box-shadow: 0 35px 90px rgba(102, 126, 234, 0.6);
+}
+
+.card-2::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.card-2 .quote-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.card-2 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    line-height: 1.7;
+    margin-bottom: 35px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-2 .quote-author {
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.card-2 .author-name {
+    font-weight: 600;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+}
+
+.card-2 .quote-source {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    backdrop-filter: blur(10px);
+}
+
+.card-3 {
+    background-image: url('/templates/default/front/assets/postblocks/quoteblock/3.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
+    padding: 45px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-3::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%);
+    z-index: 0;
+}
+
+.card-3:hover {
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow: 0 35px 90px rgba(0, 0, 0, 0.5);
+}
+
+.card-3 > * {
+    position: relative;
+    z-index: 1;
+}
+
+.card-3 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.card-3 .quote-author {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px 25px;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-3 .author-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.3rem;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.card-3 .author-info {
+    flex: 1;
+}
+
+.card-3 .author-name {
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 5px;
+}
+
+.card-3 .quote-source {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+.card-4 {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 45px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-4:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-10px);
+    box-shadow: 0 35px 90px rgba(0, 0, 0, 0.4);
+}
+
+.card-4 .quote-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    line-height: 1;
+    margin-bottom: -20px;
+}
+
+.card-4 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    line-height: 1.7;
+    margin-bottom: 35px;
+    position: relative;
+}
+
+.card-4 .quote-author {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-4 .author-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.4rem;
+    box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+}
+
+.card-4 .author-info {
+    flex: 1;
+}
+
+.card-4 .author-name {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.card-4 .quote-source {
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.card-5 {
+    background-image: url('/templates/default/front/assets/postblocks/quoteblock/2.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
+    padding: 45px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.card-5::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.85) 100%);
+    z-index: 0;
+}
+
+.card-5:hover {
+    transform: scale(1.03);
+    box-shadow: 0 35px 90px rgba(0, 0, 0, 0.6);
+}
+
+.card-5 > * {
+    position: relative;
+    z-index: 1;
+}
+
+.card-5 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    line-height: 1.7;
+    margin-bottom: 35px;
+    position: relative;
+    padding-left: 30px;
+    border-left: 4px solid #6366f1;
+}
+
+.card-5 .quote-author {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.card-5 .author-name {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #818cf8;
+}
+
+.card-5 .quote-source {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.card-6 {
+    background-image: url('/templates/default/front/assets/postblocks/quoteblock/1.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 24px;
+    padding: 45px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-6::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(251, 146, 60, 0.7) 0%, rgba(236, 72, 153, 0.7) 100%);
+    z-index: 0;
+}
+
+.card-6:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 40px 100px rgba(236, 72, 153, 0.5);
+}
+
+.card-6 > * {
+    position: relative;
+    z-index: 1;
+}
+
+.card-6 .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    text-align: center;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.card-6 .quote-author {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 25px 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.card-6 .author-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+.card-6 .quote-source {
+    font-size: 0.95rem;
+    opacity: 0.95;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .card-1, .card-2, .card-3, .card-4, .card-5, .card-6 {
+        padding: 30px 25px;
+    }
+
+    .card-1 .quote-text,
+    .card-2 .quote-text,
+    .card-3 .quote-text,
+    .card-4 .quote-text,
+    .card-5 .quote-text,
+    .card-6 .quote-text {
+        font-size: 1.2rem;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-1, .card-2, .card-3, .card-4, .card-5, .card-6 {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.card-1 { animation-delay: 0.1s; }
+.card-2 { animation-delay: 0.2s; }
+.card-3 { animation-delay: 0.3s; }
+.card-4 { animation-delay: 0.4s; }
+.card-5 { animation-delay: 0.5s; }
+.card-6 { animation-delay: 0.6s; }

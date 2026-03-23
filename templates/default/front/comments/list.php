@@ -64,7 +64,7 @@ function renderCommentsTree($comments, $level = 0) {
                     <div class="tg-comment-avatar">
                         <img src="<?php echo $userAvatar; ?>" 
                              alt="<?php echo html($userName); ?>"
-                             onerror="this.onerror=null; this.src='<?php echo BASE_URL; ?>/uploads/avatars/default.png'">
+                             onerror="this.onerror=null; this.src='<?php echo BASE_URL; ?>/uploads/avatars/default.jpg'">
                         
                         <?php if ($level > 0) { ?>
                             <div class="tg-reply-line"></div>
@@ -148,7 +148,7 @@ function renderCommentsTree($comments, $level = 0) {
                 
                 <div class="tg-comment-actions">
                     <?php if ($canReply) { ?>
-                    <button type="button" class="tg-action-btn tg-btn-reply" 
+                    <button type="button" class="tg-action-btn tg-btn-reply reply-btn" 
                             data-comment-id="<?php echo $commentId; ?>" 
                             data-comment-author="<?php echo html($userName); ?>">
                         <?php echo bloggy_icon('bs', 'reply', '14', 'currentColor', 'tg-mr-1'); ?>

@@ -879,7 +879,7 @@ class CommentsSystem {
                             <img src="${commentData.author_avatar}" 
                                 alt="${commentData.author_name}"
                                 class="rounded-circle"
-                                onerror="this.onerror=null; this.src='${this.config.base_url}/uploads/avatars/default.png'">
+                                onerror="this.onerror=null; this.src='${this.config.base_url}/uploads/avatars/default.jpg'">
                             ${parentId > 0 ? '<div class="reply-line"></div>' : ''}
                         </div>
                         

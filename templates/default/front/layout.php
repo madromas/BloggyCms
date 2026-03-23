@@ -58,7 +58,8 @@ if ($maintenanceMode && !$isAdmin) {
             <?php echo $content ?>
         </main>
         <?php echo render_html_block('footer'); ?>
-        
+        <?php echo render_html_block('top'); ?>
+        <?php echo render_html_block('cookies'); ?>
     </div>
     
     <?php echo base_front_js(['bootstrap.bundle.min','notifications','main']); ?>
