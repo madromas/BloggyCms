@@ -127,4 +127,25 @@ class FileUpload {
         
         return $errors[$errorCode] ?? 'Неизвестная ошибка';
     }
+
+    /**
+     * Проверяет, является ли файл ZIP-архивом
+     * 
+     * @param string $filePath Путь к файлу
+     * @return bool
+     */
+    public static function isZip($filePath) {
+        if (!file_exists($filePath)) {
+            return false;
+        }
+        
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $filePath);
+        finfo_close($finfo);
+        
+        return $mimeType === 'application/zip' || 
+               $mimeType === 'application/x-zip-compressed' ||
+               pathinfo($filePath, PATHINFO_EXTENSION) === 'zip';
+    }
+
 }

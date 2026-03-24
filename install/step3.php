@@ -132,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             define('DEFAULT_TEMPLATE', 'default');
             define('USER_ONLINE_INTERVAL', 300);
             define('CACHE_DIR', BASE_PATH.'/cache');
+            define('ADDONS_TEMP_DIR', UPLOADS_PATH . '/temp_addon/');
             if(!is_dir(CACHE_DIR)) @mkdir(CACHE_DIR,0755,true);";
                         file_put_contents($configDir.'/config.php', $configContent);
             file_put_contents(dirname(__DIR__).'/system/config/install.lock', date('Y-m-d H:i:s')."\n");

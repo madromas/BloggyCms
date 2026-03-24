@@ -76,6 +76,34 @@ INSERT IGNORE INTO `{#}block_types` (`id`, `system_name`, `name`, `description`,
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `{#}installed_addons`
+-- Таблица для хранения установленных пакетов дополнений
+--
+
+CREATE TABLE IF NOT EXISTS `{#}installed_addons` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `system_name` varchar(100) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `version_major` int NOT NULL DEFAULT 1,
+  `version_minor` int NOT NULL DEFAULT 0,
+  `version_build` int NOT NULL DEFAULT 0,
+  `version_string` varchar(50) NOT NULL,
+  `version_date` varchar(20) DEFAULT NULL,
+  `author_name` varchar(255) DEFAULT NULL,
+  `author_url` varchar(500) DEFAULT NULL,
+  `author_email` varchar(255) DEFAULT NULL,
+  `description` text,
+  `type` enum('install','update') NOT NULL DEFAULT 'install',
+  `installed_at` datetime NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_system_name` (`system_name`),
+  KEY `idx_system_name` (`system_name`),
+  KEY `idx_is_active` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
 -- Структура таблицы `{#}bookmarks`
 --
 

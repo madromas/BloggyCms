@@ -73,4 +73,14 @@ class Logger {
             self::log($message, 'DEBUG');
         }
     }
+
+    /**
+     * Записывает информационное сообщение
+     * 
+     * @param mixed $message Сообщение для логирования
+     * @return void
+     */
+    public static function info($message) {
+        self::log($message, 'INFO');
+    }
 }

@@ -208,7 +208,7 @@ class AdminController extends Controller {
             exit;
         }
         
-        $fullPath = TEMPLATES_PATH . '/' . $template . '/' . $filePath;
+        $fullPath = TEMPLATES_PATH . '/' . $template . '/front/' . $filePath;
         
         $normalizedPath = $this->normalizePath($fullPath);
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
@@ -255,7 +255,7 @@ class AdminController extends Controller {
             exit;
         }
         
-        $fullPath = TEMPLATES_PATH . '/' . $template . '/' . $filePath;
+        $fullPath = TEMPLATES_PATH . '/' . $template . '/front/' . $filePath;
         
         $normalizedPath = $this->normalizePath($fullPath);
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
@@ -337,14 +337,14 @@ class AdminController extends Controller {
      * Рекурсивное получение файлов шаблона с кэшированием
      */
     private function getTemplateFiles($template) {
-        
         $templatePath = TEMPLATES_PATH . '/' . $template;
+        $frontPath = $templatePath . '/front';
         
-        if (!is_dir($templatePath)) {
+        if (!is_dir($frontPath)) {
             return [];
         }
 
-        $cacheKey = 'tmpl_files_' . md5($template);
+        $cacheKey = 'tmpl_files_all_' . md5($template);
         $cacheFile = CACHE_DIR . '/' . $cacheKey . '.json';
         
         if (file_exists($cacheFile) && is_writable(CACHE_DIR)) {
@@ -358,9 +358,10 @@ class AdminController extends Controller {
         }
 
         $files = [];
-        $excludeDirs = ['.git', 'node_modules', 'vendor', '.cache', 'tmp', '.idea', '.vscode'];
+        $excludeDirs = ['.git', 'node_modules', 'vendor', '.cache', 'tmp', '.idea', '.vscode', 'admin'];
+        $allowedExtensions = ['php', 'html', 'css', 'js', 'json', 'xml', 'txt', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
         
-        $scanDir = function($dir, $basePath) use (&$scanDir, &$files, $excludeDirs) {
+        $scanDir = function($dir, $basePath) use (&$scanDir, &$files, $excludeDirs, $allowedExtensions, $frontPath) {
             $items = @scandir($dir);
             if ($items === false) return;
             
@@ -368,7 +369,7 @@ class AdminController extends Controller {
                 if ($item === '.' || $item === '..') continue;
                 
                 $fullPath = $dir . DIRECTORY_SEPARATOR . $item;
-                $relativePath = str_replace($basePath . DIRECTORY_SEPARATOR, '', $fullPath);
+                $relativePath = str_replace($frontPath . DIRECTORY_SEPARATOR, '', $fullPath);
                 $relativePath = str_replace('\\', '/', $relativePath);
                 
                 if (is_dir($fullPath)) {
@@ -378,14 +379,15 @@ class AdminController extends Controller {
                     continue;
                 }
                 
-                if (is_file($fullPath) && pathinfo($fullPath, PATHINFO_EXTENSION) === 'php') {
-                    $parsed = $this->parseTemplateHeader($fullPath);
-                    if ($parsed['is_template']) {
+                if (is_file($fullPath)) {
+                    $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+                    if (in_array($extension, $allowedExtensions)) {
                         $files[] = [
                             'name' => basename($relativePath),
                             'path' => $relativePath,
                             'size' => $this->formatFileSize(filesize($fullPath)),
-                            'description' => $parsed['description'],
+                            'description' => $this->getFileDescription($fullPath),
+                            'extension' => $extension,
                             'full_path' => $fullPath
                         ];
                     }
@@ -393,7 +395,7 @@ class AdminController extends Controller {
             }
         };
         
-        $scanDir($templatePath, $templatePath);
+        $scanDir($frontPath, $frontPath);
         usort($files, fn($a, $b) => strcmp($a['path'], $b['path']));
 
         if (is_writable(CACHE_DIR)) {
@@ -406,6 +408,22 @@ class AdminController extends Controller {
         }
 
         return $files;
+    }
+
+    /**
+     * Получает описание файла (для PHP-шаблонов)
+     */
+    private function getFileDescription($filePath) {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        
+        if ($extension === 'php') {
+            $content = @file_get_contents($filePath, false, null, 0, 4096);
+            if ($content !== false && preg_match('/\/\*\*\s*\*\s*Template Name:\s*(.+?)\s*\*\//s', $content, $matches)) {
+                return trim($matches[1]);
+            }
+        }
+        
+        return '';
     }
 
     /**
@@ -432,30 +450,31 @@ class AdminController extends Controller {
     }
 
     /**
-     * Проверка, является ли файл редактируемым по расширению
-     */
-    private function isEditableFile($filename) {
-        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        return $extension === 'php';
-    }
-
-    /**
      * Получение метаинформации о файле
      */
     private function getFileInfo($fullPath, $relativePath) {
         $size = @filesize($fullPath);
         if ($size === false) $size = 0;
         
-        $parsed = $this->parseTemplateHeader($fullPath);
+        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        $description = $this->getFileDescription($fullPath);
         
         return [
             'name' => basename($relativePath),
             'path' => $relativePath,
             'size' => $this->formatFileSize($size),
-            'description' => $parsed['description'],
+            'description' => $description,
+            'extension' => $extension,
             'full_path' => $fullPath,
-            'updated_at' => filemtime($fullPath)
+            'updated_at' => filemtime($fullPath),
+            'is_editable' => $this->isEditableFile($fullPath)
         ];
+    }
+
+    private function isEditableFile($fullPath) {
+        $editableExtensions = ['php', 'html', 'css', 'js', 'json', 'xml', 'txt', 'svg'];
+        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+        return in_array($extension, $editableExtensions);
     }
 
     /**
@@ -469,6 +488,133 @@ class AdminController extends Controller {
         } else {
             return round($size / 1048576, 2) . ' MB';
         }
+    }
+
+    /**
+     * API: Скачивание файла
+     */
+    public function downloadFileAction() {
+        $template = $_GET['template'] ?? 'default';
+        $filePath = $_GET['file'] ?? '';
+        
+        if (empty($filePath) || strpos($filePath, '..') !== false) {
+            die('Некорректный путь к файлу');
+        }
+        
+        $fullPath = TEMPLATES_PATH . '/' . $template . '/front/' . $filePath;
+        
+        $normalizedPath = $this->normalizePath($fullPath);
+        $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
+        
+        if (strpos($normalizedPath, $templateBasePath) !== 0) {
+            die('Доступ запрещен');
+        }
+        
+        if (!file_exists($fullPath) || !is_file($fullPath)) {
+            die('Файл не найден');
+        }
+        
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . basename($fullPath) . '"');
+        header('Content-Length: ' . filesize($fullPath));
+        readfile($fullPath);
+        exit;
+    }
+
+    /**
+     * API: Загрузка файла на сервер
+     */
+    public function uploadFileAction() {
+        header('Content-Type: application/json');
+        
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'error' => 'Ошибка загрузки файла']);
+            exit;
+        }
+        
+        $template = $_POST['template'] ?? 'default';
+        $uploadPath = $_POST['path'] ?? '';
+        
+        if (strpos($uploadPath, '..') !== false || strpos($uploadPath, './') !== false) {
+            echo json_encode(['success' => false, 'error' => 'Некорректный путь']);
+            exit;
+        }
+        
+        $file = $_FILES['file'];
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowedExtensions = ['php', 'html', 'css', 'js', 'json', 'xml', 'txt', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
+        
+        if (!in_array($extension, $allowedExtensions)) {
+            echo json_encode(['success' => false, 'error' => 'Недопустимый тип файла']);
+            exit;
+        }
+        
+        if ($file['size'] > 10 * 1024 * 1024) {
+            echo json_encode(['success' => false, 'error' => 'Файл слишком большой (максимум 10MB)']);
+            exit;
+        }
+        
+        $targetDir = TEMPLATES_PATH . '/' . $template . '/front';
+        if (!empty($uploadPath)) {
+            $targetDir .= '/' . trim($uploadPath, '/');
+        }
+        
+        if (!is_dir($targetDir)) {
+            if (!mkdir($targetDir, 0755, true)) {
+                echo json_encode(['success' => false, 'error' => 'Не удалось создать директорию']);
+                exit;
+            }
+        }
+        
+        $targetFile = $targetDir . '/' . basename($file['name']);
+        
+        $normalizedTarget = $this->normalizePath($targetFile);
+        $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
+        
+        if (strpos($normalizedTarget, $templateBasePath) !== 0) {
+            echo json_encode(['success' => false, 'error' => 'Доступ запрещен']);
+            exit;
+        }
+        
+        if (file_exists($targetFile)) {
+            echo json_encode(['success' => false, 'error' => 'Файл уже существует']);
+            exit;
+        }
+        
+        if (move_uploaded_file($file['tmp_name'], $targetFile)) {
+            BackupHelper::createBackup($targetFile);
+            
+            $relativePath = str_replace(TEMPLATES_PATH . '/' . $template . '/front/', '', $targetFile);
+            
+            echo json_encode(['success' => true, 'message' => 'Файл успешно загружен', 'path' => $relativePath]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Ошибка сохранения файла']);
+        }
+        exit;
+    }
+
+    /**
+     * API: Создание папки front для шаблона
+     */
+    public function createFrontFolderAction() {
+        header('Content-Type: application/json');
+        
+        $input = json_decode(file_get_contents('php://input'), true);
+        $template = $input['template'] ?? 'default';
+        
+        $frontPath = TEMPLATES_PATH . '/' . $template . '/front';
+        
+        if (is_dir($frontPath)) {
+            echo json_encode(['success' => true, 'message' => 'Папка уже существует']);
+            exit;
+        }
+        
+        if (mkdir($frontPath, 0755, true)) {
+            echo json_encode(['success' => true, 'message' => 'Папка front успешно создана']);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Не удалось создать папку front']);
+        }
+        exit;
     }
 
     /**
