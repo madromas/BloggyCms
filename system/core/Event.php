@@ -48,7 +48,7 @@ class Event {
             'acceptedArgs' => $acceptedArgs
         ];
     }
-    
+
     /**
      * Запускает событие (триггер)
      * 
@@ -65,23 +65,29 @@ class Event {
             return null;
         }
         
-        // Сортируем по приоритету (убывание)
         krsort(self::$listeners[$event]);
         
         $result = null;
-        foreach (self::$listeners[$event] as $listeners) {
-            foreach ($listeners as $listener) {
+        $listenerCount = 0;
+        foreach (self::$listeners[$event] as $priority => $listeners) {
+            foreach ($listeners as $id => $listener) {
+                $listenerCount++;
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
                 
                 $callbackArgs = array_slice($args, 0, $acceptedArgs);
-                $result = call_user_func_array($callback, $callbackArgs);
+                
+                $callbackResult = call_user_func_array($callback, $callbackArgs);
+                
+                if ($callbackResult !== null) {
+                    $result = $callbackResult;
+                }
             }
         }
         
         return $result;
     }
-    
+
     /**
      * Запускает событие с возможностью модификации значения
      * 
@@ -106,8 +112,13 @@ class Event {
             foreach ($listeners as $listener) {
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
+
+                $callbackArgs = [$result];
                 
-                $callbackArgs = array_slice($args, 0, $acceptedArgs);
+                for ($i = 0; $i < $acceptedArgs - 1; $i++) {
+                    $callbackArgs[] = $args[$i] ?? null;
+                }
+                
                 $callbackResult = call_user_func_array($callback, $callbackArgs);
                 
                 if ($callbackResult !== null) {

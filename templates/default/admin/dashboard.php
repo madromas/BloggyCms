@@ -114,6 +114,13 @@
                 <?php } ?>
             </div>
         <?php } ?>
+
+        <?php 
+            $extraCards = Event::trigger('admin.dashboard.stats_cards', [$stats, $this]);
+            if (!empty($extraCards) && is_string($extraCards)) {
+                echo $extraCards;
+            }
+        ?>
     </div>
 
     <div class="content-grid">

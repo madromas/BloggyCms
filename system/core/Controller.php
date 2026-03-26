@@ -103,7 +103,6 @@ class Controller {
      * @throws Exception Если файл шаблона не найден
      */
     public function render($template, $data = []) {
-
         Event::trigger('controller.render.before', [
             'template' => $template,
             'data' => &$data,

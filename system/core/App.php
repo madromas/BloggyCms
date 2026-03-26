@@ -14,12 +14,17 @@ class App {
      * @var Database Объект подключения к базе данных
      */
     private $db;
+
+    /**
+     * @var array Загруженные хуки
+     */
+    private $hooks = [];
     
     /**
      * Конструктор класса App
      * Инициализирует сессию, подключение к БД и middleware
      */
-    public function __construct() {
+        public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -29,8 +34,58 @@ class App {
         
         AdminAuthMiddleware::handle();
         
-        // Инициализируем шорткоды полей
         $this->initFieldShortcodes();
+        $this->loadControllerHooks();
+    }
+
+    /**
+     * Загружает все хуки из папок hooks контроллеров
+     */
+    private function loadControllerHooks() {
+        $controllersPath = __DIR__ . '/../controllers';
+        
+        if (!is_dir($controllersPath)) {
+            return;
+        }
+        
+        $controllers = scandir($controllersPath);
+        
+        foreach ($controllers as $controller) {
+            if ($controller === '.' || $controller === '..') {
+                continue;
+            }
+            
+            $hooksPath = $controllersPath . '/' . $controller . '/hooks';
+            
+            if (is_dir($hooksPath)) {
+                $hookFiles = glob($hooksPath . '/*.php');
+                foreach ($hookFiles as $hookFile) {
+                    try {
+                        require_once $hookFile;
+                    } catch (Exception $e) {}
+                }
+            }
+        }
+    }
+
+    /**
+     * Загружает все хуки из указанной директории
+     * 
+     * @param string $hooksPath Путь к папке hooks
+     * @param string $controllerName Имя контроллера
+     */
+    private function loadHooksFromDirectory($hooksPath, $controllerName) {
+        $hookFiles = glob($hooksPath . '/*.php');
+        
+        foreach ($hookFiles as $hookFile) {
+            try {
+                require_once $hookFile;
+                $hookName = basename($hookFile, '.php');
+                $this->hooks[$controllerName][$hookName] = $hookFile;
+            } catch (Exception $e) {
+                error_log("Ошибка загрузки хука {$hookFile}: " . $e->getMessage());
+            }
+        }
     }
     
     /**

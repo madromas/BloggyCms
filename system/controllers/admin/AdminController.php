@@ -69,9 +69,14 @@ class AdminController extends Controller {
                 'users' => $this->db->fetch("SELECT COUNT(*) as count FROM users")['count'],
                 'content_blocks' => $this->db->fetch("SELECT COUNT(*) as count FROM html_block_types")['count']
             ];
-
+            
+            $stats = Event::filter('admin.dashboard.stats', $stats, [
+                'db' => $this->db,
+                'controller' => $this
+            ]);
+            
             $count_posts = SettingsHelper::get('controller_admin', 'count_posts', 4);
-
+            
             $recentPosts = $this->db->fetchAll("SELECT * FROM posts WHERE status = 'published' ORDER BY created_at DESC LIMIT $count_posts");
             $popularPosts = $this->db->fetchAll("SELECT * FROM posts WHERE status = 'published' AND views > 0 ORDER BY views DESC LIMIT $count_posts");
             $commentedPosts = $this->db->fetchAll("

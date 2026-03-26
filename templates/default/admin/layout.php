@@ -38,20 +38,41 @@
                     BLOGGY<span style = "color:rgb(163, 230, 237)">CMS</span>
                 </a>
                 <nav class="nav flex-column">
-                    <?= admin_menu_item('posts', ADMIN_URL . '/posts', 'file-text', 'Посты') ?>
-                    <?= admin_menu_item('categories', ADMIN_URL . '/categories', 'folder', 'Категории') ?>
-                    <?= admin_menu_item('tags', ADMIN_URL . '/tags', 'tags', 'Теги') ?>
-                    <?= admin_menu_item('comments', ADMIN_URL . '/comments', 'chat-dots', 'Комментарии') ?>
-                    <?= admin_menu_item('users', ADMIN_URL . '/users', 'people', 'Пользователи') ?>
-                    <?= admin_menu_item('pages', ADMIN_URL . '/pages', 'file-earmark', 'Страницы') ?>
-                    <?= admin_menu_item('html-blocks', ADMIN_URL . '/html-blocks', 'grid-1x2', 'Контент-блоки') ?>
-                    <?= admin_menu_item('post-blocks', ADMIN_URL . '/post-blocks', 'bricks', 'Постблоки') ?>
-                    <?= admin_menu_item('fields', ADMIN_URL . '/fields', 'input-cursor-text', 'Поля') ?>
-                    <?= admin_menu_item('menu', ADMIN_URL . '/menu', 'view-list', 'Конструктор меню') ?>
-                    <?= admin_menu_item('forms', ADMIN_URL . '/forms', 'mailbox', 'Конструктор форм') ?>
-                    <?= admin_menu_item('icons', ADMIN_URL . '/icons', 'emoji-heart-eyes', 'Иконки') ?>
-                    <?= admin_menu_item('settings', ADMIN_URL . '/settings', 'gear', 'Настройки') ?>
-                    <?= admin_menu_item('templates', ADMIN_URL . '/templates', 'palette', 'Шаблон') ?>
+                    <?php
+                    $menuItems = [
+                        ['section' => 'posts', 'url' => ADMIN_URL . '/posts', 'icon' => 'file-text', 'title' => 'Посты', 'priority' => 10],
+                        ['section' => 'categories', 'url' => ADMIN_URL . '/categories', 'icon' => 'folder', 'title' => 'Категории', 'priority' => 20],
+                        ['section' => 'tags', 'url' => ADMIN_URL . '/tags', 'icon' => 'tags', 'title' => 'Теги', 'priority' => 30],
+                        ['section' => 'comments', 'url' => ADMIN_URL . '/comments', 'icon' => 'chat-dots', 'title' => 'Комментарии', 'priority' => 40],
+                        ['section' => 'users', 'url' => ADMIN_URL . '/users', 'icon' => 'people', 'title' => 'Пользователи', 'priority' => 50],
+                        ['section' => 'pages', 'url' => ADMIN_URL . '/pages', 'icon' => 'file-earmark', 'title' => 'Страницы', 'priority' => 60],
+                        ['section' => 'html-blocks', 'url' => ADMIN_URL . '/html-blocks', 'icon' => 'grid-1x2', 'title' => 'Контент-блоки', 'priority' => 70],
+                        ['section' => 'post-blocks', 'url' => ADMIN_URL . '/post-blocks', 'icon' => 'bricks', 'title' => 'Постблоки', 'priority' => 80],
+                        ['section' => 'fields', 'url' => ADMIN_URL . '/fields', 'icon' => 'input-cursor-text', 'title' => 'Поля', 'priority' => 90],
+                        ['section' => 'menu', 'url' => ADMIN_URL . '/menu', 'icon' => 'view-list', 'title' => 'Конструктор меню', 'priority' => 100],
+                        ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 110],
+                        ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 120],
+                        ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 130],
+                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 140],
+                    ];
+                    
+                    $menuItems = Event::filter('admin.menu.items', $menuItems);
+                    
+                    usort($menuItems, function($a, $b) {
+                        $priorityA = $a['priority'] ?? 100;
+                        $priorityB = $b['priority'] ?? 100;
+                        return $priorityA <=> $priorityB;
+                    });
+                    
+                    foreach ($menuItems as $item) {
+                        echo admin_menu_item(
+                            $item['section'],
+                            $item['url'],
+                            $item['icon'],
+                            $item['title']
+                        );
+                    }
+                    ?>
                 </nav>
             </aside>
 
