@@ -3,14 +3,6 @@ namespace auth\actions;
 
 /**
  * Действие для входа пользователя в систему (фронтенд)
- * 
- * Реализует полный цикл аутентификации с расширенными функциями безопасности:
- * - Ограничение попыток входа с блокировкой по IP
- * - Валидация учетных данных по email и паролю
- * - Обновление статистики активности пользователя
- * - Интеграция с системой достижений (ачивок)
- * - Гибкая система редиректов после успешного входа
- *
  */
 class Login extends AuthAction {
     /**
@@ -21,8 +13,6 @@ class Login extends AuthAction {
 
     /**
      * Конструктор действия входа пользователя
-     * Инициализирует модель отслеживания попыток входа
-     * 
      * @param \Database $db Объект подключения к базе данных
      * @param array $params Дополнительные параметры маршрутизации
      */
@@ -86,6 +76,7 @@ class Login extends AuthAction {
 
                 $this->loginAttemptModel->resetAttempts();
                 $this->updateUserLastLogin($user['id']);
+                $this->updateUserActivity($user['id']);
 
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
@@ -138,31 +129,35 @@ class Login extends AuthAction {
      * 
      * @param int $userId Идентификатор пользователя
      * @return void
-     * 
-     * @database_field users.last_login (DATETIME)
-     * @analytics Используется для отчетов по активности пользователей
-     * @cleanup Может использоваться для очистки неактивных сессий
-     *
      */
     private function updateUserLastLogin($userId) {
         try {
             $this->userModel->update($userId, [
                 'last_login' => date('Y-m-d H:i:s')
             ]);
-        } catch (\Exception $e) {
-           
-        }
+        } catch (\Exception $e) {}
+    }
+    
+    /**
+     * Обновление времени последней активности пользователя
+     * 
+     * Записывает текущую дату и время в таблицу user_activity.
+     * Используется для определения онлайн-статуса пользователя.
+     * 
+     * @param int $userId Идентификатор пользователя
+     * @return void
+     */
+    private function updateUserActivity($userId) {
+        try {
+            $activityManager = \UserActivityManager::getInstance($this->db);
+            $activityManager->touch($userId);
+        } catch (\Exception $e) {}
     }
     
     /**
      * Получение настроек авторизации для фронтенда из конфигурации
-     * 
      * Использует SettingsHelper для доступа к системным настройкам.
-     * 
      * @return array Настройки авторизации для фронтенда
-     * 
-     * @see \SettingsHelper::get() Для получения значений из конфигурации
-     * 
      */
     private function getFrontAuthSettings() {
         return [
@@ -177,11 +172,6 @@ class Login extends AuthAction {
     
     /**
      * Определение URL для редиректа после успешного входа пользователя
-     * 
-     * Приоритет редиректов:
-     * 1. Сессионный redirect_url (например, при попытке доступа к защищенной странице)
-     * 2. Настройка auth_redirect из конфигурации
-     * 
      * @param array $user Данные аутентифицированного пользователя
      * @param string $redirectOption Настройка редиректа из конфигурации
      * @return string URL для перенаправления

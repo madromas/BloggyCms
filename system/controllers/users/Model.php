@@ -289,7 +289,7 @@ class UserModel implements ModelAPI {
     * 
     * @return array Массив активных пользователей
     */
-   public function getActiveUsers() {
+    public function getActiveUsers() {
         return $this->db->fetchAll("
             SELECT * FROM users 
             WHERE status = 'active' 

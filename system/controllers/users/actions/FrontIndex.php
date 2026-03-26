@@ -62,6 +62,14 @@ class FrontIndex extends UserAction {
         $user['groups'] = $this->userModel->getUserGroupsWithDetails($user['id']);
         $user['achievements'] = $this->userModel->getUserAchievements($user['id']);
         $user['unlocked_achievements_count'] = $this->countUnlockedAchievements($user['achievements']);
+        
+        if (empty($user['last_activity_human'])) {
+            if (!empty($user['last_login'])) {
+                $user['last_activity_human'] = $this->formatActivityTime($user['last_login']);
+            } else {
+                $user['last_activity_human'] = 'никогда';
+            }
+        }
     }
     
     /**
@@ -81,6 +89,35 @@ class FrontIndex extends UserAction {
             $user['is_online'] = false;
             $user['last_activity_human'] = null;
             $user['last_activity_days'] = 0;
+        }
+    }
+    
+    /**
+     * Форматирует время активности для отображения
+     * 
+     * @param string $timestamp Временная метка
+     * @return string Отформатированное время
+     */
+    private function formatActivityTime($timestamp) {
+        if (empty($timestamp)) {
+            return 'никогда';
+        }
+        
+        $lastActivityTimestamp = strtotime($timestamp);
+        $currentTimestamp = time();
+        $secondsAgo = $currentTimestamp - $lastActivityTimestamp;
+        
+        if ($secondsAgo < 60) {
+            return 'только что';
+        } elseif ($secondsAgo < 3600) {
+            $minutesAgo = floor($secondsAgo / 60);
+            return $minutesAgo . ' мин назад';
+        } elseif ($secondsAgo < 86400) {
+            $hoursAgo = floor($secondsAgo / 3600);
+            return $hoursAgo . ' ч назад';
+        } else {
+            $daysAgo = floor($secondsAgo / 86400);
+            return $daysAgo . ' д назад';
         }
     }
     

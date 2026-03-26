@@ -1,39 +1,18 @@
 <?php
 
 /**
- * Менеджер для отслеживания активности пользователей (упрощенная версия)
+ * Менеджер для отслеживания активности пользователей
  */
 class UserActivityManager {
-    /**
-     * @var mixed Подключение к базе данных
-     */
+    
     private $db;
-    
-    /**
-     * @var self|null Единственный экземпляр класса
-     */
     private static $instance = null;
-    
-    /**
-     * @var array Кэш статусов пользователей
-     */
     private $cache = [];
     
-    /**
-     * Конструктор UserActivityManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
     private function __construct($db) {
         $this->db = $db;
     }
     
-    /**
-     * Получает экземпляр UserActivityManager (Singleton)
-     *
-     * @param mixed $db Подключение к базе данных
-     * @return self Экземпляр UserActivityManager
-     */
     public static function getInstance($db = null) {
         if (self::$instance === null && $db) {
             self::$instance = new self($db);
@@ -43,7 +22,7 @@ class UserActivityManager {
     
     /**
      * Обновляет активность пользователя
-     *
+     * 
      * @param int $userId ID пользователя
      * @return bool Результат обновления
      */
@@ -51,40 +30,44 @@ class UserActivityManager {
         if (!$userId) return false;
         
         try {
-            $tableCheck = $this->db->fetch("SELECT 1 FROM information_schema.tables 
-                                          WHERE table_schema = DATABASE() 
-                                          AND table_name = 'user_activity'");
+            $tableCheck = $this->db->fetch("SHOW TABLES LIKE 'user_activity'");
             
-            if (!$tableCheck) {
-                return false;
+            if ($tableCheck) {
+                $sql = "INSERT INTO user_activity 
+                        (user_id, last_activity, session_id, ip_address, user_agent) 
+                        VALUES (?, NOW(), ?, ?, ?)
+                        ON DUPLICATE KEY UPDATE 
+                        last_activity = NOW(),
+                        session_id = VALUES(session_id),
+                        ip_address = VALUES(ip_address),
+                        user_agent = VALUES(user_agent)";
+                
+                $params = [
+                    $userId,
+                    session_id(),
+                    $_SERVER['REMOTE_ADDR'] ?? '',
+                    substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255)
+                ];
+                
+                $this->db->query($sql, $params);
+                return true;
+            } else {
+                $sql = "UPDATE users SET last_login = NOW() WHERE id = ?";
+                $this->db->query($sql, [$userId]);
+                return true;
             }
             
-            $sql = "INSERT INTO user_activity 
-                    (user_id, last_activity, session_id, ip_address, user_agent) 
-                    VALUES (?, NOW(), ?, ?, ?)
-                    ON DUPLICATE KEY UPDATE 
-                    last_activity = NOW(),
-                    session_id = VALUES(session_id),
-                    ip_address = VALUES(ip_address),
-                    user_agent = VALUES(user_agent)";
-            
-            $params = [
-                $userId,
-                session_id(),
-                $_SERVER['REMOTE_ADDR'] ?? '',
-                substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255)
-            ];
-            
-            return $this->db->query($sql, $params);
-            
         } catch (\Exception $e) {
+            if (defined('DEBUG_MODE') && DEBUG_MODE) {
+                error_log('UserActivityManager::touch error: ' . $e->getMessage());
+            }
             return false;
         }
     }
     
     /**
      * Проверяет онлайн статус пользователя
-     *
+     * 
      * @param int $userId ID пользователя
      * @return bool Онлайн ли пользователь
      */
@@ -102,9 +85,7 @@ class UserActivityManager {
         }
         
         try {
-            $tableCheck = $this->db->fetch("SELECT 1 FROM information_schema.tables 
-                                          WHERE table_schema = DATABASE() 
-                                          AND table_name = 'user_activity'");
+            $tableCheck = $this->db->fetch("SHOW TABLES LIKE 'user_activity'");
             
             if ($tableCheck) {
                 $sql = "SELECT 
@@ -149,15 +130,13 @@ class UserActivityManager {
     
     /**
      * Получает информацию о последней активности
-     *
+     * 
      * @param int $userId ID пользователя
      * @return array Информация об активности
      */
     public function getLastActivityInfo($userId) {
         try {
-            $tableCheck = $this->db->fetch("SELECT 1 FROM information_schema.tables 
-                                          WHERE table_schema = DATABASE() 
-                                          AND table_name = 'user_activity'");
+            $tableCheck = $this->db->fetch("SHOW TABLES LIKE 'user_activity'");
             
             if ($tableCheck) {
                 $sql = "SELECT last_activity 
@@ -188,7 +167,7 @@ class UserActivityManager {
     
     /**
      * Форматирует время активности
-     *
+     * 
      * @param string $timestamp Временная метка
      * @return array Форматированное время
      */

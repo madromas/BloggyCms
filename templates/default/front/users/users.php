@@ -145,10 +145,10 @@ if (!empty($users)) {
                                     <?php } ?>
                                     
                                     <?php if (!empty($user['registration_days'])) { ?>
-                                    <span style="display: flex; align-items: center; gap: 4px; color: var(--tg-text-secondary);">
-                                        <?php echo bloggy_icon('bs', 'calendar-day', '10', 'currentColor'); ?>
-                                        <span><?php echo $user['registration_days']; ?> дн.</span>
-                                    </span>
+                                        <span style="display: flex; align-items: center; gap: 4px; color: var(--tg-text-secondary);">
+                                            <?php echo bloggy_icon('bs', 'calendar-day', '10', 'currentColor'); ?>
+                                            <span><?php echo $user['registration_days']; ?> дн.</span>
+                                        </span>
                                     <?php } ?>
                                 </div>
                             </div>

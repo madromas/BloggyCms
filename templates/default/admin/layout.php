@@ -101,12 +101,20 @@
                                 </div>
                             </div>
 
-                            <a href="<?= ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-controllers d-flex align-items-center" title="Контроллеры">
+                            <a href="<?= ADMIN_URL ?>/addons" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление пакетами">
+                                <div class="btn-icon-wrapper">
+                                    <?php echo bloggy_icon('bs', 'box', '16 16', '#28a745') ?>
+                                </div>
+                                <span class="btn-text">Пакеты</span>
+                            </a>
+
+                            <a href="<?= ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление контроллерами">
                                 <div class="btn-icon-wrapper">
                                     <?php echo bloggy_icon('bs', 'cpu', '16 16', '#7b1fa2') ?>
                                 </div>
                                 <span class="btn-text">Контроллеры</span>
                             </a>
+
                         </div>
                         <div class="dropdown">
                             <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

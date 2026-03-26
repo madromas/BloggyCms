@@ -307,6 +307,10 @@ class AdminLogin extends AuthAction {
             $_SESSION['is_admin'] = true;
             
             $this->updateLastAdminIP($user['id'], $_SERVER['REMOTE_ADDR']);
+            
+            $activityManager = UserActivityManager::getInstance($this->db);
+            $activityManager->touch($user['id']);
+            
             unset($_SESSION['admin_login_attempt_failed']);
             $this->loginAttemptModel->resetAttempts();
             $this->redirect(ADMIN_URL . '/');
