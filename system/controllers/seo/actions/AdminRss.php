@@ -1,0 +1,34 @@
+<?php
+namespace seo\actions;
+
+/**
+* Действие сохранения настроек RSS
+*/
+class AdminRss extends SeoAction {
+    public function execute() {
+        if (!$this->checkAdminAccess()) {
+            \Notification::error('У вас нет прав доступа');
+            $this->redirect(ADMIN_URL . '/seo');
+            return;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $settings = [
+                    'enabled' => isset($_POST['enabled']) ? 1 : 0,
+                    'posts_limit' => (int)($_POST['posts_limit'] ?? 20),
+                    'include_full_content' => isset($_POST['include_full_content']) ? 1 : 0,
+                    'copyright' => $_POST['copyright'] ?? '',
+                    'language' => $_POST['language'] ?? 'ru-ru'
+                ];
+
+                $this->seoModel->saveSettings('seo_rss', $settings);
+                \Notification::success('Настройки RSS сохранены');
+            } catch (\Exception $e) {
+                \Notification::error('Ошибка: ' . $e->getMessage());
+            }
+        }
+
+        $this->redirect(ADMIN_URL . '/seo');
+    }
+}

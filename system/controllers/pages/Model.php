@@ -86,7 +86,17 @@ class PageModel implements ModelAPI {
             $slug,
             $data['status'] ?? 'draft'
         ]);
-        return $this->db->lastInsertId();
+
+        $pageId = $this->db->lastInsertId();
+
+        Event::trigger('page.created', [
+            $pageId,
+            $data['title'],
+            $slug,
+            $data
+        ]);
+        
+        return $pageId;
     }
     
     /**
@@ -97,17 +107,33 @@ class PageModel implements ModelAPI {
      * @return bool Результат выполнения запроса
      */
     public function update($id, $data) {
+
+        $oldPage = $this->getById($id);
+        
+        if (!$oldPage) {
+            throw new Exception('Страница не найдена');
+        }
+        
         $slug = !empty($data['slug']) 
             ? $this->createUniqueSlug($data['slug'], $id) 
             : $this->createUniqueSlug($data['title'], $id);
         
         $sql = "UPDATE pages SET title = ?, slug = ?, status = ? WHERE id = ?";
-        return $this->db->query($sql, [
+        
+        $result = $this->db->query($sql, [
             $data['title'],
             $slug,
             $data['status'] ?? 'draft',
             $id
         ]);
+
+        Event::trigger('page.updated', [
+            $id,
+            $oldPage,
+            $data
+        ]);
+        
+        return $result;
     }
     
     /**
@@ -118,6 +144,13 @@ class PageModel implements ModelAPI {
      */
     public function delete($id) {
         try {
+
+            $page = $this->getById($id);
+            
+            if (!$page) {
+                throw new Exception('Страница не найдена');
+            }
+            
             $this->db->beginTransaction();
             
             $this->postBlockModel->deleteByPage($id);
@@ -130,6 +163,12 @@ class PageModel implements ModelAPI {
             $result = $this->db->query("DELETE FROM pages WHERE id = ?", [$id]);
             
             $this->db->commit();
+
+            Event::trigger('page.deleted', [
+                $id,
+                $page['title'],
+                $page['slug']
+            ]);
             
             return $result;
         } catch (Exception $e) {

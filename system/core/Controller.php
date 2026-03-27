@@ -105,7 +105,7 @@ class Controller {
     public function render($template, $data = []) {
         Event::trigger('controller.render.before', [
             'template' => $template,
-            'data' => &$data,
+            'data' => $data,
             'controller' => $this
         ]);
 

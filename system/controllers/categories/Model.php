@@ -80,27 +80,15 @@ class CategoryModel implements ModelAPI {
     * Добавляет новую категорию в базу данных с автоматической генерацией slug
     *
     * @param array $data Массив данных категории:
-    *                    - name: название (обязательно)
-    *                    - slug: URL-идентификатор (опционально, генерируется из названия)
-    *                    - description: описание
-    *                    - meta_title: SEO-заголовок
-    *                    - meta_description: SEO-описание
-    *                    - canonical_url: канонический URL
-    *                    - noindex: флаг запрета индексации
-    *                    - image: путь к изображению
-    *                    - sort_order: порядок сортировки
-    *                    - password_protected: защита паролем
-    *                    - password: пароль для доступа
     * @return int ID созданной категории
-    * @throws Exception При ошибке вставки в базу данных
+    * @throws Exception При ошибках
     */
     public function create($data) {
-        // Генерируем slug если не указан
         $slug = !empty($data['slug']) ? $this->createUniqueSlug($data['slug'], null) : $this->createUniqueSlug($data['name']);
         
         $sql = "INSERT INTO categories 
                 (name, slug, description, meta_title, meta_description, canonical_url, noindex, 
-                 image, sort_order, password_protected, password) 
+                image, sort_order, password_protected, password) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $result = $this->db->query($sql, [
@@ -120,8 +108,17 @@ class CategoryModel implements ModelAPI {
         if (!$result) {
             throw new Exception('Ошибка при создании категории в базе данных');
         }
+
+        $categoryId = $this->db->lastInsertId();
+
+        Event::trigger('category.created', [
+            $categoryId,
+            $data['name'],
+            $slug,
+            $data
+        ]);
         
-        return $this->db->lastInsertId();
+        return $categoryId;
     }
     
     /**
@@ -129,11 +126,16 @@ class CategoryModel implements ModelAPI {
     * Изменяет данные категории с автоматической генерацией slug
     *
     * @param int $id Идентификатор обновляемой категории
-    * @param array $data Массив данных для обновления (аналогично create)
+    * @param array $data Массив данных для обновления
     * @return bool Результат выполнения запроса
     */
     public function update($id, $data) {
-        // Используем переданный slug или генерируем из названия
+        $oldCategory = $this->getById($id);
+        
+        if (!$oldCategory) {
+            throw new Exception('Категория не найдена');
+        }
+        
         $slug = !empty($data['slug']) ? $this->createUniqueSlug($data['slug'], $id) : $this->createUniqueSlug($data['name'], $id);
         
         $sql = "UPDATE categories SET 
@@ -164,6 +166,12 @@ class CategoryModel implements ModelAPI {
             $data['password'],
             $id
         ]);
+
+        Event::trigger('category.updated', [
+            $id,
+            $oldCategory,
+            $data
+        ]);
         
         return $result;
     }
@@ -178,14 +186,28 @@ class CategoryModel implements ModelAPI {
     */
     public function delete($id) {
         try {
-            // Проверяем есть ли посты в категории
+
+            $category = $this->getById($id);
+            
+            if (!$category) {
+                throw new Exception('Категория не найдена');
+            }
+            
             $postsCount = $this->getPostsCount($id);
             
             if ($postsCount > 0) {
                 throw new Exception("Невозможно удалить категорию. В ней содержится {$postsCount} постов. Сначала удалите или переместите посты.");
             }
             
-            return $this->db->query("DELETE FROM categories WHERE id = ?", [$id]);
+            $result = $this->db->query("DELETE FROM categories WHERE id = ?", [$id]);
+
+            Event::trigger('category.deleted', [
+                $id,
+                $category['name'],
+                $category['slug']
+            ]);
+            
+            return $result;
             
         } catch (Exception $e) {
             throw $e;
@@ -356,26 +378,15 @@ class CategoryModel implements ModelAPI {
     /**
     * Получение постов категории с пагинацией
     * Возвращает посты категории с информацией о тегах и пагинацией
-    *
-    * @param int $categoryId Идентификатор категории
-    * @param int $page Текущая страница (начинается с 1)
-    * @param int $perPage Количество постов на странице
-    * @return array Массив с данными:
-    *               - posts: список постов
-    *               - total: общее количество постов
-    *               - pages: общее количество страниц
-    *               - current_page: текущая страница
     */
     public function getPostsPaginated($categoryId, $page = 1, $perPage = 15) {
         $offset = ($page - 1) * $perPage;
         
-        // Общее количество постов
         $totalPosts = $this->db->fetch(
             "SELECT COUNT(*) as count FROM posts WHERE category_id = ? AND status = 'published'",
             [$categoryId]
         )['count'];
         
-        // Запрос постов с информацией о тегах
         $sql = "
             SELECT p.*, c.name as category_name, c.slug as category_slug,
                    GROUP_CONCAT(
@@ -394,7 +405,6 @@ class CategoryModel implements ModelAPI {
         
         $posts = $this->db->fetchAll($sql, [$categoryId]);
         
-        // Преобразование данных тегов из строки в массив
         foreach ($posts as &$post) {
             $tags = [];
             if (!empty($post['tag_data'])) {

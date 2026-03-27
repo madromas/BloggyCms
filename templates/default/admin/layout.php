@@ -53,7 +53,8 @@
                         ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 110],
                         ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 120],
                         ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 130],
-                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 140],
+                        ['section' => 'settings', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => 'SEO', 'priority' => 140],
+                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 150],
                     ];
                     
                     $menuItems = Event::filter('admin.menu.items', $menuItems);

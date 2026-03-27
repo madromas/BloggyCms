@@ -1,35 +1,35 @@
 <?php
 /**
- * Система событий
- * Позволяет плагинам и контроллерам реагировать на события ядра
- * 
- * @package Core
- */
+* Система событий
+* Позволяет плагинам и контроллерам реагировать на события ядра
+*
+* @package Core
+*/
 class Event {
     /**
-     * @var array Список слушателей событий
-     */
+    * @var array Список слушателей событий
+    */
     private static $listeners = [];
     
     /**
-     * @var array Отложенные слушатели (до инициализации)
-     */
+    * @var array Отложенные слушатели (до инициализации)
+    */
     private static $pendingListeners = [];
     
     /**
-     * @var bool Флаг инициализации
-     */
+    * @var bool Флаг инициализации
+    */
     private static $initialized = false;
     
     /**
-     * Подписывает слушателя на событие
-     * 
-     * @param string $event Название события (например, 'post.created')
-     * @param callable $callback Функция-обработчик
-     * @param int $priority Приоритет (чем выше, тем раньше выполнится)
-     * @param int $acceptedArgs Количество аргументов, передаваемых в callback
-     * @return void
-     */
+    * Подписывает слушателя на событие
+    *
+    * @param string $event Название события (например, 'post.created')
+    * @param callable $callback Функция-обработчик
+    * @param int $priority Приоритет (чем выше, тем раньше выполнится)
+    * @param int $acceptedArgs Количество аргументов, передаваемых в callback
+    * @return void
+    */
     public static function listen($event, $callback, $priority = 10, $acceptedArgs = 1) {
         if (!self::$initialized) {
             self::$pendingListeners[] = [
@@ -42,20 +42,19 @@ class Event {
         }
         
         $id = self::getListenerId($callback);
-        
         self::$listeners[$event][$priority][$id] = [
             'callback' => $callback,
             'acceptedArgs' => $acceptedArgs
         ];
     }
-
+    
     /**
-     * Запускает событие (триггер)
-     * 
-     * @param string $event Название события
-     * @param array $args Аргументы для передачи в слушатели
-     * @return mixed Результат последнего обработчика (если есть)
-     */
+    * Запускает событие (триггер)
+    *
+    * @param string $event Название события
+    * @param array $args Аргументы для передачи в слушатели
+    * @return mixed Результат последнего обработчика (если есть)
+    */
     public static function trigger($event, $args = []) {
         if (!self::$initialized) {
             self::initialize();
@@ -68,14 +67,19 @@ class Event {
         krsort(self::$listeners[$event]);
         
         $result = null;
-        $listenerCount = 0;
+        
         foreach (self::$listeners[$event] as $priority => $listeners) {
             foreach ($listeners as $id => $listener) {
-                $listenerCount++;
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
                 
-                $callbackArgs = array_slice($args, 0, $acceptedArgs);
+                // ВАЖНО: Передаем аргументы позиционно, а не как ассоциативный массив
+                // Это предотвращает ошибку "Unknown named parameter" в PHP 8+
+                $callbackArgs = [];
+                if (is_array($args) && $acceptedArgs > 0) {
+                    // Берем только первые N элементов массива для позиционной передачи
+                    $callbackArgs = array_slice(array_values($args), 0, $acceptedArgs);
+                }
                 
                 $callbackResult = call_user_func_array($callback, $callbackArgs);
                 
@@ -87,15 +91,15 @@ class Event {
         
         return $result;
     }
-
+    
     /**
-     * Запускает событие с возможностью модификации значения
-     * 
-     * @param string $event Название события
-     * @param mixed $value Значение для фильтрации
-     * @param array $args Дополнительные аргументы
-     * @return mixed Отфильтрованное значение
-     */
+    * Запускает событие с возможностью модификации значения
+    *
+    * @param string $event Название события
+    * @param mixed $value Значение для фильтрации
+    * @param array $args Дополнительные аргументы
+    * @return mixed Отфильтрованное значение
+    */
     public static function filter($event, $value, $args = []) {
         if (!self::$initialized) {
             self::initialize();
@@ -108,15 +112,17 @@ class Event {
         krsort(self::$listeners[$event]);
         
         $result = $value;
-        foreach (self::$listeners[$event] as $listeners) {
+        
+        foreach (self::$listeners[$event] as $priority => $listeners) {
             foreach ($listeners as $listener) {
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
-
-                $callbackArgs = [$result];
                 
-                for ($i = 0; $i < $acceptedArgs - 1; $i++) {
-                    $callbackArgs[] = $args[$i] ?? null;
+                // Передаем value первым аргументом, затем дополнительные аргументы
+                $callbackArgs = [$result];
+                if (is_array($args) && $acceptedArgs > 1) {
+                    $additionalArgs = array_slice(array_values($args), 0, $acceptedArgs - 1);
+                    $callbackArgs = array_merge($callbackArgs, $additionalArgs);
                 }
                 
                 $callbackResult = call_user_func_array($callback, $callbackArgs);
@@ -131,39 +137,37 @@ class Event {
     }
     
     /**
-     * Отписывает слушателя от события
-     * 
-     * @param string $event Название события
-     * @param callable $callback Функция-обработчик
-     * @param int $priority Приоритет
-     * @return bool Успешность удаления
-     */
+    * Отписывает слушателя от события
+    *
+    * @param string $event Название события
+    * @param callable $callback Функция-обработчик
+    * @param int $priority Приоритет
+    * @return bool Успешность удаления
+    */
     public static function unlisten($event, $callback, $priority = 10) {
         $id = self::getListenerId($callback);
-        
         if (isset(self::$listeners[$event][$priority][$id])) {
             unset(self::$listeners[$event][$priority][$id]);
             return true;
         }
-        
         return false;
     }
     
     /**
-     * Проверяет, есть ли слушатели у события
-     * 
-     * @param string $event Название события
-     * @return bool
-     */
+    * Проверяет, есть ли слушатели у события
+    *
+    * @param string $event Название события
+    * @return bool
+    */
     public static function hasListeners($event) {
         return isset(self::$listeners[$event]) && !empty(self::$listeners[$event]);
     }
     
     /**
-     * Инициализирует систему событий
-     * 
-     * @return void
-     */
+    * Инициализирует систему событий
+    *
+    * @return void
+    */
     public static function initialize() {
         if (self::$initialized) {
             return;
@@ -184,11 +188,11 @@ class Event {
     }
     
     /**
-     * Получает уникальный ID для callback
-     * 
-     * @param callable $callback
-     * @return string
-     */
+    * Получает уникальный ID для callback
+    *
+    * @param callable $callback
+    * @return string
+    */
     private static function getListenerId($callback) {
         if (is_string($callback)) {
             return $callback;
@@ -206,10 +210,10 @@ class Event {
     }
     
     /**
-     * Очищает все слушатели
-     * 
-     * @return void
-     */
+    * Очищает все слушатели
+    *
+    * @return void
+    */
     public static function reset() {
         self::$listeners = [];
         self::$pendingListeners = [];

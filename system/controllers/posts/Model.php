@@ -192,11 +192,18 @@ class PostModel implements ModelAPI {
                 $data['password'] ?? null,
                 $data['show_to_groups'] ?? null,
                 $data['hide_from_groups'] ?? null,
-                $data['allow_comments'] ?? 1,  // Значение по умолчанию
+                $data['allow_comments'] ?? 1,
                 $data['created_at'] ?? date('Y-m-d H:i:s')
             ]);
 
-            return $this->db->lastInsertId();
+            $postId = $this->db->lastInsertId();
+
+            Event::trigger('post.created', [
+                $postId,
+                $data
+            ]);
+
+            return $postId;
         } catch (Exception $e) {
             throw $e;
         }
@@ -212,13 +219,20 @@ class PostModel implements ModelAPI {
      */
     public function update($id, $data) {
         try {
+
+            $oldPost = $this->getById($id);
+            
+            if (!$oldPost) {
+                throw new Exception('Пост не найден');
+            }
+            
             $updates = [];
             $params = [];
             
             $allowedFields = [
                 'title', 'short_description', 'slug', 'category_id', 'status', 'featured_image', 
                 'meta_description', 'seo_title', 'password_protected', 'password',
-                'show_to_groups', 'hide_from_groups', 'allow_comments', 'created_at'  // Добавлено
+                'show_to_groups', 'hide_from_groups', 'allow_comments', 'created_at'
             ];
             
             foreach ($allowedFields as $field) {
@@ -238,7 +252,23 @@ class PostModel implements ModelAPI {
             
             $sql = "UPDATE posts SET " . implode(', ', $updates) . " WHERE id = ?";
             
-            return $this->db->query($sql, $params);
+            $result = $this->db->query($sql, $params);
+            
+            Event::trigger('post.updated', [
+                $id,
+                $oldPost,
+                $data
+            ]);
+            
+            if (isset($data['status']) && $data['status'] != $oldPost['status']) {
+                Event::trigger('post.status_changed', [
+                    $id,
+                    $oldPost['status'],
+                    $data['status']
+                ]);
+            }
+            
+            return $result;
         } catch (Exception $e) {
             throw $e;
         }
@@ -253,6 +283,13 @@ class PostModel implements ModelAPI {
      */
     public function delete($id) {
         try {
+
+            $post = $this->getById($id);
+            
+            if (!$post) {
+                throw new Exception('Пост не найден');
+            }
+            
             $this->db->beginTransaction();
 
             $this->db->query("DELETE FROM post_blocks WHERE post_id = ?", [$id]);
@@ -270,6 +307,12 @@ class PostModel implements ModelAPI {
             $result = $this->db->query("DELETE FROM posts WHERE id = ?", [$id]);
 
             $this->db->commit();
+
+            Event::trigger('post.deleted', [
+                $id,
+                $post['title'],
+                $post['slug']
+            ]);
             
             return $result;
         } catch (Exception $e) {

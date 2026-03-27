@@ -1,0 +1,170 @@
+<?php
+namespace seo\actions;
+
+/**
+* Абстрактный базовый класс для всех действий модуля SEO
+* Предоставляет общую функциональность, доступ к моделям и вспомогательные методы
+*
+* @package seo\actions
+*/
+abstract class SeoAction {
+    /** @var \Database Объект подключения к базе данных */
+    protected $db;
+    
+    /** @var array Параметры запроса */
+    protected $params;
+    
+    /** @var object Контроллер, вызывающий действие */
+    protected $controller;
+    
+    /** @var \SeoModel Модель для работы с SEO */
+    protected $seoModel;
+    
+    /** @var \PostModel Модель для работы с постами */
+    protected $postModel;
+    
+    /** @var \PageModel Модель для работы со страницами */
+    protected $pageModel;
+    
+    /** @var \CategoryModel Модель для работы с категориями */
+    protected $categoryModel;
+    
+    /** @var \TagModel Модель для работы с тегами */
+    protected $tagModel;
+    
+    /** @var \SettingsModel Модель настроек */
+    protected $settingsModel;
+    
+    /** @var \BreadcrumbsManager Менеджер хлебных крошек */
+    protected $breadcrumbs;
+    
+    /** @var string Заголовок страницы */
+    protected $pageTitle;
+
+    /**
+    * Конструктор класса действия
+    *
+    * @param object $db Подключение к базе данных
+    * @param array $params Параметры запроса
+    */
+    public function __construct($db, $params = []) {
+        $this->db = $db;
+        $this->params = $params;
+        $this->seoModel = new \SeoModel($db);
+        $this->postModel = new \PostModel($db);
+        $this->pageModel = new \PageModel($db);
+        $this->categoryModel = new \CategoryModel($db);
+        $this->tagModel = new \TagModel($db);
+        $this->settingsModel = new \SettingsModel($db);
+        $this->breadcrumbs = new \BreadcrumbsManager($db);
+        $this->pageTitle = '';
+        \BreadcrumbsHelper::setManager($this->breadcrumbs);
+    }
+
+    /**
+    * Устанавливает контроллер
+    */
+    public function setController($controller) {
+        $this->controller = $controller;
+    }
+
+    /**
+    * Абстрактный метод выполнения действия
+    */
+    abstract public function execute();
+
+    /**
+    * Рендерит шаблон
+    */
+    protected function render($template, $data = []) {
+        if ($this->controller) {
+            $this->controller->render($template, $data);
+        } else {
+            throw new \Exception('Controller not set for Action');
+        }
+    }
+
+    /**
+    * Перенаправление
+    */
+    protected function redirect($url) {
+        if ($this->controller) {
+            $this->controller->redirect($url);
+        } else {
+            header('Location: ' . $url);
+            exit;
+        }
+    }
+
+    /**
+    * Проверка прав администратора
+    */
+    protected function checkAdminAccess() {
+        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+    }
+
+    /**
+    * Проверка AJAX запроса
+    */
+    protected function isAjaxRequest() {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    /**
+    * Отправка JSON ответа
+    */
+    protected function jsonResponse($data) {
+        header('Content-Type: application/json');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    /**
+    * Отправка XML ответа
+    */
+    protected function xmlResponse($xml, $filename = null) {
+        header('Content-Type: application/xml; charset=utf-8');
+        if ($filename) {
+            header('Content-Disposition: inline; filename="' . $filename . '"');
+        }
+        echo $xml;
+        exit;
+    }
+
+    /**
+    * Отправка TXT ответа
+    */
+    protected function textResponse($text, $filename = null) {
+        header('Content-Type: text/plain; charset=utf-8');
+        if ($filename) {
+            header('Content-Disposition: inline; filename="' . $filename . '"');
+        }
+        echo $text;
+        exit;
+    }
+
+    /**
+    * Получение базового URL
+    */
+    protected function getBaseUrl() {
+        return defined('BASE_URL') ? BASE_URL : 'http://localhost';
+    }
+
+    /**
+    * Экранирование для XML
+    */
+    protected function escapeXml($string) {
+        return htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+    }
+
+    /**
+    * Форматирование даты для XML
+    */
+    protected function formatXmlDate($timestamp) {
+        if (empty($timestamp)) {
+            return date('Y-m-d\TH:i:s+00:00');
+        }
+        return date('Y-m-d\TH:i:s+00:00', strtotime($timestamp));
+    }
+}

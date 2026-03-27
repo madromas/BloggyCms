@@ -200,7 +200,16 @@ class TagModel implements ModelAPI {
             $data['image'] ?? null
         ]);
 
-        return $this->db->lastInsertId();
+        $tagId = $this->db->lastInsertId();
+
+        Event::trigger('tag.created', [
+            $tagId,
+            $data['name'],
+            $slug,
+            $data
+        ]);
+        
+        return $tagId;
     }
     
     /**
@@ -211,15 +220,31 @@ class TagModel implements ModelAPI {
      * @return bool Результат выполнения запроса
      */
     public function update($id, $data) {
+
+        $oldTag = $this->getById($id);
+        
+        if (!$oldTag) {
+            throw new Exception('Тег не найден');
+        }
+        
         $slug = $this->createUniqueSlug($data['name'], $id);
 
         $sql = "UPDATE tags SET name = ?, slug = ?, image = ? WHERE id = ?";
-        return $this->db->query($sql, [
+        
+        $result = $this->db->query($sql, [
             $data['name'],
             $slug,
             $data['image'] ?? null,
             $id
         ]);
+
+        Event::trigger('tag.updated', [
+            $id,
+            $oldTag,
+            $data
+        ]);
+        
+        return $result;
     }
     
     /**
@@ -229,8 +254,24 @@ class TagModel implements ModelAPI {
      * @return bool Результат выполнения запроса
      */
     public function delete($id) {
+
+        $tag = $this->getById($id);
+        
+        if (!$tag) {
+            throw new Exception('Тег не найден');
+        }
+        
         $this->db->query("DELETE FROM post_tags WHERE tag_id = ?", [$id]);
-        return $this->db->query("DELETE FROM tags WHERE id = ?", [$id]);
+        
+        $result = $this->db->query("DELETE FROM tags WHERE id = ?", [$id]);
+
+        Event::trigger('tag.deleted', [
+            $id,
+            $tag['name'],
+            $tag['slug']
+        ]);
+        
+        return $result;
     }
     
     /**
