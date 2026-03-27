@@ -80,9 +80,9 @@
 ## 🔗 Ссылки
 
 - [🌐 Официальный сайт проекта](https://bloggy.su)
-- [📘 Документация](https://gitverse.ru/pechora/BloggyCms/wiki)
-- [🐛 Сообщить об ошибке](https://gitverse.ru/pechora/BloggyCms/tasktracker)
-- [📦 Скачать](https://gitverse.ru/pechora/BloggyCms/releases)
+- [📘 Документация](https://github.com/pechora/BloggyCms/wiki)
+- [🐛 Сообщить об ошибке](https://github.com/pechora/BloggyCms/tasktracker)
+- [📦 Скачать](https://github.com/pechora/BloggyCms/releases)
 
 ---
 
