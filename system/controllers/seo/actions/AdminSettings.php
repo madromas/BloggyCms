@@ -116,7 +116,6 @@ class AdminSettings extends SeoAction {
     
     /**
     * Создает физические файлы ключей IndexNow
-    * @param string $rootPath Корневая路径 сайта
     * @param array $settings Настройки IndexNow
     */
     private function generateIndexNowKeyFiles($rootPath, $settings) {
