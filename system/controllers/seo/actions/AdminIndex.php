@@ -18,7 +18,7 @@ class AdminIndex extends SeoAction {
             $sitemapSettings = $this->seoModel->getSitemapSettings();
             $rssSettings = $this->seoModel->getRssSettings();
             $indexnowSettings = $this->seoModel->getIndexNowSettings();
-            
+            $schemaSettings = $this->seoModel->getSchemaSettings();
             $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(dirname(dirname(__DIR__))));
             $indexnowSettings['ya_key_exists'] = !empty($indexnowSettings['ya_key']) && 
                 file_exists($rootPath . '/' . $indexnowSettings['ya_key'] . '.txt');
@@ -32,6 +32,7 @@ class AdminIndex extends SeoAction {
                 'sitemap_settings' => $sitemapSettings,
                 'rss_settings' => $rssSettings,
                 'indexnow_settings' => $indexnowSettings,
+                'schema_settings' => $schemaSettings,
                 'pageTitle' => 'SEO Настройки'
             ]);
         } catch (\Exception $e) {

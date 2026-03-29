@@ -152,4 +152,14 @@ class SeoController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
+
+    /**
+    * Настройка Schema.org
+    */
+    public function adminSchemaAction() {
+        $action = new \seo\actions\AdminSchema($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
+
 }

@@ -109,11 +109,10 @@ class Show extends PostAction {
     }
     
     /**
-     * Отображает полную страницу поста со всем контентом
-     * 
-     * @param array $post Данные поста
-     * @return void
-     */
+    * Отображает полную страницу поста со всем контентом
+    * @param array $post Данные поста
+    * @return void
+    */
     private function showPost($post) {
         $this->addBreadcrumb('Главная', BASE_URL);
         $this->addBreadcrumb('Все записи', BASE_URL . '/posts');
@@ -154,6 +153,9 @@ class Show extends PostAction {
         $pendingComment = $_GET['pending_comment'] ?? null;
         $post['comments_count'] = $totalComments;
 
+        $seoModel = new \SeoModel($this->db);
+        $schemaData = $seoModel->generateBlogPostingSchema($post);
+
         $this->render('front/posts/show', [
             'post' => $post,
             'tags' => $tags,
@@ -169,7 +171,8 @@ class Show extends PostAction {
             'scrollToComment' => $scrollToComment,
             'pendingComment' => $pendingComment,
             'isAdmin' => $isAdmin,
-            'likes_count' => $post['likes_count'] ?? 0
+            'likes_count' => $post['likes_count'] ?? 0,
+            'schemaData' => $schemaData
         ]);
     }
 

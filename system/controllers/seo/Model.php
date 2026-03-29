@@ -1015,4 +1015,170 @@ class SeoModel implements ModelAPI {
         return $deleted;
     }
 
+    /**
+    * Получить настройки Schema.org
+    * @return array
+    */
+    public function getSchemaSettings() {
+        $default = [
+            'org_name' => \SettingsHelper::get('site', 'site_name', 'BloggyCMS'),
+            'org_logo' => '',
+            'org_type' => 'Organization',
+            'org_url' => defined('BASE_URL') ? BASE_URL : '',
+            'social_facebook' => '',
+            'social_twitter' => '',
+            'social_instagram' => '',
+            'social_telegram' => '',
+            'social_vk' => '',
+            'social_youtube' => '',
+            'contact_email' => '',
+            'contact_phone' => '',
+            'same_as' => []
+        ];
+        
+        $settings = $this->settingsModel->get('seo_schema', []);
+        return array_merge($default, $settings);
+    }
+
+    /**
+    * Сохранить настройки Schema.org
+    * @param array $settings
+    * @return bool
+    */
+    public function saveSchemaSettings($settings) {
+        return $this->settingsModel->save('seo_schema', $settings);
+    }
+
+    /**
+    * Сгенерировать Organization Schema для сайта
+    * @param array $settings Настройки Schema
+    * @return array Schema.org данные
+    */
+    public function generateOrganizationSchema($settings = []) {
+        if (empty($settings)) {
+            $settings = $this->getSchemaSettings();
+        }
+        
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => $settings['org_type'] ?? 'Organization',
+            'name' => $settings['org_name'] ?? '',
+            'url' => $settings['org_url'] ?? ''
+        ];
+        
+        // Логотип
+        if (!empty($settings['org_logo'])) {
+            $schema['logo'] = [
+                '@type' => 'ImageObject',
+                'url' => $settings['org_logo']
+            ];
+        }
+        
+        // Социальные профили
+        $sameAs = [];
+        if (!empty($settings['social_facebook'])) $sameAs[] = $settings['social_facebook'];
+        if (!empty($settings['social_twitter'])) $sameAs[] = $settings['social_twitter'];
+        if (!empty($settings['social_instagram'])) $sameAs[] = $settings['social_instagram'];
+        if (!empty($settings['social_telegram'])) $sameAs[] = $settings['social_telegram'];
+        if (!empty($settings['social_vk'])) $sameAs[] = $settings['social_vk'];
+        if (!empty($settings['social_youtube'])) $sameAs[] = $settings['social_youtube'];
+        
+        if (!empty($sameAs)) {
+            $schema['sameAs'] = $sameAs;
+        }
+        
+        // Контакты
+        if (!empty($settings['contact_email']) || !empty($settings['contact_phone'])) {
+            $schema['contactPoint'] = [];
+            if (!empty($settings['contact_email'])) {
+                $schema['contactPoint']['email'] = $settings['contact_email'];
+            }
+            if (!empty($settings['contact_phone'])) {
+                $schema['contactPoint']['telephone'] = $settings['contact_phone'];
+            }
+            $schema['contactPoint']['contactType'] = 'customer service';
+        }
+        
+        return $schema;
+    }
+
+    /**
+    * Сгенерировать Schema.org BlogPosting для поста
+    * @param array $post Данные поста
+    * @return array Schema.org данные
+    */
+    public function generateBlogPostingSchema($post) {
+        $baseUrl = defined('BASE_URL') ? BASE_URL : 'http://localhost';
+        
+        $schemaSettings = $this->getSchemaSettings();
+        
+        $imageData = null;
+        if (!empty($post['featured_image'])) {
+            $imageData = [
+                '@type' => 'ImageObject',
+                'url' => $baseUrl . '/uploads/images/' . $post['featured_image'],
+                'width' => 1200,
+                'height' => 630
+            ];
+        }
+        
+        $authorData = [
+            '@type' => 'Person',
+            'name' => $post['author_name'] ?? $post['author_display_name'] ?? 'Admin'
+        ];
+        
+        $publisherData = [
+            '@type' => $schemaSettings['org_type'] ?? 'Organization',
+            'name' => $schemaSettings['org_name'] ?? \SettingsHelper::get('site', 'site_name', 'BloggyCMS')
+        ];
+        
+        if (!empty($schemaSettings['org_logo'])) {
+            $publisherData['logo'] = [
+                '@type' => 'ImageObject',
+                'url' => $schemaSettings['org_logo']
+            ];
+        } else {
+            $publisherData['logo'] = [
+                '@type' => 'ImageObject',
+                'url' => $baseUrl . '/uploads/images/logo.png'
+            ];
+        }
+        
+        $keywords = '';
+        if (!empty($post['tags']) && is_array($post['tags'])) {
+            $keywords = implode(', ', array_column($post['tags'], 'name'));
+        }
+        
+        $wordCount = 0;
+        if (!empty($post['content'])) {
+            $wordCount = str_word_count(strip_tags($post['content']));
+        }
+        
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => $baseUrl . '/post/' . ($post['slug'] ?? '')
+            ],
+            'headline' => $post['title'] ?? '',
+            'description' => $post['short_description'] ?? mb_substr(strip_tags($post['content'] ?? ''), 0, 160),
+            'image' => $imageData,
+            'author' => $authorData,
+            'publisher' => $publisherData,
+            'datePublished' => date('c', strtotime($post['created_at'] ?? 'now')),
+            'dateModified' => date('c', strtotime($post['updated_at'] ?? $post['created_at'] ?? 'now')),
+            'articleSection' => $post['category_name'] ?? '',
+            'keywords' => $keywords,
+            'wordCount' => $wordCount,
+            'inLanguage' => \SettingsHelper::get('site', 'site_language', 'ru-RU')
+        ];
+        
+        if (!empty($post['comments_count']) && $post['comments_count'] > 0) {
+            $schema['commentCount'] = (int)$post['comments_count'];
+        }
+        
+        return $schema;
+    }
+
 }

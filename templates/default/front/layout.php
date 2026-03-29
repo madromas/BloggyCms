@@ -44,6 +44,9 @@ if ($maintenanceMode && !$isAdmin) {
     <?php if(!empty(SettingsHelper::get('general', 'site_author'))) { ?>
         <meta name="author" content="<?php echo SettingsHelper::get('general', 'site_author'); ?>" />
     <?php } ?>
+    <?php if (isset($schemaData) && is_array($schemaData)) { ?>
+        <script type="application/ld+json"><?php echo json_encode($schemaData, JSON_UNESCAPED_UNICODE); ?></script>
+    <?php } ?>
     <?php echo base_front_css(['bootstrap.min','main']); ?>
     <?php echo render_front_css(); ?>
 </head>

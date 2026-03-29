@@ -10,5 +10,6 @@ return [
     'robots.txt' => ['controller' => 'Seo', 'action' => 'robots'],
     'rss.xml' => ['controller' => 'Seo', 'action' => 'rss'],
     'rss/category/{slug}' => ['controller' => 'Seo', 'action' => 'rssCategory'],
-    'rss/tag/{slug}' => ['controller' => 'Seo', 'action' => 'rssTag']
+    'rss/tag/{slug}' => ['controller' => 'Seo', 'action' => 'rssTag'],
+    'admin/seo/schema' => ['controller' => 'Seo', 'action' => 'adminSchema', 'admin' => true]
 ];

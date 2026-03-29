@@ -101,6 +101,11 @@ $indexnow_settings = array_merge([
                             IndexNow
                         </button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="schema-tab" data-bs-toggle="tab" data-bs-target="#schema" type="button" role="tab">
+                            <?php echo bloggy_icon('bs', 'diagram-3', '14', 'currentColor', 'me-1') ?>Schema.org
+                        </button>
+                    </li>
                 </ul>
             </div>
             
@@ -438,6 +443,178 @@ $indexnow_settings = array_merge([
                                 </div>
                             </div>
                         </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="schema" role="tabpanel">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-0">
+                                <h5 class="card-title mb-0">
+                                    <?php echo bloggy_icon('bs', 'building', '20', 'var(--bs-primary)', 'me-2') ?>
+                                    Информация об организации
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <strong>Schema.org для организации</strong><br>
+                                    Эти данные используются для разметки издателя (publisher) в статьях и общей информации о сайте.
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'building', '14', 'currentColor', 'me-1') ?>
+                                            Название организации
+                                        </label>
+                                        <input type="text" class="form-control" 
+                                            name="schema_org_name" 
+                                            value="<?php echo html($schema_settings['org_name'] ?? '') ?>" 
+                                            placeholder="Например: My Company LLC">
+                                        <div class="form-text">Официальное название вашей организации</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'diagram-3', '14', 'currentColor', 'me-1') ?>
+                                            Тип организации
+                                        </label>
+                                        <select class="form-select" name="schema_org_type">
+                                            <option value="Organization" <?php echo ($schema_settings['org_type'] ?? '') === 'Organization' ? 'selected' : '' ?>>Organization</option>
+                                            <option value="Corporation" <?php echo ($schema_settings['org_type'] ?? '') === 'Corporation' ? 'selected' : '' ?>>Corporation</option>
+                                            <option value="LocalBusiness" <?php echo ($schema_settings['org_type'] ?? '') === 'LocalBusiness' ? 'selected' : '' ?>>LocalBusiness</option>
+                                            <option value="NewsMediaOrganization" <?php echo ($schema_settings['org_type'] ?? '') === 'NewsMediaOrganization' ? 'selected' : '' ?>>NewsMediaOrganization</option>
+                                            <option value="Person" <?php echo ($schema_settings['org_type'] ?? '') === 'Person' ? 'selected' : '' ?>>Person (для персональных блогов)</option>
+                                        </select>
+                                        <div class="form-text">Выберите подходящий тип из <a href="https://schema.org/Organization" target="_blank">schema.org</a></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'image', '14', 'currentColor', 'me-1') ?>
+                                            Логотип организации (URL)
+                                        </label>
+                                        <input type="text" class="form-control" 
+                                            name="schema_org_logo" 
+                                            value="<?php echo html($schema_settings['org_logo'] ?? '') ?>" 
+                                            placeholder="https://yoursite.com/logo.png">
+                                        <div class="form-text">Полный URL логотипа (рекомендуется 600x60px)</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'globe', '14', 'currentColor', 'me-1') ?>
+                                            URL сайта
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_org_url" 
+                                            value="<?php echo html($schema_settings['org_url'] ?? BASE_URL) ?>">
+                                        <div class="form-text">Основной URL вашего сайта</div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">
+                                    <?php echo bloggy_icon('bs', 'share', '18', 'currentColor', 'me-2') ?>
+                                    Социальные профили
+                                </h6>
+                                <p class="text-muted small mb-3">
+                                    Укажите ссылки на социальные сети для улучшения разметки SameAs
+                                </p>
+                                
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'facebook', '14', '#1877F2', 'me-1') ?>
+                                            Facebook
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_facebook" 
+                                            value="<?php echo html($schema_settings['social_facebook'] ?? '') ?>" 
+                                            placeholder="https://facebook.com/yourpage">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'twitter', '14', '#1DA1F2', 'me-1') ?>
+                                            Twitter / X
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_twitter" 
+                                            value="<?php echo html($schema_settings['social_twitter'] ?? '') ?>" 
+                                            placeholder="https://twitter.com/yourprofile">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'instagram', '14', '#E4405F', 'me-1') ?>
+                                            Instagram
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_instagram" 
+                                            value="<?php echo html($schema_settings['social_instagram'] ?? '') ?>" 
+                                            placeholder="https://instagram.com/yourprofile">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'telegram', '14', '#0088cc', 'me-1') ?>
+                                            Telegram
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_telegram" 
+                                            value="<?php echo html($schema_settings['social_telegram'] ?? '') ?>" 
+                                            placeholder="https://t.me/yourchannel">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'vk', '14', '#0077FF', 'me-1') ?>
+                                            ВКонтакте
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_vk" 
+                                            value="<?php echo html($schema_settings['social_vk'] ?? '') ?>" 
+                                            placeholder="https://vk.com/yourpage">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('brands', 'youtube', '14', '#FF0000', 'me-1') ?>
+                                            YouTube
+                                        </label>
+                                        <input type="url" class="form-control" 
+                                            name="schema_social_youtube" 
+                                            value="<?php echo html($schema_settings['social_youtube'] ?? '') ?>" 
+                                            placeholder="https://youtube.com/yourchannel">
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">
+                                    <?php echo bloggy_icon('bs', 'envelope', '18', 'currentColor', 'me-2') ?>
+                                    Контактная информация
+                                </h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'envelope', '14', 'currentColor', 'me-1') ?>
+                                            Email для связи
+                                        </label>
+                                        <input type="email" class="form-control" 
+                                            name="schema_contact_email" 
+                                            value="<?php echo html($schema_settings['contact_email'] ?? '') ?>" 
+                                            placeholder="info@yoursite.com">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'telephone', '14', 'currentColor', 'me-1') ?>
+                                            Телефон
+                                        </label>
+                                        <input type="tel" class="form-control" 
+                                            name="schema_contact_phone" 
+                                            value="<?php echo html($schema_settings['contact_phone'] ?? '') ?>" 
+                                            placeholder="+7 999 123-45-67">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
