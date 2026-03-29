@@ -163,8 +163,8 @@ class AdminIndex extends ControllersAction {
         $systemControllers = [
             'admin', 'auth', 'settings', 'users', 'posts', 'categories', 
             'pages', 'menu', 'comments', 'profile', 'search', 
-            'tags', 'fields', 'html_blocks', 'icons', 'postblocks', 
-            'docs', 'addons', 'archive', 'forms', 'login_attempt', 'notifications'
+            'tags', 'fields', 'html_blocks', 'icons', 'postblocks', 'home',
+            'docs', 'addons', 'archive', 'forms', 'login_attempt', 'notifications', 'seo'
         ];
         $info['is_system'] = in_array(strtolower($dirName), $systemControllers);
         

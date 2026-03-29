@@ -1,266 +1,187 @@
 class GalleryBlockAdmin {
-    constructor(containerId = 'gallery-items-container') {
-        this.itemsContainer = document.getElementById(containerId);
-        this.itemCounter = 0;
+    constructor(container = document) {
+        this.container = container;
+        this.itemsContainer = this.container.querySelector('#gallery-items-container');
+        this.addButton = this.container.querySelector('#add-gallery-item');
+        this.template = this.container.querySelector('#gallery-template');
         
-        if (!this.itemsContainer) {
-            console.warn('Gallery container not found:', containerId);
-            return;
+        if (this.itemsContainer && !this.itemsContainer.hasAttribute('data-initialized')) {
+            this.itemsContainer.setAttribute('data-initialized', 'true');
+            this.init();
         }
-        
-        this.init();
     }
 
     init() {
         this.bindEvents();
         this.initSortable();
-        this.updateRemoveButtons();
-        this.updateItemCounter();
+        this.updateIndices();
+        this.attachPreviewToExisting();
     }
 
     bindEvents() {
-        const addButton = document.getElementById('add-gallery-item');
-        if (addButton) {
-            addButton.addEventListener('click', () => {
-                this.addGalleryItem();
-            });
-        } else {
-            console.warn('Add gallery item button not found');
+        if (this.addButton && !this.addButton.hasAttribute('data-event-bound')) {
+            this.addButton.addEventListener('click', () => this.addGalleryItem());
+            this.addButton.setAttribute('data-event-bound', 'true');
         }
 
-        this.itemsContainer.addEventListener('click', (e) => {
-            const removeButton = e.target.closest('.remove-gallery-item');
-            if (removeButton) {
-                this.removeGalleryItem(removeButton);
-            }
-        });
+        if (this.itemsContainer && !this.itemsContainer.hasAttribute('data-event-bound')) {
+            this.itemsContainer.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.remove-gallery-item');
+                if (removeBtn) {
+                    this.removeGalleryItem(removeBtn.closest('.gallery-item'));
+                }
+            });
+            
+            this.itemsContainer.addEventListener('change', (e) => {
+                const fileInput = e.target.closest('.gallery-image-input');
+                if (fileInput) {
+                    this.showImagePreview(fileInput);
+                }
+            });
+            
+            this.itemsContainer.setAttribute('data-event-bound', 'true');
+        }
+    }
 
-        this.itemsContainer.addEventListener('change', (e) => {
-            if (e.target.classList.contains('gallery-image-input')) {
-                this.handleImagePreview(e.target);
+    initSortable() {
+        if (typeof Sortable !== 'undefined' && this.itemsContainer) {
+            try {
+                new Sortable(this.itemsContainer, {
+                    handle: '.gallery-item-handle',
+                    ghostClass: 'sortable-ghost',
+                    chosenClass: 'sortable-chosen',
+                    animation: 150,
+                    onEnd: () => this.updateIndices()
+                });
+            } catch (e) {}
+        }
+    }
+
+    attachPreviewToExisting() {
+        if (!this.itemsContainer) return;
+        
+        this.itemsContainer.querySelectorAll('.gallery-image-input').forEach(input => {
+            if (input.files && input.files.length > 0 && input.files[0]) {
+                this.showImagePreview(input);
             }
         });
     }
 
     addGalleryItem() {
-        const newIndex = this.getItemCount();
+        if (!this.itemsContainer || !this.template) return;
         
-        const newItemHtml = this.getGalleryItemHtml(newIndex);
+        let nextIndex = this.itemsContainer.querySelectorAll('.gallery-item').length;
+        let html = this.template.innerHTML.replace(/__INDEX__/g, nextIndex);
         
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newItemHtml.trim();
-        const newItem = tempDiv.firstElementChild;
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+        const newItem = temp.firstElementChild;
         
         this.itemsContainer.appendChild(newItem);
-        this.updateRemoveButtons();
-        this.updateItemCounter();
+        this.updateIndices();
+        
+        const altInput = newItem.querySelector('input[name*="[alt_text]"]');
+        if (altInput) altInput.focus();
     }
 
-    removeGalleryItem(button) {
-        const item = button.closest('.gallery-item');
-        if (item && this.itemsContainer.children.length > 1) {
-            if (confirm('Удалить это изображение из галереи?')) {
-                item.remove();
-                this.renumberItems();
-                this.updateRemoveButtons();
-                this.updateItemCounter();
-            }
+    removeGalleryItem(itemElement) {
+        if (!this.itemsContainer) return;
+        
+        const items = this.itemsContainer.querySelectorAll('.gallery-item');
+        if (items.length > 1) {
+            itemElement.remove();
+            this.updateIndices();
+        } else {
+            alert('Нельзя удалить последнее изображение');
         }
     }
 
-    updateRemoveButtons() {
-        const removeButtons = this.itemsContainer.querySelectorAll('.remove-gallery-item');
-        const shouldDisable = this.itemsContainer.children.length === 1;
+    showImagePreview(fileInput) {
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) return;
         
-        removeButtons.forEach(button => {
-            button.disabled = shouldDisable;
-        });
+        const item = fileInput.closest('.gallery-item');
+        const previewContainer = item?.querySelector('.new-image-preview');
+        const previewImg = previewContainer?.querySelector('.preview-image');
+        
+        if (previewImg) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+        
+        const urlInput = item?.querySelector('.gallery-image-url');
+        if (urlInput) urlInput.value = '';
     }
 
-    renumberItems() {
+    updateIndices() {
+        if (!this.itemsContainer) return;
+        
         const items = this.itemsContainer.querySelectorAll('.gallery-item');
         
-        items.forEach((item, index) => {
-            const contentInputs = item.querySelectorAll('input[name^="content[images]"], textarea[name^="content[images]"]');
-            contentInputs.forEach(input => {
-                const oldName = input.name;
-                const newName = oldName.replace(/content\[images\]\[\d+\]/, `content[images][${index}]`);
-                input.name = newName;
-            });
-
-            const removeCheckbox = item.querySelector('input[type="checkbox"][name^="remove_gallery_image_"]');
-            if (removeCheckbox) {
-                removeCheckbox.name = `remove_gallery_image_${index}`;
-                removeCheckbox.id = `removeImage${index}`;
-                
-                const label = item.querySelector(`label[for^="removeImage"]`);
-                if (label) {
-                    label.htmlFor = `removeImage${index}`;
-                }
-            }
-
+        items.forEach((item, idx) => {
+            item.setAttribute('data-index', idx);
+            
             const fileInput = item.querySelector('.gallery-image-input');
-            if (fileInput) {
-                fileInput.name = `gallery_image_${index}`;
+            if (fileInput) fileInput.name = fileInput.name.replace(/gallery_image_\d+/, `gallery_image_${idx}`);
+            
+            const urlInput = item.querySelector('.gallery-image-url');
+            if (urlInput) urlInput.name = `content[images][${idx}][image_url]`;
+            
+            const altInput = item.querySelector('input[name*="[alt_text]"]');
+            if (altInput) altInput.name = `content[images][${idx}][alt_text]`;
+            
+            const captionInput = item.querySelector('input[name*="[caption]"]');
+            if (captionInput) captionInput.name = `content[images][${idx}][caption]`;
+            
+            const removeCheckbox = item.querySelector('input[type="checkbox"][name*="remove_gallery_image"]');
+            if (removeCheckbox) {
+                removeCheckbox.name = `remove_gallery_image_${idx}`;
+                removeCheckbox.id = `removeImage${idx}`;
+                const label = removeCheckbox.nextElementSibling;
+                if (label) label.setAttribute('for', `removeImage${idx}`);
             }
         });
     }
 
-    handleImagePreview(input) {
-        const file = input.files[0];
-        if (!file) return;
-
-        const previewContainer = input.closest('.gallery-item').querySelector('.new-image-preview');
-        const previewImg = previewContainer.querySelector('.preview-image');
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            previewContainer.style.display = 'block';
-            const currentPreview = input.closest('.gallery-item').querySelector('.current-image-preview');
-            if (currentPreview) {
-                currentPreview.style.display = 'none';
+    static reinitializeAll() {
+        document.querySelectorAll('#gallery-items-container').forEach(container => {
+            container.removeAttribute('data-initialized');
+            if (container.closest('.modal')) {
+                new GalleryBlockAdmin(container.closest('.modal'));
+            } else {
+                new GalleryBlockAdmin();
             }
-        };
-        
-        reader.readAsDataURL(file);
-    }
-
-    initSortable() {
-        if (typeof Sortable === 'undefined') {
-            console.warn('Sortable.js not loaded');
-            return;
-        }
-
-        try {
-            this.sortable = new Sortable(this.itemsContainer, {
-                handle: '.gallery-item-handle',
-                animation: 150,
-                ghostClass: 'sortable-ghost',
-                chosenClass: 'sortable-chosen',
-                dragClass: 'sortable-drag',
-                
-                onEnd: (evt) => {
-                    this.renumberItems();
-                }
-            });
-        } catch (error) {
-            console.error('Error initializing Sortable:', error);
-        }
-    }
-
-    getGalleryItemHtml(index) {
-        return `
-        <div class="gallery-item card mb-3">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-1 text-center">
-                        <span class="gallery-item-handle text-muted">
-                            <i class="bi bi-grip-vertical"></i>
-                        </span>
-                    </div>
-                    <div class="col-8">
-                        <!-- Поле для загрузки файла -->
-                        <div class="mb-3">
-                            <label class="form-label small">Загрузить изображение *</label>
-                            <input type="file" 
-                                   name="gallery_image_${index}" 
-                                   class="form-control form-control-sm gallery-image-input" 
-                                   accept="image/*"
-                                   required>
-                            <div class="form-text small">
-                                Форматы: JPG, PNG, GIF, WebP. Макс. размер: 5MB
-                            </div>
-                        </div>
-
-                        <!-- Скрытое поле для URL -->
-                        <input type="hidden" 
-                               name="content[images][${index}][image_url]" 
-                               class="gallery-image-url" 
-                               value="">
-
-                        <!-- Alt текст -->
-                        <div class="mb-3">
-                            <label class="form-label small">Alt текст *</label>
-                            <input type="text" 
-                                   name="content[images][${index}][alt_text]" 
-                                   class="form-control form-control-sm" 
-                                   value="" 
-                                   placeholder="Описание изображения"
-                                   required>
-                        </div>
-
-                        <!-- Подпись -->
-                        <div class="mb-2">
-                            <label class="form-label small">Подпись</label>
-                            <input type="text" 
-                                   name="content[images][${index}][caption]" 
-                                   class="form-control form-control-sm" 
-                                   value="" 
-                                   placeholder="Необязательная подпись">
-                        </div>
-
-                        <!-- Предпросмотр нового изображения -->
-                        <div class="new-image-preview mt-2" style="display: none;">
-                            <div class="border rounded p-2 bg-light">
-                                <img src="" alt="Предпросмотр" class="img-thumbnail preview-image" style="max-height: 60px;">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-end">
-                        <button type="button" class="btn btn-danger btn-sm remove-gallery-item">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    }
-
-    getItemCount() {
-        return this.itemsContainer.children.length;
-    }
-
-    updateItemCounter() {
-        const count = this.getItemCount();
+        });
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    
-    const galleryContainers = document.querySelectorAll('[id^="gallery-items-container"]');
-    
-    if (galleryContainers.length > 0) {
-        galleryContainers.forEach((container, index) => {
-            const containerId = container.id;
-            
-            window[`galleryBlockAdmin${index}`] = new GalleryBlockAdmin(containerId);
-        });
-    } else {
-        const alternativeContainers = document.querySelectorAll('.gallery-items-container');
-        if (alternativeContainers.length > 0) {
-            alternativeContainers.forEach((container, index) => {
-                window[`galleryBlockAdmin${index}`] = new GalleryBlockAdmin();
-            });
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('gallery-items-container')) {
+        new GalleryBlockAdmin();
     }
 });
 
-document.addEventListener('show.bs.modal', function() {
-    setTimeout(() => {
-        const galleryContainer = document.getElementById('gallery-items-container');
-        if (galleryContainer && !window.galleryBlockAdminInitialized) {
-            window.galleryBlockAdmin = new GalleryBlockAdmin();
-            window.galleryBlockAdminInitialized = true;
+function initGalleryBlockInModal(modal) {
+    if (modal) {
+        const galleryContainer = modal.querySelector('#gallery-items-container');
+        if (galleryContainer && !galleryContainer.hasAttribute('data-initialized')) {
+            new GalleryBlockAdmin(modal);
+            galleryContainer.setAttribute('data-initialized', 'true');
         }
-    }, 100);
-});
-
-window.reinitializeGalleryBlock = function() {
-    const galleryContainer = document.getElementById('gallery-items-container');
-    if (galleryContainer) {
-        window.galleryBlockAdmin = new GalleryBlockAdmin();
     }
-};
+}
 
-window.GalleryBlockAdmin = GalleryBlockAdmin;
+const galleryObserver = new MutationObserver(() => {
+    if (document.querySelector('#gallery-items-container:not([data-initialized])')) {
+        GalleryBlockAdmin.reinitializeAll();
+    }
+});
+galleryObserver.observe(document.body, { childList: true, subtree: true });
+
+if (typeof window !== 'undefined') {
+    window.GalleryBlockAdmin = GalleryBlockAdmin;
+    window.initGalleryBlockInModal = initGalleryBlockInModal;
+}

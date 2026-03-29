@@ -22,24 +22,9 @@ $sizeMap = [
 ];
 $buttonSize = $sizeMap[$size] ?? 50;
 
-$style = "
-    position: fixed;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: {$buttonSize}px;
-    height: {$buttonSize}px;
-    background-color: {$bgColor};
-    color: {$textColor};
-    border: none;
-    border-radius: " . ($shape === 'circle' ? '50%' : '12px') . ";
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease;
-    text-decoration: none;
-";
+$customId = !empty($settings['custom_id']) ? html($settings['custom_id']) : 'scroll-to-top-btn';
+
+$style = "position: fixed; z-index: 9999; display: flex; align-items: center; justify-content: center; width: {$buttonSize}px; height: {$buttonSize}px; background-color: {$bgColor}; color: {$textColor}; border: none; border-radius: " . ($shape === 'circle' ? '50%' : '12px') . "; cursor: pointer; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease; text-decoration: none;";
 
 if ($position === 'bottom-right') {
     $style .= " bottom: {$offsetBottom}px; right: {$offsetSide}px;";
@@ -73,46 +58,9 @@ if (!empty($customIcon)) {
 }
 ?>
 
-<button type="button"
-        id="<?php echo !empty($settings['custom_id']) ? html($settings['custom_id']) : 'scroll-to-top-btn'; ?>"
-        class="<?php echo $buttonClasses; ?>"
-        style="<?php echo $style; ?>"
-        aria-label="Прокрутить вверх">
+<button type="button" id="<?php echo $customId; ?>" class="<?php echo $buttonClasses; ?>" style="<?php echo $style; ?>" aria-label="Прокрутить вверх" data-scroll-threshold="<?php echo $scrollThreshold; ?>" data-animation-duration="<?php echo $animationDuration; ?>">
     <?php echo $iconHtml; ?>
 </button>
-
-<?php ob_start(); ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollBtn = document.getElementById('<?php echo !empty($settings['custom_id']) ? html($settings['custom_id']) : 'scroll-to-top-btn'; ?>');
-            if (!scrollBtn) return;
-
-            const scrollThreshold = <?php echo $scrollThreshold; ?>;
-            const animationDuration = <?php echo $animationDuration; ?>;
-
-            function checkScroll() {
-                if (window.scrollY > scrollThreshold) {
-                    scrollBtn.style.opacity = '1';
-                    scrollBtn.style.visibility = 'visible';
-                } else {
-                    scrollBtn.style.opacity = '0';
-                    scrollBtn.style.visibility = 'hidden';
-                }
-            }
-
-            window.addEventListener('scroll', checkScroll);
-            checkScroll();
-
-            scrollBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        });
-    </script>
-<?php front_bottom_js(ob_get_clean()); ?>
 
 <?php if (!empty($settings['custom_css_class'])) { ?>
     <style>

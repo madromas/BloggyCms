@@ -81,10 +81,9 @@ $currentUserId = $_SESSION['user_id'] ?? null;
                                         <?php if (!empty($achievement['image'])) { ?>
                                             <img src="<?php echo BASE_URL; ?>/uploads/achievements/<?php echo html($achievement['image']); ?>" 
                                                  alt="<?php echo html($achievement['name']); ?>"
-                                                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: var(--tg-shadow);">
+                                                 style="width: 100px; height: 100px;">
                                         <?php } else { ?>
-                                            <div class="tg-achievement-icon" 
-                                                 style="width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; background: <?php echo $achievement['icon_color'] ?? 'var(--tg-primary)'; ?>; display: flex; align-items: center; justify-content: center;">
+                                            <div class="tg-achievement-icon" style="width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; background: <?php echo $achievement['icon_color'] ?? 'var(--tg-primary)'; ?>; display: flex; align-items: center; justify-content: center;">
                                                 <?php echo bloggy_icon('bs', $achievement['icon'] ?? 'trophy', '40', 'white'); ?>
                                             </div>
                                         <?php } ?>

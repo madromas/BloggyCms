@@ -21,6 +21,24 @@ class GalleryBlock extends BasePostBlock {
         return 'media';
     }
 
+    public function getAdminJs(): array {
+        return [
+            'templates/default/admin/assets/js/blocks/gallery.js'
+        ];
+    }
+
+    public function getAdminCss(): array {
+        return [
+            'templates/default/admin/assets/css/blocks/gallery.css'
+        ];
+    }
+
+    public function getFrontendJs(): array {
+        return [
+            '/templates/default/front/assets/js/zoomi.min.js',
+        ];
+    }
+
     public function getTemplateWithShortcodes(): string {
         return '
         <div class="post-block-gallery {layout} {custom_class}">
@@ -37,13 +55,7 @@ class GalleryBlock extends BasePostBlock {
 
     public function getDefaultContent(): array {
         return [
-            'images' => [
-                [
-                    'image_url' => '',
-                    'alt_text' => '',
-                    'caption' => ''
-                ]
-            ]
+            'images' => []
         ];
     }
 
@@ -60,120 +72,239 @@ class GalleryBlock extends BasePostBlock {
 
     public function getContentForm($currentContent = []): string {
         $currentContent = $this->validateAndNormalizeContent($currentContent);
-        $images = $currentContent['images'] ?? [['image_url' => '', 'alt_text' => '', 'caption' => '']];
+        $images = $currentContent['images'] ?? [];
         
         ob_start();
         ?>
-        <div class="mb-4">
-            <label class="form-label">Изображения галереи</label>
-            <div id="gallery-items-container">
-                <?php foreach($images as $index => $image): ?>
-                <div class="gallery-item card mb-3">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-1 text-center">
-                                <span class="gallery-item-handle text-muted">
-                                    <i class="bi bi-grip-vertical"></i>
-                                </span>
-                            </div>
-                            <div class="col-8">
-                                <div class="mb-3">
-                                    <label class="form-label small">Загрузить изображение *</label>
-                                    <input type="file" 
-                                           name="gallery_image_<?= $index ?>" 
-                                           class="form-control form-control-sm gallery-image-input" 
-                                           accept="image/*"
-                                           <?= empty($image['image_url']) ? 'required' : '' ?>>
-                                    <div class="form-text small">
-                                        Форматы: JPG, PNG, GIF, WebP. Макс. размер: 5MB
-                                    </div>
+        <div class="gallery-block-wrapper">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Изображения галереи</label>
+                <div class="text-muted small mb-3">Перетащите элементы для изменения порядка</div>
+            </div>
+            
+            <div id="gallery-items-container" class="gallery-items-container">
+                <?php if (empty($images)): ?>
+                    <div class="gallery-item card mb-3" data-index="0">
+                        <div class="card-body">
+                            <div class="row align-items-start">
+                                <div class="col-auto pe-0">
+                                    <span class="gallery-item-handle text-muted">
+                                        <i class="bi bi-grip-vertical fs-5"></i>
+                                    </span>
                                 </div>
-                                <input type="hidden" 
-                                       name="content[images][<?= $index ?>][image_url]" 
-                                       class="gallery-image-url" 
-                                       value="<?= htmlspecialchars($image['image_url']) ?>">
-                                <div class="mb-3">
-                                    <label class="form-label small">Alt текст *</label>
-                                    <input type="text" 
-                                           name="content[images][<?= $index ?>][alt_text]" 
-                                           class="form-control form-control-sm" 
-                                           value="<?= htmlspecialchars($image['alt_text']) ?>" 
-                                           placeholder="Описание изображения"
-                                           required>
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label small">Подпись</label>
-                                    <input type="text" 
-                                           name="content[images][<?= $index ?>][caption]" 
-                                           class="form-control form-control-sm" 
-                                           value="<?= htmlspecialchars($image['caption']) ?>" 
-                                           placeholder="Необязательная подпись">
-                                </div>
-                                <?php if (!empty($image['image_url'])): ?>
-                                <div class="current-image-preview mt-2 p-2 border rounded bg-light">
-                                    <div class="d-flex align-items-center">
-                                        <img src="<?= htmlspecialchars($image['image_url']) ?>" 
-                                             alt="Текущее изображение" 
-                                             class="img-thumbnail me-2"
-                                             style="max-height: 60px;">
-                                        <div class="flex-grow-1">
-                                            <small class="text-muted d-block"><?= htmlspecialchars($image['image_url']) ?></small>
-                                            <div class="form-check mt-1">
-                                                <input class="form-check-input" type="checkbox" 
-                                                       name="remove_gallery_image_<?= $index ?>" 
-                                                       value="1" 
-                                                       id="removeImage<?= $index ?>">
-                                                <label class="form-check-label small" for="removeImage<?= $index ?>">
-                                                    Удалить изображение
-                                                </label>
+                                <div class="col">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <div class="image-upload-area">
+                                                <label class="form-label small fw-semibold">Изображение *</label>
+                                                <input type="file" 
+                                                    name="gallery_image_0" 
+                                                    class="form-control form-control-sm gallery-image-input" 
+                                                    accept="image/*"
+                                                    required>
+                                                <div class="form-text small text-muted">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Форматы: JPG, PNG, GIF, WebP. Макс. размер: 5MB
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="content[images][0][image_url]" class="gallery-image-url" value="">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-semibold">Alt текст *</label>
+                                            <input type="text" 
+                                                name="content[images][0][alt_text]" 
+                                                class="form-control form-control-sm" 
+                                                value="" 
+                                                placeholder="Краткое описание изображения"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-semibold">Подпись</label>
+                                            <input type="text" 
+                                                name="content[images][0][caption]" 
+                                                class="form-control form-control-sm" 
+                                                value="" 
+                                                placeholder="Необязательная подпись к изображению">
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="new-image-preview" style="display: none;">
+                                                <div class="preview-card p-2 bg-light rounded">
+                                                    <img src="" alt="Предпросмотр" class="preview-image" style="max-height: 80px; max-width: 100%; border-radius: 0.5rem;">
+                                                    <div class="small text-muted mt-1">Новое изображение</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <?php endif; ?>
-                                <div class="new-image-preview mt-2" style="display: none;">
-                                    <div class="border rounded p-2 bg-light">
-                                        <img src="" alt="Предпросмотр" class="img-thumbnail preview-image" style="max-height: 60px;">
-                                    </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-light btn-sm remove-gallery-item" disabled>
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="col-2 text-end">
-                                <button type="button" class="btn btn-danger btn-sm remove-gallery-item" <?= count($images) === 1 ? 'disabled' : '' ?>>
-                                    <i class="bi bi-trash"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($images as $index => $image): ?>
+                    <div class="gallery-item card mb-3" data-index="<?= $index ?>">
+                        <div class="card-body">
+                            <div class="row align-items-start">
+                                <div class="col-auto pe-0">
+                                    <span class="gallery-item-handle text-muted">
+                                        <i class="bi bi-grip-vertical fs-5"></i>
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <div class="row g-3">
+                                        <?php if (empty($image['image_url'])): ?>
+                                            <div class="col-md-12">
+                                                <div class="image-upload-area">
+                                                    <label class="form-label small fw-semibold">Изображение *</label>
+                                                    <input type="file" 
+                                                        name="gallery_image_<?= $index ?>" 
+                                                        class="form-control form-control-sm gallery-image-input" 
+                                                        accept="image/*"
+                                                        required>
+                                                    <div class="form-text small text-muted">
+                                                        <i class="bi bi-info-circle me-1"></i>
+                                                        Форматы: JPG, PNG, GIF, WebP. Макс. размер: 5MB
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="content[images][<?= $index ?>][image_url]" class="gallery-image-url" value="">
+                                        <?php else: ?>
+                                            <div class="col-md-12">
+                                                <div class="current-image-preview">
+                                                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded">
+                                                        <img src="<?= htmlspecialchars($image['image_url']) ?>" 
+                                                            alt="Текущее изображение" 
+                                                            class="rounded"
+                                                            style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <div class="flex-grow-1">
+                                                            <div class="small text-muted mb-1">Текущее изображение</div>
+                                                            <code class="small"><?= htmlspecialchars(basename($image['image_url'])) ?></code>
+                                                            <div class="form-check mt-2">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                    name="remove_gallery_image_<?= $index ?>" 
+                                                                    value="1" 
+                                                                    id="removeImage<?= $index ?>">
+                                                                <label class="form-check-label small text-danger" for="removeImage<?= $index ?>">
+                                                                    <i class="bi bi-trash3 me-1"></i>Удалить
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="content[images][<?= $index ?>][image_url]" class="gallery-image-url" value="<?= htmlspecialchars($image['image_url']) ?>">
+                                        <?php endif; ?>
+                                        
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-semibold">Alt текст *</label>
+                                            <input type="text" 
+                                                name="content[images][<?= $index ?>][alt_text]" 
+                                                class="form-control form-control-sm" 
+                                                value="<?= htmlspecialchars($image['alt_text'] ?? '') ?>" 
+                                                placeholder="Краткое описание изображения"
+                                                required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-semibold">Подпись</label>
+                                            <input type="text" 
+                                                name="content[images][<?= $index ?>][caption]" 
+                                                class="form-control form-control-sm" 
+                                                value="<?= htmlspecialchars($image['caption'] ?? '') ?>" 
+                                                placeholder="Необязательная подпись к изображению">
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="new-image-preview" style="display: none;">
+                                                <div class="preview-card p-2 bg-light rounded">
+                                                    <img src="" alt="Предпросмотр" class="preview-image" style="max-height: 80px; max-width: 100%; border-radius: 0.5rem;">
+                                                    <div class="small text-muted mt-1">Новое изображение</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-light btn-sm remove-gallery-item" title="Удалить изображение">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
             
-            <button type="button" class="btn btn-secondary mt-2" id="add-gallery-item">
-                <i class="bi bi-plus"></i> Добавить изображение
+            <button type="button" class="btn btn-outline-primary mt-3" id="add-gallery-item">
+                <i class="bi bi-plus-lg me-2"></i>Добавить изображение
             </button>
         </div>
 
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.gallery-image-input').forEach(function(input) {
-                input.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const previewContainer = this.closest('.gallery-item').querySelector('.new-image-preview');
-                        const previewImg = previewContainer.querySelector('.preview-image');
-                        const reader = new FileReader();
-                        
-                        reader.onload = function(e) {
-                            previewImg.src = e.target.result;
-                            previewContainer.style.display = 'block';
-                        }
-                        
-                        reader.readAsDataURL(file);
-                    }
-                });
-            });
-        });
-        </script>
+        <template id="gallery-template">
+            <div class="gallery-item card mb-3" data-index="__INDEX__">
+                <div class="card-body">
+                    <div class="row align-items-start">
+                        <div class="col-auto pe-0">
+                            <span class="gallery-item-handle text-muted">
+                                <i class="bi bi-grip-vertical fs-5"></i>
+                            </span>
+                        </div>
+                        <div class="col">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="image-upload-area">
+                                        <label class="form-label small fw-semibold">Изображение *</label>
+                                        <input type="file" 
+                                            name="gallery_image___INDEX__" 
+                                            class="form-control form-control-sm gallery-image-input" 
+                                            accept="image/*"
+                                            required>
+                                        <div class="form-text small text-muted">
+                                            <i class="bi bi-info-circle me-1"></i>
+                                            Форматы: JPG, PNG, GIF, WebP. Макс. размер: 5MB
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="content[images][__INDEX__][image_url]" class="gallery-image-url" value="">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Alt текст *</label>
+                                    <input type="text" 
+                                        name="content[images][__INDEX__][alt_text]" 
+                                        class="form-control form-control-sm" 
+                                        value="" 
+                                        placeholder="Краткое описание изображения"
+                                        required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Подпись</label>
+                                    <input type="text" 
+                                        name="content[images][__INDEX__][caption]" 
+                                        class="form-control form-control-sm" 
+                                        value="" 
+                                        placeholder="Необязательная подпись к изображению">
+                                </div>
+                                <div class="col-12">
+                                    <div class="new-image-preview" style="display: none;">
+                                        <div class="preview-card p-2 bg-light rounded">
+                                            <img src="" alt="Предпросмотр" class="preview-image" style="max-height: 80px; max-width: 100%; border-radius: 0.5rem;">
+                                            <div class="small text-muted mt-1">Новое изображение</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-light btn-sm remove-gallery-item" title="Удалить изображение">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
         <?php
         return ob_get_clean();
     }
@@ -291,13 +422,14 @@ class GalleryBlock extends BasePostBlock {
                 <span class="badge bg-secondary ms-2">' . $imageCount . ' изображений</span>
             </div>
             <div class="gallery-preview-grid">';
+        
         $previewImages = array_slice($images, 0, 4);
         foreach ($previewImages as $image) {
             if (!empty($image['image_url'])) {
                 $previewHtml .= '
                 <div class="gallery-preview-item">
                     <img src="' . htmlspecialchars($image['image_url']) . '" 
-                         alt="' . htmlspecialchars($image['alt_text']) . '" 
+                         alt="' . htmlspecialchars($image['alt_text'] ?? '') . '" 
                          class="img-thumbnail">
                 </div>';
             }
@@ -352,11 +484,7 @@ class GalleryBlock extends BasePostBlock {
         }
         
         if (empty($images)) {
-            $images[] = [
-                'image_url' => '',
-                'alt_text' => '',
-                'caption' => ''
-            ];
+            $images = [];
         }
         
         $content['images'] = $images;
@@ -378,11 +506,9 @@ class GalleryBlock extends BasePostBlock {
         if (isset($settings['lightbox'])) {
             $settings['lightbox'] = (bool)$settings['lightbox'];
         }
-
         if (isset($settings['columns'])) {
             $settings['columns'] = (int)$settings['columns'];
         }
-
         if (isset($settings['custom_class'])) {
             $settings['custom_class'] = trim($settings['custom_class']);
         }
@@ -545,12 +671,6 @@ class GalleryBlock extends BasePostBlock {
         ]);
     }
 
-    public function getAdminJs(): array {
-        return [
-            'templates/default/admin/assets/js/blocks/gallery.js'
-        ];
-    }
-
     public function validateSettings($settings): array {
         $errors = [];
 
@@ -695,8 +815,7 @@ class GalleryBlock extends BasePostBlock {
                                         <img src="<?= htmlspecialchars($imageUrl) ?>" 
                                             alt="<?= htmlspecialchars($altText) ?>"
                                             class="img-fluid rounded"
-                                            style="width: 100%; height: 80px; object-fit: cover;"
-                                            onerror="this.onerror=null; this.style.backgroundColor='#f8f9fa'; this.innerHTML='<i class=\'bi bi-image text-muted\' style=\'font-size: 24px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);\'></i>'">
+                                            style="width: 100%; height: 80px; object-fit: cover;">
                                         
                                         <?php if ($index === 3 && $imageCount > 4): ?>
                                             <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex align-items-center justify-content-center rounded">
@@ -744,5 +863,4 @@ class GalleryBlock extends BasePostBlock {
         <?php
         return ob_get_clean();
     }
-
 }

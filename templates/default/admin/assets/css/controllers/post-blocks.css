@@ -302,7 +302,6 @@
 }
 
 .gallery-item {
-    aspect-ratio: 1;
     border-radius: 6px;
     overflow: hidden;
     border: 1px solid #e5e7eb;

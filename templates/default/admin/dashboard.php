@@ -1,11 +1,18 @@
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-content">
-            <h1 class="dashboard-title">
-                <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
-                Панель управления
-            </h1>
-            <p class="dashboard-subtitle">Добро пожаловать в панель управления блога!</p>
+            <div class="header-title-wrapper">
+                <div>
+                    <h1 class="dashboard-title">
+                        <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
+                        Панель управления
+                    </h1>
+                    <p class="dashboard-subtitle">Добро пожаловать в панель управления блога!</p>
+                </div>
+                <a href="/admin/settings?tab=components&controller=admin" class="settings-icon-link" title="Настройки компонентов админ-панели">
+                    <?php echo bloggy_icon('bs', 'gear', '32', '#0004ff;'); ?>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -133,7 +140,7 @@
                 <div class="card-body-modern">
                     <?php if(!empty($recentPosts)) { ?>
                         <div class="post-list">
-                            <?php foreach($recentPosts as $post): ?>
+                            <?php foreach($recentPosts as $post) { ?>
                                 <a href="<?= BASE_URL ?>/post/<?= $post['slug'] ?>" target="_blank" class="post-item">
                                     <div class="post-content">
                                         <h4><?php echo html($post['title']) ?></h4>
@@ -144,7 +151,7 @@
                                     </div>
                                     <?php echo bloggy_icon('bs', 'chevron-right', '16', '#cbd5e1'); ?>
                                 </a>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </div>
                     <?php } else { ?>
                         <div class="empty-state-modern">
@@ -165,7 +172,7 @@
                 <div class="card-body-modern">
                     <?php if(!empty($popularPosts)) { ?>
                         <div class="post-list">
-                            <?php foreach($popularPosts as $post): ?>
+                            <?php foreach($popularPosts as $post) { ?>
                                 <a href="<?= BASE_URL ?>/post/<?= $post['slug'] ?>" target="_blank" class="post-item">
                                     <div class="post-content">
                                         <h4><?php echo html($post['title']) ?></h4>
@@ -176,7 +183,7 @@
                                     </div>
                                     <?php echo bloggy_icon('bs', 'chevron-right', '16', '#cbd5e1'); ?>
                                 </a>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </div>
                     <?php } else { ?>
                         <div class="empty-state-modern">
@@ -197,7 +204,7 @@
                 <div class="card-body-modern">
                     <?php if(!empty($commentedPosts)) { ?>
                         <div class="post-list">
-                            <?php foreach($commentedPosts as $post): ?>
+                            <?php foreach($commentedPosts as $post) { ?>
                                 <a href="<?= BASE_URL ?>/post/<?= $post['slug'] ?>" target="_blank" class="post-item">
                                     <div class="post-content">
                                         <h4><?php echo html($post['title']) ?></h4>
@@ -208,7 +215,7 @@
                                     </div>
                                     <?php echo bloggy_icon('bs', 'chevron-right', '16', '#cbd5e1'); ?>
                                 </a>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </div>
                     <?php } else { ?>
                         <div class="empty-state-modern">
@@ -229,7 +236,7 @@
                 <div class="card-body-modern">
                     <?php if(!empty($draftPosts)) { ?>
                         <div class="post-list">
-                            <?php foreach($draftPosts as $post): ?>
+                            <?php foreach($draftPosts as $post) { ?>
                                 <div class="post-item draft-item">
                                     <div class="post-content">
                                         <h4><?php echo html($post['title']) ?></h4>
@@ -250,7 +257,7 @@
                                         </a>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </div>
                     <?php } else { ?>
                         <div class="empty-state-modern">
@@ -272,9 +279,9 @@
                         <h3>Последние поисковые запросы</h3>
                     </div>
                     <div class="card-body-modern">
-                        <?php if(!empty($recentSearches)): ?>
+                        <?php if(!empty($recentSearches)) { ?>
                             <div class="search-list">
-                                <?php foreach($recentSearches as $search): ?>
+                                <?php foreach($recentSearches as $search) { ?>
                                     <div class="search-item">
                                         <a href="<?= BASE_URL ?>/search?q=<?= urlencode($search['query']) ?>" target="_blank" class="search-query">
                                             <?php echo bloggy_icon('bs', 'search', '14', '#0088cc', 'me-2'); ?>
@@ -291,17 +298,17 @@
                                             </span>
                                         </div>
                                     </div>
-                                <?php endforeach; ?>
+                                <?php } ?>
                             </div>
                             <div class="card-footer-modern">
                                 <a href="<?= ADMIN_URL ?>/search-history" class="link-btn">Все запросы →</a>
                             </div>
-                        <?php else: ?>
+                        <?php } else { ?>
                             <div class="empty-state-modern">
                                 <?php echo bloggy_icon('bs', 'search', '48', '#cbd5e1', 'mb-3'); ?>
                                 <p>Поисковых запросов пока нет</p>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
                 </div>
             <?php } ?>
@@ -313,9 +320,9 @@
                         <h3>Популярные запросы</h3>
                     </div>
                     <div class="card-body-modern">
-                        <?php if(!empty($popularSearches)): ?>
+                        <?php if(!empty($popularSearches)) { ?>
                             <div class="search-list">
-                                <?php foreach($popularSearches as $search): ?>
+                                <?php foreach($popularSearches as $search) { ?>
                                     <div class="search-item popular">
                                         <a href="<?= BASE_URL ?>/search?q=<?= urlencode($search['query']) ?>" target="_blank" class="search-query">
                                             <?php echo bloggy_icon('bs', 'fire', '14', '#f59e0b', 'me-2'); ?>
@@ -328,17 +335,17 @@
                                             </span>
                                         </div>
                                     </div>
-                                <?php endforeach; ?>
+                                <?php } ?>
                             </div>
                             <div class="card-footer-modern">
                                 <a href="<?= ADMIN_URL ?>/search-history" class="link-btn">Все запросы →</a>
                             </div>
-                        <?php else: ?>
+                        <?php } else { ?>
                             <div class="empty-state-modern">
                                 <?php echo bloggy_icon('bs', 'star', '48', '#cbd5e1', 'mb-3'); ?>
                                 <p>Популярных запросов пока нет</p>
                             </div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
                 </div>
             <?php } ?>

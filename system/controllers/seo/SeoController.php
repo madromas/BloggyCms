@@ -1,15 +1,15 @@
 <?php
 /**
-* Контроллер управления SEO-настройками
-* Предоставляет интерфейс для управления robots.txt, sitemap.xml и RSS-лентами
-*
-* @package Controllers
-* @extends Controller
-*/
+ * Контроллер управления SEO-настройками
+ * Предоставляет интерфейс для управления robots.txt, sitemap.xml и RSS-лентами
+ *
+ * @package Controllers
+ * @extends Controller
+ */
 class SeoController extends Controller {
     /** @var SeoModel Модель для работы с SEO */
     private $seoModel;
-
+    
     /**
     * Конструктор контроллера
     */
@@ -17,7 +17,7 @@ class SeoController extends Controller {
         parent::__construct($db);
         $this->seoModel = new SeoModel($db);
     }
-
+    
     /**
     * Главная страница управления SEO (админка)
     */
@@ -26,7 +26,7 @@ class SeoController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
     * Настройка SEO (админка)
     */
@@ -35,61 +35,106 @@ class SeoController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Настройки robots.txt
+    * Настройка robots.txt
     */
     public function adminRobotsAction() {
         $action = new \seo\actions\AdminRobots($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Настройки sitemap.xml
+    * Настройка sitemap.xml
     */
     public function adminSitemapAction() {
         $action = new \seo\actions\AdminSitemap($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Настройки RSS
+    * Настройка RSS
     */
     public function adminRssAction() {
         $action = new \seo\actions\AdminRss($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Генерация sitemap.xml (публичный доступ)
+    * Очистка кэша SEO
+    */
+    public function adminClearCacheAction() {
+        if (!$this->checkAdminAccess()) {
+            \Notification::error('У вас нет прав доступа');
+            $this->redirect(ADMIN_URL);
+            return;
+        }
+        
+        $this->seoModel->clearCache();
+        \Notification::success('Кэш SEO очищен');
+        $this->redirect(ADMIN_URL . '/seo');
+    }
+    
+    /**
+    * Тестовая отправка IndexNow
+    * Доступно в админке: /admin/seo/test-indexnow
+    */
+    public function adminTestIndexNowAction() {
+        $action = new \seo\actions\AdminTestIndexNow($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
+    
+    /**
+    * Обработка очереди задач IndexNow (для cron)
+    * Доступно по URL: /admin/seo/process-queue?token={secret}
+    */
+    public function adminProcessQueueAction() {
+        $action = new \seo\actions\AdminProcessQueue($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
+    
+    /**
+    * Отдача файла с ключом IndexNow
+    * URL: /{key}.txt
+    */
+    public function indexnowKeyAction($key) {
+        $action = new \seo\actions\IndexNowKey($this->db, ['key' => $key]);
+        $action->setController($this);
+        return $action->execute();
+    }
+    
+    /**
+    * Генерация sitemap.xml
     */
     public function sitemapAction() {
         $action = new \seo\actions\GenerateSitemap($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Генерация robots.txt (публичный доступ)
+    * Генерация robots.txt
     */
     public function robotsAction() {
         $action = new \seo\actions\GenerateRobots($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
-    * Генерация RSS ленты (публичный доступ)
+    * Генерация RSS
     */
     public function rssAction() {
         $action = new \seo\actions\GenerateRss($this->db);
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
     * RSS для категории
     */
@@ -98,7 +143,7 @@ class SeoController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
-
+    
     /**
     * RSS для тега
     */
@@ -107,5 +152,4 @@ class SeoController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
-
 }

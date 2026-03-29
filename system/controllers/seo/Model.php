@@ -540,4 +540,479 @@ class SeoModel implements ModelAPI {
         return date('Y-m-d\TH:i:s+00:00', strtotime($timestamp));
     }
 
+    /**
+    * Получить настройки IndexNow
+    * @return array
+    */
+    public function getIndexNowSettings() {
+        $default = [
+            'enabled' => false,
+            'ya_key' => $this->generateRandomKey(),
+            'bing_key' => $this->generateRandomKey(),
+            'notify_error' => true,
+            'auto_submit' => true,
+            'submit_delay' => 0
+        ];
+        
+        $settings = $this->settingsModel->get('seo_indexnow', []);
+        return array_merge($default, $settings);
+    }
+
+    /**
+    * Сохранить настройки IndexNow
+    * @param array $settings
+    * @return bool
+    */
+    public function saveIndexNowSettings($settings) {
+        return $this->settingsModel->save('seo_indexnow', $settings);
+    }
+
+    /**
+    * Генерация случайного ключа для IndexNow
+    * 
+    * @param int $length
+    * @return string
+    */
+    public function generateRandomKey($length = 32) {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-';
+        return substr(str_shuffle(str_repeat($chars, $length)), 0, $length);
+    }
+
+    /**
+    * Получить список поисковых систем, поддерживающих IndexNow
+    * @return array
+    */
+    public function getIndexNowEngines() {
+        return [
+            'ya_key' => [
+                'name' => 'Yandex',
+                'url' => 'https://yandex.com/indexnow',
+                'supports_bulk' => true
+            ],
+            'bing_key' => [
+                'name' => 'Bing',
+                'url' => 'https://www.bing.com/indexnow',
+                'supports_bulk' => true
+            ]
+        ];
+    }
+
+    /**
+    * Отправить URL в IndexNow (синхронно)
+    * @param string $key_name Название ключа (ya_key, bing_key)
+    * @param string|array $urls URL или массив URL для отправки
+    * @return array ['code' => http_code, 'success' => bool, 'error' => string]
+    */
+    public function sendIndexNowPing($key_name, $urls) {
+        $settings = $this->getIndexNowSettings();
+        $engines = $this->getIndexNowEngines();
+        
+        if (!isset($engines[$key_name])) {
+            return ['code' => 0, 'success' => false, 'error' => 'Неверный ключ поисковой системы'];
+        }
+        
+        $key = $settings[$key_name] ?? '';
+        if (empty($key)) {
+            return ['code' => 0, 'success' => false, 'error' => 'Ключ не задан в настройках'];
+        }
+        
+        if (!is_array($urls)) {
+            $urls = [$urls];
+        }
+
+        $urls = array_map([$this, 'normalizeUrl'], $urls);
+        $urls = array_filter($urls);
+        
+        if (empty($urls)) {
+            return ['code' => 0, 'success' => false, 'error' => 'Нет URL для отправки'];
+        }
+        
+        $host = $this->getHost();
+        if ($this->isLocalhost($host)) {
+            return [
+                'code' => 0, 
+                'success' => false, 
+                'error' => 'IndexNow не работает с локальными доменами. Требуется публичный доступ к сайту.'
+            ];
+        }
+        
+        $keyUrl = $this->getKeyLocation($key);
+        if (!$this->checkKeyFileAccessibility($keyUrl)) {
+            return [
+                'code' => 0, 
+                'success' => false, 
+                'error' => 'Файл с ключом недоступен: ' . $keyUrl
+            ];
+        }
+        
+        $engine = $engines[$key_name];
+        
+        $data = [
+            'host' => $host,
+            'key' => $key,
+            'urlList' => $urls
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $engine['url']);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen(json_encode($data))
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        $success = $httpCode >= 200 && $httpCode < 300;
+        
+        if (!$success && $settings['notify_error']) {
+            $this->logIndexNowError($key_name, $urls, $httpCode, $error, $response);
+        }
+        
+        return [
+            'code' => $httpCode,
+            'success' => $success,
+            'error' => $error ?: ($response ?: 'Неизвестная ошибка')
+        ];
+    }
+
+    /**
+    * Проверить, является ли хост локальным
+    * @param string $host
+    * @return bool
+    */
+    public function isLocalhost($host) {
+        $localHosts = ['localhost', '127.0.0.1', '::1'];
+        $localDomains = ['.local', '.localhost', '.test', '.dev'];
+        
+        if (in_array($host, $localHosts)) {
+            return true;
+        }
+        
+        foreach ($localDomains as $domain) {
+            if (strpos($host, $domain) !== false) {
+                return true;
+            }
+        }
+        
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            if (filter_var($host, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+    * Проверить доступность файла с ключом
+    * @param string $keyUrl
+    * @return bool
+    */
+    private function checkKeyFileAccessibility($keyUrl) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $keyUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        
+        return $httpCode === 200;
+    }
+
+    /**
+    * Отправить URL в IndexNow через очередь
+    * @param string|array $urls URL или массив URL
+    * @param int $delay Задержка в секундах
+    * @return bool
+    */
+    public function queueIndexNowPing($urls, $delay = 0) {
+        if (!$this->isIndexNowEnabled()) {
+            return false;
+        }
+        
+        $settings = $this->getIndexNowSettings();
+        
+        if (!is_array($urls)) {
+            $urls = [$urls];
+        }
+        
+        $urls = array_map([$this, 'normalizeUrl'], $urls);
+        $urls = array_filter($urls);
+        
+        if (empty($urls)) {
+            return false;
+        }
+        
+        $taskData = [
+            'urls' => $urls,
+            'created_at' => time(),
+            'scheduled_at' => time() + $delay
+        ];
+        
+        return $this->addToQueue('indexnow_ping', $taskData);
+    }
+
+    /**
+    * Обработка очереди IndexNow
+    * 
+    * @param array $task Данные задачи
+    * @return bool
+    */
+    public function processIndexNowQueue($task) {
+        $settings = $this->getIndexNowSettings();
+        $engines = $this->getIndexNowEngines();
+        $results = [];
+        
+        foreach (array_keys($engines) as $key_name) {
+            if (!empty($settings[$key_name])) {
+                $results[$key_name] = $this->sendIndexNowPing($key_name, $task['urls']);
+            }
+        }
+        
+        return $results;
+    }
+
+    /**
+    * Добавить задачу в очередь
+    * 
+    * @param string $task Тип задачи
+    * @param array $data Данные задачи
+    * @return bool
+    */
+    private function addToQueue($task, $data) {
+        try {
+            $sql = "INSERT INTO queue_tasks (task, data, status, created_at) VALUES (?, ?, 'pending', NOW())";
+            $this->db->query($sql, [$task, json_encode($data)]);
+            return true;
+        } catch (Exception $e) {
+            Logger::error('IndexNow queue error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+    * Обработать все ожидающие задачи очереди
+    * @param int $limit Максимальное количество задач
+    * @return int Количество обработанных задач
+    */
+    public function processQueue($limit = 10) {
+        $tasks = $this->db->fetchAll(
+            "SELECT * FROM queue_tasks WHERE status = 'pending' ORDER BY created_at ASC LIMIT ?",
+            [$limit]
+        );
+        
+        $processed = 0;
+        
+        foreach ($tasks as $task) {
+            $data = json_decode($task['data'], true);
+            
+            $this->db->query(
+                "UPDATE queue_tasks SET status = 'processing', processed_at = NOW() WHERE id = ?",
+                [$task['id']]
+            );
+            
+            try {
+                switch ($task['task']) {
+                    case 'indexnow_ping':
+                        $this->processIndexNowQueue($data);
+                        break;
+                    default:
+                        throw new Exception("Unknown task type: {$task['task']}");
+                }
+                
+                $this->db->query(
+                    "UPDATE queue_tasks SET status = 'completed' WHERE id = ?",
+                    [$task['id']]
+                );
+                $processed++;
+                
+            } catch (Exception $e) {
+                $attempts = $task['attempts'] + 1;
+                $status = $attempts >= 3 ? 'failed' : 'pending';
+                
+                $this->db->query(
+                    "UPDATE queue_tasks SET status = ?, attempts = ? WHERE id = ?",
+                    [$status, $attempts, $task['id']]
+                );
+                
+                Logger::error("IndexNow queue task #{$task['id']} failed: " . $e->getMessage());
+            }
+        }
+        
+        return $processed;
+    }
+
+    /**
+    * Проверить, включен ли IndexNow
+    * @return bool
+    */
+    public function isIndexNowEnabled() {
+        $settings = $this->getIndexNowSettings();
+        return !empty($settings['enabled']);
+    }
+
+    /**
+    * Получить хост сайта
+    * @return string
+    */
+    public function getHost() {
+        $baseUrl = $this->getBaseUrl();
+        $parsed = parse_url($baseUrl);
+        return $parsed['host'] ?? $_SERVER['HTTP_HOST'] ?? '';
+    }
+
+    /**
+    * Получить URL для TXT файла ключа
+    * @param string $key
+    * @return string
+    */
+    public function getKeyLocation($key) {
+        return rtrim($this->getBaseUrl(), '/') . '/' . $key . '.txt';
+    }
+
+    /**
+    * Нормализовать URL
+    * @param string $url
+    * @return string
+    */
+    public function normalizeUrl($url) {
+        if (empty($url)) {
+            return '';
+        }
+        
+        if (($pos = strpos($url, '#')) !== false) {
+            $url = substr($url, 0, $pos);
+        }
+        
+        $url = preg_replace('#(?<=:)/+#', '/', $url);
+        $url = preg_replace('#(https?):/([^/])#', '$1://$2', $url);
+        $url = rtrim($url, '/');
+        
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            Logger::error('[IndexNow] Invalid URL after normalization: ' . $url);
+            return '';
+        }
+        
+        return $url;
+    }
+
+    /**
+    * Логирование ошибок IndexNow
+    * @param string $key_name
+    * @param array $urls
+    * @param int $httpCode
+    * @param string $error
+    */
+    private function logIndexNowError($key_name, $urls, $httpCode, $error) {
+        $engines = $this->getIndexNowEngines();
+        $engineName = $engines[$key_name]['name'] ?? $key_name;
+        
+        $message = sprintf(
+            '[IndexNow] %s returned code %d for URL(s): %s',
+            $engineName,
+            $httpCode,
+            implode(', ', $urls)
+        );
+        
+        if ($error) {
+            $message .= ' | CURL error: ' . $error;
+        }
+        
+        Logger::error($message);
+        $this->sendIndexNowNotification($engineName, $httpCode, $urls);
+    }
+
+    /**
+    * Отправить уведомление администраторам об ошибке IndexNow
+    * @param string $engineName
+    * @param int $httpCode
+    * @param array $urls
+    */
+    private function sendIndexNowNotification($engineName, $httpCode, $urls) {
+        if (class_exists('NotificationModel')) {
+            $notificationModel = new NotificationModel($this->db);
+            $admin_ids = $this->db->fetchAll(
+                "SELECT id FROM users WHERE is_admin = 1 OR role = 'admin'"
+            );
+            
+            foreach ($admin_ids as $admin) {
+                $notificationModel->add([
+                    'type' => 'indexnow_error',
+                    'title' => 'Ошибка IndexNow',
+                    'message' => sprintf(
+                        'При отправке в %s получен код ответа %d. URL: %s',
+                        $engineName,
+                        $httpCode,
+                        implode(', ', $urls)
+                    ),
+                    'user_id' => $admin['id']
+                ]);
+            }
+        }
+    }
+
+    /**
+    * Обработка события изменения контента
+    * @param string $url URL измененной страницы
+    * @param string $contentType Тип контента (post, page, category, tag)
+    * @param int $contentId ID контента
+    * @return bool
+    */
+    public function onContentChange($url, $contentType, $contentId) {
+        if (!$this->isIndexNowEnabled()) {
+            return false;
+        }
+        
+        $settings = $this->getIndexNowSettings();
+        $delay = (int)($settings['submit_delay'] ?? 0);
+        
+        return $this->queueIndexNowPing($url, $delay);
+    }
+
+    /**
+    * Получить старые ключи IndexNow (для очистки)
+    * @return array
+    */
+    public function getOldIndexNowKeys() {
+        $settings = $this->settingsModel->get('seo_indexnow', []);
+        return [
+            'ya_key' => $settings['ya_key'] ?? '',
+            'bing_key' => $settings['bing_key'] ?? ''
+        ];
+    }
+
+    /**
+    * Очистить файлы ключей IndexNow
+    * @param array $keys Ключи для удаления
+    * @return int Количество удаленных файлов
+    */
+    public function cleanupIndexNowKeyFiles($rootPath, $keys) {
+        $deleted = 0;
+        
+        foreach ($keys as $key_name => $key) {
+            if (!empty($key)) {
+                $filePath = $rootPath . '/' . $key . '.txt';
+                if (file_exists($filePath)) {
+                    if (@unlink($filePath)) {
+                        $deleted++;
+                        error_log("SEO: Deleted IndexNow key file: " . $filePath);
+                    }
+                }
+            }
+        }
+        
+        return $deleted;
+    }
+
 }

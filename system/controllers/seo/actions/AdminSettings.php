@@ -43,11 +43,39 @@ class AdminSettings extends SeoAction {
                     'language' => trim($_POST['rss_language'] ?? 'ru-ru')
                 ];
 
+                $indexnowSettings = [
+                    'enabled' => isset($_POST['indexnow_enabled']) ? 1 : 0,
+                    'ya_key' => trim($_POST['indexnow_ya_key'] ?? ''),
+                    'bing_key' => trim($_POST['indexnow_bing_key'] ?? ''),
+                    'auto_submit' => isset($_POST['indexnow_auto_submit']) ? 1 : 0,
+                    'submit_delay' => (int)($_POST['indexnow_submit_delay'] ?? 0),
+                    'notify_error' => isset($_POST['indexnow_notify_error']) ? 1 : 0
+                ];
+                
+                if ($indexnowSettings['enabled']) {
+                    if (empty($indexnowSettings['ya_key'])) {
+                        $indexnowSettings['ya_key'] = $this->seoModel->generateRandomKey(32);
+                    }
+                    if (empty($indexnowSettings['bing_key'])) {
+                        $indexnowSettings['bing_key'] = $this->seoModel->generateRandomKey(32);
+                    }
+                }
+
                 $this->seoModel->saveSettings('seo_robots', $robotsSettings);
                 $this->seoModel->saveSettings('seo_sitemap', $sitemapSettings);
                 $this->seoModel->saveSettings('seo_rss', $rssSettings);
-                $this->forceGenerateFiles();
+                $this->seoModel->saveIndexNowSettings($indexnowSettings);
+                
+                $this->forceGenerateFiles($indexnowSettings);
+                
                 $this->seoModel->clearCache();
+                
+                if (class_exists('\SettingsHelper')) {
+                    \SettingsHelper::clearCache('seo_robots');
+                    \SettingsHelper::clearCache('seo_sitemap');
+                    \SettingsHelper::clearCache('seo_rss');
+                    \SettingsHelper::clearCache('seo_indexnow');
+                }
                 
                 \Notification::success('Настройки SEO успешно сохранены и файлы обновлены');
                 
@@ -56,10 +84,10 @@ class AdminSettings extends SeoAction {
             }
         }
 
-        $this->redirect(ADMIN_URL . '/seo');
+        $this->redirect(ADMIN_URL . '/seo?tab=indexnow');
     }
     
-    private function forceGenerateFiles() {
+    private function forceGenerateFiles($indexnowSettings = []) {
         $rootPath = defined('ROOT_PATH') ? ROOT_PATH : dirname(dirname(dirname(dirname(__DIR__))));
         
         $robots = $this->seoModel->generateRobots();
@@ -67,8 +95,6 @@ class AdminSettings extends SeoAction {
             $robotsPath = $rootPath . '/robots.txt';
             file_put_contents($robotsPath, $robots);
             error_log("SEO: robots.txt generated at " . $robotsPath);
-        } else {
-            error_log("SEO: robots.txt is empty");
         }
         
         $sitemap = $this->seoModel->generateSitemap();
@@ -76,8 +102,6 @@ class AdminSettings extends SeoAction {
             $sitemapPath = $rootPath . '/sitemap.xml';
             file_put_contents($sitemapPath, $sitemap);
             error_log("SEO: sitemap.xml generated at " . $sitemapPath);
-        } else {
-            error_log("SEO: sitemap.xml is empty");
         }
         
         $rss = $this->seoModel->generateRss();
@@ -85,8 +109,55 @@ class AdminSettings extends SeoAction {
             $rssPath = $rootPath . '/rss.xml';
             file_put_contents($rssPath, $rss);
             error_log("SEO: rss.xml generated at " . $rssPath);
-        } else {
-            error_log("SEO: rss.xml is empty");
+        }
+        
+        $this->generateIndexNowKeyFiles($rootPath, $indexnowSettings);
+    }
+    
+    /**
+    * Создает физические файлы ключей IndexNow
+    * @param string $rootPath Корневая路径 сайта
+    * @param array $settings Настройки IndexNow
+    */
+    private function generateIndexNowKeyFiles($rootPath, $settings) {
+        $oldSettings = $this->seoModel->getIndexNowSettings();
+        
+        if (!empty($oldSettings['ya_key']) && $oldSettings['ya_key'] !== ($settings['ya_key'] ?? '')) {
+            $oldYaPath = $rootPath . '/' . $oldSettings['ya_key'] . '.txt';
+            if (file_exists($oldYaPath)) {
+                @unlink($oldYaPath);
+                error_log("SEO: Deleted old Yandex IndexNow key file: " . $oldYaPath);
+            }
+        }
+        
+        if (!empty($oldSettings['bing_key']) && $oldSettings['bing_key'] !== ($settings['bing_key'] ?? '')) {
+            $oldBingPath = $rootPath . '/' . $oldSettings['bing_key'] . '.txt';
+            if (file_exists($oldBingPath)) {
+                @unlink($oldBingPath);
+                error_log("SEO: Deleted old Bing IndexNow key file: " . $oldBingPath);
+            }
+        }
+        
+        if (!empty($settings['enabled'])) {
+            if (!empty($settings['ya_key'])) {
+                $yaPath = $rootPath . '/' . $settings['ya_key'] . '.txt';
+                if (file_put_contents($yaPath, $settings['ya_key']) !== false) {
+                    error_log("SEO: Yandex IndexNow key file created: " . $yaPath);
+                } else {
+                    error_log("SEO: Failed to create Yandex IndexNow key file: " . $yaPath);
+                    \Notification::warning('Не удалось создать файл ключа Яндекс IndexNow. Проверьте права на запись в корень сайта.');
+                }
+            }
+            
+            if (!empty($settings['bing_key'])) {
+                $bingPath = $rootPath . '/' . $settings['bing_key'] . '.txt';
+                if (file_put_contents($bingPath, $settings['bing_key']) !== false) {
+                    error_log("SEO: Bing IndexNow key file created: " . $bingPath);
+                } else {
+                    error_log("SEO: Failed to create Bing IndexNow key file: " . $bingPath);
+                    \Notification::warning('Не удалось создать файл ключа Bing IndexNow. Проверьте права на запись в корень сайта.');
+                }
+            }
         }
     }
 }

@@ -2741,9 +2741,6 @@ a:hover {
 .tg-achievement-image {
   width: 120px;
   height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: var(--tg-shadow);
 }
 
 .tg-achievement-icon-placeholder {

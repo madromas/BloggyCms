@@ -54,6 +54,7 @@ class CommentsSettings {
                         'title' => 'Иконки эмоций',
                         'hint' => 'Добавьте нужные иконки. Например, с сервиса https://emojicopy.org/ru',
                         'show' => 'field:show_emodji',
+                        'repeater_columns' => 4,
                         'fields' => [
                             [
                                 'name' => 'icon',

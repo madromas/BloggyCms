@@ -679,6 +679,23 @@ CREATE TABLE IF NOT EXISTS `{#}users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+--
+-- Структура таблицы `{#}queue_tasks`
+--
+
+CREATE TABLE IF NOT EXISTS `{#}queue_tasks` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `task` varchar(100) NOT NULL,
+    `data` text NOT NULL,
+    `status` enum('pending','processing','completed','failed') DEFAULT 'pending',
+    `attempts` int(11) DEFAULT 0,
+    `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+    `processed_at` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
