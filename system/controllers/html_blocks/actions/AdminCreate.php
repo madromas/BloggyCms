@@ -68,7 +68,9 @@ class AdminCreate extends HtmlBlockAction {
                 } else {
                     // Для DefaultBlock - сохраняем HTML из настроек
                     $settings = [
-                        'html' => $_POST['settings']['html'] ?? ''
+                        'html' => $_POST['settings']['html'] ?? '',
+                        'use_fragment' => isset($_POST['settings']['use_fragment']) ? (int)$_POST['settings']['use_fragment'] : 0,
+                        'selected_fragment' => $_POST['settings']['selected_fragment'] ?? ''
                     ];
                 }
 

@@ -249,200 +249,196 @@ $indexnow_settings = array_merge([
                     </div>
 
                     <div class="tab-pane fade" id="indexnow" role="tabpanel">
-                        <form method="POST" action="<?php echo ADMIN_URL ?>/seo/settings">
-                            <?php echo \CsrfToken::field('seo_settings') ?>
-                            
-                            <div class="card border-0 shadow-sm mb-4">
-                                <div class="card-header bg-white border-0">
-                                    <h5 class="card-title mb-0">
-                                        <?php echo bloggy_icon('bs', 'rocket', '20', 'var(--bs-primary)', 'me-2') ?>
-                                        IndexNow - Быстрая индексация
-                                    </h5>
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-0">
+                                <h5 class="card-title mb-0">
+                                    <?php echo bloggy_icon('bs', 'rocket', '20', 'var(--bs-primary)', 'me-2') ?>
+                                    IndexNow - Быстрая индексация
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <strong>Что такое IndexNow?</strong><br>
+                                    Протокол для мгновенного уведомления поисковых систем об изменениях на сайте.
+                                    Поддерживается Яндекс и Bing.
                                 </div>
-                                <div class="card-body">
-                                    <div class="alert alert-info">
-                                        <strong>Что такое IndexNow?</strong><br>
-                                        Протокол для мгновенного уведомления поисковых систем об изменениях на сайте.
-                                        Поддерживается Яндекс и Bing.
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" 
-                                                    name="indexnow_enabled" id="indexnow_enabled" value="1" 
-                                                    <?php echo $indexnow_settings['enabled'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="indexnow_enabled">
-                                                    Включить IndexNow
-                                                </label>
-                                                <div class="form-text">
-                                                    Автоматически уведомлять поисковые системы об изменениях на сайте
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" 
-                                                    name="indexnow_auto_submit" id="indexnow_auto_submit" value="1" 
-                                                    <?php echo $indexnow_settings['auto_submit'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="indexnow_auto_submit">
-                                                    Автоматическая отправка
-                                                </label>
-                                                <div class="form-text">
-                                                    Отправлять уведомления при создании/обновлении/удалении контента
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <?php echo bloggy_icon('bs', 'clock', '14', 'currentColor', 'me-1') ?>
-                                                Задержка отправки (секунд)
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" 
+                                                name="indexnow_enabled" id="indexnow_enabled" value="1" 
+                                                <?php echo $indexnow_settings['enabled'] ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="indexnow_enabled">
+                                                Включить IndexNow
                                             </label>
-                                            <input type="number" class="form-control" 
-                                                name="indexnow_submit_delay" 
-                                                value="<?php echo (int)$indexnow_settings['submit_delay'] ?>" 
-                                                min="0" max="300">
                                             <div class="form-text">
-                                                Отложить отправку для группировки изменений (0 - сразу)
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" 
-                                                    name="indexnow_notify_error" id="indexnow_notify_error" value="1" 
-                                                    <?php echo $indexnow_settings['notify_error'] ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="indexnow_notify_error">
-                                                    Уведомлять об ошибках
-                                                </label>
-                                                <div class="form-text">
-                                                    Отправлять уведомление администраторам при сбоях отправки
-                                                </div>
+                                                Автоматически уведомлять поисковые системы об изменениях на сайте
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <hr class="my-4">
-                                    
-                                    <h6 class="mb-3">
-                                        <?php echo bloggy_icon('bs', 'key', '18', 'currentColor', 'me-2') ?>
-                                        Ключи верификации
-                                    </h6>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <?php echo bloggy_icon('bs', 'yandex', '14', '#fc3f1d', 'me-1') ?>
-                                                Ключ для Яндекс
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" 
+                                                name="indexnow_auto_submit" id="indexnow_auto_submit" value="1" 
+                                                <?php echo $indexnow_settings['auto_submit'] ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="indexnow_auto_submit">
+                                                Автоматическая отправка
                                             </label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" 
-                                                    name="indexnow_ya_key" 
-                                                    value="<?php echo html($indexnow_settings['ya_key'] ?? '') ?>" 
-                                                    placeholder="Будет сгенерирован автоматически" 
-                                                    pattern="[a-zA-Z0-9-]+">
-                                                <button type="button" class="btn btn-outline-secondary" 
-                                                        onclick="generateKey(this, 'ya_key')">
-                                                    <?php echo bloggy_icon('bs', 'arrow-repeat', '14', 'currentColor') ?>
-                                                </button>
-                                            </div>
                                             <div class="form-text">
-                                                Только латинские буквы, цифры и дефис
+                                                Отправлять уведомления при создании/обновлении/удалении контента
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">
-                                                <?php echo bloggy_icon('bs', 'microsoft', '14', '#00a4ef', 'me-1') ?>
-                                                Ключ для Bing
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'clock', '14', 'currentColor', 'me-1') ?>
+                                            Задержка отправки (секунд)
+                                        </label>
+                                        <input type="number" class="form-control" 
+                                            name="indexnow_submit_delay" 
+                                            value="<?php echo (int)$indexnow_settings['submit_delay'] ?>" 
+                                            min="0" max="300">
+                                        <div class="form-text">
+                                            Отложить отправку для группировки изменений (0 - сразу)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" 
+                                                name="indexnow_notify_error" id="indexnow_notify_error" value="1" 
+                                                <?php echo $indexnow_settings['notify_error'] ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="indexnow_notify_error">
+                                                Уведомлять об ошибках
                                             </label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" 
-                                                    name="indexnow_bing_key" 
-                                                    value="<?php echo html($indexnow_settings['bing_key'] ?? '') ?>" 
-                                                    placeholder="Будет сгенерирован автоматически" 
-                                                    pattern="[a-zA-Z0-9-]+">
-                                                <button type="button" class="btn btn-outline-secondary" 
-                                                        onclick="generateKey(this, 'bing_key')">
-                                                    <?php echo bloggy_icon('bs', 'arrow-repeat', '14', 'currentColor') ?>
-                                                </button>
-                                            </div>
                                             <div class="form-text">
-                                                Только латинские буквы, цифры и дефис
+                                                Отправлять уведомление администраторам при сбоях отправки
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="alert alert-info mt-3" id="indexnow_keys_info"  style="<?php echo !$indexnow_settings['enabled'] ? 'display: none;' : '' ?>">
-                                        <div class="d-flex align-items-start">
-                                            <?php echo bloggy_icon('bs', 'info-circle', '18', 'currentColor', 'me-2 mt-1') ?>
-                                            <div>
-                                                <strong>Файлы с ключами:</strong><br>
-                                                <?php
-                                                $hasKeys = false;
-                                                if (!empty($indexnow_settings['ya_key'])) {
-                                                    $hasKeys = true;
-                                                    $keyExists = $indexnow_settings['ya_key_exists'] ?? false;
-                                                    $statusIcon = $keyExists ? 
-                                                        bloggy_icon('bs', 'check-circle-fill', '14', '#198754', 'me-1') : 
-                                                        bloggy_icon('bs', 'x-circle-fill', '14', '#dc3545', 'me-1');
-                                                    $statusText = $keyExists ? 'Файл существует' : 'Файл не найден!';
-                                                    echo '<div class="d-flex align-items-center mt-1">' . $statusIcon . 
-                                                        '<code><a href="' . BASE_URL . '/' . $indexnow_settings['ya_key'] . '.txt" target="_blank">' . 
-                                                        BASE_URL . '/' . $indexnow_settings['ya_key'] . '.txt</a></code> (Яндекс) ' .
-                                                        '<span class="badge ' . ($keyExists ? 'bg-success' : 'bg-danger') . ' ms-2">' . $statusText . '</span></div>';
-                                                }
-                                                if (!empty($indexnow_settings['bing_key'])) {
-                                                    $hasKeys = true;
-                                                    $keyExists = $indexnow_settings['bing_key_exists'] ?? false;
-                                                    $statusIcon = $keyExists ? 
-                                                        bloggy_icon('bs', 'check-circle-fill', '14', '#198754', 'me-1') : 
-                                                        bloggy_icon('bs', 'x-circle-fill', '14', '#dc3545', 'me-1');
-                                                    $statusText = $keyExists ? 'Файл существует' : 'Файл не найден!';
-                                                    echo '<div class="d-flex align-items-center mt-1">' . $statusIcon . 
-                                                        '<code><a href="' . BASE_URL . '/' . $indexnow_settings['bing_key'] . '.txt" target="_blank">' . 
-                                                        BASE_URL . '/' . $indexnow_settings['bing_key'] . '.txt</a></code> (Bing) ' .
-                                                        '<span class="badge ' . ($keyExists ? 'bg-success' : 'bg-danger') . ' ms-2">' . $statusText . '</span></div>';
-                                                }
-                                                if (!$hasKeys) {
-                                                    echo '<span class="text-muted">Ключи не заданы. Сохраните настройки для генерации ключей.</span>';
-                                                }
-                                                ?>
-                                                <div class="mt-2 small text-muted">
-                                                    Убедитесь, что файлы доступны. При ошибке 404 проверьте настройки веб-сервера (.htaccess) и права на запись в корень сайта.
-                                                </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <h6 class="mb-3">
+                                    <?php echo bloggy_icon('bs', 'key', '18', 'currentColor', 'me-2') ?>
+                                    Ключи верификации
+                                </h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'yandex', '14', '#fc3f1d', 'me-1') ?>
+                                            Ключ для Яндекс
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" 
+                                                name="indexnow_ya_key" 
+                                                value="<?php echo html($indexnow_settings['ya_key'] ?? '') ?>" 
+                                                placeholder="Будет сгенерирован автоматически" 
+                                                pattern="[a-zA-Z0-9-]+">
+                                            <button type="button" class="btn btn-outline-secondary" 
+                                                    onclick="generateKey(this, 'ya_key')">
+                                                <?php echo bloggy_icon('bs', 'arrow-repeat', '14', 'currentColor') ?>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            Только латинские буквы, цифры и дефис
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <?php echo bloggy_icon('bs', 'microsoft', '14', '#00a4ef', 'me-1') ?>
+                                            Ключ для Bing
+                                        </label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" 
+                                                name="indexnow_bing_key" 
+                                                value="<?php echo html($indexnow_settings['bing_key'] ?? '') ?>" 
+                                                placeholder="Будет сгенерирован автоматически" 
+                                                pattern="[a-zA-Z0-9-]+">
+                                            <button type="button" class="btn btn-outline-secondary" 
+                                                    onclick="generateKey(this, 'bing_key')">
+                                                <?php echo bloggy_icon('bs', 'arrow-repeat', '14', 'currentColor') ?>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            Только латинские буквы, цифры и дефис
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3" id="indexnow_keys_info"  style="<?php echo !$indexnow_settings['enabled'] ? 'display: none;' : '' ?>">
+                                    <div class="d-flex align-items-start">
+                                        <?php echo bloggy_icon('bs', 'info-circle', '18', 'currentColor', 'me-2 mt-1') ?>
+                                        <div>
+                                            <strong>Файлы с ключами:</strong><br>
+                                            <?php
+                                            $hasKeys = false;
+                                            if (!empty($indexnow_settings['ya_key'])) {
+                                                $hasKeys = true;
+                                                $keyExists = $indexnow_settings['ya_key_exists'] ?? false;
+                                                $statusIcon = $keyExists ? 
+                                                    bloggy_icon('bs', 'check-circle-fill', '14', '#198754', 'me-1') : 
+                                                    bloggy_icon('bs', 'x-circle-fill', '14', '#dc3545', 'me-1');
+                                                $statusText = $keyExists ? 'Файл существует' : 'Файл не найден!';
+                                                echo '<div class="d-flex align-items-center mt-1">' . $statusIcon . 
+                                                    '<code><a href="' . BASE_URL . '/' . $indexnow_settings['ya_key'] . '.txt" target="_blank">' . 
+                                                    BASE_URL . '/' . $indexnow_settings['ya_key'] . '.txt</a></code> (Яндекс) ' .
+                                                    '<span class="badge ' . ($keyExists ? 'bg-success' : 'bg-danger') . ' ms-2">' . $statusText . '</span></div>';
+                                            }
+                                            if (!empty($indexnow_settings['bing_key'])) {
+                                                $hasKeys = true;
+                                                $keyExists = $indexnow_settings['bing_key_exists'] ?? false;
+                                                $statusIcon = $keyExists ? 
+                                                    bloggy_icon('bs', 'check-circle-fill', '14', '#198754', 'me-1') : 
+                                                    bloggy_icon('bs', 'x-circle-fill', '14', '#dc3545', 'me-1');
+                                                $statusText = $keyExists ? 'Файл существует' : 'Файл не найден!';
+                                                echo '<div class="d-flex align-items-center mt-1">' . $statusIcon . 
+                                                    '<code><a href="' . BASE_URL . '/' . $indexnow_settings['bing_key'] . '.txt" target="_blank">' . 
+                                                    BASE_URL . '/' . $indexnow_settings['bing_key'] . '.txt</a></code> (Bing) ' .
+                                                    '<span class="badge ' . ($keyExists ? 'bg-success' : 'bg-danger') . ' ms-2">' . $statusText . '</span></div>';
+                                            }
+                                            if (!$hasKeys) {
+                                                echo '<span class="text-muted">Ключи не заданы. Сохраните настройки для генерации ключей.</span>';
+                                            }
+                                            ?>
+                                            <div class="mt-2 small text-muted">
+                                                Убедитесь, что файлы доступны. При ошибке 404 проверьте настройки веб-сервера (.htaccess) и права на запись в корень сайта.
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="alert alert-light border mt-3" id="indexnow_test_block" style="<?php echo !$indexnow_settings['enabled'] ? 'display: none;' : '' ?>">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <?php echo bloggy_icon('bs', 'flask', '18', 'currentColor', 'me-2') ?>
-                                                <strong>Тестирование IndexNow</strong>
-                                                <div class="small text-muted mt-1">
-                                                    Отправьте тестовый запрос для проверки работоспособности
-                                                </div>
-                                                <?php if (!empty($indexnow_settings['is_localhost'])) { ?>
-                                                <div class="alert alert-warning mt-2 mb-0 py-2 small">
-                                                    <?php echo bloggy_icon('bs', 'exclamation-triangle', '14', '#856404', 'me-1') ?>
-                                                    <strong>Внимание!</strong> Вы работаете на локальном домене. 
-                                                    IndexNow требует публичный доступ к сайту.
-                                                </div>
-                                                <?php } ?>
+                                </div>
+                                
+                                <div class="alert alert-light border mt-3" id="indexnow_test_block" style="<?php echo !$indexnow_settings['enabled'] ? 'display: none;' : '' ?>">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <?php echo bloggy_icon('bs', 'flask', '18', 'currentColor', 'me-2') ?>
+                                            <strong>Тестирование IndexNow</strong>
+                                            <div class="small text-muted mt-1">
+                                                Отправьте тестовый запрос для проверки работоспособности
                                             </div>
-                                            <a href="<?php echo ADMIN_URL ?>/seo/test-indexnow" 
-                                            class="btn btn-sm btn-outline-primary"
-                                            onclick="return confirm('Отправить тестовый запрос в поисковые системы?')">
-                                                <?php echo bloggy_icon('bs', 'send', '14', 'currentColor', 'me-1') ?>
-                                                Отправить тест
-                                            </a>
+                                            <?php if (!empty($indexnow_settings['is_localhost'])) { ?>
+                                            <div class="alert alert-warning mt-2 mb-0 py-2 small">
+                                                <?php echo bloggy_icon('bs', 'exclamation-triangle', '14', '#856404', 'me-1') ?>
+                                                <strong>Внимание!</strong> Вы работаете на локальном домене. 
+                                                IndexNow требует публичный доступ к сайту.
+                                            </div>
+                                            <?php } ?>
                                         </div>
+                                        <a href="<?php echo ADMIN_URL ?>/seo/test-indexnow" 
+                                        class="btn btn-sm btn-outline-primary"
+                                        onclick="return confirm('Отправить тестовый запрос в поисковые системы?')">
+                                            <?php echo bloggy_icon('bs', 'send', '14', 'currentColor', 'me-1') ?>
+                                            Отправить тест
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
 
                     <div class="tab-pane fade" id="schema" role="tabpanel">
@@ -705,6 +701,22 @@ $indexnow_settings = array_merge([
             }
             if (bingKeyInput && !bingKeyInput.value) {
                 bingKeyInput.placeholder = 'Будет сгенерирован автоматически';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const googleEnabled = document.getElementById('google_enabled');
+            const googleTestBlock = document.getElementById('google_test_block');
+            
+            if (googleEnabled) {
+                const toggleTestBlock = () => {
+                    if (googleTestBlock) {
+                        googleTestBlock.style.display = googleEnabled.checked ? 'block' : 'none';
+                    }
+                };
+                
+                googleEnabled.addEventListener('change', toggleTestBlock);
+                toggleTestBlock();
             }
         });
     </script>

@@ -580,7 +580,20 @@ class FieldManager {
      * @param array $config Конфигурация поля
      * @return BaseField|null Экземпляр поля
      */
-    public function getFieldInstance(string $type, array $config = []): ?BaseField {
+    public function getFieldInstance(string $type, $config = []): ?BaseField {
+        if (is_string($config)) {
+            $decoded = json_decode($config, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $config = $decoded;
+            } else {
+                $config = [];
+            }
+        }
+        
+        if (!is_array($config)) {
+            $config = [];
+        }
+        
         if (!isset(self::$fieldClasses[$type])) {
             return null;
         }

@@ -24,10 +24,6 @@ function regenerate_seo_files($data = []) {
             if (!empty($sitemap)) {
                 $sitemapPath = $rootPath . '/sitemap.xml';
                 file_put_contents($sitemapPath, $sitemap);
-                
-                if (defined('DEBUG_MODE') && DEBUG_MODE) {
-                    error_log("SEO: sitemap.xml regenerated after content change");
-                }
             }
         }
 
@@ -36,30 +32,34 @@ function regenerate_seo_files($data = []) {
             if (!empty($rss)) {
                 $rssPath = $rootPath . '/rss.xml';
                 file_put_contents($rssPath, $rss);
-                
-                if (defined('DEBUG_MODE') && DEBUG_MODE) {
-                    error_log("SEO: rss.xml regenerated after content change");
-                }
             }
         }
         
         $seoModel->clearCache();
         
-    } catch (Exception $e) {
-        if (defined('DEBUG_MODE') && DEBUG_MODE) {
-            error_log("SEO regeneration error: " . $e->getMessage());
-        }
-    }
+    } catch (Exception $e) {}
 }
 
 // При создании поста
 Event::listen('post.created', function($data) {
     regenerate_seo_files($data);
+    
+    if (isset($data['url'])) {
+        $db = Database::getInstance();
+        $seoModel = new SeoModel($db);
+        $seoModel->onContentChange($data['url'], 'post', $data['id'] ?? 0);
+    }
 }, 10, 1);
 
 // При обновлении поста
 Event::listen('post.updated', function($data) {
     regenerate_seo_files($data);
+    
+    if (isset($data['url'])) {
+        $db = Database::getInstance();
+        $seoModel = new SeoModel($db);
+        $seoModel->onContentChange($data['url'], 'post', $data['id'] ?? 0);
+    }
 }, 10, 1);
 
 // При удалении поста

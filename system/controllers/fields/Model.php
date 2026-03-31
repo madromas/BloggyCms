@@ -300,7 +300,17 @@ class FieldModel implements ModelAPI {
      * @return string HTML-код поля ввода
      */
     public function renderFieldInput($field, $value, $entityType, $entityId): string {
-        $config = json_decode($field['config'] ?? '{}', true);
+        $config = [];
+        
+        if (isset($field['config'])) {
+            if (is_string($field['config'])) {
+                $decoded = json_decode($field['config'], true);
+                $config = is_array($decoded) ? $decoded : [];
+            } elseif (is_array($field['config'])) {
+                $config = $field['config'];
+            }
+        }
+        
         return $this->fieldManager->renderFieldInput(
             $field['type'],
             $field['system_name'],

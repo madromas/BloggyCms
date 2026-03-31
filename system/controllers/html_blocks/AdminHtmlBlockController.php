@@ -147,5 +147,14 @@ class AdminHtmlBlockController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
+
+    /**
+    * Действие: Получение списка фрагментов (AJAX)
+    */
+    public function getFragmentsAction() {
+        $action = new \html_blocks\actions\AdminGetFragments($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
     
 }

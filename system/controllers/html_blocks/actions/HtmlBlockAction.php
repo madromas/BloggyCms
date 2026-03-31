@@ -274,7 +274,6 @@ abstract class HtmlBlockAction {
         
         $selectedTemplate = $block['template'] ?? 'default';
 
-        // Рендеринг формы
         $this->render('admin/html_blocks/form', [
             'block' => $block,
             'blockTypes' => $blockTypes,
@@ -299,15 +298,56 @@ abstract class HtmlBlockAction {
      */
     protected function getDefaultBlockSettingsForm($settings = []) {
         $html = $settings['html'] ?? '';
+        $useFragment = $settings['use_fragment'] ?? false;
+        $selectedFragment = $settings['selected_fragment'] ?? '';
+        
         ob_start();
         ?>
         <div class="mb-4">
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" 
+                    id="use_fragment" name="settings[use_fragment]" value="1"
+                    <?php echo $useFragment ? 'checked' : ''; ?>>
+                <label class="form-check-label fw-semibold" for="use_fragment">
+                    <?php echo bloggy_icon('bs', 'puzzle', '16', '#0d6efd', 'me-1'); ?>
+                    Использовать фрагмент
+                </label>
+                <div class="form-text">Используйте фрагмент для динамического вывода контента</div>
+            </div>
+            
+            <div id="fragment-selector" style="display: <?php echo $useFragment ? 'block' : 'none'; ?>;">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold d-flex align-items-center">
+                        <?php echo bloggy_icon('bs', 'list-ul', '16', '#0d6efd', 'me-1'); ?>
+                        Выберите фрагмент
+                    </label>
+                    <select name="settings[selected_fragment]" id="selected_fragment" class="form-select">
+                        <option value="">-- Выберите фрагмент --</option>
+                    </select>
+                    <div class="form-text">Выберите фрагмент для отображения его записей</div>
+                </div>
+                
+                <div id="fragment-shortcodes" class="mt-3" style="display: none;">
+                    <div class="card bg-light">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <?php echo bloggy_icon('bs', 'code-slash', '16', '#0d6efd', 'me-1'); ?>
+                                Доступные шорткоды для выбранного фрагмента
+                            </h6>
+                        </div>
+                        <div class="card-body" id="shortcodes-list">
+                            <div class="text-muted text-center py-3">
+                                Выберите фрагмент для отображения доступных шорткодов
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-4" id="html-editor-container" style="display: <?php echo $useFragment ? 'none' : 'block'; ?>;">
             <label class="form-label fw-semibold d-flex align-items-center">
-                <?php 
-                if (function_exists('bloggy_icon')) {
-                    echo bloggy_icon('bs', 'code', '16', '#0d6efd', 'me-2'); 
-                }
-                ?>
+                <?php echo bloggy_icon('bs', 'code', '16', '#0d6efd', 'me-2'); ?>
                 HTML-код блока
             </label>
             <div class="mb-2">
@@ -324,6 +364,89 @@ abstract class HtmlBlockAction {
         
         <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const useFragmentCheckbox = document.getElementById('use_fragment');
+            const fragmentSelector = document.getElementById('fragment-selector');
+            const htmlEditorContainer = document.getElementById('html-editor-container');
+            const fragmentSelect = document.getElementById('selected_fragment');
+            const fragmentShortcodes = document.getElementById('fragment-shortcodes');
+            const shortcodesList = document.getElementById('shortcodes-list');
+            
+            function loadFragments() {
+                fetch('<?php echo ADMIN_URL; ?>/html-blocks/get-fragments')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const selectedValue = '<?php echo addslashes($selectedFragment); ?>';
+                            fragmentSelect.innerHTML = '<option value="">-- Выберите фрагмент --</option>';
+                            
+                            data.fragments.forEach(fragment => {
+                                const option = document.createElement('option');
+                                option.value = fragment.system_name;
+                                option.textContent = fragment.name + ' (' + fragment.fields.length + ' полей)';
+                                if (option.value === selectedValue) {
+                                    option.selected = true;
+                                }
+                                fragmentSelect.appendChild(option);
+                            });
+                            
+                            if (selectedValue) {
+                                loadFragmentShortcodes(selectedValue);
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error loading fragments:', error));
+            }
+            
+            function loadFragmentShortcodes(systemName) {
+                fetch('<?php echo ADMIN_URL; ?>/html-blocks/get-fragments')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const fragment = data.fragments.find(f => f.system_name === systemName);
+                            if (fragment) {
+                                let html = '<div class="mb-3"><strong>Базовые шорткоды:</strong>';
+                                html += '<div class="bg-white rounded p-2 mb-2"><code class="d-block">' + fragment.shortcode_simple + '</code>';
+                                html += '<small class="text-muted">Простой вывод всех записей фрагмента</small></div>';
+                                html += '<div class="bg-white rounded p-2"><code class="d-block">' + fragment.shortcode_loop + '</code>';
+                                html += '<small class="text-muted">Кастомный вывод с циклом по записям</small></div></div>';
+                                
+                                html += '<strong>Поля фрагмента:</strong>';
+                                fragment.fields.forEach(field => {
+                                    html += '<div class="bg-white rounded p-2 mb-2">';
+                                    html += '<div class="fw-semibold">' + field.name + ' (' + field.type + ')</div>';
+                                    html += '<code class="d-block small">' + field.shortcode + '</code>';
+                                    html += '<code class="d-block small">' + field.display_shortcode + '</code>';
+                                    html += '<small class="text-muted">' + (field.type === 'image' ? 'Отображает изображение' : 'Отображает значение поля') + '</small>';
+                                    html += '</div>';
+                                });
+                                
+                                shortcodesList.innerHTML = html;
+                                fragmentShortcodes.style.display = 'block';
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error loading fragment shortcodes:', error));
+            }
+            
+            useFragmentCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    fragmentSelector.style.display = 'block';
+                    htmlEditorContainer.style.display = 'none';
+                } else {
+                    fragmentSelector.style.display = 'none';
+                    htmlEditorContainer.style.display = 'block';
+                    fragmentShortcodes.style.display = 'none';
+                }
+            });
+            
+            fragmentSelect.addEventListener('change', function() {
+                if (this.value) {
+                    loadFragmentShortcodes(this.value);
+                } else {
+                    fragmentShortcodes.style.display = 'none';
+                }
+            });
+            
             if (typeof ace !== 'undefined' && document.getElementById('default-block-html-editor')) {
                 const htmlEditor = ace.edit("default-block-html-editor", {
                     theme: "ace/theme/monokai",
@@ -351,9 +474,9 @@ abstract class HtmlBlockAction {
                         textarea.value = htmlEditor.getValue();
                     });
                 }
-                
-                htmlEditor.session.getUndoManager().reset();
             }
+            
+            loadFragments();
         });
         </script>
         <?php

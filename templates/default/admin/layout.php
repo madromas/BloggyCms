@@ -48,13 +48,14 @@
                         ['section' => 'pages', 'url' => ADMIN_URL . '/pages', 'icon' => 'file-earmark', 'title' => 'Страницы', 'priority' => 60],
                         ['section' => 'html-blocks', 'url' => ADMIN_URL . '/html-blocks', 'icon' => 'grid-1x2', 'title' => 'Контент-блоки', 'priority' => 70],
                         ['section' => 'post-blocks', 'url' => ADMIN_URL . '/post-blocks', 'icon' => 'bricks', 'title' => 'Постблоки', 'priority' => 80],
-                        ['section' => 'fields', 'url' => ADMIN_URL . '/fields', 'icon' => 'input-cursor-text', 'title' => 'Поля', 'priority' => 90],
-                        ['section' => 'menu', 'url' => ADMIN_URL . '/menu', 'icon' => 'view-list', 'title' => 'Конструктор меню', 'priority' => 100],
-                        ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 110],
-                        ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 120],
-                        ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 130],
-                        ['section' => 'settings', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => 'SEO', 'priority' => 140],
-                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 150],
+                        ['section' => 'fragments', 'url' => ADMIN_URL . '/fragments', 'icon' => 'puzzle', 'title' => 'Фрагменты', 'priority' => 90],
+                        ['section' => 'fields', 'url' => ADMIN_URL . '/fields', 'icon' => 'input-cursor-text', 'title' => 'Поля', 'priority' => 100],
+                        ['section' => 'menu', 'url' => ADMIN_URL . '/menu', 'icon' => 'view-list', 'title' => 'Конструктор меню', 'priority' => 110],
+                        ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 120],
+                        ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 130],
+                        ['section' => 'seo', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => 'SEO', 'priority' => 140],
+                        ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 150],
+                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 160],
                     ];
                     
                     $menuItems = Event::filter('admin.menu.items', $menuItems);

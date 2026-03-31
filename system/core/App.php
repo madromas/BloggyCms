@@ -24,7 +24,8 @@ class App {
      * Конструктор класса App
      * Инициализирует сессию, подключение к БД и middleware
      */
-        public function __construct() {
+    public function __construct() {
+        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -89,33 +90,28 @@ class App {
     }
     
     /**
-     * Инициализация шорткодов для работы с полями
-     * Регистрирует базовые шорткоды и делает подключение к БД глобально доступным
-     */
+    * Инициализация шорткодов для работы с полями
+    * Регистрирует базовые шорткоды и делает подключение к БД глобально доступным
+    */
     private function initFieldShortcodes() {
         global $db;
-        $db = $this->db; // Делаем глобально доступным
+        $db = $this->db;
         
         try {
-            // Инициализируем FieldManager для автоматической регистрации шорткодов
             $fieldManager = new FieldManager($this->db);
             $fieldManager->registerFieldShortcodes();
             
-            // Регистрируем базовые шорткоды
             $this->registerBaseShortcodes();
             
-        } catch (Exception $e) {
-
-        }
+        } catch (Exception $e) {}
     }
     
     /**
-     * Регистрация базовых шорткодов для работы с полями
-     */
+    * Регистрация базовых шорткодов для работы с полями
+    */
     private function registerBaseShortcodes() {
         global $db;
         
-        // Шорткод для простого получения значения поля
         Shortcodes::add('field', function($attrs) use ($db) {
             $fieldName = $attrs['name'] ?? '';
             $entityType = $attrs['type'] ?? '';
@@ -136,7 +132,6 @@ class App {
             }
         });
         
-        // Шорткод для получения отрендеренного значения поля
         Shortcodes::add('field_display', function($attrs) use ($db) {
             $fieldName = $attrs['name'] ?? '';
             $entityType = $attrs['type'] ?? '';
@@ -175,14 +170,19 @@ class App {
                 return $attrs['default'] ?? '';
             }
         });
+        
+        if (class_exists('FragmentHelper')) {
+            if (method_exists('FragmentHelper', 'registerShortcodes')) {
+                FragmentHelper::registerShortcodes();
+            }
+        }
     }
     
     /**
-     * Основной метод запуска приложения
-     * Определяет маршрут и вызывает соответствующий контроллер
-     *
-     * @throws Exception Если контроллер или действие не найдены
-     */
+    * Основной метод запуска приложения
+    * Определяет маршрут и вызывает соответствующий контроллер
+    * @throws Exception Если контроллер или действие не найдены
+    */
     public function run() {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $route = $this->router->match($uri);

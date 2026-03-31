@@ -58,9 +58,6 @@ class UserActivityManager {
             }
             
         } catch (\Exception $e) {
-            if (defined('DEBUG_MODE') && DEBUG_MODE) {
-                error_log('UserActivityManager::touch error: ' . $e->getMessage());
-            }
             return false;
         }
     }

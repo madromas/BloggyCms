@@ -6,6 +6,7 @@ function initHtmlBlockForm() {
     initAceEditors();
     initAssetHandlers();
     initAssetSelector();
+    initFragmentHandlers();
     initFormSubmit();
     initTooltips();
     focusNameField();
@@ -83,7 +84,10 @@ function initHtmlEditor() {
         useSoftTabs: true,
         wrap: true,
         minLines: 20,
-        maxLines: 40
+        maxLines: 40,
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        enableSnippets: true
     });
     
     window.defaultBlockHtmlEditor.session.setUseWrapMode(true);
@@ -95,6 +99,8 @@ function initHtmlEditor() {
     }
     
     configureAceEditor(window.defaultBlockHtmlEditor, true);
+    
+    window.htmlEditor = window.defaultBlockHtmlEditor;
 }
 
 function configureAceEditor(editor, enableCompletions = false) {
@@ -112,6 +118,222 @@ function configureAceEditor(editor, enableCompletions = false) {
     editor.session.setTabSize(4);
     editor.session.setUseSoftTabs(true);
     editor.session.getUndoManager().reset();
+}
+
+function initFragmentHandlers() {
+    const useFragmentCheckbox = document.getElementById('use_fragment');
+    const fragmentSelector = document.getElementById('fragment-selector');
+    const fragmentSelect = document.getElementById('selected_fragment');
+    const fragmentShortcodes = document.getElementById('fragment-shortcodes');
+    const shortcodesList = document.getElementById('shortcodes-list');
+    
+    if (!useFragmentCheckbox) return;
+    
+    let currentShortcode = '';
+    
+    function loadFragments() {
+        const adminUrl = window.ADMIN_URL || '/admin';
+        fetch(`${adminUrl}/html-blocks/get-fragments`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && fragmentSelect) {
+                    const selectedValue = fragmentSelect.getAttribute('data-selected') || '';
+                    fragmentSelect.innerHTML = '<option value="">-- Выберите фрагмент --</option>';
+                    
+                    data.fragments.forEach(fragment => {
+                        const option = document.createElement('option');
+                        option.value = fragment.system_name;
+                        option.textContent = `${fragment.name} (${fragment.fields.length} полей)`;
+                        if (option.value === selectedValue) {
+                            option.selected = true;
+                        }
+                        fragmentSelect.appendChild(option);
+                    });
+                    
+                    if (selectedValue) {
+                        updateShortcodeDisplay(selectedValue);
+                        loadFragmentShortcodes(selectedValue);
+                        if (fragmentShortcodes) fragmentShortcodes.style.display = 'block';
+                    }
+                }
+            })
+            .catch(error => console.error('Error loading fragments:', error));
+    }
+    
+    function updateShortcodeDisplay(systemName) {
+        currentShortcode = `{${systemName}}`;
+    }
+    
+    function loadFragmentShortcodes(systemName) {
+        const adminUrl = window.ADMIN_URL || '/admin';
+        fetch(`${adminUrl}/html-blocks/get-fragments`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && shortcodesList) {
+                    const fragment = data.fragments.find(f => f.system_name === systemName);
+                    if (fragment) {
+                        const badge = document.getElementById('shortcode-badge');
+                        if (badge) {
+                            const totalShortcodes = 2 + (fragment.fields.length * 2);
+                            badge.textContent = totalShortcodes;
+                        }
+                        
+                        let html = `
+                            <div class="mb-3">
+                                <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                                    <span class="badge bg-primary px-3 py-2">📋 Базовые</span>
+                        `;
+                        
+                        const baseShortcodes = [
+                            { code: fragment.shortcode_simple, desc: 'Простой вывод всех записей' },
+                            { code: fragment.shortcode_loop, desc: 'Кастомный цикл по записям' }
+                        ];
+                        
+                        baseShortcodes.forEach(item => {
+                            html += `
+                                <div class="shortcode-item d-inline-flex align-items-center bg-white rounded border px-2 py-1">
+                                    <code class="small me-1">${escapeHtml(item.code)}</code>
+                                    <div class="btn-group btn-group-sm ms-1">
+                                        <button class="btn btn-sm btn-link text-secondary p-0 copy-shortcode" data-shortcode="${escapeHtml(item.code)}" title="Копировать">
+                                            <svg class="icon" width="12" height="12"><use href="/templates/default/admin/icons/bs.svg#copy"/></svg>
+                                        </button>
+                                        <button class="btn btn-sm btn-link text-primary p-0 ms-1 insert-shortcode" data-shortcode="${escapeHtml(item.code)}" title="Вставить">
+                                            <svg class="icon" width="12" height="12"><use href="/templates/default/admin/icons/bs.svg#plus"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `</div>`;
+                        
+                        if (fragment.fields.length > 0) {
+                            html += `
+                                <div class="mt-3">
+                                    <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                                        <span class="badge bg-success px-3 py-2">📝 Поля фрагмента</span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                            `;
+                            
+                            fragment.fields.forEach(field => {
+                                html += `
+                                    <div class="field-shortcodes-group d-inline-flex flex-column bg-white rounded border p-2" style="min-width: 180px;">
+                                        <div class="small fw-semibold text-dark mb-1">${escapeHtml(field.name)}</div>
+                                        <div class="d-flex gap-2">
+                                            <div class="shortcode-item d-inline-flex align-items-center bg-light rounded px-2 py-1">
+                                                <code class="small me-1" style="font-size: 0.7rem;">${escapeHtml(field.shortcode)}</code>
+                                                <div class="btn-group btn-group-sm ms-1">
+                                                    <button class="btn btn-sm btn-link text-secondary p-0 copy-shortcode" data-shortcode="${escapeHtml(field.shortcode)}" title="Копировать">
+                                                        <svg class="icon" width="10" height="10"><use href="/templates/default/admin/icons/bs.svg#copy"/></svg>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-primary p-0 ms-1 insert-shortcode" data-shortcode="${escapeHtml(field.shortcode)}" title="Вставить">
+                                                        <svg class="icon" width="10" height="10"><use href="/templates/default/admin/icons/bs.svg#plus"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="shortcode-item d-inline-flex align-items-center bg-light rounded px-2 py-1">
+                                                <code class="small me-1" style="font-size: 0.7rem;">${escapeHtml(field.display_shortcode)}</code>
+                                                <div class="btn-group btn-group-sm ms-1">
+                                                    <button class="btn btn-sm btn-link text-secondary p-0 copy-shortcode" data-shortcode="${escapeHtml(field.display_shortcode)}" title="Копировать">
+                                                        <svg class="icon" width="10" height="10"><use href="/templates/default/admin/icons/bs.svg#copy"/></svg>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-link text-primary p-0 ms-1 insert-shortcode" data-shortcode="${escapeHtml(field.display_shortcode)}" title="Вставить">
+                                                        <svg class="icon" width="10" height="10"><use href="/templates/default/admin/icons/bs.svg#plus"/></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted mt-1" style="font-size: 0.65rem;">
+                                            ${field.type === 'image' ? '🖼️ Изображение' : '📄 Текст'}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            
+                            html += `</div></div>`;
+                        }
+                        
+                        shortcodesList.innerHTML = html;
+                        
+                        document.querySelectorAll('.copy-shortcode').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const shortcode = this.getAttribute('data-shortcode');
+                                copyToClipboard(shortcode, this);
+                                return false;
+                            });
+                        });
+                        
+                        document.querySelectorAll('.insert-shortcode').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const shortcode = this.getAttribute('data-shortcode');
+                                insertIntoEditor(shortcode);
+                                return false;
+                            });
+                        });
+                    }
+                }
+            })
+            .catch(error => console.error('Error loading fragment shortcodes:', error));
+    }
+    
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+            const originalHtml = button.innerHTML;
+            button.innerHTML = '<svg class="icon icon-check" width="14" height="14"><use href="/templates/default/admin/icons/bs.svg#check"/></svg>';
+            setTimeout(() => {
+                button.innerHTML = originalHtml;
+            }, 1500);
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+        });
+    }
+    
+    function insertIntoEditor(shortcode) {
+        if (window.htmlEditor) {
+            window.htmlEditor.insert(shortcode);
+        } else if (window.defaultBlockHtmlEditor) {
+            window.defaultBlockHtmlEditor.insert(shortcode);
+        } else {
+            console.warn('Editor not available');
+        }
+    }
+    
+    useFragmentCheckbox.addEventListener('change', function() {
+        if (fragmentSelector) {
+            fragmentSelector.style.display = this.checked ? 'block' : 'none';
+        }
+        if (!this.checked && fragmentShortcodes) {
+            fragmentShortcodes.style.display = 'none';
+        }
+    });
+    
+    if (fragmentSelect) {
+        fragmentSelect.addEventListener('change', function() {
+            if (this.value) {
+                updateShortcodeDisplay(this.value);
+                loadFragmentShortcodes(this.value);
+                if (fragmentShortcodes) fragmentShortcodes.style.display = 'block';
+            } else {
+                if (fragmentShortcodes) fragmentShortcodes.style.display = 'none';
+                if (shortcodesList) {
+                    shortcodesList.innerHTML = `
+                        <div class="text-center text-muted py-3">
+                            <svg class="icon" width="16" height="16"><use href="/templates/default/admin/icons/bs.svg#arrow-left"/></svg>
+                            Выберите фрагмент слева
+                        </div>
+                    `;
+                }
+                currentShortcode = '';
+            }
+        });
+    }
+    
+    loadFragments();
 }
 
 function initAssetHandlers() {
@@ -132,12 +354,12 @@ function addAssetRow(type) {
                 data-asset-type="${type}"
                 data-bs-toggle="tooltip"
                 title="Выбрать из папки блока">
-            <svg class="icon icon-folder" width="16" height="16" style="fill: #000">
+            <svg class="icon icon-folder" width="16" height="16">
                 <use href="/templates/default/admin/icons/bs.svg#folder2-open"></use>
             </svg>
         </button>
         <button type="button" class="btn btn-outline-danger remove-asset" data-type="${type}">
-            <svg class="icon icon-trash" width="16" height="16" style="fill: #000">
+            <svg class="icon icon-trash" width="16" height="16">
                 <use href="/templates/default/admin/icons/bs.svg#trash"></use>
             </svg>
         </button>
@@ -248,17 +470,8 @@ async function loadAssetFiles(blockType, assetType) {
     }
     
     try {
-        if (typeof window.ADMIN_URL === 'undefined') {
-            const path = window.location.pathname;
-            if (path.includes('/admin/')) {
-                const base = path.split('/admin/')[0];
-                window.ADMIN_URL = base + '/admin';
-            } else {
-                window.ADMIN_URL = '/admin';
-            }
-        }
-        
-        const response = await fetch(`${window.ADMIN_URL}/html-blocks/get-block-assets?block_type=${encodeURIComponent(blockType)}&asset_type=${assetType}`);
+        const adminUrl = window.ADMIN_URL || '/admin';
+        const response = await fetch(`${adminUrl}/html-blocks/get-block-assets?block_type=${encodeURIComponent(blockType)}&asset_type=${assetType}`);
         const data = await response.json();
         
         if (data.success && data.files && data.files.length > 0) {
@@ -274,11 +487,11 @@ async function loadAssetFiles(blockType, assetType) {
                 item.setAttribute('data-file-path', file.path);
                 item.innerHTML = `
                     <div>
-                        <svg class="icon icon-file me-2" width="16" height="16" style="fill: #0d6efd">
+                        <svg class="icon icon-file me-2" width="16" height="16">
                             <use href="/templates/default/admin/icons/bs.svg#filetype-${assetType === 'css' ? 'scss' : 'code'}"></use>
                         </svg>
-                        <strong>${file.name}</strong>
-                        <div class="small text-muted">${file.path}</div>
+                        <strong>${escapeHtml(file.name)}</strong>
+                        <div class="small text-muted">${escapeHtml(file.path)}</div>
                     </div>
                     <div class="text-end">
                         <span class="badge bg-secondary">${formatFileSize(file.size)}</span>
@@ -292,7 +505,7 @@ async function loadAssetFiles(blockType, assetType) {
             if (noFilesAlert) {
                 noFilesAlert.style.display = 'block';
                 noFilesAlert.innerHTML = `
-                    <svg class="icon icon-warning me-2" width="16" height="16" style="fill: #856404">
+                    <svg class="icon icon-warning me-2" width="16" height="16">
                         <use href="/templates/default/admin/icons/bs.svg#exclamation-triangle"></use>
                     </svg>
                     ${data.message || 'Файлы не найдены. Вы можете указать путь вручную.'}
@@ -303,10 +516,10 @@ async function loadAssetFiles(blockType, assetType) {
         console.error('Error loading assets:', error);
         filesList.innerHTML = `
             <div class="alert alert-danger">
-                <svg class="icon icon-error me-2" width="16" height="16" style="fill: #721c24">
+                <svg class="icon icon-error me-2" width="16" height="16">
                     <use href="/templates/default/admin/icons/bs.svg#exclamation-circle"></use>
                 </svg>
-                Ошибка загрузки: ${error.message}
+                Ошибка загрузки: ${escapeHtml(error.message)}
             </div>
         `;
     }
@@ -329,14 +542,6 @@ function handleFileSelect(e) {
     if (assetSelectorModal) {
         assetSelectorModal.hide();
     }
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 function initFormSubmit() {
@@ -386,8 +591,28 @@ function focusNameField() {
     document.querySelector('input[name="name"]')?.focus();
 }
 
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 window.HtmlBlockForm = {
     init: initHtmlBlockForm,
     addAssetRow: addAssetRow,
-    loadAssetFiles: loadAssetFiles
+    loadAssetFiles: loadAssetFiles,
+    insertIntoEditor: function(shortcode) {
+        if (window.htmlEditor) {
+            window.htmlEditor.insert(shortcode);
+        }
+    }
 };

@@ -71,6 +71,13 @@ try {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
 }
 
+require_once SYSTEM_PATH . '/helpers/Shortcodes.php';
+require_once SYSTEM_PATH . '/helpers/FragmentHelper.php';
+
+if (class_exists('FragmentHelper') && class_exists('ShortcodeRegistry')) {
+    FragmentHelper::registerShortcodes();
+}
+
 spl_autoload_register(function ($class) use ($db) {
     if ($class === 'AchievementTriggers') {
         $file = ROOT_PATH . '/system/controllers/users/AchievementTriggers.php';
@@ -202,6 +209,9 @@ function loadAllHelpers($dir) {
         if (is_dir($fullPath)) {
             loadAllHelpers($fullPath);
         } elseif (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
+            if ($file === 'Shortcodes.php' || $file === 'FragmentHelper.php') {
+                continue;
+            }
             require_once $fullPath;
         }
     }
@@ -247,7 +257,7 @@ try {
         }
         Event::trigger('app.init', [
             'db' => $db,
-            'app' => null // будет создан в App
+            'app' => null
         ]);
     }
     

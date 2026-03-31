@@ -9,4 +9,3 @@
 <?php echo render_html_block('posts'); ?>
 <?php echo render_html_block('tags'); ?>
 <?php echo render_html_block('feedback'); ?>
-<?php // echo FormRenderer::render('roverochnaya-forma'); ?>

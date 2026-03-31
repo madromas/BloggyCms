@@ -12,4 +12,5 @@ return [
     'admin/html-blocks/get-block-assets' => ['controller' => 'AdminHtmlBlock', 'action' => 'getBlockAssets', 'admin' => true],
     'admin/html-blocks/get-block-templates' => ['controller' => 'AdminHtmlBlock', 'action' => 'getBlockTemplates', 'admin' => true],
     'block/{slug}' => ['controller' => 'HtmlBlock', 'action' => 'show'],
+    'admin/html-blocks/get-fragments' => ['controller' => 'AdminHtmlBlock', 'action' => 'getFragments', 'admin' => true]
 ];

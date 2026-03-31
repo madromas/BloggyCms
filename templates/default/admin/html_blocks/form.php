@@ -94,17 +94,17 @@
                         </div>
                         
                         <?php if ($selectedType !== 'DefaultBlock') { ?>
-                        <div class="alert alert-info">
-                            <div class="d-flex">
-                                <?php echo bloggy_icon('bs', 'info-circle-fill', '16', '#000', 'me-2 mt-1'); ?>
-                                <div>
-                                    <strong>Тип блока:</strong> <?php echo html($blockTypes[$selectedType]['name'] ?? $selectedType); ?>
-                                    <?php if (isset($blockTypes[$selectedType]['description'])) { ?>
-                                        <br><small><?php echo html($blockTypes[$selectedType]['description']); ?></small>
-                                    <?php } ?>
+                            <div class="alert alert-info">
+                                <div class="d-flex">
+                                    <?php echo bloggy_icon('bs', 'info-circle-fill', '16', '#000', 'me-2 mt-1'); ?>
+                                    <div>
+                                        <strong>Тип блока:</strong> <?php echo html($blockTypes[$selectedType]['name'] ?? $selectedType); ?>
+                                        <?php if (isset($blockTypes[$selectedType]['description'])) { ?>
+                                            <br><small><?php echo html($blockTypes[$selectedType]['description']); ?></small>
+                                        <?php } ?>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         <?php } ?>
                     </div>
 
@@ -120,20 +120,68 @@
                                     }
                                 } else {
                                     $html = $settings['html'] ?? '';
+                                    $useFragment = !empty($settings['use_fragment']) ? true : false;
+                                    $selectedFragment = $settings['selected_fragment'] ?? '';
                                     ?>
-                                    <div class="mb-4">
+                                    <div class="mb-4 p-4 bg-light rounded border">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" 
+                                                id="use_fragment" name="settings[use_fragment]" value="1"
+                                                <?php echo $useFragment ? 'checked' : ''; ?>>
+                                            <label class="form-check-label fw-semibold" for="use_fragment">
+                                                <?php echo bloggy_icon('bs', 'puzzle', '18', '#0d6efd', 'me-2'); ?>
+                                                Использовать фрагмент
+                                            </label>
+                                            <div class="form-text mt-1 ms-4">Добавьте фрагмент в HTML-код блока с помощью шорткода</div>
+                                        </div>
+                                        
+                                        <div id="fragment-selector" class="mt-3" style="display: <?php echo $useFragment ? 'block' : 'none'; ?>;">
+                                            <div class="row mb-4">
+                                                <div class="col-md-8">
+                                                    <label class="form-label fw-semibold d-flex align-items-center">
+                                                        <?php echo bloggy_icon('bs', 'list-ul', '16', '#0d6efd', 'me-2'); ?>
+                                                        Выберите фрагмент
+                                                    </label>
+                                                    <select name="settings[selected_fragment]" id="selected_fragment" class="form-select" data-selected="<?php echo html($selectedFragment); ?>">
+                                                        <option value="">-- Выберите фрагмент --</option>
+                                                    </select>
+                                                    <div class="form-text">Выберите фрагмент, чтобы увидеть доступные шорткоды</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div id="fragment-shortcodes" class="mt-4" style="display: <?php echo $useFragment ? 'block' : 'none'; ?>;">
+                                                <div class="card border-0 bg-light">
+                                                    <div class="card-header bg-white border-bottom py-2">
+                                                        <div class="d-flex align-items-center gap-3">
+                                                            <?php echo bloggy_icon('bs', 'code-slash', '16', '#0d6efd', 'me-1'); ?>
+                                                            <span class="fw-semibold">Шорткоды фрагмента</span>
+                                                            <span class="badge bg-secondary" id="shortcode-badge">0</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body p-3" id="shortcodes-list">
+                                                        <div class="text-center text-muted py-3">
+                                                            <?php echo bloggy_icon('bs', 'arrow-left', '16', '#adb5bd', 'me-2'); ?>
+                                                            Выберите фрагмент слева
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4" id="html-editor-container">
                                         <label class="form-label fw-semibold d-flex align-items-center">
-                                            <?php echo bloggy_icon('bs', 'code', '16', '#0d6efd', 'me-2'); ?>
+                                            <?php echo bloggy_icon('bs', 'code', '18', '#0d6efd', 'me-2'); ?>
                                             HTML-код блока
                                         </label>
                                         <div class="mb-2">
                                             <small class="text-muted">
                                                 Введите произвольный HTML-код. Поддерживаются все системные шорткоды.
-                                                Например: <code>[posts limit="5" category="news"]</code>, <code>[menu name="main"]</code>
+                                                Для вставки фрагмента используйте шорткод: <code>{имя_фрагмента}</code> или <code>{ctype:имя_фрагмента}...{/ctype:имя_фрагмента}</code>
                                             </small>
                                         </div>
                                         <div class="border rounded overflow-hidden">
-                                            <div id="default-block-html-editor" style="height: 400px; width: 100%;"></div>
+                                            <div id="default-block-html-editor" style="height: 400px; width: 100%;" class="ace-editor"><?php echo htmlspecialchars($html); ?></div>
                                         </div>
                                         <textarea name="settings[html]" id="default-block-html" style="display: none;"><?php echo htmlspecialchars($html); ?></textarea>
                                     </div>
@@ -145,7 +193,6 @@
                     </div>
 
                     <div class="tab-pane fade" id="nav-assets" role="tabpanel" aria-labelledby="nav-assets-tab">
-                        
                         <div class="mb-4">
                             <label class="form-label fw-semibold d-flex align-items-center">
                                 <?php echo bloggy_icon('bs', 'filetype-css', '16', '#1889d0', 'me-2'); ?>
@@ -199,47 +246,33 @@
                                 <?php } ?>
                             </div>
                             <?php } ?>
-                                <small class="text-muted d-block mb-2">Дополнительные CSS файлы:</small>
-                                <div id="css-files-container">
-                                    <?php if (!empty($cssFiles)) { ?>
-                                        <?php foreach ($cssFiles as $index => $cssFile) { ?>
-                                            <?php if (!in_array($cssFile, $systemCss)) { ?>
-                                            <div class="input-group mb-2 css-file-row">
-                                                <input type="text"
-                                                    name="css_files[]"
-                                                    class="form-control asset-path-input"
-                                                    value="<?php echo html($cssFile); ?>"
-                                                    placeholder="templates/default/front/assets/css/my-block.css">
-                                                <button type="button" class="btn btn-outline-primary select-asset-btn" 
-                                                        data-asset-type="css"
-                                                        data-bs-toggle="tooltip"
-                                                        title="Выбрать из папки блока">
-                                                    <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
-                                                </button>
-                                                <button type="button" class="btn btn-outline-danger remove-asset" data-type="css">
-                                                    <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
-                                                </button>
-                                            </div>
-                                            <?php } ?>
+                            <small class="text-muted d-block mb-2">Дополнительные CSS файлы:</small>
+                            <div id="css-files-container">
+                                <?php if (!empty($cssFiles)) { ?>
+                                    <?php foreach ($cssFiles as $index => $cssFile) { ?>
+                                        <?php if (!in_array($cssFile, $systemCss)) { ?>
+                                        <div class="input-group mb-2 css-file-row">
+                                            <input type="text" name="css_files[]" class="form-control asset-path-input" value="<?php echo html($cssFile); ?>" placeholder="templates/default/front/assets/css/my-block.css">
+                                            <button type="button" class="btn btn-outline-primary select-asset-btn" data-asset-type="css" data-bs-toggle="tooltip" title="Выбрать из папки блока">
+                                                <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger remove-asset" data-type="css">
+                                                <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
+                                            </button>
+                                        </div>
                                         <?php } ?>
                                     <?php } ?>
-                                    <div class="input-group mb-2 css-file-row">
-                                        <input type="text"
-                                            name="css_files[]"
-                                            class="form-control asset-path-input"
-                                            value=""
-                                            placeholder="templates/default/front/assets/css/my-block.css">
-                                        <button type="button" class="btn btn-outline-primary select-asset-btn" 
-                                                data-asset-type="css"
-                                                data-bs-toggle="tooltip"
-                                                title="Выбрать из папки блока">
-                                            <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger remove-asset" data-type="css">
-                                            <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
-                                        </button>
-                                    </div>
+                                <?php } ?>
+                                <div class="input-group mb-2 css-file-row">
+                                    <input type="text" name="css_files[]" class="form-control asset-path-input" value="" placeholder="templates/default/front/assets/css/my-block.css">
+                                    <button type="button" class="btn btn-outline-primary select-asset-btn" data-asset-type="css" data-bs-toggle="tooltip" title="Выбрать из папки блока">
+                                        <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger remove-asset" data-type="css">
+                                        <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
+                                    </button>
                                 </div>
+                            </div>
                             <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-css-file">
                                 <?php echo bloggy_icon('bs', 'plus', '16', '#000', 'me-1'); ?>
                                 Добавить CSS файл
@@ -259,11 +292,7 @@
                                     <small class="text-muted d-block mb-2">Системные файлы (автоматически подключаются):</small>
                                     <?php foreach ($systemJs as $systemJsFile) { ?>
                                         <div class="input-group mb-2">
-                                            <input type="text"
-                                                class="form-control system-asset"
-                                                value="<?php echo html($systemJsFile); ?>"
-                                                readonly
-                                                placeholder="Системный JS файл">
+                                            <input type="text" class="form-control system-asset" value="<?php echo html($systemJsFile); ?>" readonly placeholder="Системный JS файл">
                                             <span class="input-group-text text-muted bg-light">
                                                 <?php echo bloggy_icon('bs', 'lock-fill', '16', '#6c757d', null, array('data-bs-toggle' => 'tooltip', 'title' => 'Системный файл')); ?>
                                             </span>
@@ -272,46 +301,39 @@
                                 </div>
                             <?php } ?>
                             <small class="text-muted d-block mb-2">Дополнительные JavaScript файлы:</small>
-                                <div id="js-files-container">
-                                    <?php if (!empty($jsFiles)) { ?>
-                                        <?php foreach ($jsFiles as $index => $jsFile) { ?>
-                                            <?php if (!in_array($jsFile, $systemJs)) { ?>
-                                                <div class="input-group mb-2 js-file-row">
-                                                    <input type="text"
-                                                        name="js_files[]"
-                                                        class="form-control asset-path-input"
-                                                        value="<?php echo html($jsFile); ?>"
-                                                        placeholder="templates/default/front/assets/js/my-block.js">
-                                                    <button type="button" class="btn btn-outline-primary select-asset-btn" 
-                                                            data-asset-type="js"
-                                                            data-bs-toggle="tooltip"
-                                                            title="Выбрать из папки блока">
-                                                        <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-danger remove-asset" data-type="js">
-                                                        <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
-                                                    </button>
-                                                </div>
-                                            <?php } ?>
+                            <div id="js-files-container">
+                                <?php if (!empty($jsFiles)) { ?>
+                                    <?php foreach ($jsFiles as $index => $jsFile) { ?>
+                                        <?php if (!in_array($jsFile, $systemJs)) { ?>
+                                            <div class="input-group mb-2 js-file-row">
+                                                <input type="text" name="js_files[]" class="form-control asset-path-input" value="<?php echo html($jsFile); ?>" placeholder="templates/default/front/assets/js/my-block.js">
+                                                <button type="button" class="btn btn-outline-primary select-asset-btn" data-asset-type="js" data-bs-toggle="tooltip" title="Выбрать из папки блока">
+                                                    <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger remove-asset" data-type="js">
+                                                    <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
+                                                </button>
+                                            </div>
                                         <?php } ?>
                                     <?php } ?>
-                                    <div class="input-group mb-2 js-file-row">
-                                        <input type="text"
-                                            name="js_files[]"
-                                            class="form-control asset-path-input"
-                                            value=""
-                                            placeholder="templates/default/front/assets/js/my-block.js">
-                                        <button type="button" class="btn btn-outline-primary select-asset-btn" 
-                                                data-asset-type="js"
-                                                data-bs-toggle="tooltip"
-                                                title="Выбрать из папки блока">
-                                            <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger remove-asset" data-type="js">
-                                            <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
-                                        </button>
-                                    </div>
+                                <?php } ?>
+                                <div class="input-group mb-2 js-file-row">
+                                    <input type="text"
+                                        name="js_files[]"
+                                        class="form-control asset-path-input"
+                                        value=""
+                                        placeholder="templates/default/front/assets/js/my-block.js">
+                                    <button type="button" class="btn btn-outline-primary select-asset-btn" 
+                                            data-asset-type="js"
+                                            data-bs-toggle="tooltip"
+                                            title="Выбрать из папки блока">
+                                        <?php echo bloggy_icon('bs', 'folder2-open', '16', '#000'); ?>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger remove-asset" data-type="js">
+                                        <?php echo bloggy_icon('bs', 'trash', '16', '#000'); ?>
+                                    </button>
                                 </div>
+                            </div>
                             <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add-js-file">
                                 <?php echo bloggy_icon('bs', 'plus', '16', '#000', 'me-1'); ?>
                                 Добавить JS файл

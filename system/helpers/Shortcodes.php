@@ -1,8 +1,139 @@
 <?php
 
 /**
- * Обрабатывает все шорткоды в контенте (системные + плагины)
- * Поддерживает множество типов шорткодов для CSS/JS, блоков, постов, условий и иконок
+ * Система шорткодов
+ * 
+ * @package Helpers
+ */
+
+if (class_exists('ShortcodeRegistry')) {
+    return;
+}
+
+/**
+ * Класс для регистрации и обработки шорткодов
+ */
+class ShortcodeRegistry {
+    /**
+     * @var array Зарегистрированные шорткоды
+     */
+    private static $shortcodes = [];
+    
+    /**
+     * Регистрирует новый шорткод
+     * 
+     * @param string $name Имя шорткода
+     * @param callable $callback Функция обработки
+     */
+    public static function add($name, $callback) {
+        $name = strtolower($name);
+        self::$shortcodes[$name] = $callback;
+    }
+    
+    /**
+     * Удаляет шорткод
+     * 
+     * @param string $name Имя шорткода
+     */
+    public static function remove($name) {
+        $name = strtolower($name);
+        unset(self::$shortcodes[$name]);
+    }
+    
+    /**
+     * Получает все зарегистрированные шорткоды
+     * 
+     * @return array Массив шорткодов
+     */
+    public static function getAll() {
+        return self::$shortcodes;
+    }
+    
+    /**
+     * Проверяет, зарегистрирован ли шорткод
+     * 
+     * @param string $name Имя шорткода
+     * @return bool
+     */
+    public static function has($name) {
+        $name = strtolower($name);
+        return isset(self::$shortcodes[$name]);
+    }
+    
+    /**
+     * Обрабатывает шорткоды в контенте
+     * 
+     * @param string $content Контент для обработки
+     * @return string Обработанный контент
+     */
+    public static function process(string $content): string {
+        
+        if (empty(self::$shortcodes)) {
+            return $content;
+        }
+        
+        $pairedPattern = '/\{([a-z0-9_-]+(?::[a-z0-9_-]+)?)\}(.*?)\{\/\1\}/is';
+        
+        $content = preg_replace_callback(
+            $pairedPattern,
+            function($matches) {
+                $fullMatch = $matches[0];
+                $name = strtolower($matches[1]);
+                $innerContent = $matches[2];
+                
+                if (self::has($name)) {
+                    try {
+                        $result = call_user_func(self::$shortcodes[$name], [], $innerContent);
+                        return $result !== null ? $result : $fullMatch;
+                    } catch (Exception $e) {
+                        return $fullMatch;
+                    }
+                } else {
+                    return $fullMatch;
+                }
+            },
+            $content
+        );
+        
+        $simplePattern = '/\{([a-z0-9_-]+(?::[a-z0-9_-]+)?)(?:\s+([^}]+))?\}/i';
+        
+        $content = preg_replace_callback(
+            $simplePattern,
+            function($matches) {
+                $fullMatch = $matches[0];
+                $name = strtolower($matches[1]);
+                $attrs = [];
+                
+                // Парсим атрибуты если есть
+                if (isset($matches[2])) {
+                    $attrString = $matches[2];
+                    
+                    preg_match_all('/(\w+)\s*=\s*["\']([^"\']+)["\']/', $attrString, $attrMatches, PREG_SET_ORDER);
+                    foreach ($attrMatches as $attr) {
+                        $attrs[$attr[1]] = $attr[2];
+                    }
+                }
+                
+                if (self::has($name)) {
+                    try {
+                        $result = call_user_func(self::$shortcodes[$name], $attrs);
+                        return $result !== null ? $result : $fullMatch;
+                    } catch (Exception $e) {
+                        return $fullMatch;
+                    }
+                } else {
+                    return $fullMatch;
+                }
+            },
+            $content
+        );
+        
+        return $content;
+    }
+}
+
+/**
+ * Основная функция обработки всех шорткодов в контенте
  * 
  * @param string $content Содержимое для обработки
  * @param array $posts Массив постов для шорткода {posts}
@@ -10,35 +141,47 @@
  * @return string Обработанное содержимое
  */
 function process_shortcodes(string $content, array $posts = [], array $blocks = []): string {
-
+    
+    if (empty($content)) {
+        return $content;
+    }
+    
     if (preg_match_all('/\{css\s+["\']([^"\']+)["\']\}/', $content, $matches)) {
         foreach ($matches[1] as $cssFile) {
-            add_html_block_css($cssFile);
+            if (function_exists('add_html_block_css')) {
+                add_html_block_css($cssFile);
+            }
         }
         $content = preg_replace('/\{css\s+["\']([^"\']+)["\']\}/', '', $content);
     }
-
+    
     if (preg_match_all('/\{js\s+["\']([^"\']+)["\']\}/', $content, $matches)) {
         foreach ($matches[1] as $jsFile) {
-            add_html_block_js($jsFile);
+            if (function_exists('add_html_block_js')) {
+                add_html_block_js($jsFile);
+            }
         }
         $content = preg_replace('/\{js\s+["\']([^"\']+)["\']\}/', '', $content);
     }
-
+    
     if (preg_match_all('/\{css-inline\}(.*?)\{\/css-inline\}/s', $content, $matches)) {
         foreach ($matches[1] as $inlineCss) {
-            add_html_inline_css($inlineCss);
+            if (function_exists('add_html_inline_css')) {
+                add_html_inline_css($inlineCss);
+            }
         }
         $content = preg_replace('/\{css-inline\}(.*?)\{\/css-inline\}/s', '', $content);
     }
-
+    
     if (preg_match_all('/\{js-inline\}(.*?)\{\/js-inline\}/s', $content, $matches)) {
         foreach ($matches[1] as $inlineJs) {
-            add_html_inline_js($inlineJs);
+            if (function_exists('add_html_inline_js')) {
+                add_html_inline_js($inlineJs);
+            }
         }
         $content = preg_replace('/\{js-inline\}(.*?)\{\/js-inline\}/s', '', $content);
     }
-
+    
     if (preg_match_all('/\{add-block-([^\}]+)\}/', $content, $matches)) {
         foreach ($matches[0] as $key => $fullMatch) {
             $blockSlug = $matches[1][$key];
@@ -52,27 +195,26 @@ function process_shortcodes(string $content, array $posts = [], array $blocks = 
             }
             
             $blockContent = process_shortcodes($blockContent, $posts, $blocks);
-            
             $content = str_replace($fullMatch, $blockContent, $content);
         }
     }
-
+    
     if (preg_match('/\{posts(?:\s+limit=(\d+))?\}(.*?)\{\/posts\}/s', $content, $matches)) {
         $limit = isset($matches[1]) ? (int)$matches[1] : null;
         $postTemplate = $matches[2];
         $postsContent = '';
         
         $postsToProcess = $limit ? array_slice($posts, 0, $limit) : $posts;
-
+        
         foreach ($postsToProcess as $post) {
             $postContent = $postTemplate;
-
+            
             $postUrl = BASE_URL . '/post/' . ($post['slug'] ?? '');
             $categoryUrl = BASE_URL . '/category/' . ($post['category_slug'] ?? '');
             $imageUrl = isset($post['featured_image']) 
                 ? BASE_URL . '/uploads/images/' . $post['featured_image']
                 : '';
-
+            
             $replacements = [
                 '{post-title}' => htmlspecialchars($post['title'] ?? ''),
                 '{post-description}' => htmlspecialchars($post['excerpt'] ?? ''),
@@ -91,17 +233,17 @@ function process_shortcodes(string $content, array $posts = [], array $blocks = 
                 '{post-created}' => htmlspecialchars($post['created_at'] ?? ''),
                 '{post-updated}' => htmlspecialchars($post['updated_at'] ?? '')
             ];
-
+            
             foreach ($replacements as $search => $replace) {
                 $postContent = str_replace($search, $replace, $postContent);
             }
-
+            
             $postsContent .= $postContent;
         }
-
+        
         $content = str_replace($matches[0], $postsContent, $content);
     }
-
+    
     if (preg_match_all('/\{if:([^\}]+)\}(.*?)\{\/if:\1\}/s', $content, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
             $fullMatch = $match[0];
@@ -119,8 +261,7 @@ function process_shortcodes(string $content, array $posts = [], array $blocks = 
             $content = str_replace($fullMatch, $shouldShow ? $conditionalContent : '', $content);
         }
     }
-
-    // Обрабатка иконок {icon "set:name" size="24" color="#fff"}
+    
     if (preg_match_all('/\{icon[\s]+[\'"]([^:]+):([^\'""]+)[\'"]((?:\s+(?:size=[\'"][\d\s]+[\'"]|color=[\'"][^\'""]+[\'"]))*)\}/', $content, $matches, PREG_SET_ORDER)) {
         foreach ($matches as $match) {
             $fullMatch = $match[0];
@@ -129,22 +270,27 @@ function process_shortcodes(string $content, array $posts = [], array $blocks = 
             $attrs = $match[3];
             $size = preg_match('/size=[\'"]([\d\s]+)[\'"]/', $attrs, $sizeMatch) ? $sizeMatch[1] : null;
             $color = preg_match('/color=[\'"]([^\'""]+)[\'"]/', $attrs, $colorMatch) ? $colorMatch[1] : null;
-
-            $content = str_replace($fullMatch, bloggy_icon($set, $icon, $size, $color), $content);
+            
+            if (function_exists('bloggy_icon')) {
+                $content = str_replace($fullMatch, bloggy_icon($set, $icon, $size, $color), $content);
+            }
         }
     }
-
+    
     $content = preg_replace_callback(
         '/\{front-image:([^:}]+)(?::([^}]+))?\}/i',
         function($matches) {
-            return front_image($matches[1], $matches[2] ?? '');
+            if (function_exists('front_image')) {
+                return front_image($matches[1], $matches[2] ?? '');
+            }
+            return $matches[0];
         },
         $content
     );
-
-    if (class_exists('Shortcodes')) {
-        $content = Shortcodes::process($content);
+    
+    if (class_exists('ShortcodeRegistry')) {
+        $content = ShortcodeRegistry::process($content);
     }
-
+    
     return $content;
 }

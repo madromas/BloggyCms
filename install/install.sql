@@ -679,6 +679,44 @@ CREATE TABLE IF NOT EXISTS `{#}users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Структура таблицы `{#}fragments`
+--
+CREATE TABLE `{#}fragments` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `system_name` varchar(100) NOT NULL COMMENT 'Системное имя (для шорткодов)',
+    `name` varchar(255) NOT NULL COMMENT 'Название фрагмента',
+    `description` text COMMENT 'Описание',
+    `css_files` text COMMENT 'CSS файлы (JSON)',
+    `js_files` text COMMENT 'JS файлы (JSON)',
+    `inline_css` text COMMENT 'Инлайн CSS',
+    `inline_js` text COMMENT 'Инлайн JS',
+    `fields_config` text COMMENT 'Конфигурация полей (JSON)',
+    `status` enum('active','inactive') DEFAULT 'active',
+    `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `system_name` (`system_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `{#}fragment_entries`
+--
+CREATE TABLE `{#}fragment_entries` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `fragment_id` int(11) NOT NULL COMMENT 'ID фрагмента',
+    `data` text COMMENT 'Данные записи (JSON)',
+    `sort_order` int(11) DEFAULT 0 COMMENT 'Порядок сортировки',
+    `status` enum('active','inactive') DEFAULT 'active',
+    `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `fragment_id` (`fragment_id`),
+    KEY `sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
 
 --
 -- Структура таблицы `{#}queue_tasks`

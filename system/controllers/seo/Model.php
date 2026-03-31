@@ -1006,7 +1006,6 @@ class SeoModel implements ModelAPI {
                 if (file_exists($filePath)) {
                     if (@unlink($filePath)) {
                         $deleted++;
-                        error_log("SEO: Deleted IndexNow key file: " . $filePath);
                     }
                 }
             }

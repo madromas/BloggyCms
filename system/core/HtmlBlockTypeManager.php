@@ -200,6 +200,17 @@ class HtmlBlockTypeManager {
      * @return string Обработанный HTML
      */
     public function processBlockContent($systemName, $settings = [], $template = null) {
+
+        if ($systemName === 'DefaultBlock') {
+            $html = $settings['html'] ?? '';
+            
+            if (function_exists('process_shortcodes')) {
+                $html = process_shortcodes($html);
+            }
+            
+            return $html;
+        }
+        
         $blockType = $this->getBlockType($systemName);
         
         if ($blockType && $blockType['class']) {
