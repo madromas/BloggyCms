@@ -525,7 +525,7 @@ class SeoModel implements ModelAPI {
     * @return string
     */
     protected function escapeXml($string) {
-        return htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        return html($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
     }
 
     /**

@@ -3,93 +3,72 @@
 namespace addons\actions;
 
 /**
- * Действие загрузки и установки пакета (AJAX)
- * 
- * @package addons\actions
- */
+* Действие загрузки и установки пакета (AJAX)
+* @package addons\actions
+*/
 class AdminUpload extends AddonAction {
     
-    /**
-     * Временная директория для загрузки
-     */
     const TEMP_DIR = UPLOADS_PATH . '/temp_addon/';
     
     /**
-     * Метод выполнения
-     */
+    * Метод выполнения
+    */
     public function execute() {
         header('Content-Type: application/json');
         
         try {
-            // Проверка метода запроса
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 throw new \Exception('Неверный метод запроса');
             }
             
-            // Проверка наличия файла
             if (!isset($_FILES['addon_file']) || $_FILES['addon_file']['error'] !== UPLOAD_ERR_OK) {
                 throw new \Exception('Файл не загружен или произошла ошибка загрузки');
             }
             
             $file = $_FILES['addon_file'];
             
-            // Проверка типа файла
             $fileInfo = pathinfo($file['name']);
             if (strtolower($fileInfo['extension'] ?? '') !== 'zip') {
                 throw new \Exception('Файл должен быть в формате ZIP');
             }
             
-            // Проверка размера (макс. 50MB)
             $maxSize = 50 * 1024 * 1024;
             if ($file['size'] > $maxSize) {
                 throw new \Exception('Размер файла не должен превышать 50MB');
             }
             
-            // Создание временной директории
             $this->createTempDir();
             
-            // Сохранение и распаковка файла
             $zipPath = self::TEMP_DIR . 'package.zip';
             if (!move_uploaded_file($file['tmp_name'], $zipPath)) {
                 throw new \Exception('Не удалось сохранить загруженный файл');
             }
             
-            // Распаковка архива
             $extractPath = self::TEMP_DIR . 'extracted/';
             $this->extractZip($zipPath, $extractPath);
             
-            // Валидация структуры пакета
             $this->validatePackageStructure($extractPath);
             
-            // Парсинг package.ini
             $packageInfo = $this->parsePackageIni($extractPath . 'package.ini');
             
-            // Проверка типа пакета (install или update)
             $this->validatePackageType($packageInfo, $extractPath);
             
-            // Проверка версии (для обновлений)
             if ($packageInfo['type'] === 'update') {
                 $this->validateVersionForUpdate($packageInfo);
             } else {
                 $this->validateVersionForInstall($packageInfo);
             }
             
-            // Создание резервной копии файлов, которые будут заменены
             $backupInfo = $this->createBackup($extractPath . 'files/');
             
-            // Копирование файлов
             $this->copyFiles($extractPath . 'files/');
             
-            // Выполнение install.php если есть
             $this->executeInstallScript($extractPath, $packageInfo);
             
-            // Регистрация пакета в базе данных
             $this->registerPackage($packageInfo);
             
-            // Очистка временной директории
             $this->cleanupTempDir();
             
-            // Успешный ответ
             echo json_encode([
                 'success' => true,
                 'message' => 'Пакет успешно установлен',
@@ -107,8 +86,8 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Создание временной директории
-     */
+    * Создание временной директории
+    */
     private function createTempDir() {
         if (is_dir(self::TEMP_DIR)) {
             $this->deleteDirectory(self::TEMP_DIR);
@@ -119,10 +98,9 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Удаление директории рекурсивно
-     * 
-     * @param string $dir
-     */
+    * Удаление директории рекурсивно
+    * @param string $dir
+    */
     private function deleteDirectory($dir) {
         if (!is_dir($dir)) {
             return;
@@ -141,8 +119,8 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Очистка временной директории
-     */
+    * Очистка временной директории
+    */
     private function cleanupTempDir() {
         if (is_dir(self::TEMP_DIR)) {
             $this->deleteDirectory(self::TEMP_DIR);
@@ -150,12 +128,11 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Распаковка ZIP-архива
-     * 
-     * @param string $zipPath
-     * @param string $extractPath
-     * @throws \Exception
-     */
+    * Распаковка ZIP-архива
+    * @param string $zipPath
+    * @param string $extractPath
+    * @throws \Exception
+    */
     private function extractZip($zipPath, $extractPath) {
         if (!class_exists('ZipArchive')) {
             throw new \Exception('PHP ZipArchive не установлен');
@@ -171,11 +148,10 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Валидация структуры пакета
-     * 
-     * @param string $path
-     * @throws \Exception
-     */
+    * Валидация структуры пакета 
+    * @param string $path
+    * @throws \Exception
+    */
     private function validatePackageStructure($path) {
         if (!is_dir($path . 'files/')) {
             throw new \Exception('Пакет должен содержать папку "files"');
@@ -187,12 +163,11 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Парсинг файла package.ini
-     * 
-     * @param string $iniPath
-     * @return array
-     * @throws \Exception
-     */
+    * Парсинг файла package.ini 
+    * @param string $iniPath
+    * @return array
+    * @throws \Exception
+    */
     private function parsePackageIni($iniPath) {
         $content = file_get_contents($iniPath);
         if (!$content) {
@@ -204,7 +179,6 @@ class AdminUpload extends AddonAction {
             throw new \Exception('Неверный формат package.ini');
         }
         
-        // Проверка обязательного блока [info]
         if (!isset($data['info']) || empty($data['info']['title'])) {
             throw new \Exception('В package.ini отсутствует обязательный блок [info] с полем title');
         }
@@ -214,10 +188,8 @@ class AdminUpload extends AddonAction {
             throw new \Exception('Название пакета не должно превышать 64 символа');
         }
         
-        // Генерация системного имени из названия
         $systemName = $this->generateSystemName($title);
         
-        // Проверка обязательного блока [version]
         if (!isset($data['version']) || 
             !isset($data['version']['major']) || 
             !isset($data['version']['minor']) || 
@@ -245,7 +217,6 @@ class AdminUpload extends AddonAction {
             'description' => null
         ];
         
-        // Описание
         if (isset($data['description']['text'])) {
             if (is_array($data['description']['text'])) {
                 $result['description'] = implode("\n", $data['description']['text']);
@@ -254,7 +225,6 @@ class AdminUpload extends AddonAction {
             }
         }
         
-        // Определение типа пакета
         if (isset($data['install'])) {
             $result['type'] = 'install';
             $result['install_info'] = $data['install'];
@@ -265,7 +235,6 @@ class AdminUpload extends AddonAction {
             throw new \Exception('В package.ini должен быть блок [install] или [update]');
         }
         
-        // Валидация блока type
         if ($result['type'] === 'install') {
             if (empty($data['install']['type']) || $data['install']['type'] !== 'install') {
                 throw new \Exception('Для блока [install] поле type должно быть "install"');
@@ -283,15 +252,13 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Генерация системного имени из названия
-     * 
-     * @param string $title
-     * @return string
-     */
+    * Генерация системного имени из названия
+    * @param string $title
+    * @return string
+    */
     private function generateSystemName($title) {
         $name = mb_strtolower($title, 'UTF-8');
         
-        // Транслитерация
         $cyr = [
             'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п',
             'р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я',
@@ -312,12 +279,11 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Проверка типа пакета и наличие install.php
-     * 
-     * @param array $packageInfo
-     * @param string $path
-     * @throws \Exception
-     */
+    * Проверка типа пакета и наличие install.php 
+    * @param array $packageInfo
+    * @param string $path
+    * @throws \Exception
+    */
     private function validatePackageType($packageInfo, $path) {
         $hasInstallPhp = file_exists($path . 'install.php');
         
@@ -332,11 +298,10 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Проверка версии для установки
-     * 
-     * @param array $packageInfo
-     * @throws \Exception
-     */
+    * Проверка версии для установки 
+    * @param array $packageInfo
+    * @throws \Exception
+    */
     private function validateVersionForInstall($packageInfo) {
         if ($this->addonModel->exists($packageInfo['system_name'])) {
             throw new \Exception(
@@ -347,11 +312,10 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Проверка версии для обновления
-     * 
-     * @param array $packageInfo
-     * @throws \Exception
-     */
+    * Проверка версии для обновления
+    * @param array $packageInfo
+    * @throws \Exception
+    */
     private function validateVersionForUpdate($packageInfo) {
         $installedVersion = $this->addonModel->getInstalledVersion($packageInfo['system_name']);
         
@@ -362,7 +326,6 @@ class AdminUpload extends AddonAction {
             );
         }
         
-        // Проверка версии из update блока
         $versionFrom = $packageInfo['update_info']['version'] ?? null;
         if ($versionFrom && $versionFrom !== $installedVersion) {
             throw new \Exception(
@@ -374,11 +337,10 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Создание резервной копии файлов
-     * 
-     * @param string $filesPath
-     * @return array
-     */
+    * Создание резервной копии файлов
+    * @param string $filesPath
+    * @return array
+    */
     private function createBackup($filesPath) {
         $backupDir = self::TEMP_DIR . 'backup/';
         $backupInfo = [
@@ -392,22 +354,20 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Копирование файлов из пакета в систему
-     * 
-     * @param string $source
-     */
+    * Копирование файлов из пакета в систему 
+    * @param string $source
+    */
     private function copyFiles($source) {
         $this->copyFilesRecursive($source, BASE_PATH);
     }
     
     /**
-     * Рекурсивное копирование файлов
-     * 
-     * @param string $source
-     * @param string $destination
-     * @param string|null $backupDir
-     * @param bool $createBackup
-     */
+    * Рекурсивное копирование файлов 
+    * @param string $source
+    * @param string $destination
+    * @param string|null $backupDir
+    * @param bool $createBackup
+    */
     private function copyFilesRecursive($source, $destination, $backupDir = null, $createBackup = false) {
         if (!is_dir($source)) {
             return;
@@ -428,7 +388,6 @@ class AdminUpload extends AddonAction {
                 }
                 $this->copyFilesRecursive($sourcePath, $destPath, $backupDir, $createBackup);
             } else {
-                // Создание резервной копии
                 if ($createBackup && $backupDir && file_exists($destPath)) {
                     $backupFile = $backupDir . $item;
                     $dir = dirname($backupFile);
@@ -438,19 +397,17 @@ class AdminUpload extends AddonAction {
                     copy($destPath, $backupFile);
                 }
                 
-                // Копирование файла
                 copy($sourcePath, $destPath);
             }
         }
     }
     
     /**
-     * Выполнение install.php скрипта
-     * 
-     * @param string $path
-     * @param array $packageInfo
-     * @throws \Exception
-     */
+    * Выполнение install.php скрипта
+    * @param string $path
+    * @param array $packageInfo
+    * @throws \Exception
+    */
     private function executeInstallScript($path, $packageInfo) {
         $installFile = $path . 'install.php';
         
@@ -493,10 +450,9 @@ class AdminUpload extends AddonAction {
     }
     
     /**
-     * Регистрация пакета в базе данных
-     * 
-     * @param array $packageInfo
-     */
+    * Регистрация пакета в базе данных
+    * @param array $packageInfo
+    */
     private function registerPackage($packageInfo) {
         if ($packageInfo['type'] === 'update') {
             $this->addonModel->update($packageInfo['system_name'], $packageInfo);

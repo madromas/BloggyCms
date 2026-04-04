@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие переключения статуса формы
- */
+* Действие переключения статуса формы
+*/
 class AdminToggleStatus extends FormAction {
     
     public function execute() {

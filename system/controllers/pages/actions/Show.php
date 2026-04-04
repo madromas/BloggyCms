@@ -3,19 +3,15 @@
 namespace pages\actions;
 
 /**
- * Действие отображения страницы на фронтенде
- * Загружает страницу, её блоки и пользовательские поля, подготавливает контент для отображения
- * 
- * @package pages\actions
- * @extends PageAction
- */
+* Действие отображения страницы на фронтенде
+* @package pages\actions
+*/
 class Show extends PageAction {
     
     /**
-     * Метод выполнения отображения страницы
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения страницы
+    * @return void
+    */
     public function execute() {
         $slug = $this->params['slug'] ?? null;
 
@@ -60,11 +56,10 @@ class Show extends PageAction {
     }
     
     /**
-     * Подготавливает блоки страницы для отображения
-     * 
-     * @param int $pageId ID страницы
-     * @return array Массив обработанных блоков
-     */
+    * Подготавливает блоки страницы для отображения 
+    * @param int $pageId ID страницы
+    * @return array Массив обработанных блоков
+    */
     private function preparePageBlocks($pageId) {
         $blocks = $this->postBlockModel->getByPage($pageId);
         $this->loadBlockAssets($blocks);
@@ -78,11 +73,10 @@ class Show extends PageAction {
     }
     
     /**
-     * Загружает фронтенд-ассеты (CSS, JS) для всех блоков на странице
-     * 
-     * @param array $blocks Массив блоков страницы
-     * @return void
-     */
+    * Загружает фронтенд-ассеты (CSS, JS) для всех блоков на странице
+    * @param array $blocks Массив блоков страницы
+    * @return void
+    */
     private function loadBlockAssets($blocks) {
         $blocksData = [];
         foreach ($blocks as $block) {
@@ -95,11 +89,10 @@ class Show extends PageAction {
     }
     
     /**
-     * Обрабатывает отдельный блок страницы
-     * 
-     * @param array $block Данные блока из базы данных
-     * @return array Обработанный блок готовый к отображению
-     */
+    * Обрабатывает отдельный блок страницы
+    * @param array $block Данные блока из базы данных
+    * @return array Обработанный блок готовый к отображению
+    */
     private function processSingleBlock($block) {
         
         $content = $this->decodeJsonIfNeeded($block['content']);
@@ -123,12 +116,11 @@ class Show extends PageAction {
     }
     
     /**
-     * Декодирует строку из JSON, если это необходимо
-     * 
-     * @param mixed $data Данные для декодирования
-     * @param bool $defaultArray Возвращать массив по умолчанию
-     * @return mixed Декодированные данные
-     */
+    * Декодирует строку из JSON, если это необходимо
+    * @param mixed $data Данные для декодирования
+    * @param bool $defaultArray Возвращать массив по умолчанию
+    * @return mixed Декодированные данные
+    */
     private function decodeJsonIfNeeded($data, $defaultArray = false) {
 
         if (is_string($data)) {
@@ -150,12 +142,11 @@ class Show extends PageAction {
     }
     
     /**
-     * Подготавливает пользовательские поля для сущности
-     * 
-     * @param string $entityType Тип сущности (например, 'page')
-     * @param int $entityId ID сущности
-     * @return array Массив значений полей с метаданными
-     */
+    * Подготавливает пользовательские поля для сущности 
+    * @param string $entityType Тип сущности (например, 'page')
+    * @param int $entityId ID сущности
+    * @return array Массив значений полей с метаданными
+    */
     private function prepareCustomFields($entityType, $entityId) {
         $fieldModel = new \FieldModel($this->db);
         $customFields = $fieldModel->getActiveByEntityType($entityType);
@@ -172,11 +163,10 @@ class Show extends PageAction {
     }
     
     /**
-     * Рекурсивно добавляет хлебные крошки для родительских страниц
-     * 
-     * @param int $parentId ID родительской страницы
-     * @return void
-     */
+    * Рекурсивно добавляет хлебные крошки для родительских страниц
+    * @param int $parentId ID родительской страницы
+    * @return void
+    */
     private function addParentPageBreadcrumbs($parentId) {
         $parentPage = $this->pageModel->getById($parentId);
         

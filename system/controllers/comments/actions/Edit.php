@@ -3,21 +3,16 @@
 namespace comments\actions;
 
 /**
- * Действие редактирования комментария пользователем
- * Позволяет пользователям редактировать свои собственные комментарии с учетом прав модерации
- * Поддерживает различные статусы после редактирования в зависимости от прав пользователя
- * 
- * @package comments\actions
- * @extends CommentAction
- */
+* Действие редактирования комментария пользователем
+* @package comments\actions
+* @extends CommentAction
+*/
 class Edit extends CommentAction {
     
     /**
-     * Метод выполнения редактирования комментария
-     * Обрабатывает форму редактирования с проверкой прав и управлением статусами
-     * 
-     * @return void
-     */
+    * Метод выполнения редактирования комментария
+    * @return void
+    */
     public function execute() {
         $id = $this->params['id'] ?? null;
         
@@ -138,14 +133,12 @@ class Edit extends CommentAction {
     }
     
     /**
-     * Рендеринг формы редактирования комментария
-     * Отображает форму с различными опциями в зависимости от прав пользователя
-     *
-     * @param array $comment Данные редактируемого комментария
-     * @param array $post Данные поста, к которому относится комментарий
-     * @param bool $isAdmin Флаг административных прав
-     * @return void
-     */
+    * Рендеринг формы редактирования комментария
+    * @param array $comment Данные редактируемого комментария
+    * @param array $post Данные поста, к которому относится комментарий
+    * @param bool $isAdmin Флаг административных прав
+    * @return void
+    */
     private function renderForm($comment, $post, $isAdmin = false) {
         $this->render('front/comments/edit', [
             'comment' => $comment,

@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие получения структуры формы через AJAX
- */
+* Действие получения структуры формы через AJAX
+*/
 class AdminGetStructure extends FormAction {
     
     public function execute() {

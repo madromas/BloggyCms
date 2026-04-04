@@ -287,4 +287,53 @@ class HtmlBlockTypeManager {
             $this->loadBlockFrontendAssets($block['block_type']);
         }
     }
+
+    /**
+    * Получение количества блоков указанного типа 
+    * @param string $systemName Системное имя типа блока
+    * @return int Количество блоков
+    */
+    public function getBlocksCountByType($systemName) {
+        $sql = "SELECT COUNT(*) as count FROM html_blocks hb 
+                JOIN html_block_types hbt ON hb.type_id = hbt.id 
+                WHERE hbt.system_name = ?";
+        
+        $result = $this->db->fetch($sql, [$systemName]);
+        return (int)($result['count'] ?? 0);
+    }
+
+    /**
+    * Удаление типа блока из базы данных
+    * @param string $systemName Системное имя типа блока
+    * @return bool Результат удаления
+    */
+    public function deleteBlockType($systemName) {
+        return $this->db->query(
+            "DELETE FROM html_block_types WHERE system_name = ?",
+            [$systemName]
+        );
+    }
+
+    /**
+    * Проверка, существуют ли блоки указанного типа 
+    * @param string $systemName Системное имя типа блока
+    * @return bool true если есть блоки
+    */
+    public function hasBlocks($systemName) {
+        return $this->getBlocksCountByType($systemName) > 0;
+    }
+
+    /**
+    * Переключение статуса типа блока
+    * @param string $systemName Системное имя типа блока
+    * @param int $status Новый статус (0 или 1)
+    * @return bool Результат выполнения
+    */
+    public function toggleBlockTypeStatus($systemName, $status) {
+        return $this->db->query(
+            "UPDATE html_block_types SET is_active = ? WHERE system_name = ?",
+            [(int)$status, $systemName]
+        );
+    }
+
 }

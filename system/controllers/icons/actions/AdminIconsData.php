@@ -3,44 +3,32 @@
 namespace icons\actions;
 
 /**
- * Действие получения данных об иконках через AJAX
- * Возвращает JSON с информацией об иконках для использования в интерфейсе
- * 
- * @package icons\actions
- */
+* Действие получения данных об иконках через AJAX
+* @package icons\actions
+*/
 class AdminIconsData {
     
-    /**
-     * @var object|null Контроллер, управляющий действием
-     */
     protected $controller;
     
     /**
-     * Установка контроллера для действия
-     * Связывает действие с контроллером для доступа к его методам
-     *
-     * @param object $controller Объект контроллера
-     * @return void
-     */
+    * Установка контроллера для действия
+    * @param object $controller Объект контроллера
+    * @return void
+    */
     public function setController($controller) {
         $this->controller = $controller;
     }
     
     /**
-     * Метод выполнения получения данных об иконках
-     * Собирает информацию о всех доступных иконках и возвращает в формате JSON
-     * 
-     * @return void
-     */
+    * Метод выполнения получения данных об иконках 
+    * @return void
+    */
     public function execute() {
         try {
-            // Установка заголовка для JSON-ответа
             header('Content-Type: application/json');
             
-            // Получение всех иконок
             $icons = $this->getAllIcons();
             
-            // Проверка, найдены ли иконки
             if (empty($icons)) {
                 echo json_encode([
                     'success' => false,
@@ -50,7 +38,6 @@ class AdminIconsData {
                 exit;
             }
             
-            // Успешный ответ с данными
             echo json_encode([
                 'success' => true,
                 'message' => 'Иконки успешно загружены',
@@ -58,7 +45,6 @@ class AdminIconsData {
             ]);
             
         } catch (\Exception $e) {
-            // Логирование ошибки и отправка JSON с ошибкой
             \Logger::error('Ошибка при загрузке иконок: ' . $e->getMessage());
             
             echo json_encode([
@@ -71,37 +57,29 @@ class AdminIconsData {
     }
     
     /**
-     * Получение всех иконок из директорий шаблона
-     * Сканирует директории иконок и извлекает информацию о наборах иконок
-     *
-     * @return array Структурированный массив с информацией об иконках
-     */
+    * Получение всех иконок из директорий шаблона
+    * @return array Структурированный массив с информацией об иконках
+    */
     private function getAllIcons() {
         $icons = [];
         
-        // Получаем список доступных шаблонов
         $templates = $this->getAvailableTemplates();
         
         foreach ($templates as $template) {
             $iconsDir = TEMPLATES_PATH . '/' . $template . '/admin/icons/';
             
-            // Проверяем существование директории
             if (!is_dir($iconsDir)) {
                 continue;
             }
             
-            // Поиск всех SVG файлов в директории иконок
             $files = glob($iconsDir . '*.svg');
             
-            // Обработка каждого найденного файла
             foreach ($files as $file) {
                 $set = basename($file, '.svg');
                 $content = file_get_contents($file);
                 
-                // Извлечение всех ID символов (иконок) из SVG файла
                 preg_match_all('/<symbol\s+id="([^"]+)"/', $content, $matches);
                 
-                // Если в файле найдены иконки, добавляем их в результат
                 if (!empty($matches[1])) {
                     $icons[$template][$set] = [
                         'name' => $set,
@@ -118,7 +96,6 @@ class AdminIconsData {
             }
         }
         
-        // Если иконок нет ни в одном шаблоне, выбрасываем исключение
         if (empty($icons)) {
             throw new \Exception('В системе не найдено ни одного файла с иконками');
         }
@@ -127,12 +104,11 @@ class AdminIconsData {
     }
     
     /**
-     * Получение списка доступных шаблонов
-     *
-     * @return array Массив с названиями шаблонов
-     */
+    * Получение списка доступных шаблонов
+    * @return array Массив с названиями шаблонов
+    */
     private function getAvailableTemplates() {
-        $templates = ['default']; // По умолчанию как минимум есть default
+        $templates = ['default'];
         
         $templatesDir = TEMPLATES_PATH;
         if (is_dir($templatesDir)) {
@@ -148,20 +124,17 @@ class AdminIconsData {
     }
     
     /**
-     * Генерация HTML для предварительного просмотра иконки
-     * Создает SVG элемент для отображения иконки в интерфейсе
-     *
-     * @param string $set Набор иконок (имя файла без расширения)
-     * @param string $iconId ID иконки в SVG файле
-     * @param string $template Название шаблона
-     * @return string HTML-код для отображения иконки
-     */
+    * Генерация HTML для предварительного просмотра иконки
+    * @param string $set Набор иконок (имя файла без расширения)
+    * @param string $iconId ID иконки в SVG файле
+    * @param string $template Название шаблона
+    * @return string HTML-код для отображения иконки
+    */
     private function getIconPreviewHtml($set, $iconId, $template = 'default') {
-        // Формирование HTML для превью иконки с использованием символа из SVG спрайта
         return sprintf(
             '<svg width="24" height="24" style="fill: #2d5f94;"><use href="%s#%s"/></svg>',
             BASE_URL . '/templates/' . $template . '/admin/icons/' . $set . '.svg',
-            htmlspecialchars($iconId)
+            html($iconId)
         );
     }
 }

@@ -3,22 +3,15 @@
 namespace users\actions;
 
 /**
- * Действие отображения публичного списка всех участников сайта
- * Показывает активных пользователей с их статистикой, онлайн-статусом,
- * группами и достижениями
- * 
- * @package users\actions
- * @extends UserAction
- */
+* Действие отображения публичного списка всех участников сайта
+* @package users\actions
+*/
 class FrontIndex extends UserAction {
     
     /**
-     * Метод выполнения отображения списка участников
-     * Получает активных пользователей, обогащает их дополнительной информацией
-     * (статистика, онлайн-статус, группы, ачивки) и отображает список
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения списка участников
+    * @return void
+    */
     public function execute() {
         try {
             $this->addBreadcrumb('Главная', BASE_URL);
@@ -48,12 +41,11 @@ class FrontIndex extends UserAction {
     }
     
     /**
-     * Обогащает данные одного пользователя дополнительной информацией
-     * 
-     * @param array $user Ссылка на данные пользователя
-     * @param \UserActivityManager|null $activityManager Менеджер активности
-     * @return void
-     */
+    * Обогащает данные одного пользователя дополнительной информацией
+    * @param array $user Ссылка на данные пользователя
+    * @param \UserActivityManager|null $activityManager Менеджер активности
+    * @return void
+    */
     private function enrichUserData(&$user, $activityManager) {
         $user['posts_count'] = $this->userModel->getUserStatValue($user['id'], 'posts_count');
         $user['comments_count'] = $this->userModel->getUserStatValue($user['id'], 'comments_count');
@@ -73,12 +65,11 @@ class FrontIndex extends UserAction {
     }
     
     /**
-     * Добавляет информацию об активности пользователя
-     * 
-     * @param array $user Ссылка на данные пользователя
-     * @param \UserActivityManager|null $activityManager Менеджер активности
-     * @return void
-     */
+    * Добавляет информацию об активности пользователя 
+    * @param array $user Ссылка на данные пользователя
+    * @param \UserActivityManager|null $activityManager Менеджер активности
+    * @return void
+    */
     private function enrichUserActivity(&$user, $activityManager) {
         if ($activityManager) {
             $user['is_online'] = $activityManager->isOnline($user['id']);
@@ -93,11 +84,10 @@ class FrontIndex extends UserAction {
     }
     
     /**
-     * Форматирует время активности для отображения
-     * 
-     * @param string $timestamp Временная метка
-     * @return string Отформатированное время
-     */
+    * Форматирует время активности для отображения 
+    * @param string $timestamp Временная метка
+    * @return string Отформатированное время
+    */
     private function formatActivityTime($timestamp) {
         if (empty($timestamp)) {
             return 'никогда';
@@ -122,11 +112,10 @@ class FrontIndex extends UserAction {
     }
     
     /**
-     * Подсчитывает количество разблокированных ачивок у пользователя
-     * 
-     * @param array $achievements Массив достижений пользователя
-     * @return int Количество разблокированных достижений
-     */
+    * Подсчитывает количество разблокированных ачивок у пользователя
+    * @param array $achievements Массив достижений пользователя
+    * @return int Количество разблокированных достижений
+    */
     private function countUnlockedAchievements($achievements) {
         if (empty($achievements)) {
             return 0;

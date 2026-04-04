@@ -7,11 +7,16 @@ abstract class FormAction {
     protected $params;
     protected $controller;
     protected $formModel;
+    protected $breadcrumbs;
+    protected $pageTitle;
     
     public function __construct($db, $params = []) {
         $this->db = $db;
         $this->params = $params;
         $this->formModel = new \FormModel($db);
+        $this->breadcrumbs = new \BreadcrumbsManager($db);
+        $this->pageTitle = '';
+        \BreadcrumbsHelper::setManager($this->breadcrumbs);
     }
     
     public function setController($controller) {
@@ -20,8 +25,35 @@ abstract class FormAction {
     
     abstract public function execute();
     
+    /**
+    * Добавляет элемент в хлебные крошки
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента
+    * @return self
+    */
+    protected function addBreadcrumb($title, $url = null) {
+        $this->breadcrumbs->add($title, $url);
+        return $this;
+    }
+    
+    /**
+    * Устанавливает заголовок страницы 
+    * @param string $title Заголовок
+    * @return self
+    */
+    protected function setPageTitle($title) {
+        $this->pageTitle = $title;
+        return $this;
+    }
+    
     protected function render($template, $data = []) {
         if ($this->controller) {
+            if (!isset($data['breadcrumbs'])) {
+                $data['breadcrumbs'] = $this->breadcrumbs;
+            }
+            if (!isset($data['title']) && $this->pageTitle) {
+                $data['title'] = $this->pageTitle;
+            }
             $this->controller->render($template, $data);
         } else {
             throw new \Exception('Controller not set for Action');
@@ -109,5 +141,13 @@ abstract class FormAction {
                 'headers' => []
             ]
         ];
+    }
+    
+    /**
+    * Возвращает менеджер хлебных крошек
+    * @return \BreadcrumbsManager
+    */
+    protected function getBreadcrumbs() {
+        return $this->breadcrumbs;
     }
 }

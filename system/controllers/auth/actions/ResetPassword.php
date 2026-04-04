@@ -4,15 +4,11 @@ namespace auth\actions;
 
 /**
 * Класс действия "Сброс пароля"
-* Обрабатывает процесс установки нового пароля по токену восстановления
-* Включает валидацию токена, проверку пароля и отправку уведомлений
 */
 class ResetPassword extends AuthAction {
     
     /**
     * Выполнение действия сброса пароля
-    * Управляет процессом установки нового пароля через токен восстановления
-    *
     * @throws \Exception При недействительном токене или ошибках валидации
     */
     public function execute() {
@@ -90,7 +86,6 @@ class ResetPassword extends AuthAction {
 
     /**
     * Получение настроек авторизации для фронтенда
-    * Извлекает параметры восстановления пароля из системы настроек
     */
     private function getFrontAuthSettings() {
         return [
@@ -100,8 +95,6 @@ class ResetPassword extends AuthAction {
 
     /**
     * Валидация токена восстановления пароля
-    * Проверяет существование, срок действия и использование токена
-    *
     * @param string $token Токен восстановления из URL
     * @return array|false Данные токена или false при недействительном токене
     */
@@ -133,7 +126,6 @@ class ResetPassword extends AuthAction {
 
     /**
     * Отметка токена восстановления как использованного
-    * Предотвращает повторное использование токена
     */
     private function markTokenAsUsed($resetId) {
         $this->db->query(
@@ -144,8 +136,6 @@ class ResetPassword extends AuthAction {
 
     /**
     * Отправка email-уведомления об изменении пароля
-    * Информирует пользователя об успешной смене пароля
-    *
     * @param string $email Email адрес пользователя
     * @param string $username Имя пользователя
     * @return bool Результат отправки email

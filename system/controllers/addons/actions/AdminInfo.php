@@ -3,15 +3,14 @@
 namespace addons\actions;
 
 /**
- * Действие получения информации о пакете (AJAX)
- * 
- * @package addons\actions
- */
+* Действие получения информации о пакете (AJAX) 
+* @package addons\actions
+*/
 class AdminInfo extends AddonAction {
     
     /**
-     * Метод выполнения
-     */
+    * Метод выполнения
+    */
     public function execute() {
         header('Content-Type: application/json');
         

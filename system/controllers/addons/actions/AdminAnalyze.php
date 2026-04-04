@@ -3,20 +3,19 @@
 namespace addons\actions;
 
 /**
- * Действие анализа пакета без установки
- * 
- * @package addons\actions
- */
+* Действие анализа пакета без установки
+* @package addons\actions
+*/
 class AdminAnalyze extends AddonAction {
     
     /**
-     * Временная директория для анализа
-     */
+    * Временная директория для анализа
+    */
     const TEMP_DIR = UPLOADS_PATH . '/temp_analyze/';
     
     /**
-     * Метод выполнения
-     */
+    * Метод выполнения
+    */
     public function execute() {
         header('Content-Type: application/json');
         
@@ -49,21 +48,18 @@ class AdminAnalyze extends AddonAction {
             $extractPath = self::TEMP_DIR . 'extracted/';
             $this->extractZip($zipPath, $extractPath);
             
-            // Проверка наличия package.ini
             if (!file_exists($extractPath . 'package.ini')) {
                 throw new \Exception('Пакет должен содержать файл package.ini');
             }
             
             $packageInfo = $this->parsePackageIni($extractPath . 'package.ini');
-            
-            // Проверяем, установлен ли уже пакет
+
             $isInstalled = $this->addonModel->exists($packageInfo['system_name']);
             if ($isInstalled) {
                 $installedVersion = $this->addonModel->getInstalledVersion($packageInfo['system_name']);
                 $packageInfo['is_installed'] = true;
                 $packageInfo['installed_version'] = $installedVersion;
                 
-                // Если это пакет обновления, проверяем версию
                 if ($packageInfo['type'] === 'update') {
                     $versionFrom = $packageInfo['update_info']['version'] ?? null;
                     if ($versionFrom && $versionFrom !== $installedVersion) {
@@ -98,8 +94,8 @@ class AdminAnalyze extends AddonAction {
     }
     
     /**
-     * Распаковка ZIP-архива
-     */
+    * Распаковка ZIP-архива
+    */
     private function extractZip($zipPath, $extractPath) {
         if (!class_exists('ZipArchive')) {
             throw new \Exception('PHP ZipArchive не установлен');
@@ -115,8 +111,8 @@ class AdminAnalyze extends AddonAction {
     }
     
     /**
-     * Удаление директории рекурсивно
-     */
+    * Удаление директории рекурсивно
+    */
     private function deleteDirectory($dir) {
         if (!is_dir($dir)) {
             return;
@@ -135,8 +131,8 @@ class AdminAnalyze extends AddonAction {
     }
     
     /**
-     * Парсинг файла package.ini
-     */
+    * Парсинг файла package.ini
+    */
     private function parsePackageIni($iniPath) {
         $content = file_get_contents($iniPath);
         if (!$content) {
@@ -148,7 +144,6 @@ class AdminAnalyze extends AddonAction {
             throw new \Exception('Неверный формат package.ini');
         }
         
-        // Проверка обязательного блока [info]
         if (!isset($data['info']) || empty($data['info']['title'])) {
             throw new \Exception('В package.ini отсутствует обязательный блок [info] с полем title');
         }
@@ -160,7 +155,6 @@ class AdminAnalyze extends AddonAction {
         
         $systemName = $this->generateSystemName($title);
         
-        // Проверка обязательного блока [version]
         if (!isset($data['version']) || 
             !isset($data['version']['major']) || 
             !isset($data['version']['minor']) || 
@@ -220,8 +214,8 @@ class AdminAnalyze extends AddonAction {
     }
     
     /**
-     * Генерация системного имени из названия
-     */
+    * Генерация системного имени из названия
+    */
     private function generateSystemName($title) {
         $name = mb_strtolower($title, 'UTF-8');
         

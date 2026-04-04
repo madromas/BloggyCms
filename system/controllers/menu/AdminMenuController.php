@@ -124,9 +124,9 @@ class AdminMenuController extends Controller {
      * @return string HTML-код пункта меню
      */
     public function renderMenuItem($item, $index) {
-        $title = htmlspecialchars($item['title'] ?? '');
-        $url = htmlspecialchars($item['url'] ?? '');
-        $class = htmlspecialchars($item['class'] ?? '');
+        $title = html($item['title'] ?? '');
+        $url = html($item['url'] ?? '');
+        $class = html($item['class'] ?? '');
         $target = $item['target'] ?? '_self';
         $children = $item['children'] ?? [];
         

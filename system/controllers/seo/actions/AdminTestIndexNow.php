@@ -61,7 +61,6 @@ class AdminTestIndexNow extends SeoAction {
                         $messages[] = ucfirst($engine) . ": HTTP " . $result['code'] . " ✓";
                     } else {
                         $errorMsg = $result['error'] ?? 'Неизвестная ошибка';
-                        // Сокращаем длинные ошибки
                         if (strlen($errorMsg) > 150) {
                             $errorMsg = substr($errorMsg, 0, 150) . '...';
                         }

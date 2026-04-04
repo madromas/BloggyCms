@@ -3,13 +3,13 @@
 namespace auth\actions;
 
 /**
- * Действие для восстановления пароля пользователя
- */
+* Действие для восстановления пароля пользователя
+*/
 class ForgotPassword extends AuthAction {
     
     /**
-     * Основной метод выполнения процесса восстановления пароля
-     */
+    * Основной метод выполнения процесса восстановления пароля
+    */
     public function execute() {
         try {
 
@@ -69,8 +69,8 @@ class ForgotPassword extends AuthAction {
     }
 
     /**
-     * Получение настроек авторизации для фронтенда из базы данных
-     */
+    * Получение настроек авторизации для фронтенда из базы данных
+    */
     private function getFrontAuthSettings() {
         return [
             'disable_restore' => \SettingsHelper::get('controller_auth', 'disable_restore', false)
@@ -78,8 +78,8 @@ class ForgotPassword extends AuthAction {
     }
 
     /**
-     * Сохранение токена восстановления пароля в базе данных
-     */
+    * Сохранение токена восстановления пароля в базе данных
+    */
     private function saveResetToken($userId, $token, $expiresAt) {
         $this->db->query(
             "INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)",
@@ -88,8 +88,8 @@ class ForgotPassword extends AuthAction {
     }
 
     /**
-     * Отправка email с инструкциями по восстановлению пароля
-     */
+    * Отправка email с инструкциями по восстановлению пароля
+    */
     private function sendResetEmail($email, $token, $username) {
         return \Email::sendPasswordReset($email, $token, $username);
     }

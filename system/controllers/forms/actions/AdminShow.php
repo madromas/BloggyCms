@@ -3,10 +3,13 @@
 namespace forms\actions;
 
 /**
- * Действие просмотра отправок формы
- */
+* Действие просмотра отправок формы
+*/
 class AdminShow extends FormAction {
     
+    /**
+    * Действие просмотра отправок формы
+    */
     public function execute() {
         $id = $this->params['id'] ?? null;
         if (!$id) {
@@ -21,6 +24,11 @@ class AdminShow extends FormAction {
             $this->redirect(ADMIN_URL . '/forms');
             return;
         }
+        
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb(html($form['name']), ADMIN_URL . '/forms/edit/' . $id);
+        $this->addBreadcrumb('Отправки');
         
         $page = $_GET['page'] ?? 1;
         $perPage = 20;
@@ -51,8 +59,9 @@ class AdminShow extends FormAction {
             'spamCount' => $statusStats['spam'],
             'currentPage' => $page,
             'totalPages' => $totalPages,
-            'pageTitle' => 'Отправки формы: ' . htmlspecialchars($form['name']),
+            'pageTitle' => 'Отправки формы: ' . html($form['name']),
             'formModel' => $this->formModel
         ]);
     }
+
 }

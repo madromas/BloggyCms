@@ -12,7 +12,6 @@ return [
     'admin/posts/edit/{id}' => ['controller' => 'Post', 'action' => 'edit', 'admin' => true],
     'admin/posts/delete/{id}' => ['controller' => 'Post', 'action' => 'delete', 'admin' => true],
     'admin/posts/toggle-status/{id}' => ['controller' => 'Post', 'action' => 'toggleStatus', 'admin' => true],
-    'admin/posts/upload-image' => ['controller' => 'Post', 'action' => 'uploadImage', 'admin' => true],
     'admin/posts/upload-featured-image' => ['controller' => 'Post', 'action' => 'uploadFeaturedImage', 'admin' => true],
     'admin/posts/upload-gallery-images' => ['controller' => 'Post', 'action' => 'uploadGalleryImages', 'admin' => true],
     'admin/posts/upload-block-image' => ['controller' => 'Post', 'action' => 'uploadBlockImage', 'admin' => true],

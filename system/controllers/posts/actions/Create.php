@@ -3,22 +3,21 @@
 namespace posts\actions;
 
 /**
- * Действие создания нового поста в административной панели
- * Отображает форму создания поста и обрабатывает её отправку,
- * включая валидацию, сохранение поста, блоков, тегов и пользовательских полей
- * 
- * @package posts\actions
- * @extends PostAction
- */
+* Действие создания нового поста в административной панели
+* @package posts\actions
+*/
 class Create extends PostAction {
     
     /**
-     * Метод выполнения создания поста
-     * При GET-запросе отображает форму, при POST-запросе обрабатывает сохранение
-     * 
-     * @return void
-     */
+    * Метод выполнения создания поста
+    * @return void
+    */
     public function execute() {
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Посты', ADMIN_URL . '/posts');
+        $this->addBreadcrumb('Создание поста');
+        
         try {
             $categories = $this->categoryModel->getAll();
             $tags = $this->tagModel->getAll();
@@ -39,15 +38,14 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает POST-запрос на создание поста
-     * 
-     * @param array $categories Список категорий
-     * @param array $tags Список тегов
-     * @param int $maxTags Максимальное количество тегов
-     * @param bool $hasCategories Флаг наличия категорий
-     * @throws \Exception При ошибках валидации
-     * @return void
-     */
+    * Обрабатывает POST-запрос на создание поста
+    * @param array $categories Список категорий
+    * @param array $tags Список тегов
+    * @param int $maxTags Максимальное количество тегов
+    * @param bool $hasCategories Флаг наличия категорий
+    * @throws \Exception При ошибках валидации
+    * @return void
+    */
     private function handlePostRequest($categories, $tags, $maxTags, $hasCategories) {
         $this->validateRequiredFields($maxTags, $hasCategories);
         $postData = $this->preparePostData();
@@ -61,13 +59,12 @@ class Create extends PostAction {
     }
 
     /**
-     * Валидирует обязательные поля формы
-     * 
-     * @param int $maxTags Максимальное количество тегов
-     * @param bool $hasCategories Флаг наличия категорий
-     * @throws \Exception При ошибках валидации
-     * @return void
-     */
+    * Валидирует обязательные поля формы
+    * @param int $maxTags Максимальное количество тегов
+    * @param bool $hasCategories Флаг наличия категорий
+    * @throws \Exception При ошибках валидации
+    * @return void
+    */
     private function validateRequiredFields($maxTags, $hasCategories) {
         if (empty($_POST['title'])) {
             throw new \Exception('Заголовок обязателен');
@@ -98,11 +95,10 @@ class Create extends PostAction {
     }
 
     /**
-     * Подготавливает данные поста из POST-запроса
-     * 
-     * @return array Массив с данными поста
-     * @throws \Exception При ошибке загрузки изображения
-     */
+    * Подготавливает данные поста из POST-запроса 
+    * @return array Массив с данными поста
+    * @throws \Exception При ошибке загрузки изображения
+    */
     private function preparePostData() {
         $categoryId = null;
         if (isset($_POST['category_id']) && $_POST['category_id'] !== '' && $_POST['category_id'] !== 'NULL') {
@@ -134,11 +130,10 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает загрузку главного изображения
-     * 
-     * @return string|null Путь к изображению или null
-     * @throws \Exception При ошибке загрузки
-     */
+    * Обрабатывает загрузку главного изображения
+    * @return string|null Путь к изображению или null
+    * @throws \Exception При ошибке загрузки
+    */
     private function processFeaturedImage() {
         if (!empty($_POST['uploaded_image_path'])) {
             return $_POST['uploaded_image_path'];
@@ -162,13 +157,11 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает и сохраняет блоки поста
-     * Переопределяет родительский метод для работы с данными из POST-запроса
-     * 
-     * @param int $postId ID созданного поста
-     * @param array $blocksData Данные блоков (передаются из родительского вызова)
-     * @return void
-     */
+    * Обрабатывает и сохраняет блоки поста
+    * @param int $postId ID созданного поста
+    * @param array $blocksData Данные блоков (передаются из родительского вызова)
+    * @return void
+    */
     protected function processPostBlocks($postId, $blocksData = []) {
         if (empty($blocksData) && !empty($_POST['post_blocks'])) {
             $decodedData = json_decode($_POST['post_blocks'], true);
@@ -183,11 +176,10 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает и сохраняет теги поста
-     * 
-     * @param int $postId ID созданного поста
-     * @return void
-     */
+    * Обрабатывает и сохраняет теги поста 
+    * @param int $postId ID созданного поста
+    * @return void
+    */
     private function processPostTags($postId) {
         if (!empty($_POST['tags_json'])) {
             $tags = json_decode($_POST['tags_json'], true);
@@ -203,12 +195,11 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает и сохраняет пользовательские поля
-     * 
-     * @param int $postId ID созданного поста
-     * @throws \Exception При ошибках валидации
-     * @return void
-     */
+    * Обрабатывает и сохраняет пользовательские поля 
+    * @param int $postId ID созданного поста
+    * @throws \Exception При ошибках валидации
+    * @return void
+    */
     private function processCustomFields($postId) {
         $fieldModel = new \FieldModel($this->db);
         $fieldManager = new \FieldManager($this->db);
@@ -225,13 +216,12 @@ class Create extends PostAction {
     }
 
     /**
-     * Валидирует пользовательские поля
-     * 
-     * @param array $customFields Массив полей
-     * @param \FieldModel $fieldModel Модель полей
-     * @param \FieldManager $fieldManager Менеджер полей
-     * @return array Массив ошибок валидации
-     */
+    * Валидирует пользовательские поля
+    * @param array $customFields Массив полей
+    * @param \FieldModel $fieldModel Модель полей
+    * @param \FieldManager $fieldManager Менеджер полей
+    * @return array Массив ошибок валидации
+    */
     private function validateCustomFields($customFields, $fieldModel, $fieldManager) {
         $errors = [];
         
@@ -248,14 +238,13 @@ class Create extends PostAction {
     }
 
     /**
-     * Сохраняет одно пользовательское поле
-     * 
-     * @param array $field Данные поля
-     * @param int $postId ID поста
-     * @param \FieldModel $fieldModel Модель полей
-     * @param \FieldManager $fieldManager Менеджер полей
-     * @return void
-     */
+    * Сохраняет одно пользовательское поле
+    * @param array $field Данные поля
+    * @param int $postId ID поста
+    * @param \FieldModel $fieldModel Модель полей
+    * @param \FieldManager $fieldManager Менеджер полей
+    * @return void
+    */
     private function saveCustomField($field, $postId, $fieldModel, $fieldManager) {
         try {
             $value = $fieldManager->processFieldValue($field, $_POST, $_FILES);
@@ -277,14 +266,13 @@ class Create extends PostAction {
     }
 
     /**
-     * Отображает форму создания поста
-     * 
-     * @param array $categories Список категорий
-     * @param array $tags Список тегов
-     * @param int $maxTags Максимальное количество тегов
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return void
-     */
+    * Отображает форму создания поста
+    * @param array $categories Список категорий
+    * @param array $tags Список тегов
+    * @param int $maxTags Максимальное количество тегов
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return void
+    */
     private function renderCreateForm($categories, $tags, $maxTags, $hasCategories) {
         $this->render('admin/posts/create', [
             'categories' => $categories,
@@ -297,15 +285,14 @@ class Create extends PostAction {
     }
 
     /**
-     * Обрабатывает ошибку при создании поста
-     * 
-     * @param \Exception $e Исключение
-     * @param array $categories Список категорий
-     * @param array $tags Список тегов
-     * @param int $maxTags Максимальное количество тегов
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return void
-     */
+    * Обрабатывает ошибку при создании поста
+    * @param \Exception $e Исключение
+    * @param array $categories Список категорий
+    * @param array $tags Список тегов
+    * @param int $maxTags Максимальное количество тегов
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return void
+    */
     private function handleError($e, $categories, $tags, $maxTags, $hasCategories) {
         \Notification::error($e->getMessage());
         

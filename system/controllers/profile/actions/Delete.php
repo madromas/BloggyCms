@@ -3,15 +3,14 @@
 namespace profile\actions;
 
 /**
- * Действие удаления аккаунта пользователя
- */
+* Действие удаления аккаунта пользователя
+*/
 class Delete extends ProfileAction {
     
     /**
-     * Метод выполнения удаления аккаунта
-     * 
-     * @return void
-     */
+    * Метод выполнения удаления аккаунта
+    * @return void
+    */
     public function execute() {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
@@ -63,11 +62,10 @@ class Delete extends ProfileAction {
     }
     
     /**
-     * Удаляет аватар пользователя
-     * 
-     * @param array $user Данные пользователя
-     * @return void
-     */
+    * Удаляет аватар пользователя
+    * @param array $user Данные пользователя
+    * @return void
+    */
     private function deleteUserAvatar($user) {
         if (!empty($user['avatar']) && $user['avatar'] !== 'default.jpg') {
             $avatarPath = UPLOADS_PATH . '/avatars/' . $user['avatar'];
@@ -78,11 +76,10 @@ class Delete extends ProfileAction {
     }
     
     /**
-     * Проверяет CSRF токен
-     * 
-     * @param string $token Токен для проверки
-     * @return bool Результат проверки
-     */
+    * Проверяет CSRF токен
+    * @param string $token Токен для проверки
+    * @return bool Результат проверки
+    */
     private function validateCsrfToken($token) {
         if (empty($_SESSION['csrf_token']) || empty($token)) {
             return false;

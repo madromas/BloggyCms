@@ -3,20 +3,15 @@
 namespace categories\actions;
 
 /**
- * Действие отображения категории на фронтенде
- * Показывает страницу категории с постами, включая пагинацию и проверку доступа к защищенным категориям
- * 
- * @package categories\actions
- * @extends CategoryAction
- */
+* Действие отображения категории на фронтенде
+* @package categories\actions
+*/
 class Show extends CategoryAction {
     
     /**
-     * Метод выполнения отображения категории
-     * Загружает данные категории и ее постов с пагинацией, проверяет доступ для защищенных категорий
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения категории
+    * @return void
+    */
     public function execute() {
 
         $slug = $this->params['slug'] ?? null;
@@ -71,8 +66,8 @@ class Show extends CategoryAction {
             }
             
             /**
-             * Рендеринг шаблона страницы категории
-             */
+            * Рендеринг шаблона страницы категории
+            */
             $this->render('front/category/category', [
                 'category' => $category,
                 'posts' => $result['posts'],
@@ -90,11 +85,10 @@ class Show extends CategoryAction {
     }
     
     /**
-     * Рекурсивно добавляет хлебные крошки для родительских категорий
-     * 
-     * @param int $parentId ID родительской категории
-     * @return void
-     */
+    * Рекурсивно добавляет хлебные крошки для родительских категорий
+    * @param int $parentId ID родительской категории
+    * @return void
+    */
     private function addParentCategoryBreadcrumbs($parentId) {
         $parentCategory = $this->categoryModel->getById($parentId);
         

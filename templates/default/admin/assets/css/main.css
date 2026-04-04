@@ -4113,3 +4113,40 @@ h6.card-title {
 .shortcode-item code {
     font-family: monospace;
 }
+
+.admin-breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-breadcrumb .breadcrumb {
+    background: transparent;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.admin-breadcrumb .breadcrumb-item {
+    font-size: 0.9rem;
+}
+
+.admin-breadcrumb .breadcrumb-item a {
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.admin-breadcrumb .breadcrumb-item a:hover {
+    color: #0d6efd;
+}
+
+.admin-breadcrumb .breadcrumb-item.active {
+    color: #212529;
+    font-weight: 500;
+}
+
+.admin-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    color: #6c757d;
+    padding: 0 8px;
+}

@@ -3,32 +3,25 @@
 namespace auth\actions;
 
 /**
- * Действие для авторизации администратора с расширенной безопасностью
- */
+* Действие для авторизации администратора с расширенной безопасностью
+*/
 class AdminLogin extends AuthAction {
 
-    /**
-     * @var \LoginAttemptModel Модель для отслеживания попыток входа
-     * @access private
-     */
     private $loginAttemptModel;
 
     /**
-     * Конструктор действия входа администратора
-     * Инициализирует модель отслеживания попыток входа
-     * 
-     * @param \Database $db Объект подключения к базе данных
-     * @param array $params Дополнительные параметры маршрутизации
-     */
+    * Конструктор действия входа администратора
+    * @param \Database $db Объект подключения к базе данных
+    * @param array $params Дополнительные параметры маршрутизации
+    */
     public function __construct($db, $params = []) {
         parent::__construct($db, $params);
         $this->loginAttemptModel = new \LoginAttemptModel($db);
     }
 
     /**
-     * Основной метод выполнения действия входа администратора
-     *
-     */
+    * Основной метод выполнения действия входа администратора
+    */
     public function execute() {
         if ($this->loginAttemptModel->isBlocked()) {
             $this->showBlockedPage();
@@ -124,9 +117,8 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Получение настроек безопасности авторизации из базы данных
-     *
-     */
+    * Получение настроек безопасности авторизации из базы данных
+    */
     private function getAuthSettings() {
         return [
             'show_qa' => \SettingsHelper::get('controller_auth', 'show_qa', false),
@@ -138,27 +130,24 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Проверка наличия активной блокировки страницы входа
-     *
-     */
+    * Проверка наличия активной блокировки страницы входа
+    */
     private function isLoginBlocked() {
         $blockedUntil = $_SESSION['login_blocked_until'] ?? 0;
         return time() < $blockedUntil;
     }
 
     /**
-     * Получение времени разблокировки страницы входа
-     *
-     */
+    * Получение времени разблокировки страницы входа
+    */
     private function getUnlockTime() {
         $blockedUntil = $_SESSION['login_blocked_until'] ?? 0;
         return $blockedUntil;
     }
 
     /**
-     * Установка блокировки страницы входа
-     *
-     */
+    * Установка блокировки страницы входа
+    */
     private function blockLoginPage($blockTimeMinutes) {
         $blockTimeSeconds = $blockTimeMinutes * 60;
         $_SESSION['login_blocked_until'] = time() + $blockTimeSeconds;
@@ -166,37 +155,30 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Увеличение счетчика неудачных попыток входа
-     * 
-     */
+    * Увеличение счетчика неудачных попыток входа
+    */
     private function incrementLoginAttempts() {
         $_SESSION['login_attempts'] = ($_SESSION['login_attempts'] ?? 0) + 1;
     }
 
     /**
-     * Получение текущего количества неудачных попыток
-     *
-     */
+    * Получение текущего количества неудачных попыток
+    */
     private function getLoginAttemptsCount() {
         return $_SESSION['login_attempts'] ?? 0;
     }
 
     /**
-     * Сброс счетчика неудачных попыток входа
-     * 
-     */
+    * Сброс счетчика неудачных попыток входа 
+    */
     private function resetLoginAttempts() {
         unset($_SESSION['login_attempts']);
     }
 
     /**
-     * Отображение страницы с информацией о блокировке входа
-     * 
-     * Показывает пользователю время оставшейся блокировки
-     * и рекомендации по дальнейшим действиям
-     * 
-     * @return void
-     */
+    * Отображение страницы с информацией о блокировке входа 
+    * @return void
+    */
     private function showBlockedPage() {
         $unlockTime = $this->loginAttemptModel->getUnlockTime();
         $remainingTime = $unlockTime - time();
@@ -209,12 +191,8 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Безопасное получение случайного вопроса из массива
-     * 
-     * Проверяет валидность массива вопросов и корректность
-     * структуры каждого элемента перед выбором случайного
-     * 
-     */
+    * Безопасное получение случайного вопроса из массива
+    */
     private function getRandomQuestion($wordsArray) {
         if (empty($wordsArray) || !is_array($wordsArray)) {
             return ['question' => 'Нет доступных вопросов', 'answer' => 'none'];
@@ -233,12 +211,8 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Определение необходимости показа контрольных вопросов
-     * 
-     * Анализирует текущий контекст входа и настройки безопасности
-     * для принятия решения о необходимости дополнительной проверки
-     * 
-     */
+    * Определение необходимости показа контрольных вопросов
+*/
     private function shouldShowQuestions($showQA, $qaParam, $username) {
         if (!$showQA) return false;
         
@@ -260,14 +234,10 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Получение последнего известного IP адреса администратора
-     * 
-     * Извлекает из базы данных IP адрес, с которого пользователь
-     * последний раз успешно заходил в административную панель
-     * 
-     * @param string $username Имя пользователя для поиска
-     * @return string|null IP адрес или null если не найден
-     */
+    * Получение последнего известного IP адреса администратора
+    * @param string $username Имя пользователя для поиска
+    * @return string|null IP адрес или null если не найден
+    */
     private function getLastAdminIP($username) {
         if (empty($username)) return null;
         
@@ -276,15 +246,11 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Обновление последнего IP адреса администратора
-     * 
-     * Сохраняет текущий IP адрес пользователя в базе данных
-     * при успешном входе в административную панель
-     * 
-     * @param int $userId Идентификатор пользователя
-     * @param string $ip IP адрес для сохранения
-     * @return void
-     */
+    * Обновление последнего IP адреса администратора 
+    * @param int $userId Идентификатор пользователя
+    * @param string $ip IP адрес для сохранения
+    * @return void
+    */
     private function updateLastAdminIP($userId, $ip) {
         $this->db->query(
             "UPDATE users SET last_admin_ip = ? WHERE id = ?",
@@ -293,12 +259,8 @@ class AdminLogin extends AuthAction {
     }
 
     /**
-     * Обработка основных учетных данных администратора
-     * 
-     * Выполняет аутентификацию, проверяет права администратора,
-     * устанавливает сессию и выполняет перенаправление
-     * 
-     */
+    * Обработка основных учетных данных администратора 
+    */
     private function processAdminLogin($username, $password, $authSettings, $currentAttempts) {
         $user = $this->userModel->authenticate($username, $password);
         if ($user && ($user['is_admin'] || $user['role'] === 'admin')) {

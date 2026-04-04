@@ -3,42 +3,20 @@ namespace seo\actions;
 
 /**
 * Абстрактный базовый класс для всех действий модуля SEO
-* Предоставляет общую функциональность, доступ к моделям и вспомогательные методы
-*
 * @package seo\actions
 */
 abstract class SeoAction {
-    /** @var \Database Объект подключения к базе данных */
+
     protected $db;
-    
-    /** @var array Параметры запроса */
     protected $params;
-    
-    /** @var object Контроллер, вызывающий действие */
     protected $controller;
-    
-    /** @var \SeoModel Модель для работы с SEO */
     protected $seoModel;
-    
-    /** @var \PostModel Модель для работы с постами */
     protected $postModel;
-    
-    /** @var \PageModel Модель для работы со страницами */
     protected $pageModel;
-    
-    /** @var \CategoryModel Модель для работы с категориями */
     protected $categoryModel;
-    
-    /** @var \TagModel Модель для работы с тегами */
     protected $tagModel;
-    
-    /** @var \SettingsModel Модель настроек */
     protected $settingsModel;
-    
-    /** @var \BreadcrumbsManager Менеджер хлебных крошек */
     protected $breadcrumbs;
-    
-    /** @var string Заголовок страницы */
     protected $pageTitle;
 
     /**
@@ -72,12 +50,47 @@ abstract class SeoAction {
     * Абстрактный метод выполнения действия
     */
     abstract public function execute();
+    
+    /**
+    * Добавляет элемент в хлебные крошки
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента
+    * @return self
+    */
+    protected function addBreadcrumb($title, $url = null) {
+        $this->breadcrumbs->add($title, $url);
+        return $this;
+    }
+    
+    /**
+    * Устанавливает заголовок страницы
+    * @param string $title Заголовок
+    * @return self
+    */
+    protected function setPageTitle($title) {
+        $this->pageTitle = $title;
+        return $this;
+    }
+    
+    /**
+    * Возвращает менеджер хлебных крошек 
+    * @return \BreadcrumbsManager
+    */
+    protected function getBreadcrumbs() {
+        return $this->breadcrumbs;
+    }
 
     /**
     * Рендерит шаблон
     */
     protected function render($template, $data = []) {
         if ($this->controller) {
+            if (!isset($data['breadcrumbs'])) {
+                $data['breadcrumbs'] = $this->breadcrumbs;
+            }
+            if (!isset($data['title']) && $this->pageTitle) {
+                $data['title'] = $this->pageTitle;
+            }
             $this->controller->render($template, $data);
         } else {
             throw new \Exception('Controller not set for Action');
@@ -155,7 +168,7 @@ abstract class SeoAction {
     * Экранирование для XML
     */
     protected function escapeXml($string) {
-        return htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+        return html($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
     }
 
     /**

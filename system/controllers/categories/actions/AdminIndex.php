@@ -3,27 +3,24 @@
 namespace categories\actions;
 
 /**
- * Действие для отображения списка категорий в админ-панели
- * Обеспечивает управление категориями с поддержкой drag-and-drop сортировки и визуальными подсказками
- * 
- * @package categories\actions
- * @extends CategoryAction
- */
+* Действие для отображения списка категорий в админ-панели
+* @package categories\actions
+* @extends CategoryAction
+*/
 class AdminIndex extends CategoryAction {
     
     /**
-     * Основной метод выполнения действия
-     * Загружает все категории, генерирует случайную подсказку и отображает интерфейс управления
-     * 
-     * @return void
-     * @throws \Exception При ошибках загрузки категорий из модели
-     */
+    * Основной метод выполнения действия
+    * @return void
+    * @throws \Exception
+    */
     public function execute() {
         try {
-            // Получение всех категорий с сортировкой
+
+            $this->addBreadcrumb('Категории');
+        
             $categories = $this->categoryModel->getAllOrdered();
             
-            // Коллекция подсказок для пользователя
             $hints = [
                 "Перетаскивайте категории для изменения порядка отображения",
                 "Категории с большим количеством постов отображаются выше",
@@ -37,18 +34,11 @@ class AdminIndex extends CategoryAction {
                 "При удалении категории - если в ней присутствуют посты, система предложит перенести посты в другую категорию",
             ];
             
-            // Выбор случайной подсказки для отображения
             $randomHint = $hints[array_rand($hints)];
             
             /**
-             * Рендеринг шаблона админ-панели с передачей данных
-             * 
-             * @param string $template Путь к шаблону (admin/categories/index)
-             * @param array $data Данные для шаблона:
-             * - categories: массив категорий с информацией о количестве постов
-             * - randomHint: случайная текстовая подсказка
-             * - pageTitle: заголовок страницы
-             */
+            * Рендеринг шаблона админ-панели с передачей данных
+            */
             $this->render('admin/categories/index', [
                 'categories' => $categories,
                 'randomHint' => $randomHint,
@@ -56,7 +46,6 @@ class AdminIndex extends CategoryAction {
             ]);
             
         } catch (\Exception $e) {
-            // Обработка ошибок с показом уведомления и редиректом
             \Notification::error('Ошибка при загрузке категорий: ' . $e->getMessage());
             $this->redirect(ADMIN_URL);
         }

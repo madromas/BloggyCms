@@ -81,7 +81,7 @@ class HtmlBlockController extends Controller {
                 }
             
             if (empty($blockContent)) {
-                $blockContent = '<div class="alert alert-info">Блок "' . htmlspecialchars($block['name'] ?? '') . '" не имеет содержимого.</div>';
+                $blockContent = '<div class="alert alert-info">Блок "' . html($block['name'] ?? '') . '" не имеет содержимого.</div>';
             }
             
             $this->render('front/html_block', [

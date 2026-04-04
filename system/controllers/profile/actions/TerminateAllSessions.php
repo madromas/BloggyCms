@@ -3,15 +3,14 @@
 namespace profile\actions;
 
 /**
- * Действие завершения всех сессий пользователя кроме текущей
- */
+* Действие завершения всех сессий пользователя кроме текущей
+*/
 class TerminateAllSessions extends ProfileAction {
     
     /**
-     * Метод выполнения завершения всех сессий
-     * 
-     * @return void
-     */
+    * Метод выполнения завершения всех сессий
+    * @return void
+    */
     public function execute() {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
@@ -41,11 +40,10 @@ class TerminateAllSessions extends ProfileAction {
     }
     
     /**
-     * Завершает все сессии пользователя кроме текущей
-     * 
-     * @param int $userId ID пользователя
-     * @return bool Результат операции
-     */
+    * Завершает все сессии пользователя кроме текущей 
+    * @param int $userId ID пользователя
+    * @return bool Результат операции
+    */
     private function terminateAllUserSessions($userId) {
         $result = $this->db->query(
             "DELETE FROM user_sessions WHERE user_id = ? AND session_id != ?",
@@ -56,11 +54,10 @@ class TerminateAllSessions extends ProfileAction {
     }
     
     /**
-     * Проверяет CSRF токен
-     * 
-     * @param string $token Токен для проверки
-     * @return bool Результат проверки
-     */
+    * Проверяет CSRF токен
+    * @param string $token Токен для проверки
+    * @return bool Результат проверки
+    */
     private function validateCsrfToken($token) {
         if (empty($_SESSION['csrf_token']) || empty($token)) {
             return false;

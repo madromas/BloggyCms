@@ -3,24 +3,15 @@
 namespace profile\actions;
 
 /**
- * Действие обновления данных профиля пользователя
- * Обрабатывает POST-запрос с формой редактирования профиля,
- * проверяет CSRF-токен, валидирует и сохраняет данные пользователя,
- * включая загрузку аватара, смену пароля и пользовательские поля
- * 
- * @package profile\actions
- * @extends ProfileAction
- */
+* Действие обновления данных профиля пользователя 
+* @package profile\actions
+*/
 class Update extends ProfileAction {
     
     /**
-     * Метод выполнения обновления профиля
-     * Проверяет аутентификацию, метод запроса, CSRF-токен,
-     * подготавливает и валидирует данные, выполняет обновление
-     * и перенаправляет с соответствующим сообщением
-     * 
-     * @return void
-     */
+    * Метод выполнения обновления профиля
+    * @return void
+    */
     public function execute() {
 
         $this->checkAuthentication();
@@ -50,11 +41,9 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Подготавливает данные из POST-запроса для обновления
-     * Валидирует email, website, обрабатывает загрузку аватара
-     * 
-     * @return array Массив данных для обновления (пустые поля отфильтрованы)
-     */
+    * Подготавливает данные из POST-запроса для обновления
+    * @return array Массив данных для обновления (пустые поля отфильтрованы)
+    */
     private function prepareUpdateData() {
         $data = [
             'display_name' => trim($_POST['display_name'] ?? ''),
@@ -77,14 +66,11 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Выполняет обновление данных пользователя
-     * Обрабатывает смену пароля, обновление основных данных
-     * и сохранение пользовательских полей
-     * 
-     * @param array $user Текущие данные пользователя
-     * @param array $updateData Данные для обновления
-     * @return bool true при успешном обновлении
-     */
+    * Выполняет обновление данных пользователя
+    * @param array $user Текущие данные пользователя
+    * @param array $updateData Данные для обновления
+    * @return bool true при успешном обновлении
+    */
     private function processUpdate($user, $updateData) {
         if (!empty($_POST['new_password'])) {
             if (!$this->userModel->updatePassword(
@@ -113,27 +99,24 @@ class Update extends ProfileAction {
     
 
     /**
-     * Сохраняет значения пользовательских полей
-     * 
-     * @param int $userId ID пользователя
-     * @return bool Результат сохранения
-     */
+    * Сохраняет значения пользовательских полей
+    * @param int $userId ID пользователя
+    * @return bool Результат сохранения
+    */
     private function saveCustomFields($userId) {
         try {
             $customFields = $this->fieldModel->getActiveByEntityType('user');
             $currentValues = $this->fieldModel->getFieldValues($userId, 'user');
             $fieldManager = new \FieldManager($this->db);
             
-            // ВАЛИДАЦИЯ ОБЯЗАТЕЛЬНЫХ ПОЛЕЙ
             foreach ($customFields as $field) {
-                // Проверяем is_required ИЗ БАЗЫ ДАННЫХ (колонка is_required), а не из config
+
                 $isRequired = (bool)$field['is_required'];
                 
                 if ($isRequired) {
                     $postKey = 'field_' . $field['system_name'];
                     $value = $_POST[$postKey] ?? null;
                     
-                    // Проверка на пустое значение
                     if (empty($value) && $value !== '0') {
                         $this->redirectWithError('Поле "' . $field['name'] . '" обязательно для заполнения', '/profile/edit');
                         return false;
@@ -141,7 +124,6 @@ class Update extends ProfileAction {
                 }
             }
             
-            // СОХРАНЕНИЕ ПОЛЕЙ
             foreach ($customFields as $field) {
                 $processedValue = $fieldManager->processFieldValue(
                     $field,
@@ -180,11 +162,9 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Обрабатывает загрузку нового аватара пользователя
-     * Проверяет тип файла, размер, сохраняет в директорию avatars
-     * 
-     * @return string|null Имя загруженного файла или null при ошибке
-     */
+    * Обрабатывает загрузку нового аватара пользователя
+    * @return string|null Имя загруженного файла или null при ошибке
+    */
     private function handleAvatarUpload() {
         $file = $_FILES['avatar'];
         
@@ -242,11 +222,10 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Обновляет данные пользователя в сессии
-     * 
-     * @param array $data Обновленные данные
-     * @return void
-     */
+    * Обновляет данные пользователя в сессии 
+    * @param array $data Обновленные данные
+    * @return void
+    */
     private function updateSession($data) {
         if (isset($data['display_name'])) {
             $_SESSION['display_name'] = $data['display_name'];
@@ -257,12 +236,10 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Валидирует email-адрес
-     * Проверяет формат и уникальность (не занят другим пользователем)
-     * 
-     * @param string $email Email для проверки
-     * @return string|null Валидный email или null
-     */
+    * Валидирует email-адрес
+    * @param string $email Email для проверки
+    * @return string|null Валидный email или null
+    */
     private function validateEmail($email) {
         $email = trim($email);
         
@@ -286,11 +263,10 @@ class Update extends ProfileAction {
     }
     
     /**
-     * Валидирует URL веб-сайта
-     * 
-     * @param string $website URL для проверки
-     * @return string|null Валидный URL или null
-     */
+    * Валидирует URL веб-сайта
+    * @param string $website URL для проверки
+    * @return string|null Валидный URL или null
+    */
     private function validateWebsite($website) {
         $website = trim($website);
         

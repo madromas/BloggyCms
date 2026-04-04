@@ -106,16 +106,22 @@
                                                     <?php 
                                                     $displayedFields = 0;
                                                     foreach ($fields as $field) {
+                                                        // Проверяем, нужно ли показывать поле в списке и есть ли у него значение
                                                         if (!empty($field['show_in_list']) && isset($entry['data'][$field['system_name']])) {
                                                             $value = $entry['data'][$field['system_name']];
+                                                            // Проверяем, что значение не пустое
                                                             if (!empty($value) || $value === '0') {
                                                                 $displayedFields++;
+                                                                
+                                                                // Форматируем значение в зависимости от типа поля
                                                                 $displayValue = $value;
                                                                 
+                                                                // Для изображений показываем имя файла, а не весь путь
                                                                 if ($field['type'] === 'image') {
                                                                     $displayValue = basename($value);
                                                                 }
                                                                 
+                                                                // Обрезаем длинные значения
                                                                 if (strlen($displayValue) > 50) {
                                                                     $displayValue = mb_substr($displayValue, 0, 50) . '...';
                                                                 }
@@ -125,6 +131,7 @@
                                                         }
                                                     }
                                                     
+                                                    // Если ни одного поля не отобразилось
                                                     if ($displayedFields === 0) {
                                                         echo '<em class="text-muted">Нет данных для отображения</em>';
                                                     }
@@ -169,50 +176,50 @@
 </div>
 
 <?php if (!empty($entries)): ?>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof Sortable !== 'undefined') {
-                const container = document.getElementById('sortable-entries');
-                Sortable.create(container, {
-                    handle: '.drag-handle',
-                    animation: 150,
-                    onEnd: function() {
-                        const order = [];
-                        document.querySelectorAll('.entry-item').forEach((item, idx) => {
-                            order.push({
-                                id: item.dataset.id,
-                                order: idx
-                            });
-                        });
-                        
-                        fetch('<?php echo ADMIN_URL; ?>/fragments/reorder-entries', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ order: order })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Порядок записей обновлен', 'success');
-                            }
-                        });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Sortable !== 'undefined') {
+        const container = document.getElementById('sortable-entries');
+        Sortable.create(container, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function() {
+                const order = [];
+                document.querySelectorAll('.entry-item').forEach((item, idx) => {
+                    order.push({
+                        id: item.dataset.id,
+                        order: idx
+                    });
+                });
+                
+                fetch('<?php echo ADMIN_URL; ?>/fragments/reorder-entries', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ order: order })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Порядок записей обновлен', 'success');
                     }
                 });
             }
-            
-            function showNotification(message, type) {
-                const notification = document.createElement('div');
-                notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-                notification.innerHTML = `
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                document.body.appendChild(notification);
-                setTimeout(() => notification.remove(), 3000);
-            }
         });
-    </script>
+    }
+    
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+});
+</script>
 <?php endif; ?>

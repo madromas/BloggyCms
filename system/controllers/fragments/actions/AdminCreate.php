@@ -3,12 +3,12 @@
 namespace fragments\actions;
 
 /**
- * Действие создания фрагмента
- */
+* Действие создания фрагмента
+*/
 class AdminCreate extends FragmentAction {
     
     public function execute() {
-        $this->addBreadcrumb('Главная', ADMIN_URL);
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Фрагменты', ADMIN_URL . '/fragments');
         $this->addBreadcrumb('Создание фрагмента');
         $this->setPageTitle('Создание фрагмента');

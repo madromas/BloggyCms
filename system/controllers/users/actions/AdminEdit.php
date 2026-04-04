@@ -3,39 +3,27 @@
 namespace users\actions;
 
 /**
- * Действие редактирования пользователя в административной панели
- * Отображает форму редактирования существующего пользователя и обрабатывает её отправку,
- * включая валидацию, обновление данных, загрузку/удаление аватара,
- * пользовательские поля, группы и ручные достижения
- * 
- * @package users\actions
- * @extends UserAction
- */
+* Действие редактирования пользователя в административной панели
+* @package users\actions
+*/
 class AdminEdit extends UserAction {
     
-    /**
-     * @var \FieldManager Менеджер полей для обработки пользовательских полей
-     */
     private $fieldManager;
     
     /**
-     * Конструктор
-     * 
-     * @param \Database $db
-     * @param array $params
-     */
+    * Конструктор
+    * @param \Database $db
+    * @param array $params
+    */
     public function __construct($db, $params = []) {
         parent::__construct($db, $params);
         $this->fieldManager = new \FieldManager($db);
     }
     
     /**
-     * Метод выполнения редактирования пользователя
-     * Проверяет ID, загружает данные пользователя, обрабатывает POST-запрос
-     * или отображает форму с текущими данными
-     * 
-     * @return void
-     */
+    * Метод выполнения редактирования пользователя
+    * @return void
+    */
     public function execute() {
         $id = $this->params['id'] ?? null;
         
@@ -47,6 +35,10 @@ class AdminEdit extends UserAction {
         
         try {
             $user = $this->loadUser($id);
+            
+            $this->addBreadcrumb('Панель управления', ADMIN_URL);
+            $this->addBreadcrumb('Пользователи', ADMIN_URL . '/users');
+            $this->addBreadcrumb('Редактирование: ' . ($user['display_name'] ?: $user['username']));
             
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $this->handlePostRequest($id, $user);
@@ -61,12 +53,11 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Загружает пользователя по ID и проверяет существование
-     * 
-     * @param int $id ID пользователя
-     * @return array Данные пользователя
-     * @throws \Exception Если пользователь не найден
-     */
+    * Загружает пользователя по ID и проверяет существование
+    * @param int $id ID пользователя
+    * @return array Данные пользователя
+    * @throws \Exception Если пользователь не найден
+    */
     private function loadUser($id) {
         $user = $this->userModel->getById($id);
         if (!$user) {
@@ -76,13 +67,12 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обрабатывает POST-запрос на обновление пользователя
-     * 
-     * @param int $id ID пользователя
-     * @param array $user Текущие данные пользователя
-     * @return void
-     * @throws \Exception При ошибках валидации
-     */
+    * Обрабатывает POST-запрос на обновление пользователя
+    * @param int $id ID пользователя
+    * @param array $user Текущие данные пользователя
+    * @return void
+    * @throws \Exception При ошибках валидации
+    */
     private function handlePostRequest($id, $user) {
         $this->validateRequiredFields();
         $this->checkUniqueness($id);
@@ -98,10 +88,9 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Валидирует обязательные поля формы
-     * 
-     * @throws \Exception При ошибках валидации
-     */
+    * Валидирует обязательные поля формы
+    * @throws \Exception При ошибках валидации
+    */
     private function validateRequiredFields() {
         if (empty($_POST['username'])) {
             throw new \Exception('Имя пользователя обязательно');
@@ -113,11 +102,10 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Проверяет уникальность имени пользователя и email
-     * 
-     * @param int $id ID текущего пользователя для исключения
-     * @throws \Exception Если данные уже заняты
-     */
+    * Проверяет уникальность имени пользователя и email
+    * @param int $id ID текущего пользователя для исключения
+    * @throws \Exception Если данные уже заняты
+    */
     private function checkUniqueness($id) {
         $existingUser = $this->userModel->getByUsername($_POST['username']);
         if ($existingUser && $existingUser['id'] != $id) {
@@ -131,11 +119,10 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Подготавливает основные данные пользователя
-     * 
-     * @param array $user Текущие данные пользователя
-     * @return array Данные для обновления
-     */
+    * Подготавливает основные данные пользователя
+    * @param array $user Текущие данные пользователя
+    * @return array Данные для обновления
+    */
     private function prepareUserData($user) {
         return [
             'username' => $_POST['username'],
@@ -149,12 +136,11 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обрабатывает смену пароля
-     * 
-     * @param array $userData Данные пользователя
-     * @return array Обновленные данные
-     * @throws \Exception Если пароли не совпадают
-     */
+    * Обрабатывает смену пароля
+    * @param array $userData Данные пользователя
+    * @return array Обновленные данные
+    * @throws \Exception Если пароли не совпадают
+    */
     private function handlePasswordChange($userData) {
         if (!empty($_POST['password'])) {
             if ($_POST['password'] !== $_POST['password_confirm']) {
@@ -166,12 +152,11 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обрабатывает обновление аватара (загрузку или удаление)
-     * 
-     * @param array $userData Данные пользователя
-     * @param array $user Текущие данные пользователя
-     * @return array Обновленные данные
-     */
+    * Обрабатывает обновление аватара (загрузку или удаление)
+    * @param array $userData Данные пользователя
+    * @param array $user Текущие данные пользователя
+    * @return array Обновленные данные
+    */
     private function handleAvatarUpdate($userData, $user) {
         if (!empty($_FILES['avatar']['tmp_name'])) {
             $uploadDir = UPLOADS_PATH . '/avatars/';
@@ -197,10 +182,9 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Удаляет старый аватар пользователя
-     * 
-     * @param array $user Данные пользователя
-     */
+    * Удаляет старый аватар пользователя
+    * @param array $user Данные пользователя
+    */
     private function deleteOldAvatar($user) {
         if (!empty($user['avatar']) && $user['avatar'] !== 'default.jpg') {
             $avatarPath = UPLOADS_PATH . '/avatars/' . $user['avatar'];
@@ -211,11 +195,10 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Сохраняет пользовательские поля с поддержкой файлов
-     * 
-     * @param int $userId ID пользователя
-     * @param array $user Данные пользователя
-     */
+    * Сохраняет пользовательские поля с поддержкой файлов
+    * @param int $userId ID пользователя
+    * @param array $user Данные пользователя
+    */
     private function saveCustomFields($userId, $user) {
         $customFields = $this->fieldModel->getActiveByEntityType('user');
         $currentValues = $this->getCurrentFieldValues($userId);
@@ -258,11 +241,10 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Получает текущие значения всех полей для пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив значений, где ключ - system_name поля
-     */
+    * Получает текущие значения всех полей для пользователя
+    * @param int $userId ID пользователя
+    * @return array Массив значений, где ключ - system_name поля
+    */
     private function getCurrentFieldValues($userId) {
         $values = [];
         
@@ -281,10 +263,9 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обновляет группы пользователя
-     * 
-     * @param int $userId ID пользователя
-     */
+    * Обновляет группы пользователя
+    * @param int $userId ID пользователя
+    */
     private function updateUserGroups($userId) {
         if (isset($_POST['groups'])) {
             $this->userModel->updateUserGroups($userId, $_POST['groups']);
@@ -294,10 +275,9 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обновляет ручные достижения пользователя
-     * 
-     * @param int $userId ID пользователя
-     */
+    * Обновляет ручные достижения пользователя
+    * @param int $userId ID пользователя
+    */
     private function updateUserAchievements($userId) {
         if (!isset($_POST['achievements'])) {
             return;
@@ -323,10 +303,9 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Отображает форму редактирования пользователя
-     * 
-     * @param array $user Данные пользователя
-     */
+    * Отображает форму редактирования пользователя
+    * @param array $user Данные пользователя
+    */
     private function renderEditForm($user) {
         $customFields = $this->fieldModel->getActiveByEntityType('user');
         $fieldValues = $this->getCurrentFieldValues($user['id']);
@@ -340,11 +319,10 @@ class AdminEdit extends UserAction {
     }
     
     /**
-     * Обрабатывает ошибку при редактировании
-     * 
-     * @param \Exception $e Исключение
-     * @param int $id ID пользователя
-     */
+    * Обрабатывает ошибку при редактировании
+    * @param \Exception $e Исключение
+    * @param int $id ID пользователя
+    */
     private function handleError($e, $id) {
         \Notification::error($e->getMessage());
         

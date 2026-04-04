@@ -3,33 +3,25 @@
 namespace categories\actions;
 
 /**
- * Действие создания новой категории
- * Обрабатывает форму создания категории, включая загрузку изображений и работу с кастомными полями
- * 
- * @package categories\actions
- * @extends CategoryAction
- */
+* Действие создания новой категории
+* @package categories\actions
+*/
 class Create extends CategoryAction {
     
-    /**
-     * @var string Заголовок страницы
-     */
     protected $pageTitle = 'Создание категории';
     
     /**
-     * Метод выполнения создания категории
-     * Обрабатывает POST-запросы для создания категории, включая загрузку файлов и кастомные поля
-     * 
-     * @return void
-     */
+    * Метод выполнения создания категории
+    * @return void
+    */
     public function execute() {
-        // Установка заголовка страницы
+
         $this->pageTitle = 'Создание категории';
+        $this->addBreadcrumb('Категории', ADMIN_URL . '/categories');
+        $this->addBreadcrumb('Создание категории');
         
-        // Обработка POST-запроса (отправка формы)
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Подготовка данных категории из формы
                 $data = [
                     'name' => trim($_POST['name']),
                     'description' => trim($_POST['description'] ?? ''),
@@ -44,43 +36,31 @@ class Create extends CategoryAction {
                         : null
                 ];
                 
-                // Обработка загрузки изображения категории
                 if (!empty($_FILES['image']['name'])) {
                     $uploadDir = UPLOADS_PATH . '/images/categories';
                     $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-                    $maxSize = 5120; // 5MB в килобайтах
-                    
-                    // Загрузка изображения через утилиту FileUpload
+                    $maxSize = 5120;
                     $fileName = \FileUpload::upload($_FILES['image'], $uploadDir, $allowedTypes, $maxSize);
-                    $data['image'] = 'categories/' . $fileName; // Сохранение относительного пути
+                    $data['image'] = 'categories/' . $fileName;
                 } else {
-                    $data['image'] = ''; // Пустое значение если изображение не загружено
+                    $data['image'] = '';
                 }
                 
-                // Создание категории в базе данных
                 $categoryId = $this->categoryModel->create($data);
                 
-                // Обработка кастомных полей категории
                 $fieldModel = new \FieldModel($this->db);
                 $fieldManager = new \FieldManager($this->db);
                 
-                // Получение активных кастомных полей для сущности "category"
                 $customFields = $fieldModel->getActiveByEntityType('category');
                 
-                // Обработка каждого кастомного поля
                 foreach ($customFields as $field) {
                     try {
-                        // Обработка значения поля (текст, файл и т.д.)
                         $value = $fieldManager->processFieldValue($field, $_POST, $_FILES);
                         
-                        // Сохранение значения если оно было передано
                         if ($value !== null) {
-                            // Парсинг конфигурации поля
                             $config = is_array($field['config']) 
                                 ? $field['config'] 
                                 : json_decode($field['config'] ?? '{}', true);
-                            
-                            // Сохранение значения поля в базе данных
                             $fieldModel->saveFieldValue(
                                 $field['id'], 
                                 'category', 
@@ -91,30 +71,25 @@ class Create extends CategoryAction {
                             );
                         }
                     } catch (\Exception $e) {
-                        // Логирование ошибок обработки отдельных полей
                         \Notification::error("Ошибка обработки поля {$field['name']}: " . $e->getMessage());
                     }
                 }
                 
-                // Уведомление об успешном создании и редирект
                 \Notification::success('Категория успешно создана');
                 $this->redirect(ADMIN_URL . '/categories');
                 return;
                 
             } catch (\Exception $e) {
-                // Обработка исключений при создании категории
                 \Notification::error('Ошибка при создании категории: ' . $e->getMessage());
-                
-                // Повторный рендеринг формы с сохраненными данными
+
                 $this->render('admin/categories/form', [
-                    'data' => $_POST, // Передача заполненных данных обратно в форму
+                    'data' => $_POST,
                     'pageTitle' => $this->pageTitle
                 ]);
                 return;
             }
         }
         
-        // Рендеринг пустой формы для GET-запроса
         $this->render('admin/categories/form', [
             'pageTitle' => $this->pageTitle
         ]);

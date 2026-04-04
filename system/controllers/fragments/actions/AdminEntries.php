@@ -3,8 +3,8 @@
 namespace fragments\actions;
 
 /**
- * Действие управления записями фрагмента
- */
+* Действие управления записями фрагмента
+*/
 class AdminEntries extends FragmentAction {
     
     public function execute() {
@@ -24,7 +24,7 @@ class AdminEntries extends FragmentAction {
             return;
         }
         
-        $this->addBreadcrumb('Главная', ADMIN_URL);
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Фрагменты', ADMIN_URL . '/fragments');
         $this->addBreadcrumb($fragment['name'], ADMIN_URL . '/fragments/edit/' . $id);
         $this->addBreadcrumb('Записи');

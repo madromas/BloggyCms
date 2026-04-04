@@ -53,7 +53,7 @@ class DefaultLatestPostsBlock extends BaseHtmlBlock {
             }
             
             $limit = (int)($settings['posts_count'] ?? 3);
-            $posts = API::posts()->getAll($limit);
+            $posts = API::posts()->getPublished($limit);
             
             if (empty($posts)) {
                 return [];

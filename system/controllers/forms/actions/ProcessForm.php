@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие обработки формы (публичное)
- */
+* Действие обработки формы
+*/
 class ProcessForm extends FormAction {
     
     public function execute() {
@@ -223,12 +223,11 @@ class ProcessForm extends FormAction {
     }
 
     /**
-     * Проверка на спам-слова
-     * 
-     * @param array $data Данные формы
-     * @param array $settings Настройки формы
-     * @return bool true если найдены спам-слова
-     */
+    * Проверка на спам-слова
+    * @param array $data Данные формы
+    * @param array $settings Настройки формы
+    * @return bool true если найдены спам-слова
+    */
     private function checkSpamKeywords($data, $settings) {
         if (empty($settings['spam_protection']) || empty($settings['spam_keywords'])) {
             return false;
@@ -388,7 +387,7 @@ class ProcessForm extends FormAction {
             if (is_array($value)) {
                 $value = implode(', ', $value);
             }
-            $template = str_replace('{' . $key . '}', htmlspecialchars($value), $template);
+            $template = str_replace('{' . $key . '}', html($value), $template);
         }
         
         $template = str_replace('{date}', date('d.m.Y H:i'), $template);

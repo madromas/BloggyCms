@@ -3,20 +3,15 @@
 namespace profile\actions;
 
 /**
- * Действие отображения профиля текущего авторизованного пользователя
- * Показывает личный профиль пользователя с его данными
- * 
- * @package profile\actions
- * @extends ProfileAction
- */
+* Действие отображения профиля текущего авторизованного пользователя
+* @package profile\actions
+*/
 class Index extends ProfileAction {
     
     /**
-     * Метод выполнения отображения личного профиля
-     * Проверяет аутентификацию пользователя, загружает его данные, отображает страницу профиля
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения личного профиля
+    * @return void
+    */
     public function execute() {
 
         $this->checkAuthentication();

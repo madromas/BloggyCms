@@ -3,35 +3,30 @@
 namespace html_blocks\actions;
 
 /**
- * Действие выбора типа HTML-блока при создании
- * Показывает доступные типы блоков с информацией о поддержке шаблонов
- * 
- * @package html_blocks\actions
- * @extends HtmlBlockAction
- */
+* Действие выбора типа HTML-блока при создании
+* @package html_blocks\actions
+*/
 class AdminSelectType extends HtmlBlockAction {
     
     /**
-     * Метод выполнения выбора типа блока
-     * Отображает интерфейс выбора типа блока с информацией о поддержке шаблонов
-     * 
-     * @return void
-     */
+    * Метод выполнения выбора типа блока
+    * @return void
+    */
     public function execute() {
-        // Проверка административных прав доступа
         if (!$this->checkAdminAccess()) {
             \Notification::error('У вас нет прав доступа к этому разделу');
             $this->redirect(ADMIN_URL . '/login');
             return;
         }
         
-        // Получение доступных типов блоков из менеджера
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Контент-блоки', ADMIN_URL . '/html-blocks');
+        $this->addBreadcrumb('Выбор типа блока');
+        
         $blockTypes = $this->blockTypeManager->getBlockTypes();
         
-        // Получение текущего активного шаблона системы
         $currentTemplate = get_current_template();
         
-        // Настройка дефолтного блока как базового типа
         $defaultBlock = [
             'DefaultBlock' => [
                 'name' => 'Дефолтный блок',
@@ -46,22 +41,10 @@ class AdminSelectType extends HtmlBlockAction {
             ]
         ];
         
-        // Объединение дефолтного блока с остальными типами блоков
         $allBlocks = $defaultBlock + $blockTypes;
         
-        // Получение информации о доступных шаблонах для каждого типа блока
         $availableTemplates = $this->getAvailableTemplates($blockTypes);
         
-        /**
-         * Рендеринг страницы выбора типа HTML-блока
-         * 
-         * @param string $template Путь к шаблону (admin/html_blocks/select_type)
-         * @param array $data Данные для шаблона:
-         * - blockTypes: массив всех доступных типов блоков (включая DefaultBlock)
-         * - availableTemplates: информация о поддержке шаблонов для типов блоков
-         * - currentTemplate: текущий активный шаблон системы
-         * - pageTitle: заголовок страницы
-         */
         $this->render('admin/html_blocks/select_type', [
             'blockTypes' => $allBlocks,
             'availableTemplates' => $availableTemplates,
@@ -69,4 +52,5 @@ class AdminSelectType extends HtmlBlockAction {
             'pageTitle' => 'Выбор типа HTML-блока'
         ]);
     }
+
 }

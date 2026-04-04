@@ -3,11 +3,16 @@
 namespace forms\actions;
 
 /**
- * Действие создания новой формы в админ-панели
- */
+* Действие создания новой формы в админ-панели
+*/
 class AdminCreate extends FormAction {
     
     public function execute() {
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb('Создание формы');
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 if (empty(trim($_POST['name']))) {
@@ -114,8 +119,8 @@ class AdminCreate extends FormAction {
     }
     
     /**
-     * Обработка структуры формы - добавление дополнительных данных
-     */
+    * Обработка структуры формы - добавление дополнительных данных
+    */
     private function processFormStructure($structure, $postData) {
         $processed = [];
         
@@ -194,8 +199,8 @@ class AdminCreate extends FormAction {
     }
     
     /**
-     * Подготовка уведомлений
-     */
+    * Подготовка уведомлений
+    */
     private function prepareNotifications($postData) {
         $notifications = [];
         
@@ -229,8 +234,8 @@ class AdminCreate extends FormAction {
     }
     
     /**
-     * Подготовка действий
-     */
+    * Подготовка действий
+    */
     private function prepareActions($postData) {
         $actions = [];
         
@@ -272,8 +277,7 @@ class AdminCreate extends FormAction {
                 'headers' => $headers
             ];
         }
-        
-        // Если действий нет, возвращаем дефолтные
+
         if (empty($actions)) {
             return [];
         }

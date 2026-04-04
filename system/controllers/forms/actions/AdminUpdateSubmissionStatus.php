@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие обновления статуса отправки
- */
+* Действие обновления статуса отправки
+*/
 class AdminUpdateSubmissionStatus extends FormAction {
     
     public function execute() {

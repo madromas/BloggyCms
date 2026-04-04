@@ -301,6 +301,7 @@
 <?php ob_start(); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Добавление CSS файлов
     const cssContainer = document.getElementById('css-files-container');
     const addCssBtn = document.getElementById('add-css-file');
     
@@ -317,6 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         attachRemoveHandler(newRow.querySelector('.remove-asset'));
     });
     
+    // Добавление JS файлов
     const jsContainer = document.getElementById('js-files-container');
     const addJsBtn = document.getElementById('add-js-file');
     
@@ -341,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.querySelectorAll('.remove-asset').forEach(attachRemoveHandler);
     
+    // Инициализация Ace Editor для CSS
     if (typeof ace !== 'undefined') {
         const cssEditor = ace.edit("inline-css-editor", {
             theme: "ace/theme/monokai",
@@ -362,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // Инициализация Ace Editor для JS
         const jsEditor = ace.edit("inline-js-editor", {
             theme: "ace/theme/monokai",
             mode: "ace/mode/javascript",

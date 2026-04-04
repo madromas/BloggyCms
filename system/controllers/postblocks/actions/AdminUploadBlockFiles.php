@@ -3,24 +3,15 @@
 namespace postblocks\actions;
 
 /**
- * Действие загрузки файлов для постблока
- * Используется для AJAX-запросов в административной панели
- * Обрабатывает загрузку файлов и данных формы для конкретного блока,
- * делегирует подготовку данных методам блока при их наличии
- * 
- * @package postblocks\actions
- * @extends PostBlockAction
- */
+* Действие загрузки файлов для постблока
+* @package postblocks\actions
+*/
 class AdminUploadBlockFiles extends PostBlockAction {
     
     /**
-     * Метод выполнения загрузки файлов для блока
-     * Проверяет права доступа, получает данные из POST,
-     * загружает экземпляр блока, обрабатывает файлы и поля формы,
-     * подготавливает данные через методы блока и возвращает результат
-     * 
-     * @return void
-     */
+    * Метод выполнения загрузки файлов для блока
+    * @return void
+    */
     public function execute() {
         if (!$this->checkAdminAccess()) {
             $this->jsonResponse([
@@ -92,14 +83,13 @@ class AdminUploadBlockFiles extends PostBlockAction {
     }
 
     /**
-     * Обрабатывает поля формы из POST-запроса
-     * Извлекает данные в формате content[ключ] и settings[ключ]
-     * Поддерживает массивы (например, content[items][])
-     * 
-     * @param array &$content Ссылка на массив контента для заполнения
-     * @param array &$settings Ссылка на массив настроек для заполнения
-     * @return void
-     */
+    * Обрабатывает поля формы из POST-запроса
+    * Извлекает данные в формате content[ключ] и settings[ключ]
+    * Поддерживает массивы (например, content[items][])
+    * @param array &$content Ссылка на массив контента для заполнения
+    * @param array &$settings Ссылка на массив настроек для заполнения
+    * @return void
+    */
     private function processPostFields(&$content, &$settings) {
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'content[') === 0) {
@@ -113,12 +103,11 @@ class AdminUploadBlockFiles extends PostBlockAction {
     }
 
     /**
-     * Объединяет данные пресета с настройками блока
-     * 
-     * @param array $settings Текущие настройки
-     * @param array $content Текущий контент
-     * @return array Обновленные настройки
-     */
+    * Объединяет данные пресета с настройками блока
+    * @param array $settings Текущие настройки
+    * @param array $content Текущий контент
+    * @return array Обновленные настройки
+    */
     private function mergePresetData($settings, $content) {
         if (!empty($settings['preset_id'])) {
             $presetModel = new \PostBlockModel($this->db);
@@ -137,13 +126,12 @@ class AdminUploadBlockFiles extends PostBlockAction {
     }
 
     /**
-     * Обрабатывает одно поле контента
-     * 
-     * @param string $key Ключ поля (например, "content[text]" или "content[items][]")
-     * @param mixed $value Значение поля
-     * @param array &$content Ссылка на массив контента
-     * @return void
-     */
+    * Обрабатывает одно поле контента
+    * @param string $key Ключ поля (например, "content[text]" или "content[items][]")
+    * @param mixed $value Значение поля
+    * @param array &$content Ссылка на массив контента
+    * @return void
+    */
     private function processContentField($key, $value, &$content) {
         $contentKey = str_replace(['content[', ']'], '', $key);
 
@@ -163,24 +151,22 @@ class AdminUploadBlockFiles extends PostBlockAction {
     }
 
     /**
-     * Обрабатывает одно поле настроек
-     * 
-     * @param string $key Ключ поля (например, "settings[align]")
-     * @param mixed $value Значение поля
-     * @param array &$settings Ссылка на массив настроек
-     * @return void
-     */
+    * Обрабатывает одно поле настроек
+    * @param string $key Ключ поля (например, "settings[align]")
+    * @param mixed $value Значение поля
+    * @param array &$settings Ссылка на массив настроек
+    * @return void
+    */
     private function processSettingsField($key, $value, &$settings) {
         $settingsKey = str_replace(['settings[', ']'], '', $key);
         $settings[$settingsKey] = $value;
     }
 
     /**
-     * Отправляет JSON-ответ и завершает выполнение
-     * 
-     * @param array $data Данные для JSON-ответа
-     * @return void
-     */
+    * Отправляет JSON-ответ и завершает выполнение
+    * @param array $data Данные для JSON-ответа
+    * @return void
+    */
     protected function jsonResponse($data) { 
         if (ob_get_level()) {
             ob_clean();

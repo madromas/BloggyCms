@@ -2,18 +2,14 @@
 namespace categories\actions;
 
 /**
- * Действие отображения всех категорий на фронте
- * Показывает страницу со списком всех категорий с пагинацией
- *
- * @package categories\actions
- * @extends CategoryAction
- */
+* Действие отображения всех категорий на фронте
+* @package categories\actions
+*/
 class Index extends CategoryAction {
     /**
-     * Метод выполнения отображения всех категорий
-     * Загружает все категории, применяет настройки сортировки и отображает страницу со списком
-     * @return void
-     */
+    * Метод выполнения отображения всех категорий
+    * @return void
+    */
     public function execute() {
         try {
             $this->addBreadcrumb('Главная', BASE_URL);
@@ -58,12 +54,11 @@ class Index extends CategoryAction {
     }
     
     /**
-     * Сортирует категории по указанному полю
-     *
-     * @param array $categories Массив категорий
-     * @param string $orderBy Поле для сортировки
-     * @return array Отсортированный массив
-     */
+    * Сортирует категории по указанному полю
+    * @param array $categories Массив категорий
+    * @param string $orderBy Поле для сортировки
+    * @return array Отсортированный массив
+    */
     private function sortCategories($categories, $orderBy) {
         switch ($orderBy) {
             case 'posts_count':
@@ -92,12 +87,11 @@ class Index extends CategoryAction {
     }
     
     /**
-     * Получить URL следующей страницы для пагинации
-     *
-     * @param int $currentPage Текущая страница
-     * @param int $totalPages Всего страниц
-     * @return string|null URL следующей страницы или null
-     */
+    * Получить URL следующей страницы для пагинации
+    * @param int $currentPage Текущая страница
+    * @param int $totalPages Всего страниц
+    * @return string|null URL следующей страницы или null
+    */
     private function getNextPageUrl($currentPage, $totalPages) {
         if ($currentPage < $totalPages) {
             return BASE_URL . '/categories?page=' . ($currentPage + 1);

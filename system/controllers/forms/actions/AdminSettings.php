@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие настроек формы
- */
+* Действие настроек формы
+*/
 class AdminSettings extends FormAction {
     
     public function execute() {
@@ -21,6 +21,11 @@ class AdminSettings extends FormAction {
             $this->redirect(ADMIN_URL . '/forms');
             return;
         }
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb('Редактирование: ' . html($form['name']), ADMIN_URL . '/forms/edit/' . $id);
+        $this->addBreadcrumb('Настройки');
         
         $settings = $form['settings'] ?? $this->getFormSettings();
         $notifications = $form['notifications'] ?? $this->getDefaultNotifications();
@@ -63,7 +68,7 @@ class AdminSettings extends FormAction {
             'actions' => $actions,
             'captchaTypes' => $captchaTypes,
             'captchaExample' => $captchaExample,
-            'pageTitle' => 'Настройки формы: ' . htmlspecialchars($form['name'])
+            'pageTitle' => 'Настройки формы: ' . html($form['name'])
         ]);
     }
     
@@ -121,8 +126,8 @@ class AdminSettings extends FormAction {
     }
     
     /**
-     * Подготовка уведомлений
-     */
+    * Подготовка уведомлений
+    */
     private function prepareNotifications($postData, $currentNotifications) {
         $notifications = [];
         
@@ -150,8 +155,8 @@ class AdminSettings extends FormAction {
     }
     
     /**
-     * Подготовка действий
-     */
+    * Подготовка действий
+    */
     private function prepareActions($postData, $currentActions) {
         $actions = [];
         
@@ -209,8 +214,8 @@ class AdminSettings extends FormAction {
     }
     
     /**
-     * Получение типов капчи
-     */
+    * Получение типов капчи
+    */
     private function getCaptchaTypes() {
         return [
             'math' => [
@@ -233,8 +238,8 @@ class AdminSettings extends FormAction {
     }
     
     /**
-     * Генерация примера для капчи
-     */
+    * Генерация примера для капчи
+    */
     private function generateCaptchaExample($type = 'math') {
         switch ($type) {
             case 'math':

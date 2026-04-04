@@ -3,39 +3,23 @@
 namespace search\actions;
 
 /**
- * Абстрактный базовый класс для всех действий модуля поиска
- * Предоставляет общую функциональность, доступ к модели поиска
- * и вспомогательные методы для работы с представлениями и перенаправлениями
- * 
- * @package search\actions
- */
+* Абстрактный базовый класс для всех действий модуля поиска
+* @package search\actions
+*/
 abstract class SearchAction {
     
-    /** @var object Подключение к базе данных */
     protected $db;
-    
-    /** @var array Параметры запроса (GET, POST, маршрутные параметры) */
     protected $params;
-    
-    /** @var object Контроллер, вызывающий действие */
     protected $controller;
-    
-    /** @var \SearchModel Модель для работы с поиском и историей запросов */
     protected $searchModel;
-    
-    /** @var \BreadcrumbsManager Менеджер для работы с хлебными крошками */
     protected $breadcrumbs;
-    
-    /** @var string Заголовок страницы */
     protected $pageTitle;
     
     /**
-     * Конструктор класса действия
-     * Инициализирует подключение к БД, параметры и модель поиска
-     * 
-     * @param object $db Подключение к базе данных
-     * @param array $params Параметры запроса (по умолчанию [])
-     */
+    * Конструктор класса действия
+    * @param object $db Подключение к базе данных
+    * @param array $params Параметры запроса (по умолчанию [])
+    */
     public function __construct($db, $params = []) {
         $this->db = $db;
         $this->params = $params;
@@ -46,79 +30,68 @@ abstract class SearchAction {
     }
     
     /**
-     * Устанавливает контроллер, вызывающий действие
-     * Необходимо для делегирования операций рендеринга и перенаправления
-     * 
-     * @param object $controller Контроллер
-     * @return void
-     */
+    * Устанавливает контроллер, вызывающий действие 
+    * @param object $controller Контроллер
+    * @return void
+    */
     public function setController($controller) {
         $this->controller = $controller;
     }
     
     /**
-     * Абстрактный метод выполнения действия
-     * Должен быть реализован в классах-наследниках
-     * Содержит основную логику конкретного действия
-     * 
-     * @return void
-     */
+    * Абстрактный метод выполнения действия
+    * @return void
+    */
     abstract public function execute();
     
     /**
-     * Добавляет элемент в хлебные крошки
-     * 
-     * @param string $title Название элемента
-     * @param string|null $url URL элемента (null для текущего элемента)
-     * @return self
-     */
+    * Добавляет элемент в хлебные крошки
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента (null для текущего элемента)
+    * @return self
+    */
     protected function addBreadcrumb($title, $url = null) {
         $this->breadcrumbs->add($title, $url);
         return $this;
     }
     
     /**
-     * Добавляет элемент в начало хлебных крошек
-     * 
-     * @param string $title Название элемента
-     * @param string|null $url URL элемента
-     * @return self
-     */
+    * Добавляет элемент в начало хлебных крошек
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента
+    * @return self
+    */
     protected function prependBreadcrumb($title, $url = null) {
         $this->breadcrumbs->prepend($title, $url);
         return $this;
     }
     
     /**
-     * Очищает все хлебные крошки
-     * 
-     * @return self
-     */
+    * Очищает все хлебные крошки 
+    * @return self
+    */
     protected function clearBreadcrumbs() {
         $this->breadcrumbs->clear();
         return $this;
     }
     
     /**
-     * Устанавливает заголовок страницы
-     * 
-     * @param string $title Заголовок
-     * @return self
-     */
+    * Устанавливает заголовок страницы
+    * @param string $title Заголовок
+    * @return self
+    */
     protected function setPageTitle($title) {
         $this->pageTitle = $title;
         return $this;
     }
     
     /**
-     * Рендерит шаблон с переданными данными
-     * Использует контроллер для рендеринга, если он установлен
-     * 
-     * @param string $template Путь к шаблону относительно папки views
-     * @param array $data Данные для передачи в шаблон
-     * @throws \Exception Если контроллер не установлен
-     * @return void
-     */
+    * Рендерит шаблон с переданными данными
+    * @param string $template Путь к шаблону относительно папки views
+    * @param array $data Данные для передачи в шаблон
+    * @throws \Exception Если контроллер не установлен
+    * @return void
+    */
     protected function render($template, $data = []) {
         if (!$this->controller) {
             throw new \Exception('Controller not set for Action');
@@ -136,13 +109,10 @@ abstract class SearchAction {
     }
     
     /**
-     * Выполняет перенаправление на указанный URL
-     * Использует контроллер для перенаправления, если он установлен,
-     * иначе выполняет перенаправление через стандартный PHP-заголовок
-     * 
-     * @param string $url URL для перенаправления
-     * @return void
-     */
+    * Выполняет перенаправление на указанный URL
+    * @param string $url URL для перенаправления
+    * @return void
+    */
     protected function redirect($url) {
         if ($this->controller) {
             $this->controller->redirect($url);
@@ -153,20 +123,17 @@ abstract class SearchAction {
     }
     
     /**
-     * Проверяет, авторизован ли пользователь
-     * Основана на проверке наличия user_id в сессии
-     * 
-     * @return bool true если пользователь авторизован, false в противном случае
-     */
+    * Проверяет, авторизован ли пользователь
+    * @return bool true если пользователь авторизован, false в противном случае
+    */
     protected function checkAuth() {
         return isset($_SESSION['user_id']);
     }
     
     /**
-     * Возвращает менеджер хлебных крошек
-     * 
-     * @return \BreadcrumbsManager
-     */
+    * Возвращает менеджер хлебных крошек
+    * @return \BreadcrumbsManager
+    */
     protected function getBreadcrumbs() {
         return $this->breadcrumbs;
     }

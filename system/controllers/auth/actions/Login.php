@@ -2,29 +2,25 @@
 namespace auth\actions;
 
 /**
- * Действие для входа пользователя в систему (фронтенд)
- */
+* Действие для входа пользователя в систему (фронтенд)
+*/
 class Login extends AuthAction {
-    /**
-     * @var \LoginAttemptModel Модель для отслеживания попыток входа и блокировок
-     * @access private
-     */
+    
     private $loginAttemptModel;
 
     /**
-     * Конструктор действия входа пользователя
-     * @param \Database $db Объект подключения к базе данных
-     * @param array $params Дополнительные параметры маршрутизации
-     */
+    * Конструктор действия входа пользователя
+    * @param \Database $db Объект подключения к базе данных
+    * @param array $params Дополнительные параметры маршрутизации
+    */
     public function __construct($db, $params = []) {
         parent::__construct($db, $params);
         $this->loginAttemptModel = new \LoginAttemptModel($db);
     }
 
     /**
-     * Основной метод выполнения процесса входа пользователя
-     * 
-     */
+    * Основной метод выполнения процесса входа пользователя 
+    */
     public function execute() {
         try {
             $this->addBreadcrumb('Главная', BASE_URL);
@@ -121,15 +117,10 @@ class Login extends AuthAction {
     }
     
     /**
-     * Обновление времени последнего входа пользователя в системе
-     * 
-     * Записывает текущую дату и время в поле last_login таблицы users.
-     * Используется для аналитики активности пользователей и определения
-     * неактивных аккаунтов.
-     * 
-     * @param int $userId Идентификатор пользователя
-     * @return void
-     */
+    * Обновление времени последнего входа пользователя в системе 
+    * @param int $userId Идентификатор пользователя
+    * @return void
+    */
     private function updateUserLastLogin($userId) {
         try {
             $this->userModel->update($userId, [
@@ -139,14 +130,10 @@ class Login extends AuthAction {
     }
     
     /**
-     * Обновление времени последней активности пользователя
-     * 
-     * Записывает текущую дату и время в таблицу user_activity.
-     * Используется для определения онлайн-статуса пользователя.
-     * 
-     * @param int $userId Идентификатор пользователя
-     * @return void
-     */
+    * Обновление времени последней активности пользователя
+    * @param int $userId Идентификатор пользователя
+    * @return void
+    */
     private function updateUserActivity($userId) {
         try {
             $activityManager = \UserActivityManager::getInstance($this->db);
@@ -155,10 +142,9 @@ class Login extends AuthAction {
     }
     
     /**
-     * Получение настроек авторизации для фронтенда из конфигурации
-     * Использует SettingsHelper для доступа к системным настройкам.
-     * @return array Настройки авторизации для фронтенда
-     */
+    * Получение настроек авторизации для фронтенда из конфигурации
+    * @return array Настройки авторизации для фронтенда
+    */
     private function getFrontAuthSettings() {
         return [
             'count_auth' => \SettingsHelper::get('controller_auth', 'count_auth', 5),
@@ -171,12 +157,11 @@ class Login extends AuthAction {
     }
     
     /**
-     * Определение URL для редиректа после успешного входа пользователя
-     * @param array $user Данные аутентифицированного пользователя
-     * @param string $redirectOption Настройка редиректа из конфигурации
-     * @return string URL для перенаправления
-     *
-     */
+    * Определение URL для редиректа после успешного входа пользователя
+    * @param array $user Данные аутентифицированного пользователя
+    * @param string $redirectOption Настройка редиректа из конфигурации
+    * @return string URL для перенаправления
+    */
     private function getRedirectUrl($user, $redirectOption) {
         if (isset($_SESSION['redirect_url'])) {
             return $_SESSION['redirect_url'];
@@ -193,13 +178,8 @@ class Login extends AuthAction {
     }
 
     /**
-     * Отображение страницы с информацией о временной блокировке входа
-     * 
-     * Показывает пользователю:
-     * - Время окончания блокировки
-     * - Оставшееся время в минутах
-     * - Рекомендации по дальнейшим действиям
-     */
+    * Отображение страницы с информацией о временной блокировке входа
+    */
     private function showBlockedPage() {
         $this->clearBreadcrumbs();
         $this->addBreadcrumb('Главная', BASE_URL);

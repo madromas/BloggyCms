@@ -3,23 +3,16 @@
 namespace posts\actions;
 
 /**
- * Действие редактирования поста в административной панели
- * Отображает форму редактирования существующего поста с его блоками, тегами и полями,
- * обрабатывает сохранение изменений, поддерживает как обычные, так и AJAX-запросы
- * 
- * @package posts\actions
- * @extends PostAction
- */
+* Действие редактирования поста в административной панели 
+* @package posts\actions
+*/
 class Edit extends PostAction {
     
     /**
-     * Метод выполнения редактирования поста
-     * Проверяет ID, загружает данные поста, блоки, категории, теги,
-     * обрабатывает POST-запрос для сохранения или отображает форму
-     * 
-     * @return void
-     * @throws \Exception Если ID не указан
-     */
+    * Метод выполнения редактирования поста
+    * @return void
+    * @throws \Exception Если ID не указан
+    */
     public function execute() {
         $id = $this->params['id'] ?? null;
         if (!$id) {
@@ -28,6 +21,11 @@ class Edit extends PostAction {
 
         try {
             $post = $this->loadPost($id);
+            
+            $this->addBreadcrumb('Панель управления', ADMIN_URL);
+            $this->addBreadcrumb('Посты', ADMIN_URL . '/posts');
+            $this->addBreadcrumb('Редактирование: ' . $post['title']);
+            
             $this->postBlockManager->loadAllPostBlockAssets();
             $categories = $this->categoryModel->getAll();
             $tags = $this->tagModel->getAll();
@@ -48,12 +46,11 @@ class Edit extends PostAction {
     }
 
     /**
-     * Загружает пост по ID и проверяет его существование
-     * 
-     * @param int $id ID поста
-     * @return array Данные поста
-     * @throws \Exception Если пост не найден
-     */
+    * Загружает пост по ID и проверяет его существование 
+    * @param int $id ID поста
+    * @return array Данные поста
+    * @throws \Exception Если пост не найден
+    */
     private function loadPost($id) {
         $post = $this->postModel->getById($id);
         if (!$post) {
@@ -63,11 +60,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Загружает и подготавливает блоки поста для отображения в форме
-     * 
-     * @param int $postId ID поста
-     * @return array Массив подготовленных блоков
-     */
+    * Загружает и подготавливает блоки поста для отображения в форме
+    * @param int $postId ID поста
+    * @return array Массив подготовленных блоков
+    */
     private function loadPostBlocks($postId) {
         $blocks = $this->postBlockModel->getByPost($postId);
         $preparedBlocks = [];
@@ -80,11 +76,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Подготавливает данные одного блока для отображения в форме
-     * 
-     * @param array $block Данные блока из БД
-     * @return array Подготовленные данные блока
-     */
+    * Подготавливает данные одного блока для отображения в форме 
+    * @param array $block Данные блока из БД
+    * @return array Подготовленные данные блока
+    */
     private function prepareBlockData($block) {
         $content = $block['content'];
         $settings = $block['settings'];
@@ -109,17 +104,16 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обрабатывает POST-запрос на сохранение изменений поста
-     * 
-     * @param int $id ID поста
-     * @param array $post Исходные данные поста
-     * @param array $categories Список категорий
-     * @param array $tags Список всех тегов
-     * @param array $postTags Текущие теги поста
-     * @param array $preparedBlocks Подготовленные блоки
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return void
-     */
+    * Обрабатывает POST-запрос на сохранение изменений поста
+    * @param int $id ID поста
+    * @param array $post Исходные данные поста
+    * @param array $categories Список категорий
+    * @param array $tags Список всех тегов
+    * @param array $postTags Текущие теги поста
+    * @param array $preparedBlocks Подготовленные блоки
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return void
+    */
     private function handlePostRequest($id, $post, $categories, $tags, $postTags, $preparedBlocks, $hasCategories) {
         $this->validateRequiredFields($hasCategories);
         $data = $this->preparePostData($id, $post, $hasCategories);
@@ -131,12 +125,11 @@ class Edit extends PostAction {
     }
 
     /**
-     * Валидирует обязательные поля формы
-     * 
-     * @param bool $hasCategories Флаг наличия категорий
-     * @throws \Exception При ошибках валидации
-     * @return void
-     */
+    * Валидирует обязательные поля формы 
+    * @param bool $hasCategories Флаг наличия категорий
+    * @throws \Exception При ошибках валидации
+    * @return void
+    */
     private function validateRequiredFields($hasCategories) {
         if (empty($_POST['title'])) {
             throw new \Exception('Заголовок обязателен');
@@ -170,13 +163,12 @@ class Edit extends PostAction {
     }
 
     /**
-     * Подготавливает данные поста для обновления
-     * 
-     * @param int $id ID поста
-     * @param array $post Текущие данные поста
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return array Подготовленные данные
-     */
+    * Подготавливает данные поста для обновления
+    * @param int $id ID поста
+    * @param array $post Текущие данные поста
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return array Подготовленные данные
+    */
     private function preparePostData($id, $post, $hasCategories) {
         $categoryId = null;
         if ($hasCategories && isset($_POST['category_id']) && $_POST['category_id'] !== '') {
@@ -207,11 +199,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обрабатывает загрузку/обновление главного изображения
-     * 
-     * @param array $post Текущие данные поста
-     * @return string|null Путь к изображению или null
-     */
+    * Обрабатывает загрузку/обновление главного изображения 
+    * @param array $post Текущие данные поста
+    * @return string|null Путь к изображению или null
+    */
     private function processFeaturedImage($post) {
         if (!empty($_POST['uploaded_image_path'])) {
             $this->deleteOldImage($post['featured_image']);
@@ -231,11 +222,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Загружает новое изображение на сервер
-     * 
-     * @param string|null $oldImage Имя старого изображения для удаления
-     * @return string|null Имя загруженного файла или null
-     */
+    * Загружает новое изображение на сервер
+    * @param string|null $oldImage Имя старого изображения для удаления
+    * @return string|null Имя загруженного файла или null
+    */
     private function uploadNewImage($oldImage) {
         $uploadDir = UPLOADS_PATH . '/images/';
         if (!is_dir($uploadDir)) {
@@ -254,11 +244,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Удаляет старое изображение с сервера
-     * 
-     * @param string|null $imageName Имя файла для удаления
-     * @return void
-     */
+    * Удаляет старое изображение с сервера
+    * @param string|null $imageName Имя файла для удаления
+    * @return void
+    */
     private function deleteOldImage($imageName) {
         if (!empty($imageName)) {
             $oldImagePath = UPLOADS_PATH . '/images/' . $imageName;
@@ -269,11 +258,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обновляет блоки поста
-     * 
-     * @param int $postId ID поста
-     * @return void
-     */
+    * Обновляет блоки поста
+    * @param int $postId ID поста
+    * @return void
+    */
     private function updatePostBlocks($postId) {
         if (!empty($_POST['post_blocks'])) {
             $blocksData = json_decode($_POST['post_blocks'], true);
@@ -284,11 +272,10 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обновляет теги поста
-     * 
-     * @param int $postId ID поста
-     * @return void
-     */
+    * Обновляет теги поста 
+    * @param int $postId ID поста
+    * @return void
+    */
     private function updatePostTags($postId) {
         $this->db->query("DELETE FROM post_tags WHERE post_id = ?", [$postId]);
         
@@ -311,12 +298,11 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обновляет пользовательские поля поста
-     * 
-     * @param int $postId ID поста
-     * @throws \Exception При ошибках валидации
-     * @return void
-     */
+    * Обновляет пользовательские поля поста 
+    * @param int $postId ID поста
+    * @throws \Exception При ошибках валидации
+    * @return void
+    */
     private function updateCustomFields($postId) {
         $fieldModel = new \FieldModel($this->db);
         $fieldManager = new \FieldManager($this->db);
@@ -334,13 +320,12 @@ class Edit extends PostAction {
     }
 
     /**
-     * Получает текущие значения пользовательских полей
-     * 
-     * @param array $customFields Массив полей
-     * @param int $postId ID поста
-     * @param \FieldModel $fieldModel Модель полей
-     * @return array Массив текущих значений
-     */
+    * Получает текущие значения пользовательских полей
+    * @param array $customFields Массив полей
+    * @param int $postId ID поста
+    * @param \FieldModel $fieldModel Модель полей
+    * @return array Массив текущих значений
+    */
     private function getCurrentFieldValues($customFields, $postId, $fieldModel) {
         $currentValues = [];
         foreach ($customFields as $field) {
@@ -350,13 +335,12 @@ class Edit extends PostAction {
     }
 
     /**
-     * Валидирует пользовательские поля
-     * 
-     * @param array $customFields Массив полей
-     * @param array $currentValues Текущие значения
-     * @param \FieldManager $fieldManager Менеджер полей
-     * @return array Массив ошибок валидации
-     */
+    * Валидирует пользовательские поля
+    * @param array $customFields Массив полей
+    * @param array $currentValues Текущие значения
+    * @param \FieldManager $fieldManager Менеджер полей
+    * @return array Массив ошибок валидации
+    */
     private function validateCustomFields($customFields, $currentValues, $fieldManager) {
         $errors = [];
         
@@ -373,15 +357,14 @@ class Edit extends PostAction {
     }
 
     /**
-     * Сохраняет одно пользовательское поле
-     * 
-     * @param array $field Данные поля
-     * @param int $postId ID поста
-     * @param array $currentValues Текущие значения
-     * @param \FieldModel $fieldModel Модель полей
-     * @param \FieldManager $fieldManager Менеджер полей
-     * @return void
-     */
+    * Сохраняет одно пользовательское поле 
+    * @param array $field Данные поля
+    * @param int $postId ID поста
+    * @param array $currentValues Текущие значения
+    * @param \FieldModel $fieldModel Модель полей
+    * @param \FieldManager $fieldManager Менеджер полей
+    * @return void
+    */
     private function saveCustomField($field, $postId, $currentValues, $fieldModel, $fieldManager) {
         try {
             $value = $fieldManager->processFieldValue($field, $_POST, $_FILES, $currentValues);
@@ -402,10 +385,9 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обрабатывает успешное обновление поста
-     * 
-     * @return void
-     */
+    * Обрабатывает успешное обновление поста
+    * @return void
+    */
     private function handleUpdateSuccess() {
         if ($this->isAjaxRequest()) {
             header('Content-Type: application/json');
@@ -422,16 +404,15 @@ class Edit extends PostAction {
     }
 
     /**
-     * Отображает форму редактирования поста
-     * 
-     * @param array $post Данные поста
-     * @param array $categories Список категорий
-     * @param array $tags Список всех тегов
-     * @param array $postTags Текущие теги поста
-     * @param array $preparedBlocks Подготовленные блоки
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return void
-     */
+    * Отображает форму редактирования поста
+    * @param array $post Данные поста
+    * @param array $categories Список категорий
+    * @param array $tags Список всех тегов
+    * @param array $postTags Текущие теги поста
+    * @param array $preparedBlocks Подготовленные блоки
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return void
+    */
     private function renderEditForm($post, $categories, $tags, $postTags, $preparedBlocks, $hasCategories) {
         $this->render('admin/posts/edit', [
             'post' => $post,
@@ -446,17 +427,16 @@ class Edit extends PostAction {
     }
 
     /**
-     * Обрабатывает ошибку при редактировании поста
-     * 
-     * @param \Exception $e Исключение
-     * @param array|null $post Данные поста
-     * @param array $categories Список категорий
-     * @param array $tags Список тегов
-     * @param array $postTags Текущие теги поста
-     * @param array $preparedBlocks Подготовленные блоки
-     * @param bool $hasCategories Флаг наличия категорий
-     * @return void
-     */
+    * Обрабатывает ошибку при редактировании поста
+    * @param \Exception $e Исключение
+    * @param array|null $post Данные поста
+    * @param array $categories Список категорий
+    * @param array $tags Список тегов
+    * @param array $postTags Текущие теги поста
+    * @param array $preparedBlocks Подготовленные блоки
+    * @param bool $hasCategories Флаг наличия категорий
+    * @return void
+    */
     private function handleError($e, $post, $categories, $tags, $postTags, $preparedBlocks, $hasCategories) {
         if ($this->isAjaxRequest()) {
             header('Content-Type: application/json');

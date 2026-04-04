@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие экспорта отправок в CSV
- */
+* Действие экспорта отправок в CSV
+*/
 class AdminExport extends FormAction {
     
     public function execute() {
@@ -22,7 +22,6 @@ class AdminExport extends FormAction {
             return;
         }
         
-        // Генерируем CSV
         $csvContent = $this->formModel->exportSubmissionsToCSV($formId);
         
         if (empty($csvContent)) {

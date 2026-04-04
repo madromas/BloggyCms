@@ -12,6 +12,7 @@ class PostModel implements ModelAPI {
 
     protected $allowedAPIMethods = [
         'getAll',
+        'getPublished',
         'getById',
         'getBySlug',
         'getLatest',
@@ -118,7 +119,7 @@ class PostModel implements ModelAPI {
             FROM posts p 
             LEFT JOIN categories c ON p.category_id = c.id 
             LEFT JOIN users u ON p.user_id = u.id
-            WHERE p.slug = ?", 
+            WHERE p.slug = ? AND p.status = 'published'",
             [$slug]
         );
         
@@ -126,7 +127,6 @@ class PostModel implements ModelAPI {
             $post['author_slug'] = $post['author_name'] ?? 'author';
             $post['author_bio'] = $post['author_bio'] ?? '';
             $post['author_website'] = $post['author_website'] ?? '';
-            // Устанавливаем значение по умолчанию для allow_comments
             $post['allow_comments'] = $post['allow_comments'] ?? 1;
         }
         
@@ -1246,6 +1246,29 @@ class PostModel implements ModelAPI {
             [$userId]
         );
         return (int)($result['count'] ?? 0);
+    }
+
+    /**
+     * Получает только опубликованные посты
+     * 
+     * @param int|null $limit Ограничение количества
+     * @return array Массив опубликованных постов
+     */
+    public function getPublished($limit = null) {
+        $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug,
+                    u.username as author_name, u.display_name as author_display_name,
+                    u.avatar as author_avatar
+                FROM posts p 
+                LEFT JOIN categories c ON p.category_id = c.id 
+                LEFT JOIN users u ON p.user_id = u.id
+                WHERE p.status = 'published'
+                ORDER BY p.created_at DESC";
+                
+        if ($limit) {
+            $sql .= " LIMIT " . (int)$limit;
+        }
+        
+        return $this->db->fetchAll($sql);
     }
     
 }

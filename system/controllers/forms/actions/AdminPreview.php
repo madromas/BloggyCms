@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие предварительного просмотра формы
- */
+* Действие предварительного просмотра формы
+*/
 class AdminPreview extends FormAction {
     
     public function execute() {
@@ -21,6 +21,10 @@ class AdminPreview extends FormAction {
             $this->redirect(ADMIN_URL . '/forms');
             return;
         }
+        
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb('Предпросмотр: ' . html($form['name']));
         
         $settings = $form['settings'] ?? [];
         
@@ -39,7 +43,8 @@ class AdminPreview extends FormAction {
         $this->render('admin/forms/preview', [
             'form' => $form,
             'formHtml' => $formHtml,
-            'pageTitle' => 'Предпросмотр формы: ' . htmlspecialchars($form['name'])
+            'pageTitle' => 'Предпросмотр формы: ' . html($form['name'])
         ]);
     }
+
 }

@@ -3,23 +3,20 @@
 namespace tags\actions;
 
 /**
- * Действие отображения списка всех тегов в административной панели
- * Главная страница управления тегами, показывает все теги
- * и случайную подсказку для администратора
- * 
- * @package tags\actions
- * @extends TagAction
- */
+* Действие отображения списка всех тегов в административной панели
+* @package tags\actions
+*/
 class AdminIndex extends TagAction {
     
     /**
-     * Метод выполнения отображения списка тегов
-     * Получает все теги из базы данных, выбирает случайную подсказку
-     * и передает их в шаблон для отображения
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения списка тегов
+    * @return void
+    */
     public function execute() {
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Теги');
+        
         try {
             $tags = $this->tagModel->getAll();
             $hints = [
@@ -50,4 +47,5 @@ class AdminIndex extends TagAction {
             $this->redirect(ADMIN_URL);
         }
     }
+
 }

@@ -17,5 +17,4 @@ return [
     'admin/forms/delete-all-submissions/{id}' => ['controller' => 'AdminForm', 'action' => 'deleteAllSubmissions', 'admin' => true],
     'form/{slug}' => ['controller' => 'Form', 'action' => 'show'],
     'form/{slug}/submit' => ['controller' => 'Form', 'action' => 'process'],
-    
 ];

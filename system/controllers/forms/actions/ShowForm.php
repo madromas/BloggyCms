@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие показа формы (публичное)
- */
+* Действие показа формы
+*/
 class ShowForm extends FormAction {
     
     public function execute() {
@@ -21,10 +21,14 @@ class ShowForm extends FormAction {
             $this->redirect(BASE_URL);
             return;
         }
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb(html($form['name']));
         
         $this->render('forms/view', [
             'form' => $form,
-            'pageTitle' => htmlspecialchars($form['name'])
+            'pageTitle' => html($form['name'])
         ]);
     }
 }

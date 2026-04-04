@@ -3,21 +3,16 @@
 namespace posts\actions;
 
 /**
- * Действие отображения отдельного поста (публичная часть)
- * Загружает и отображает пост по его URL-адресу (slug),
- * проверяет права доступа, защиту паролем, обрабатывает блоки контента,
- * комментарии, лайки, закладки и пользовательские поля
- * 
- * @package posts\actions
- * @extends PostAction
- */
+* Действие отображения отдельного поста (публичная часть)
+* @package posts\actions
+*/
 class Show extends PostAction {
     
     /**
-     * Метод выполнения отображения поста
-     * @return void
-     * @throws \Exception Если slug не указан
-     */
+    * Метод выполнения отображения поста
+    * @return void
+    * @throws \Exception Если slug не указан
+    */
     public function execute() {
         $slug = $this->params['slug'] ?? null;
         if (!$slug) {
@@ -62,21 +57,19 @@ class Show extends PostAction {
     }
     
     /**
-     * Проверяет, есть ли у пользователя доступ к защищенному посту
-     * 
-     * @param int $postId ID поста
-     * @return bool true если доступ есть
-     */
+    * Проверяет, есть ли у пользователя доступ к защищенному посту
+    * @param int $postId ID поста
+    * @return bool true если доступ есть
+    */
     private function checkPostAccess($postId) {
         return isset($_SESSION['post_access'][$postId]) && $_SESSION['post_access'][$postId] === true;
     }
     
     /**
-     * Отображает форму ввода пароля для защищенного поста
-     * 
-     * @param array $post Данные поста
-     * @return void
-     */
+    * Отображает форму ввода пароля для защищенного поста
+    * @param array $post Данные поста
+    * @return void
+    */
     private function renderPasswordForm($post) {
         $this->addBreadcrumb('Главная', BASE_URL);
         $this->addBreadcrumb('Все записи', BASE_URL . '/posts');
@@ -177,23 +170,21 @@ class Show extends PostAction {
     }
 
     /**
-     * Получает и обрабатывает комментарии к посту
-     * 
-     * @param int $postId ID поста
-     * @param bool $isAdmin Флаг администратора
-     * @return array Массив с деревом комментариев и общим количеством
-     */
+    * Получает и обрабатывает комментарии к посту
+    * @param int $postId ID поста
+    * @param bool $isAdmin Флаг администратора
+    * @return array Массив с деревом комментариев и общим количеством
+    */
     private function getComments($postId, $isAdmin) {
         $commentController = new \CommentController($this->db);
         return $commentController->getCommentsByPostWithUserData($postId, $isAdmin);
     }
 
     /**
-     * Получает и обрабатывает блоки поста
-     * 
-     * @param int $postId ID поста
-     * @return array Массив обработанных блоков
-     */
+    * Получает и обрабатывает блоки поста
+    * @param int $postId ID поста
+    * @return array Массив обработанных блоков
+    */
     private function getProcessedBlocks($postId) {
         $blocks = $this->postBlockModel->getByPost($postId);
         $processedBlocks = [];
@@ -217,11 +208,10 @@ class Show extends PostAction {
     }
 
     /**
-     * Обрабатывает один блок поста
-     * 
-     * @param array $block Данные блока
-     * @return array Обработанный блок
-     */
+    * Обрабатывает один блок поста
+    * @param array $block Данные блока
+    * @return array Обработанный блок
+    */
     private function processSingleBlock($block) {
         $content = $block['content'];
         $settings = $block['settings'];
@@ -252,11 +242,10 @@ class Show extends PostAction {
     }
 
     /**
-     * Получает пользовательские поля для поста
-     * 
-     * @param int $postId ID поста
-     * @return array Массив значений полей
-     */
+    * Получает пользовательские поля для поста
+    * @param int $postId ID поста
+    * @return array Массив значений полей
+    */
     private function getCustomFields($postId) {
         $fieldModel = new \FieldModel($this->db);
         $customFields = $fieldModel->getActiveByEntityType('post');
@@ -273,10 +262,9 @@ class Show extends PostAction {
     }
     
     /**
-     * Получает группы текущего пользователя для проверки видимости
-     * 
-     * @return array Массив групп пользователя
-     */
+    * Получает группы текущего пользователя для проверки видимости
+    * @return array Массив групп пользователя
+    */
     private function getUserGroups() {
         $userGroups = [];
         $userGroups[] = 'guest';

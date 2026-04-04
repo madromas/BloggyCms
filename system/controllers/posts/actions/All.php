@@ -3,23 +3,15 @@
 namespace posts\actions;
 
 /**
- * Действие отображения всех постов с пагинацией (публичная часть)
- * Отображает список всех опубликованных постов с учетом прав доступа,
- * пагинацией, информацией о лайках, закладках и комментариях
- * 
- * @package posts\actions
- * @extends PostAction
- */
+* Действие отображения всех постов с пагинацией (публичная часть)
+* @package posts\actions
+*/
 class All extends PostAction {
     
     /**
-     * Метод выполнения отображения всех постов
-     * Получает номер страницы из GET-параметров, определяет группы пользователя,
-     * загружает посты с пагинацией, дополняет их информацией о лайках,
-     * закладках и комментариях, передает в шаблон для отображения
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения всех постов 
+    * @return void
+    */
     public function execute() {
         try {
 
@@ -79,12 +71,11 @@ class All extends PostAction {
     }
     
     /**
-     * Получить URL следующей страницы для пагинации
-     * 
-     * @param int $currentPage Текущая страница
-     * @param int $totalPages Всего страниц
-     * @return string|null URL следующей страницы или null
-     */
+    * Получить URL следующей страницы для пагинации
+    * @param int $currentPage Текущая страница
+    * @param int $totalPages Всего страниц
+    * @return string|null URL следующей страницы или null
+    */
     private function getNextPageUrl($currentPage, $totalPages) {
         if ($currentPage < $totalPages) {
             return BASE_URL . '/posts?page=' . ($currentPage + 1);
@@ -93,11 +84,9 @@ class All extends PostAction {
     }
     
     /**
-     * Получает группы текущего пользователя для фильтрации видимости постов
-     * Всегда включает группу 'guest', добавляет группы пользователя если авторизован
-     * 
-     * @return array Массив групп пользователя
-     */
+    * Получает группы текущего пользователя для фильтрации видимости постов
+    * @return array Массив групп пользователя
+    */
     private function getUserGroups() {
         $userGroups = [];
         $userGroups[] = 'guest';

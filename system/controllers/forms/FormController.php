@@ -42,18 +42,18 @@ class FormController extends Controller {
         
         ob_start();
         ?>
-        <div class="form-container form-<?= htmlspecialchars($slug) ?>">
+        <div class="form-container form-<?= html($slug) ?>">
             <?php if ($form['description']): ?>
                 <div class="form-description mb-4">
-                    <?= nl2br(htmlspecialchars($form['description'])) ?>
+                    <?= nl2br(html($form['description'])) ?>
                 </div>
             <?php endif; ?>
             
-            <form action="<?= BASE_URL ?>/form/<?= htmlspecialchars($slug) ?>/submit" 
+            <form action="<?= BASE_URL ?>/form/<?= html($slug) ?>/submit" 
                   method="POST" 
                   class="custom-form"
                   enctype="multipart/form-data"
-                  id="form-<?= htmlspecialchars($slug) ?>">
+                  id="form-<?= html($slug) ?>">
                   
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 
@@ -61,13 +61,13 @@ class FormController extends Controller {
                     <?php if ($field['type'] === 'submit'): ?>
                         <div class="form-group mb-3">
                             <button type="submit" class="btn btn-primary">
-                                <?= htmlspecialchars($field['label'] ?? 'Отправить') ?>
+                                <?= html($field['label'] ?? 'Отправить') ?>
                             </button>
                         </div>
                     <?php elseif ($field['type'] !== 'hidden'): ?>
                         <div class="form-group mb-3">
-                            <label for="field_<?= htmlspecialchars($field['name']) ?>" class="form-label">
-                                <?= htmlspecialchars($field['label'] ?? '') ?>
+                            <label for="field_<?= html($field['name']) ?>" class="form-label">
+                                <?= html($field['label'] ?? '') ?>
                                 <?php if (!empty($field['required'])): ?>
                                     <span class="text-danger">*</span>
                                 <?php endif; ?>
@@ -75,53 +75,53 @@ class FormController extends Controller {
                             
                             <?php if (in_array($field['type'], ['text', 'email', 'tel', 'number', 'password'])): ?>
                                 <input type="<?= $field['type'] ?>"
-                                    id="field_<?= htmlspecialchars($field['name']) ?>"
-                                    name="<?= htmlspecialchars($field['name']) ?>"
+                                    id="field_<?= html($field['name']) ?>"
+                                    name="<?= html($field['name']) ?>"
                                     class="form-control"
-                                    placeholder="<?= htmlspecialchars($field['placeholder'] ?? '') ?>"
-                                    value="<?= htmlspecialchars($field['default_value'] ?? '') ?>"
+                                    placeholder="<?= html($field['placeholder'] ?? '') ?>"
+                                    value="<?= html($field['default_value'] ?? '') ?>"
                                     <?= !empty($field['required']) ? 'required' : '' ?>>
                                     
                             <?php elseif ($field['type'] === 'textarea'): ?>
-                                <textarea id="field_<?= htmlspecialchars($field['name']) ?>"
-                                    name="<?= htmlspecialchars($field['name']) ?>"
+                                <textarea id="field_<?= html($field['name']) ?>"
+                                    name="<?= html($field['name']) ?>"
                                     class="form-control"
                                     rows="<?= $field['rows'] ?? 4 ?>"
-                                    placeholder="<?= htmlspecialchars($field['placeholder'] ?? '') ?>"
-                                    <?= !empty($field['required']) ? 'required' : '' ?>><?= htmlspecialchars($field['default_value'] ?? '') ?></textarea>
+                                    placeholder="<?= html($field['placeholder'] ?? '') ?>"
+                                    <?= !empty($field['required']) ? 'required' : '' ?>><?= html($field['default_value'] ?? '') ?></textarea>
                                     
                             <?php elseif ($field['type'] === 'select'): ?>
-                                <select id="field_<?= htmlspecialchars($field['name']) ?>"
-                                    name="<?= htmlspecialchars($field['name']) ?>"
+                                <select id="field_<?= html($field['name']) ?>"
+                                    name="<?= html($field['name']) ?>"
                                     class="form-select"
                                     <?= !empty($field['required']) ? 'required' : '' ?>>
-                                    <option value=""><?= htmlspecialchars($field['placeholder'] ?? 'Выберите...') ?></option>
+                                    <option value=""><?= html($field['placeholder'] ?? 'Выберите...') ?></option>
                                     <?php foreach ($field['options'] ?? [] as $option): ?>
-                                    <option value="<?= htmlspecialchars($option['value'] ?? '') ?>">
-                                        <?= htmlspecialchars($option['label'] ?? '') ?>
+                                    <option value="<?= html($option['value'] ?? '') ?>">
+                                        <?= html($option['label'] ?? '') ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
 
                             <?php elseif ($field['type'] === 'file'): ?>
                                 <input type="file"
-                                    id="field_<?= htmlspecialchars($field['name']) ?>"
-                                    name="<?= htmlspecialchars($field['name']) . (!empty($field['multiple']) ? '[]' : '') ?>"
-                                    class="form-control <?= htmlspecialchars($field['class'] ?? '') ?>"
+                                    id="field_<?= html($field['name']) ?>"
+                                    name="<?= html($field['name']) . (!empty($field['multiple']) ? '[]' : '') ?>"
+                                    class="form-control <?= html($field['class'] ?? '') ?>"
                                     <?= !empty($field['required']) ? 'required' : '' ?>
                                     <?= !empty($field['multiple']) ? 'multiple' : '' ?>
-                                    <?= !empty($field['accept']) ? 'accept="' . htmlspecialchars($field['accept']) . '"' : '' ?>>
+                                    <?= !empty($field['accept']) ? 'accept="' . html($field['accept']) . '"' : '' ?>>
 
                             <?php endif; ?>
                             
                             <?php if (!empty($field['description'])): ?>
-                                <div class="form-text"><?= htmlspecialchars($field['description']) ?></div>
+                                <div class="form-text"><?= html($field['description']) ?></div>
                             <?php endif; ?>
                         </div>
                     <?php else: ?>
                         <input type="hidden" 
-                               name="<?= htmlspecialchars($field['name']) ?>" 
-                               value="<?= htmlspecialchars($field['default_value'] ?? '') ?>">
+                               name="<?= html($field['name']) ?>" 
+                               value="<?= html($field['default_value'] ?? '') ?>">
                     <?php endif; ?>
                 <?php endforeach; ?>
             </form>

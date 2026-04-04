@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие удаления формы
- */
+* Действие удаления формы
+*/
 class AdminDelete extends FormAction {
     
     public function execute() {
@@ -20,8 +20,7 @@ class AdminDelete extends FormAction {
             if (!$form) {
                 throw new \Exception('Форма не найдена');
             }
-            
-            // Удаляем форму (включая все связанные данные)
+
             $this->deleteFormWithRelations($id);
             
             \Notification::success('Форма успешно удалена');
@@ -34,8 +33,8 @@ class AdminDelete extends FormAction {
     }
     
     /**
-     * Удаляет форму со всеми связанными данными
-     */
+    * Удаляет форму со всеми связанными данными
+    */
     private function deleteFormWithRelations($formId) {
         $db = $this->db;
         $db->beginTransaction();

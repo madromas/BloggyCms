@@ -3,17 +3,19 @@
 namespace addons\actions;
 
 /**
- * Действие отображения списка установленных пакетов
- * 
- * @package addons\actions
- */
+* Действие отображения списка установленных пакетов
+* @package addons\actions
+*/
 class AdminIndex extends AddonAction {
     
     /**
-     * Метод выполнения
-     */
+    * Метод выполнения
+    */
     public function execute() {
         try {
+            $this->addBreadcrumb('Панель управления', ADMIN_URL);
+            $this->addBreadcrumb('Пакеты');
+            
             $addons = $this->addonModel->getAll();
             
             $hints = [

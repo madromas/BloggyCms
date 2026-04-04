@@ -3,17 +3,15 @@
 namespace tags\actions;
 
 /**
- * Действие отображения постов по тегу в публичной части
- * Показывает страницу с постами, привязанными к указанному тегу
- * @package tags\actions
- * @extends TagAction
- */
+* Действие отображения постов по тегу в публичной части
+* @package tags\actions
+*/
 class Show extends TagAction {
     
     /**
-     * Метод выполнения отображения постов по тегу
-     * @return void
-     */
+    * Метод выполнения отображения постов по тегу
+    * @return void
+    */
     public function execute() {
         $slug = $this->params['slug'] ?? null;
         

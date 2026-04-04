@@ -3,77 +3,61 @@
 namespace users\actions;
 
 /**
- * Действие создания нового пользователя в административной панели
- * Отображает форму создания пользователя и обрабатывает её отправку,
- * включая валидацию, загрузку аватара, пользовательские поля,
- * назначение групп и ручных достижений
- * 
- * @package users\actions
- * @extends UserAction
- */
+* Действие создания нового пользователя в административной панели
+* @package users\actions
+*/
 class AdminCreate extends UserAction {
     
     /**
-     * Метод выполнения создания пользователя
-     * При GET-запросе отображает форму, при POST-запросе обрабатывает сохранение
-     * 
-     * @return void
-     */
+    * Метод выполнения создания пользователя
+    * @return void
+    */
     public function execute() {
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Пользователи', ADMIN_URL . '/users');
+        $this->addBreadcrumb('Создание пользователя');
+        
         try {
-            // Обработка POST-запроса (отправка формы)
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $this->handlePostRequest();
                 return;
             }
 
-            // Отображение формы создания
             $this->renderCreateForm();
 
         } catch (\Exception $e) {
-            // Обработка ошибок
             $this->handleError($e);
         }
     }
     
     /**
-     * Обрабатывает POST-запрос на создание пользователя
-     * 
-     * @return void
-     * @throws \Exception При ошибках валидации
-     */
+    * Обрабатывает POST-запрос на создание пользователя
+    * @return void
+    * @throws \Exception При ошибках валидации
+    */
     private function handlePostRequest() {
-        // Валидация обязательных полей
+
         $this->validateRequiredFields();
-        
-        // Проверка уникальности
         $this->checkUniqueness();
         
-        // Подготовка основных данных пользователя
         $userData = $this->prepareUserData();
-        
-        // Обработка загрузки аватара
         $userData = $this->handleAvatarUpload($userData);
         
-        // Создание пользователя в базе данных
         $userId = $this->userModel->create($userData);
         
-        // Сохранение пользовательских полей
         $this->saveCustomFields($userId);
         
-        // Назначение групп
         $this->assignUserGroups($userId);
         
-        // Назначение ручных достижений
         $this->assignAchievements($userId);
         
-        // Уведомление об успехе и перенаправление
         \Notification::success('Пользователь успешно создан');
         $this->redirect(ADMIN_URL . '/users');
     }
     
     /**
-     * Валидирует обязательные поля формы
+    * Валидирует обязательные поля формы
      * 
      * @throws \Exception При ошибках валидации
      * @return void
@@ -97,11 +81,10 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Проверяет уникальность имени пользователя и email
-     * 
-     * @throws \Exception Если пользователь уже существует
-     * @return void
-     */
+    * Проверяет уникальность имени пользователя и email 
+    * @throws \Exception Если пользователь уже существует
+    * @return void
+    */
     private function checkUniqueness() {
         if ($this->userModel->getByUsername($_POST['username'])) {
             throw new \Exception('Пользователь с таким именем уже существует');
@@ -113,10 +96,9 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Подготавливает основные данные пользователя из POST
-     * 
-     * @return array Массив с данными пользователя
-     */
+    * Подготавливает основные данные пользователя из POST
+    * @return array Массив с данными пользователя
+    */
     private function prepareUserData() {
         return [
             'username' => $_POST['username'],
@@ -131,11 +113,10 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Обрабатывает загрузку аватара пользователя
-     * 
-     * @param array $userData Данные пользователя
-     * @return array Обновленные данные пользователя
-     */
+    * Обрабатывает загрузку аватара пользователя
+    * @param array $userData Данные пользователя
+    * @return array Обновленные данные пользователя
+    */
     private function handleAvatarUpload($userData) {
         if (!empty($_FILES['avatar']['tmp_name'])) {
             $uploadDir = UPLOADS_PATH . '/avatars/';
@@ -155,11 +136,10 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Сохраняет пользовательские поля для нового пользователя
-     * 
-     * @param int $userId ID созданного пользователя
-     * @return void
-     */
+    * Сохраняет пользовательские поля для нового пользователя
+    * @param int $userId ID созданного пользователя
+    * @return void
+    */
     private function saveCustomFields($userId) {
         $customFields = $this->fieldModel->getActiveByEntityType('user');
         $currentValues = [];
@@ -191,11 +171,10 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Назначает пользователю группы
-     * 
-     * @param int $userId ID пользователя
-     * @return void
-     */
+    * Назначает пользователю группы
+    * @param int $userId ID пользователя
+    * @return void
+    */
     private function assignUserGroups($userId) {
         if (!empty($_POST['groups'])) {
             $this->userModel->updateUserGroups($userId, $_POST['groups']);
@@ -208,15 +187,13 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Назначает пользователю ручные достижения
-     * 
-     * @param int $userId ID пользователя
-     * @return void
-     */
+    * Назначает пользователю ручные достижения
+    * @param int $userId ID пользователя
+    * @return void
+    */
     private function assignAchievements($userId) {
         if (!empty($_POST['achievements'])) {
             foreach ($_POST['achievements'] as $achievementId) {
-                // Проверка, что ачивка ручная
                 $achievement = $this->userModel->getAchievementById($achievementId);
                 if ($achievement && $achievement['type'] == 'manual') {
                     $this->userModel->assignAchievementToUser($userId, $achievementId);
@@ -226,10 +203,9 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Отображает форму создания пользователя
-     * 
-     * @return void
-     */
+    * Отображает форму создания пользователя
+    * @return void
+    */
     private function renderCreateForm() {
         $customFields = $this->fieldModel->getActiveByEntityType('user');
         
@@ -240,11 +216,10 @@ class AdminCreate extends UserAction {
     }
     
     /**
-     * Обрабатывает ошибку при создании пользователя
-     * 
-     * @param \Exception $e Исключение
-     * @return void
-     */
+    * Обрабатывает ошибку при создании пользователя
+    * @param \Exception $e Исключение
+    * @return void
+    */
     private function handleError($e) {
         \Notification::error($e->getMessage());
         

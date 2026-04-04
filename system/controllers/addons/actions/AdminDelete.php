@@ -3,15 +3,14 @@
 namespace addons\actions;
 
 /**
- * Действие удаления установленного пакета
- * 
- * @package addons\actions
- */
+* Действие удаления установленного пакета 
+* @package addons\actions
+*/
 class AdminDelete extends AddonAction {
     
     /**
-     * Метод выполнения
-     */
+    * Метод выполнения
+    */
     public function execute() {
         $id = $this->params['id'] ?? null;
         
@@ -28,7 +27,6 @@ class AdminDelete extends AddonAction {
                 throw new \Exception('Пакет не найден');
             }
             
-            // Удаление пакета из базы данных
             $this->addonModel->delete($id);
             
             \Notification::success('Пакет "' . html($addon['title']) . '" успешно удален');

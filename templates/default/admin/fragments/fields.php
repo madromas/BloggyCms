@@ -157,6 +157,7 @@
                                     <input type="hidden" name="fields[<?php echo $index; ?>][sort_order]" class="field-order" value="<?php echo $field['sort_order'] ?? $index; ?>">
                                     <input type="hidden" name="fields[<?php echo $index; ?>][config]" class="field-config" value='<?php echo html(json_encode($field['config'] ?? [])); ?>'>
                                     
+                                    <!-- ИЗМЕНЕНИЕ ЗДЕСЬ: Убираем прямой PHP вызов getSettingsForm() -->
                                     <div class="field-settings mt-3" data-index="<?php echo $index; ?>" data-type="<?php echo $field['type']; ?>">
                                         <div class="alert alert-info small">Загрузка настроек поля...</div>
                                     </div>
@@ -184,6 +185,8 @@
 <?php ob_start(); ?>
 <script>
 let fieldIndex = <?php echo count($fields); ?>;
+
+// НОВАЯ ФУНКЦИЯ: Загрузка настроек для всех существующих полей
 async function loadAllFieldSettings() {
     const fieldItems = document.querySelectorAll('.field-item');
     
@@ -342,6 +345,7 @@ function addField() {
     
     container.appendChild(newField);
     
+    // Инициализация обработчиков
     initFieldHandlers(newField);
     
     fieldIndex++;
@@ -349,6 +353,7 @@ function addField() {
 }
 
 function initFieldHandlers(fieldElement) {
+    // Удаление поля
     const removeBtn = fieldElement.querySelector('.remove-field');
     removeBtn.addEventListener('click', function() {
         if (confirm('Удалить это поле?')) {
@@ -357,6 +362,7 @@ function initFieldHandlers(fieldElement) {
         }
     });
     
+    // Изменение типа поля
     const typeSelect = fieldElement.querySelector('.field-type');
     const settingsContainer = fieldElement.querySelector('.field-settings');
     const index = typeSelect.dataset.index;
@@ -398,7 +404,9 @@ function initFieldHandlers(fieldElement) {
         }
     });
     
+    // Не вызываем автоматически change для существующих полей, так как они загружаются через loadAllFieldSettings
     if (!fieldElement.getAttribute('data-loaded')) {
+        // Для новых полей вызываем change
         typeSelect.dispatchEvent(new Event('change'));
         fieldElement.setAttribute('data-loaded', 'true');
     }
@@ -410,15 +418,19 @@ function updateFieldsCount() {
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // Инициализация обработчиков для существующих полей
     document.querySelectorAll('.field-item').forEach(fieldElement => {
         initFieldHandlers(fieldElement);
+        // Отмечаем как загруженные, чтобы не вызывать change автоматически
         fieldElement.setAttribute('data-loaded', 'true');
     });
     
+    // Загружаем настройки для всех существующих полей
     await loadAllFieldSettings();
     
     document.getElementById('add-field-btn').addEventListener('click', addField);
     
+    // Сортировка полей
     if (typeof Sortable !== 'undefined') {
         const container = document.getElementById('fields-container');
         Sortable.create(container, {

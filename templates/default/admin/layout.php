@@ -32,7 +32,7 @@
         }
     ?>
         <div class="admin-wrapper">
-            <aside class="sidebar" <?php if(!empty(SettingsHelper::get('controller_admin', 'bg_panel'))) { ?>style="background-image: url('<?php echo BASE_URL ?>/uploads/settings/admin/<?php echo SettingsHelper::get('controller_admin', 'bg_panel') ?>"<?php } ?>>
+            <aside class="sidebar" <?php if(!empty(SettingsHelper::get('controller_admin', 'bg_panel'))) { ?>style="background-size: cover; background-image: url('<?php echo BASE_URL ?>/uploads/settings/admin/<?php echo SettingsHelper::get('controller_admin', 'bg_panel') ?>"<?php } ?>>
                 <a href="<?= ADMIN_URL ?>" class="brand-logo d-flex align-items-center">
                     <img src = "/templates/default/admin/assets/img/logo-outline-light.png" style = "width: 32px; margin-right: 6px;">
                     BLOGGY<span style = "color:rgb(163, 230, 237)">CMS</span>
@@ -80,7 +80,26 @@
 
             <main class="content-wrapper">
                 <div class="top-bar d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0"><a href = "<?= ADMIN_URL ?>" style = "text-decoration:none"><?php echo bloggy_icon('bs', 'house', '16 16', '#000; position:relative; bottom:2px;'); ?> Панель управления</a> / <?= htmlspecialchars($pageTitle) ?></h6>
+                        <div class="breadcrumb-wrapper">
+                            <?php 
+                            if (isset($breadcrumbs) && $breadcrumbs instanceof BreadcrumbsManager && !$breadcrumbs->isEmpty()) {
+                                echo $breadcrumbs->render([
+                                    'container_tag' => 'div',
+                                    'container_class' => 'admin-breadcrumb',
+                                    'list_tag' => 'ol',
+                                    'list_class' => 'breadcrumb mb-0',
+                                    'item_tag' => 'li',
+                                    'item_class' => 'breadcrumb-item',
+                                    'active_class' => 'active',
+                                    'home_icon' => 'house'
+                                ]);
+                            } else {
+                                echo '<h6 class="mb-0"><a href="' . ADMIN_URL . '" style="text-decoration:none">';
+                                echo bloggy_icon('bs', 'house', '16', '#000', 'me-1');
+                                echo ' Панель управления</a></h6>';
+                            }
+                            ?>
+                        </div>
                     <div class="d-flex align-items-center">
                         <div class="d-flex align-items-center me-3" style="gap: 10px;">
                             <div class="dropdown">

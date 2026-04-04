@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие получения данных отправки через AJAX
- */
+* Действие получения данных отправки через AJAX
+*/
 class AdminGetSubmission extends FormAction {
     
     public function execute() {

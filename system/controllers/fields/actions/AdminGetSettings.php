@@ -30,7 +30,7 @@ class AdminGetSettings extends FieldAction {
                 echo '<div class="alert alert-warning">Настройки для этого типа поля не найдены</div>';
             }
         } catch (\Exception $e) {
-            echo '<div class="alert alert-danger">Ошибка: ' . htmlspecialchars($e->getMessage()) . '</div>';
+            echo '<div class="alert alert-danger">Ошибка: ' . html($e->getMessage()) . '</div>';
         }
         
         exit;

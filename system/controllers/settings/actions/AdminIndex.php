@@ -3,44 +3,37 @@
 namespace settings\actions;
 
 /**
- * Действие отображения и обработки главной страницы настроек
- * Управляет тремя типами настроек: общие, сайта и компонентов (контроллеров)
- * Обрабатывает POST-запросы для сохранения, загрузку изображений и валидацию
- * 
- * @package settings\actions
- * @extends SettingsAction
- */
+* Действие отображения и обработки главной страницы настроек
+* @package settings\actions
+*/
 class AdminIndex extends SettingsAction {
     
     /**
-     * Метод выполнения отображения и обработки настроек
-     * В зависимости от активной вкладки загружает соответствующие настройки,
-     * обрабатывает POST-запросы для сохранения, загрузку изображений и т.д.
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения и обработки настроек
+    * @return void
+    */
     public function execute() {
-        // Проверка прав доступа администратора
+
         if (!$this->checkAdminAccess()) {
             \Notification::error('Пожалуйста, авторизуйтесь для доступа к настройкам');
             $this->redirect(ADMIN_URL . '/login');
             return;
         }
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Настройки');
         
         try {
             $controllerManager = new \ControllerManager($this->db);
-            
-            // Получение параметров вкладки и контроллера
+
             $activeTab = $_GET['tab'] ?? 'general';
             $selectedController = $_GET['controller'] ?? '';
             
             $settings = [];
             
-            // Обработка ОБЩИХ и САЙТ настроек
             if (in_array($activeTab, ['general', 'site'])) {
                 $settings = $this->settingsModel->get($activeTab);
                 
-                // Получаем настройки по умолчанию
                 $defaultSettings = $this->getDefaultSettings($activeTab);
                 $settings = array_merge($defaultSettings, $settings);
                 
@@ -52,20 +45,17 @@ class AdminIndex extends SettingsAction {
                         
                         $postSettings = $_POST['settings'] ?? [];
                         
-                        // Специфичная обработка для site
                         if ($activeTab === 'site') {
                             $postSettings = $this->handleBackupSettings($postSettings);
                             $postSettings = $this->handleFaviconUpload($postSettings);
                         }
                         
-                        // Сохраняем настройки
                         $this->settingsModel->save($activeTab, $postSettings);
                         
                         if (class_exists('SettingsHelper')) {
                             \SettingsHelper::clearCache($activeTab);
                         }
                         
-                        // Обновляем конфигурационные файлы если нужно
                         if ($activeTab === 'site') {
                             if (isset($postSettings['site_template'])) {
                                 $this->updateConfigTemplate($postSettings['site_template']);
@@ -84,16 +74,13 @@ class AdminIndex extends SettingsAction {
                 }
             }
             
-            // Обработка КОМПОНЕНТОВ
             if ($activeTab === 'components') {
                 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $selectedController) {
                     try {
                         $postSettings = $_POST['settings'] ?? [];
                         
-                        // Обрабатываем загрузку изображений для компонентов
                         $postSettings = $this->handleComponentImageUploads($postSettings, $selectedController);
                         
-                        // Обрабатываем удаление изображений для компонентов
                         $postSettings = $this->handleComponentImageDeletes($postSettings);
                         
                         $controllerManager->saveControllerSettings($selectedController, $postSettings);
@@ -106,7 +93,6 @@ class AdminIndex extends SettingsAction {
                     }
                 }
                 
-                // Загружаем настройки выбранного контроллера
                 if ($selectedController) {
                     $controllerSettings = $controllerManager->getControllerSettings($selectedController);
                     $controller = $controllerManager->getController($selectedController);
@@ -121,7 +107,6 @@ class AdminIndex extends SettingsAction {
                 }
             }
             
-            // Отображение страницы настроек
             $this->render('admin/settings/index', [
                 'settings' => $settings,
                 'activeTab' => $activeTab,
@@ -137,8 +122,8 @@ class AdminIndex extends SettingsAction {
     }
     
     /**
-     * Обрабатывает загрузку изображений для компонентов
-     */
+    * Обрабатывает загрузку изображений для компонентов
+    */
     private function handleComponentImageUploads($postSettings, $controllerName) {
         
         foreach ($_FILES as $fieldName => $file) {
@@ -161,8 +146,8 @@ class AdminIndex extends SettingsAction {
     }
     
     /**
-     * Обрабатывает удаление изображений для компонентов
-     */
+    * Обрабатывает удаление изображений для компонентов
+    */
     private function handleComponentImageDeletes($postSettings) {
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'remove_') === 0 && $value == '1') {
@@ -185,8 +170,8 @@ class AdminIndex extends SettingsAction {
     }
     
     /**
-     * Загружает изображение для компонента
-     */
+    * Загружает изображение для компонента
+    */
     private function handleComponentImageUpload($file, $controllerName) {
         $uploadDir = UPLOADS_PATH . '/settings/' . $controllerName . '/';
         
@@ -217,8 +202,8 @@ class AdminIndex extends SettingsAction {
     }
     
     /**
-     * Удаляет изображение компонента
-     */
+    * Удаляет изображение компонента
+    */
     private function handleComponentImageDelete($fileName) {
         if ($fileName) {
             $possiblePaths = [
@@ -237,8 +222,8 @@ class AdminIndex extends SettingsAction {
     }
     
     /**
-     * Генерирует slug для имени файла
-     */
+    * Генерирует slug для имени файла
+    */
     private function generateSlug($string) {
         $converter = array(
             'а' => 'a', 'б' => 'b', 'в' => 'v', 'г' => 'g', 'д' => 'd',
@@ -259,15 +244,13 @@ class AdminIndex extends SettingsAction {
     }
 
     /**
-     * Обрабатывает загрузку favicon
-     */
+    * Обрабатывает загрузку favicon
+    */
     private function handleFaviconUpload($postSettings) {
-        // Проверяем, был ли загружен файл favicon
         if (isset($_FILES['favicon_file']) && $_FILES['favicon_file']['error'] === UPLOAD_ERR_OK) {
             try {
                 $file = $_FILES['favicon_file'];
                 
-                // Проверяем формат файла
                 $allowedTypes = ['ico', 'png', 'svg'];
                 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                 
@@ -275,7 +258,6 @@ class AdminIndex extends SettingsAction {
                     throw new \Exception('Недопустимый формат файла. Разрешены: ICO, PNG, SVG');
                 }
                 
-                // Создаем директорию для favicon если её нет
                 $uploadDir = UPLOADS_PATH . '/favicon/';
                 if (!is_dir($uploadDir)) {
                     if (!mkdir($uploadDir, 0755, true)) {
@@ -283,7 +265,6 @@ class AdminIndex extends SettingsAction {
                     }
                 }
                 
-                // Удаляем старый favicon если он существует
                 if (!empty($postSettings['favicon'])) {
                     $oldFile = UPLOADS_PATH . '/' . ltrim($postSettings['favicon'], '/');
                     if (file_exists($oldFile)) {
@@ -291,16 +272,13 @@ class AdminIndex extends SettingsAction {
                     }
                 }
                 
-                // Генерируем имя файла
                 $fileName = 'favicon_' . time() . '_' . uniqid() . '.' . $extension;
                 $targetPath = $uploadDir . $fileName;
                 
-                // Перемещаем файл
                 if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
                     throw new \Exception('Ошибка при сохранении файла');
                 }
                 
-                // Сохраняем путь в настройках (относительный путь от корня сайта)
                 $postSettings['favicon'] = 'uploads/favicon/' . $fileName;
                 
             } catch (\Exception $e) {
@@ -308,7 +286,6 @@ class AdminIndex extends SettingsAction {
             }
         }
         
-        // Проверяем, нужно ли удалить текущий favicon
         if (isset($_POST['remove_favicon']) && $_POST['remove_favicon'] == '1') {
             if (!empty($postSettings['favicon'])) {
                 $oldFile = UPLOADS_PATH . '/' . ltrim($postSettings['favicon'], '/');

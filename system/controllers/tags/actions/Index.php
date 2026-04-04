@@ -3,16 +3,15 @@
 namespace tags\actions;
 
 /**
- * Действие отображения списка всех тегов в публичной части
- * @package tags\actions
- * @extends TagAction
- */
+* Действие отображения списка всех тегов в публичной части
+* @package tags\actions
+*/
 class Index extends TagAction {
     
     /**
-     * Метод выполнения отображения списка тегов
-     * @return void
-     */
+    * Метод выполнения отображения списка тегов
+    * @return void
+    */
     public function execute() {
         try {
             $this->addBreadcrumb('Главная', BASE_URL);

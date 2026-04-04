@@ -3,22 +3,16 @@
 namespace postblocks\actions;
 
 /**
- * Действие получения HTML-формы настроек для постблока
- * Используется для AJAX-запросов в административной панели
- * Возвращает готовую HTML-форму с табами для редактирования контента и настроек блока
- * 
- * @package postblocks\actions
- * @extends PostBlockAction
- */
+* Действие получения HTML-формы настроек для постблока
+* @package postblocks\actions
+* @extends PostBlockAction
+*/
 class AdminGetSettingsForm extends PostBlockAction {
     
     /**
-     * Метод выполнения получения формы настроек
-     * Проверяет права доступа, получает системное имя блока и текущие данные,
-     * генерирует и возвращает HTML-форму с табами для редактирования блока
-     * 
-     * @return void
-     */
+    * Метод выполнения получения формы настроек
+    * @return void
+    */
     public function execute() {
         if (!$this->checkAdminAccess()) {
             echo '<div class="alert alert-danger">У вас нет прав доступа</div>';

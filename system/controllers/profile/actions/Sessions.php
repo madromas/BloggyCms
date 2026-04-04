@@ -3,15 +3,14 @@
 namespace profile\actions;
 
 /**
- * Действие получения списка активных сессий пользователя
- */
+* Действие получения списка активных сессий пользователя
+*/
 class Sessions extends ProfileAction {
     
     /**
-     * Метод выполнения получения сессий
-     * 
-     * @return void
-     */
+    * Метод выполнения получения сессий
+    * @return void
+    */
     public function execute() {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
@@ -28,11 +27,10 @@ class Sessions extends ProfileAction {
     }
     
     /**
-     * Получает активные сессии пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив сессий
-     */
+    * Получает активные сессии пользователя
+    * @param int $userId ID пользователя
+    * @return array Массив сессий
+    */
     private function getUserSessions($userId) {
         $sessions = [];
         
@@ -79,11 +77,10 @@ class Sessions extends ProfileAction {
     }
     
     /**
-     * Парсит User Agent для определения устройства
-     * 
-     * @param string $userAgent Строка User Agent
-     * @return string Название устройства
-     */
+    * Парсит User Agent для определения устройства 
+    * @param string $userAgent Строка User Agent
+    * @return string Название устройства
+    */
     private function parseUserAgent($userAgent) {
         if (empty($userAgent)) {
             return 'Неизвестное устройство';

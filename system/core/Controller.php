@@ -278,4 +278,41 @@ class Controller {
         $modelName = ucfirst($name) . 'Model';
         return isset($this->models[$name]) || isset($this->models[$modelName]);
     }
+
+    /**
+    * Инициализация хлебных крошек для админ-панели
+    * @return void
+    */
+    protected function initAdminBreadcrumbs() {
+        if (strpos($_SERVER['REQUEST_URI'], ADMIN_URL) !== false) {
+            $this->breadcrumbs = new \BreadcrumbsManager($this->db);
+            \BreadcrumbsHelper::setManager($this->breadcrumbs);
+            $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        }
+    }
+
+    /**
+    * Добавляет элемент в хлебные крошки
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента
+    * @return self
+    */
+    protected function addBreadcrumb($title, $url = null) {
+        if ($this->breadcrumbs) {
+            $this->breadcrumbs->add($title, $url);
+        }
+        return $this;
+    }
+
+    /**
+    * Очищает хлебные крошки 
+    * @return self
+    */
+    protected function clearBreadcrumbs() {
+        if ($this->breadcrumbs) {
+            $this->breadcrumbs->clear();
+        }
+        return $this;
+    }
+
 }

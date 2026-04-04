@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие просмотра формы (публичное)
- */
+* Действие просмотра формы
+*/
 class FormView extends FormAction {
     
     public function execute() {
@@ -44,7 +44,7 @@ class FormView extends FormAction {
             'csrfToken' => $csrfToken,
             'ajaxEnabled' => $ajaxEnabled,
             'additionalScripts' => $additionalScripts,
-            'pageTitle' => htmlspecialchars($form['name'])
+            'pageTitle' => html($form['name'])
         ]);
     }
 }

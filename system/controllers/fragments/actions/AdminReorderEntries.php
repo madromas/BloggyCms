@@ -3,8 +3,8 @@
 namespace fragments\actions;
 
 /**
- * Действие сортировки записей (AJAX)
- */
+* Действие сортировки записей (AJAX)
+*/
 class AdminReorderEntries extends FragmentAction {
     
     public function execute() {

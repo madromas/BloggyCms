@@ -3,8 +3,8 @@
 namespace fragments\actions;
 
 /**
- * Действие управления полями фрагмента
- */
+* Действие управления полями фрагмента
+*/
 class AdminFields extends FragmentAction {
     
     public function execute() {
@@ -24,7 +24,7 @@ class AdminFields extends FragmentAction {
             return;
         }
         
-        $this->addBreadcrumb('Главная', ADMIN_URL);
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Фрагменты', ADMIN_URL . '/fragments');
         $this->addBreadcrumb($fragment['name'], ADMIN_URL . '/fragments/edit/' . $id);
         $this->addBreadcrumb('Поля');
@@ -58,11 +58,10 @@ class AdminFields extends FragmentAction {
     }
     
     /**
-     * Обработка полей
-     * 
-     * @param array $fields
-     * @return array
-     */
+    * Обработка полей 
+    * @param array $fields
+    * @return array
+    */
     private function processFields($fields) {
         $processed = [];
         $usedSystemNames = [];
@@ -131,11 +130,10 @@ class AdminFields extends FragmentAction {
     }
     
     /**
-     * Генерация системного имени из названия
-     * 
-     * @param string $title
-     * @return string
-     */
+    * Генерация системного имени из названия
+    * @param string $title
+    * @return string
+    */
     private function generateSystemNameFromTitle($title) {
         $name = mb_strtolower($title, 'UTF-8');
         

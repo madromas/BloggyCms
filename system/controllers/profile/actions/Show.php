@@ -3,35 +3,26 @@
 namespace profile\actions;
 
 /**
- * Действие отображения публичного профиля пользователя
- * Показывает профиль пользователя по его имени пользователя (username)
- * Содержит информацию о пользователе, его постах, достижениях, активности и группах
- * 
- * @package profile\actions
- * @extends ProfileAction
- */
+* Действие отображения публичного профиля пользователя
+* @package profile\actions
+*/
 class Show extends ProfileAction {
     
-    /** @var string|null Имя пользователя для отображения профиля */
     protected $username;
     
     /**
-     * Устанавливает имя пользователя для отображения профиля
-     * 
-     * @param string|null $username Имя пользователя
-     * @return void
-     */
+    * Устанавливает имя пользователя для отображения профиля
+    * @param string|null $username Имя пользователя
+    * @return void
+    */
     public function setUsername($username) {
         $this->username = $username;
     }
     
     /**
-     * Метод выполнения отображения публичного профиля
-     * Получает имя пользователя, загружает данные пользователя,
-     * его посты, достижения, активность и отображает страницу профиля
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения публичного профиля
+    * @return void
+    */
     public function execute() {
         $username = $this->username ?: ($this->params['username'] ?? '');
         
@@ -134,11 +125,10 @@ class Show extends ProfileAction {
     }
     
     /**
-     * Получает группы пользователя с деталями
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив групп пользователя
-     */
+    * Получает группы пользователя с деталями
+    * @param int $userId ID пользователя
+    * @return array Массив групп пользователя
+    */
     private function getUserGroups($userId) {
         try {
             if (method_exists($this->userModel, 'getUserGroupsWithDetails')) {
@@ -159,11 +149,10 @@ class Show extends ProfileAction {
     }
     
     /**
-     * Получает отображаемое название роли пользователя
-     * 
-     * @param string $userRole Код роли пользователя
-     * @return string Отображаемое название роли
-     */
+    * Получает отображаемое название роли пользователя
+    * @param string $userRole Код роли пользователя
+    * @return string Отображаемое название роли
+    */
     private function getRoleDisplay($userRole) {
         if ($userRole === 'user') {
             return '';

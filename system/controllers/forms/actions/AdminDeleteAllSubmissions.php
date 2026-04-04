@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие удаления всех отправок формы
- */
+* Действие удаления всех отправок формы
+*/
 class AdminDeleteAllSubmissions extends FormAction {
     
     public function execute() {

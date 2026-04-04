@@ -280,12 +280,12 @@ class AdminFormController extends Controller {
      */
     public function renderFormField($field, $index) {
         $fieldType = $field['type'] ?? 'text';
-        $fieldLabel = htmlspecialchars($field['label'] ?? '');
-        $fieldName = htmlspecialchars($field['name'] ?? '');
-        $fieldValue = htmlspecialchars($field['default_value'] ?? '');
-        $placeholder = htmlspecialchars($field['placeholder'] ?? '');
+        $fieldLabel = html($field['label'] ?? '');
+        $fieldName = html($field['name'] ?? '');
+        $fieldValue = html($field['default_value'] ?? '');
+        $placeholder = html($field['placeholder'] ?? '');
         $required = !empty($field['required']);
-        $description = htmlspecialchars($field['description'] ?? '');
+        $description = html($field['description'] ?? '');
         $options = $field['options'] ?? [];
         $validation = $field['validation'] ?? [];
         
@@ -343,8 +343,8 @@ class AdminFormController extends Controller {
                 <input type="hidden" class="field-placeholder" value="<?= $placeholder ?>">
                 <input type="hidden" class="field-required" value="<?= $required ? '1' : '0' ?>">
                 <input type="hidden" class="field-description" value="<?= $description ?>">
-                <input type="hidden" class="field-options" value="<?= htmlspecialchars(json_encode($options)) ?>">
-                <input type="hidden" class="field-validation" value="<?= htmlspecialchars(json_encode($validation)) ?>">
+                <input type="hidden" class="field-options" value="<?= html(json_encode($options)) ?>">
+                <input type="hidden" class="field-validation" value="<?= html(json_encode($validation)) ?>">
             </div>
         </div>
         <?php
@@ -420,34 +420,34 @@ class AdminFormController extends Controller {
                 case 'date':
                 case 'password': ?>
                     <div class="mb-2">
-                        <label class="form-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                        <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <input type="<?= $type ?>" 
                                class="form-control form-control-sm" 
-                               value="<?= htmlspecialchars($value) ?>"
-                               placeholder="<?= htmlspecialchars($placeholder) ?>"
+                               value="<?= html($value) ?>"
+                               placeholder="<?= html($placeholder) ?>"
                                disabled>
                     </div>
                 <?php break;
                 
                 case 'textarea': ?>
                     <div class="mb-2">
-                        <label class="form-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                        <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <textarea class="form-control form-control-sm" 
-                                  placeholder="<?= htmlspecialchars($placeholder) ?>"
+                                  placeholder="<?= html($placeholder) ?>"
                                   rows="3"
-                                  disabled><?= htmlspecialchars($value) ?></textarea>
+                                  disabled><?= html($value) ?></textarea>
                     </div>
                 <?php break;
                 
                 case 'select': ?>
                     <div class="mb-2">
-                        <label class="form-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                        <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <select class="form-select form-select-sm" disabled>
-                            <option value=""><?= htmlspecialchars($placeholder) ?></option>
+                            <option value=""><?= html($placeholder) ?></option>
                             <?php foreach ($options as $option): ?>
-                                <option value="<?= htmlspecialchars($option['value'] ?? '') ?>"
+                                <option value="<?= html($option['value'] ?? '') ?>"
                                         <?= ($value === ($option['value'] ?? '')) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($option['label'] ?? '') ?>
+                                    <?= html($option['label'] ?? '') ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -461,14 +461,14 @@ class AdminFormController extends Controller {
                                    class="form-check-input" 
                                    <?= !empty($value) ? 'checked' : '' ?>
                                    disabled>
-                            <label class="form-check-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                            <label class="form-check-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         </div>
                     </div>
                 <?php break;
                 
                 case 'radio': ?>
                     <div class="mb-2">
-                        <label class="form-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                        <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <?php foreach ($options as $option): ?>
                             <div class="form-check">
                                 <input type="radio" 
@@ -476,7 +476,7 @@ class AdminFormController extends Controller {
                                        name="preview_<?= $name ?>"
                                        <?= ($value === ($option['value'] ?? '')) ? 'checked' : '' ?>
                                        disabled>
-                                <label class="form-check-label small"><?= htmlspecialchars($option['label'] ?? '') ?></label>
+                                <label class="form-check-label small"><?= html($option['label'] ?? '') ?></label>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -484,14 +484,14 @@ class AdminFormController extends Controller {
 
                 case 'file': ?>
                     <div class="mb-2">
-                        <label class="form-label small"><?= htmlspecialchars($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
+                        <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <input type="file"
                             class="form-control form-control-sm"
                             <?= !empty($field['multiple']) ? 'multiple' : '' ?>
-                            <?= !empty($field['accept']) ? 'accept="' . htmlspecialchars($field['accept']) . '"' : '' ?>
+                            <?= !empty($field['accept']) ? 'accept="' . html($field['accept']) . '"' : '' ?>
                             disabled>
                         <?php if (!empty($field['description'])): ?>
-                            <div class="form-text small"><?= htmlspecialchars($field['description']) ?></div>
+                            <div class="form-text small"><?= html($field['description']) ?></div>
                         <?php endif; ?>
                     </div>
                 <?php break;
@@ -499,7 +499,7 @@ class AdminFormController extends Controller {
                 case 'submit': ?>
                     <div class="mb-2">
                         <button type="button" class="btn btn-primary btn-sm" disabled>
-                            <?= htmlspecialchars($label) ?>
+                            <?= html($label) ?>
                         </button>
                     </div>
                 <?php break;

@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие удаления отправки
- */
+* Действие удаления отправки
+*/
 class AdminDeleteSubmission extends FormAction {
     
     public function execute() {

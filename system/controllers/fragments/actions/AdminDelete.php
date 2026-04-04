@@ -3,8 +3,8 @@
 namespace fragments\actions;
 
 /**
- * Действие удаления фрагмента
- */
+* Действие удаления фрагмента
+*/
 class AdminDelete extends FragmentAction {
     
     public function execute() {

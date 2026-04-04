@@ -3,15 +3,14 @@
 namespace profile\actions;
 
 /**
- * Действие завершения указанной сессии пользователя
- */
+* Действие завершения указанной сессии пользователя
+*/
 class TerminateSession extends ProfileAction {
     
     /**
-     * Метод выполнения завершения сессии
-     * 
-     * @return void
-     */
+    * Метод выполнения завершения сессии 
+    * @return void
+    */
     public function execute() {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
@@ -48,21 +47,20 @@ class TerminateSession extends ProfileAction {
     }
     
     /**
-     * Завершает указанную сессию пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @param int $sessionId ID сессии из БД
-     * @return bool Результат операции
-     */
+    * Завершает указанную сессию пользователя
+    * @param int $userId ID пользователя
+    * @param int $sessionId ID сессии из БД
+    * @return bool Результат операции
+    */
     private function terminateUserSession($userId, $sessionId) {
-        // Проверяем, не пытаемся ли завершить текущую сессию
+
         $session = $this->db->fetch(
             "SELECT session_id FROM user_sessions WHERE id = ? AND user_id = ?",
             [$sessionId, $userId]
         );
         
         if ($session && $session['session_id'] === session_id()) {
-            return false; // Нельзя завершить текущую сессию
+            return false;
         }
         
         $result = $this->db->query(
@@ -74,11 +72,10 @@ class TerminateSession extends ProfileAction {
     }
     
     /**
-     * Проверяет CSRF токен
-     * 
-     * @param string $token Токен для проверки
-     * @return bool Результат проверки
-     */
+    * Проверяет CSRF токен 
+    * @param string $token Токен для проверки
+    * @return bool Результат проверки
+    */
     private function validateCsrfToken($token) {
         if (empty($_SESSION['csrf_token']) || empty($token)) {
             return false;

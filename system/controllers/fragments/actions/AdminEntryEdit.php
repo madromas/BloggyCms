@@ -3,8 +3,8 @@
 namespace fragments\actions;
 
 /**
- * Действие редактирования записи фрагмента
- */
+* Действие редактирования записи фрагмента
+*/
 class AdminEntryEdit extends FragmentAction {
     
     public function execute() {
@@ -32,7 +32,7 @@ class AdminEntryEdit extends FragmentAction {
             return;
         }
         
-        $this->addBreadcrumb('Главная', ADMIN_URL);
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Фрагменты', ADMIN_URL . '/fragments');
         $this->addBreadcrumb($fragment['name'], ADMIN_URL . '/fragments/edit/' . $fragment['id']);
         $this->addBreadcrumb('Записи', ADMIN_URL . '/fragments/entries/' . $fragment['id']);
@@ -64,14 +64,13 @@ class AdminEntryEdit extends FragmentAction {
     }
     
     /**
-     * Обработка данных записи
-     * 
-     * @param array $fields
-     * @param array $postData
-     * @param array $filesData
-     * @param array $currentData
-     * @return array
-     */
+    * Обработка данных записи 
+    * @param array $fields
+    * @param array $postData
+    * @param array $filesData
+    * @param array $currentData
+    * @return array
+    */
     private function processEntryData($fields, $postData, $filesData, $currentData = []) {
         $data = [];
         $errors = [];

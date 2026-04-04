@@ -2,19 +2,15 @@
 namespace html_blocks\actions;
 
 /**
- * Действие получения списка доступных файлов ассетов для блока
- * Сканирует папки css/ и js/ в директории шаблона блока
- *
- * @package html_blocks\actions
- * @extends HtmlBlockAction
- */
+* Действие получения списка доступных файлов ассетов для блока
+* @package html_blocks\actions
+*/
 class AdminGetBlockAssets extends HtmlBlockAction {
+    
     /**
-     * Метод выполнения получения списка файлов
-     * Возвращает JSON со списком доступных файлов CSS/JS
-     *
-     * @return void
-     */
+    * Метод выполнения получения списка файлов
+    * @return void
+    */
     public function execute() {
         header('Content-Type: application/json');
         
@@ -54,12 +50,11 @@ class AdminGetBlockAssets extends HtmlBlockAction {
     }
     
     /**
-     * Сканирует папку с ассетами блока и возвращает список файлов
-     *
-     * @param string $blockType Тип блока (system_name)
-     * @param string $assetType Тип ассета (css/js)
-     * @return array Массив файлов с путями
-     */
+    * Сканирует папку с ассетами блока и возвращает список файлов
+    * @param string $blockType Тип блока (system_name)
+    * @param string $assetType Тип ассета (css/js)
+    * @return array Массив файлов с путями
+    */
     private function scanBlockAssets($blockType, $assetType) {
         $files = [];
         $currentTemplate = get_current_template();
@@ -85,13 +80,12 @@ class AdminGetBlockAssets extends HtmlBlockAction {
     }
     
     /**
-     * Рекурсивно сканирует директорию на наличие файлов
-     *
-     * @param string $dir Путь к директории
-     * @param string $baseDir Базовая директория для относительных путей
-     * @param string $assetType Тип ассета (css/js)
-     * @return array Массив найденных файлов
-     */
+    * Рекурсивно сканирует директорию на наличие файлов
+    * @param string $dir Путь к директории
+    * @param string $baseDir Базовая директория для относительных путей
+    * @param string $assetType Тип ассета (css/js)
+    * @return array Массив найденных файлов
+    */
     private function scanDirectory($dir, $baseDir, $assetType) {
         $files = [];
         $extension = $assetType === 'css' ? 'css' : 'js';

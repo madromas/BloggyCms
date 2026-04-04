@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие редактирования существующей формы
- */
+* Действие редактирования существующей формы
+*/
 class AdminEdit extends FormAction {
     
     public function execute() {
@@ -21,6 +21,10 @@ class AdminEdit extends FormAction {
             $this->redirect(ADMIN_URL . '/forms');
             return;
         }
+
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Формы', ADMIN_URL . '/forms');
+        $this->addBreadcrumb('Редактирование: ' . html($form['name']));
         
         $templates = $this->controller->getAvailableTemplates();
         $currentTheme = $this->controller->getCurrentTheme();
@@ -110,7 +114,7 @@ class AdminEdit extends FormAction {
             'validationTypes' => $this->controller->getValidationTypes(),
             'templates' => $templates,
             'currentTheme' => $currentTheme,
-            'pageTitle' => 'Редактирование формы: ' . htmlspecialchars($form['name']),
+            'pageTitle' => 'Редактирование формы: ' . html($form['name']),
             'isEdit' => true,
             'settings' => $settings,
             'notifications' => $notifications,
@@ -120,8 +124,8 @@ class AdminEdit extends FormAction {
     }
     
     /**
-     * Обработка структуры формы - добавление дополнительных данных
-     */
+    * Обработка структуры формы - добавление дополнительных данных
+    */
     private function processFormStructure($structure, $postData) {
         $processed = [];
         
@@ -196,8 +200,8 @@ class AdminEdit extends FormAction {
     }
     
     /**
-     * Подготовка уведомлений
-     */
+    * Подготовка уведомлений
+    */
     private function prepareNotifications($postData, $currentNotifications = []) {
         if (empty($postData['notify_admin_enabled']) && empty($postData['admin_email']) &&
             empty($postData['notify_user_enabled']) && empty($postData['user_email_field'])) {
@@ -238,8 +242,8 @@ class AdminEdit extends FormAction {
     }
     
     /**
-     * Подготовка действий
-     */
+    * Подготовка действий
+    */
     private function prepareActions($postData, $currentActions = []) {
         $actions = [];
         

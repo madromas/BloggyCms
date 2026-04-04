@@ -3,18 +3,15 @@
 namespace search\actions;
 
 /**
- * Действие для отображения результатов поиска на фронтенде
- * Обрабатывает поисковый запрос и отображает результаты по всем типам контента
- * 
- * @package search\actions
- */
+* Действие для отображения результатов поиска на фронтенде
+* @package search\actions
+*/
 class Index extends SearchAction {
     
     /**
-     * Выполняет действие поиска
-     * 
-     * @return void
-     */
+    * Выполняет действие поиска
+    * @return void
+    */
     public function execute() {
         try {
             $query = trim($_GET['q'] ?? '');
@@ -47,8 +44,8 @@ class Index extends SearchAction {
             
             $this->addBreadcrumb('Главная', BASE_URL);
             $this->addBreadcrumb('Поиск', BASE_URL . '/search');
-            $this->addBreadcrumb('Результаты поиска: "' . htmlspecialchars($query) . '"');
-            $this->setPageTitle('Поиск: ' . htmlspecialchars($query));
+            $this->addBreadcrumb('Результаты поиска: "' . html($query) . '"');
+            $this->setPageTitle('Поиск: ' . html($query));
             
             $this->searchModel->saveSearchQuery($query);
             $results = $this->searchModel->searchAll($query, $type, $page);

@@ -6,12 +6,18 @@ namespace seo\actions;
 */
 class AdminIndex extends SeoAction {
     
+    /**
+    * Действие отображения главной страницы SEO настроек
+    */
     public function execute() {
         if (!$this->checkAdminAccess()) {
             \Notification::error('У вас нет прав доступа к этому разделу');
             $this->redirect(ADMIN_URL . '/login');
             return;
         }
+        
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('SEO');
         
         try {
             $robotsSettings = $this->seoModel->getRobotsSettings();
@@ -40,4 +46,5 @@ class AdminIndex extends SeoAction {
             $this->redirect(ADMIN_URL);
         }
     }
+
 }

@@ -3,8 +3,8 @@
 namespace forms\actions;
 
 /**
- * Действие отправки формы (публичное)
- */
+* Действие отправки формы
+*/
 class FormSubmit extends FormAction {
     
     public function execute() {
@@ -123,8 +123,8 @@ class FormSubmit extends FormAction {
     }
     
     /**
-     * Проверка CSRF-токена
-     */
+    * Проверка CSRF-токена
+    */
     private function verifyCsrfToken($token, $formSlug) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -153,8 +153,8 @@ class FormSubmit extends FormAction {
     }
     
     /**
-     * Проверка капчи
-     */
+    * Проверка капчи
+    */
     private function verifyCaptcha($settings) {
         $captchaAnswer = trim($_POST['captcha_answer'] ?? '');
         $captchaHash = $_POST['captcha_hash'] ?? '';
@@ -191,8 +191,8 @@ class FormSubmit extends FormAction {
     }
     
     /**
-     * Проверка лимитов отправок
-     */
+    * Проверка лимитов отправок
+    */
     private function checkSubmissionLimits($formId, $settings) {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '';
         
@@ -216,8 +216,8 @@ class FormSubmit extends FormAction {
     }
     
     /**
-     * Проверка на спам-слова
-     */
+    * Проверка на спам-слова
+    */
     private function checkSpamKeywords($data, $settings) {
         if (empty($settings['spam_protection']) || empty($settings['spam_keywords'])) {
             return false;

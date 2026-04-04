@@ -3,24 +3,15 @@
 namespace postblocks\actions;
 
 /**
- * Действие сохранения данных постблока из формы
- * Используется для AJAX-запросов в административной панели
- * Принимает данные из POST-формы, обрабатывает настройки и контент блока,
- * подготавливает их через методы блока и возвращает результат
- * 
- * @package postblocks\actions
- * @extends PostBlockAction
- */
+* Действие сохранения данных постблока из формы
+* @package postblocks\actions
+*/
 class AdminSaveBlockData extends PostBlockAction {
     
     /**
-     * Метод выполнения сохранения данных блока
-     * Проверяет права доступа, получает данные из POST,
-     * извлекает настройки и контент (из массивов или точечных полей),
-     * подготавливает их через методы блока и возвращает результат
-     * 
-     * @return void
-     */
+    * Метод выполнения сохранения данных блока
+    * @return void
+    */
     public function execute() {
         header('Content-Type: application/json; charset=utf-8');
         
@@ -81,21 +72,18 @@ class AdminSaveBlockData extends PostBlockAction {
     }
 
     /**
-     * Извлекает настройки из POST-запроса
-     * Поддерживает два формата:
-     * - Массив $_POST['settings']
-     * - Отдельные поля вида settings[ключ]=значение
-     * 
-     * @return array Массив настроек
-     */
+    * Извлекает настройки из POST-запроса
+    * Поддерживает два формата:
+    * - Массив $_POST['settings']
+    * - Отдельные поля вида settings[ключ]=значение
+    * @return array Массив настроек
+    */
     private function extractSettingsFromPost() {
         $settings = [];
         
         if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            // Прямой массив настроек
             $settings = $_POST['settings'];
         } else {
-            // Поиск полей вида settings[ключ]
             foreach ($_POST as $key => $value) {
                 if (strpos($key, 'settings[') === 0) {
                     $settingKey = str_replace(['settings[', ']'], '', $key);
@@ -108,21 +96,18 @@ class AdminSaveBlockData extends PostBlockAction {
     }
 
     /**
-     * Извлекает контент из POST-запроса
-     * Поддерживает два формата:
-     * - Массив $_POST['content']
-     * - Отдельные поля вида content[ключ]=значение
-     * 
-     * @return array Массив контента
-     */
+    * Извлекает контент из POST-запроса
+    * Поддерживает два формата:
+    * - Массив $_POST['content']
+    * - Отдельные поля вида content[ключ]=значение
+    * @return array Массив контента
+    */
     private function extractContentFromPost() {
         $content = [];
         
         if (isset($_POST['content']) && is_array($_POST['content'])) {
-            // Прямой массив контента
             $content = $_POST['content'];
         } else {
-            // Поиск полей вида content[ключ]
             foreach ($_POST as $key => $value) {
                 if (strpos($key, 'content[') === 0) {
                     $contentKey = str_replace(['content[', ']'], '', $key);

@@ -21,6 +21,8 @@ class AdminController extends Controller {
     public function __construct($db) {
         parent::__construct($db);
         $this->userModel = new UserModel($db);
+
+        $this->initAdminBreadcrumbs();
         
         $currentAction = $this->getCurrentAction();
         

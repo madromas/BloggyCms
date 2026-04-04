@@ -3,73 +3,83 @@
 namespace settings\actions;
 
 /**
- * Абстрактный базовый класс для всех действий модуля настроек
- * Предоставляет общую функциональность, доступ к модели настроек,
- * вспомогательные методы для работы с представлениями, перенаправлениями,
- * а также методы для работы с настройками по умолчанию и конфигурационными файлами
- * 
- * @package settings\actions
- */
+* Абстрактный базовый класс для всех действий модуля настроек
+* @package settings\actions
+*/
 abstract class SettingsAction {
     
-    /** @var object Подключение к базе данных */
     protected $db;
-    
-    /** @var array Параметры запроса (GET, POST, маршрутные параметры) */
     protected $params;
-    
-    /** @var object Контроллер, вызывающий действие */
     protected $controller;
-    
-    /** @var \SettingsModel Модель для работы с настройками */
     protected $settingsModel;
+    protected $breadcrumbs;
+    protected $pageTitle;
     
     /**
-     * Конструктор класса действия
-     * Инициализирует подключение к БД, параметры и модель настроек
-     * 
-     * @param object $db Подключение к базе данных
-     * @param array $params Параметры запроса (по умолчанию [])
-     */
+    * Конструктор класса действия
+    * @param object $db Подключение к базе данных
+    * @param array $params Параметры запроса (по умолчанию [])
+    */
     public function __construct($db, $params = []) {
         $this->db = $db;
         $this->params = $params;
-        
-        // Инициализация модели для работы с настройками
         $this->settingsModel = new \SettingsModel($db);
+        $this->breadcrumbs = new \BreadcrumbsManager($db);
+        $this->pageTitle = '';
+        \BreadcrumbsHelper::setManager($this->breadcrumbs);
     }
     
     /**
-     * Устанавливает контроллер, вызывающий действие
-     * Необходимо для делегирования операций рендеринга и перенаправления
-     * 
-     * @param object $controller Контроллер
-     * @return void
-     */
+    * Устанавливает контроллер, вызывающий действие
+    * @param object $controller Контроллер
+    * @return void
+    */
     public function setController($controller) {
         $this->controller = $controller;
     }
     
     /**
-     * Абстрактный метод выполнения действия
-     * Должен быть реализован в классах-наследниках
-     * Содержит основную логику конкретного действия
-     * 
-     * @return void
-     */
+    * Абстрактный метод выполнения действия
+    * @return void
+    */
     abstract public function execute();
     
     /**
-     * Рендерит шаблон с переданными данными
-     * Использует контроллер для рендеринга, если он установлен
-     * 
-     * @param string $template Путь к шаблону относительно папки views
-     * @param array $data Данные для передачи в шаблон
-     * @throws \Exception Если контроллер не установлен
-     * @return void
-     */
+    * Добавляет элемент в хлебные крошки
+    * @param string $title Название элемента
+    * @param string|null $url URL элемента
+    * @return self
+    */
+    protected function addBreadcrumb($title, $url = null) {
+        $this->breadcrumbs->add($title, $url);
+        return $this;
+    }
+    
+    /**
+    * Устанавливает заголовок страницы
+    * @param string $title Заголовок
+    * @return self
+    */
+    protected function setPageTitle($title) {
+        $this->pageTitle = $title;
+        return $this;
+    }
+    
+    /**
+    * Рендерит шаблон с переданными данными 
+    * @param string $template Путь к шаблону относительно папки views
+    * @param array $data Данные для передачи в шаблон
+    * @throws \Exception Если контроллер не установлен
+    * @return void
+    */
     protected function render($template, $data = []) {
         if ($this->controller) {
+            if (!isset($data['breadcrumbs'])) {
+                $data['breadcrumbs'] = $this->breadcrumbs;
+            }
+            if (!isset($data['title']) && $this->pageTitle) {
+                $data['title'] = $this->pageTitle;
+            }
             $this->controller->render($template, $data);
         } else {
             throw new \Exception('Controller not set for Action');
@@ -77,13 +87,10 @@ abstract class SettingsAction {
     }
     
     /**
-     * Выполняет перенаправление на указанный URL
-     * Использует контроллер для перенаправления, если он установлен,
-     * иначе выполняет перенаправление через стандартный PHP-заголовок
-     * 
-     * @param string $url URL для перенаправления
-     * @return void
-     */
+    * Выполняет перенаправление на указанный URL
+    * @param string $url URL для перенаправления
+    * @return void
+    */
     protected function redirect($url) {
         if ($this->controller) {
             $this->controller->redirect($url);
@@ -94,22 +101,26 @@ abstract class SettingsAction {
     }
     
     /**
-     * Проверяет, имеет ли текущий пользователь права администратора
-     * Основана на проверке сессионных переменных user_id и is_admin
-     * 
-     * @return bool true если пользователь администратор, false в противном случае
-     */
+    * Проверяет, имеет ли текущий пользователь права администратора
+    * @return bool true если пользователь администратор, false в противном случае
+    */
     protected function checkAdminAccess() {
         return isset($_SESSION['user_id']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
     
     /**
-     * Возвращает настройки по умолчанию для указанной группы
-     * Содержит предопределенные значения для всех групп настроек
-     * 
-     * @param string $group Ключ группы настроек
-     * @return array Массив настроек по умолчанию для указанной группы
-     */
+    * Возвращает менеджер хлебных крошек 
+    * @return \BreadcrumbsManager
+    */
+    protected function getBreadcrumbs() {
+        return $this->breadcrumbs;
+    }
+    
+    /**
+    * Возвращает настройки по умолчанию для указанной группы
+    * @param string $group Ключ группы настроек
+    * @return array Массив настроек по умолчанию для указанной группы
+    */
     protected function getDefaultSettings($group) {
         $defaults = [
             'general' => [
@@ -257,12 +268,11 @@ abstract class SettingsAction {
     }
 
     /**
-     * Обновляет шаблон сайта в конфигурационном файле
-     * 
-     * @param string $template Название нового шаблона
-     * @throws \Exception Если файл конфигурации недоступен для записи
-     * @return void
-     */
+    * Обновляет шаблон сайта в конфигурационном файле
+    * @param string $template Название нового шаблона
+    * @throws \Exception Если файл конфигурации недоступен для записи
+    * @return void
+    */
     protected function updateConfigTemplate($template) {
         $configFile = BASE_PATH . '/system/config/config.php';
         
@@ -283,12 +293,11 @@ abstract class SettingsAction {
     }
 
     /**
-     * Обновляет базовый URL сайта в конфигурационном файле
-     * 
-     * @param string $newUrl Новый базовый URL
-     * @throws \Exception Если файл конфигурации недоступен для записи
-     * @return void
-     */
+    * Обновляет базовый URL сайта в конфигурационном файле
+    * @param string $newUrl Новый базовый URL
+    * @throws \Exception Если файл конфигурации недоступен для записи
+    * @return void
+    */
     protected function updateConfigBaseUrl($newUrl) {
         $configFile = BASE_PATH . '/system/config/config.php';
         
@@ -313,12 +322,10 @@ abstract class SettingsAction {
     }
 
     /**
-     * Обрабатывает настройки резервного копирования шаблонов
-     * Сохраняет значения для связанных полей при отключении/включении опции
-     * 
-     * @param array $postSettings Массив настроек из POST-запроса
-     * @return array Обработанный массив настроек
-     */
+    * Обрабатывает настройки резервного копирования шаблонов
+    * @param array $postSettings Массив настроек из POST-запроса
+    * @return array Обработанный массив настроек
+    */
     protected function handleBackupSettings($postSettings) {
         $currentSettings = $this->settingsModel->get('site');
         

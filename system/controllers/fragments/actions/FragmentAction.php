@@ -4,59 +4,22 @@ namespace fragments\actions;
 
 /**
 * Абстрактный базовый класс для всех действий модуля фрагментов
-* 
 * @package fragments\actions
 */
 abstract class FragmentAction {
     
-    /**
-    * @var \Database Объект подключения к базе данных
-    */
     protected $db;
-    
-    /**
-    * @var array Параметры запроса
-    */
     protected $params;
-    
-    /**
-    * @var object Контроллер, вызывающий действие
-    */
     protected $controller;
-    
-    /**
-    * @var \FragmentModel Модель для работы с фрагментами
-    */
     protected $fragmentModel;
-    
-    /**
-    * @var \FragmentEntryModel Модель для работы с записями
-    */
     protected $entryModel;
-    
-    /**
-    * @var \FieldModel Модель для работы с полями
-    */
     protected $fieldModel;
-    
-    /**
-    * @var \FieldManager Менеджер полей
-    */
     protected $fieldManager;
-    
-    /**
-    * @var \BreadcrumbsManager Менеджер хлебных крошек
-    */
     protected $breadcrumbs;
-    
-    /**
-    * @var string Заголовок страницы
-    */
     protected $pageTitle;
     
     /**
     * Конструктор
-    * 
     * @param \Database $db
     * @param array $params
     */
@@ -74,7 +37,6 @@ abstract class FragmentAction {
     
     /**
     * Установка контроллера
-    * 
     * @param object $controller
     */
     public function setController($controller) {
@@ -88,7 +50,6 @@ abstract class FragmentAction {
     
     /**
     * Добавляет элемент в хлебные крошки
-    * 
     * @param string $title
     * @param string|null $url
     * @return self
@@ -100,7 +61,6 @@ abstract class FragmentAction {
     
     /**
     * Устанавливает заголовок страницы
-    * 
     * @param string $title
     * @return self
     */
@@ -111,7 +71,6 @@ abstract class FragmentAction {
     
     /**
     * Рендеринг шаблона
-    * 
     * @param string $template
     * @param array $data
     */
@@ -133,7 +92,6 @@ abstract class FragmentAction {
     
     /**
     * Перенаправление
-    * 
     * @param string $url
     */
     protected function redirect($url) {
@@ -147,7 +105,6 @@ abstract class FragmentAction {
     
     /**
     * Проверка прав администратора
-    * 
     * @return bool
     */
     protected function checkAdminAccess() {
@@ -156,7 +113,6 @@ abstract class FragmentAction {
     
     /**
     * Проверка AJAX-запроса
-    * 
     * @return bool
     */
     protected function isAjaxRequest() {
@@ -166,7 +122,6 @@ abstract class FragmentAction {
     
     /**
     * Получение ID текущего пользователя
-    * 
     * @return int|null
     */
     protected function getCurrentUserId() {
@@ -175,7 +130,6 @@ abstract class FragmentAction {
     
     /**
     * Возвращает менеджер хлебных крошек
-    * 
     * @return \BreadcrumbsManager
     */
     protected function getBreadcrumbs() {
@@ -184,7 +138,6 @@ abstract class FragmentAction {
     
     /**
     * Генерирует уникальное системное имя
-    * 
     * @param string $name
     * @param int|null $excludeId
     * @return string
@@ -204,7 +157,6 @@ abstract class FragmentAction {
     
     /**
     * Очищает системное имя
-    * 
     * @param string $name
     * @return string
     */
@@ -218,7 +170,6 @@ abstract class FragmentAction {
     
     /**
     * Обрабатывает загрузку файлов для фрагмента
-    * 
     * @param array $postSettings
     * @return array
     */

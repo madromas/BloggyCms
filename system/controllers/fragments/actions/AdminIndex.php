@@ -3,12 +3,15 @@
 namespace fragments\actions;
 
 /**
- * Действие отображения списка фрагментов
- */
+* Действие отображения списка фрагментов
+*/
 class AdminIndex extends FragmentAction {
     
+    /**
+    * Действие отображения списка фрагментов
+    */
     public function execute() {
-        $this->addBreadcrumb('Главная', ADMIN_URL);
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Фрагменты');
         $this->setPageTitle('Управление фрагментами');
         
@@ -30,4 +33,5 @@ class AdminIndex extends FragmentAction {
             'totalFragments' => count($fragments)
         ]);
     }
+
 }
