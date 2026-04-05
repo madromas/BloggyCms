@@ -236,51 +236,58 @@ $customFields = $fieldModel->getActiveByEntityType('user');
                         ?>
                         
                         <?php if (!empty($allAchievements)) { ?>
-                            <div class="mb-3">
-                                <label class="form-label">Выберите ачивки для пользователя</label>
-                                <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-                                    <?php foreach ($allAchievements as $achievement) { ?>
-                                        <div class="form-check mb-2">
-                                            <input class="form-check-input" type="checkbox" 
-                                                name="achievements[]" value="<?php echo $achievement['id']; ?>"
-                                                id="achievement_<?php echo $achievement['id']; ?>"
-                                                <?php echo in_array($achievement['id'], $userAchievements) ? 'checked' : ''; ?>
-                                                <?php echo $achievement['type'] == 'auto' ? 'disabled title="Автоматическая ачивка"' : ''; ?>>
-                                            <label class="form-check-label d-flex align-items-center" for="achievement_<?php echo $achievement['id']; ?>">
-                                                <?php if ($achievement['image']) { ?>
-                                                    <img src="<?php echo BASE_URL; ?>/uploads/achievements/<?php echo $achievement['image']; ?>" 
-                                                        class="rounded me-2" 
-                                                        style="width: 24px; height: 24px; object-fit: cover;"
-                                                        alt="<?php echo html($achievement['name']); ?>">
-                                                <?php } else { ?>
-                                                    <div class="rounded me-2 d-flex align-items-center justify-content-center" 
-                                                        style="width: 24px; height: 24px; background: <?php echo $achievement['icon_color']; ?>;">
-                                                        <?php 
-                                                        $iconName = str_replace('bi-', '', $achievement['icon']);
-                                                        echo bloggy_icon('bs', $iconName, '12', '#fff'); 
-                                                        ?>
-                                                    </div>
-                                                <?php } ?>
-                                                
-                                                <div>
-                                                    <strong><?php echo html($achievement['name']); ?></strong>
-                                                    <?php if ($achievement['type'] == 'auto') { ?>
-                                                        <span class="badge bg-info ms-1 small">авто</span>
-                                                    <?php } else { ?>
-                                                        <span class="badge bg-warning ms-1 small">ручная</span>
-                                                    <?php } ?>
-                                                    <?php if ($achievement['description']) { ?>
-                                                        <br>
-                                                        <small class="text-muted"><?php echo html($achievement['description']); ?></small>
-                                                    <?php } ?>
+                            <div class="achievements-list">
+                                <?php foreach ($allAchievements as $achievement) { 
+                                    $isChecked = in_array($achievement['id'], $userAchievements);
+                                    $isManual = $achievement['type'] == 'manual';
+                                ?>
+                                    <div class="achievement-item <?php echo $isChecked ? 'checked' : ''; ?>">
+                                        <input class="form-check-input" 
+                                            type="checkbox" 
+                                            name="achievements[]" 
+                                            value="<?php echo $achievement['id']; ?>"
+                                            id="achievement_<?php echo $achievement['id']; ?>"
+                                            <?php echo $isChecked ? 'checked' : ''; ?>
+                                            <?php echo !$isManual ? 'disabled' : ''; ?>>
+                                        
+                                        <label class="achievement-label" for="achievement_<?php echo $achievement['id']; ?>">
+                                            <?php if ($achievement['image']) { ?>
+                                                <img src="<?php echo BASE_URL; ?>/uploads/achievements/<?php echo $achievement['image']; ?>" 
+                                                    class="achievement-icon"
+                                                    alt="<?php echo html($achievement['name']); ?>">
+                                            <?php } else { ?>
+                                                <div class="achievement-icon" style="background: <?php echo $achievement['icon_color']; ?>;">
+                                                    <?php 
+                                                    $iconName = str_replace('bi-', '', $achievement['icon']);
+                                                    echo bloggy_icon('bs', $iconName, '14', '#fff'); 
+                                                    ?>
                                                 </div>
-                                            </label>
-                                        </div>
-                                    <?php } ?>
-                                </div>
-                                <div class="form-text">
-                                    Только ручные ачивки можно назначать вручную. Автоматические ачивки присваиваются при выполнении условий.
-                                </div>
+                                            <?php } ?>
+                                            
+                                            <span class="achievement-name"><?php echo html($achievement['name']); ?></span>
+                                            
+                                            <?php if (!$isManual) { ?>
+                                                <span class="badge bg-info">авто</span>
+                                            <?php } else { ?>
+                                                <span class="badge bg-warning">ручная</span>
+                                            <?php } ?>
+                                        </label>
+                                        
+                                        <?php if ($isManual && $isChecked) { ?>
+                                            <button type="button" 
+                                                class="unassign-btn"
+                                                data-user-id="<?php echo $user['id']; ?>"
+                                                data-achievement-id="<?php echo $achievement['id']; ?>"
+                                                data-achievement-name="<?php echo htmlspecialchars($achievement['name']); ?>"
+                                                title="Отозвать ачивку">
+                                                <?php echo bloggy_icon('bs', 'trash', '14', '#dc3545'); ?>
+                                            </button>
+                                        <?php } ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="form-text mt-3">
+                                Только ручные ачивки можно назначать вручную. Автоматические ачивки присваиваются при выполнении условий.
                             </div>
                         <?php } else { ?>
                             <div class="text-center text-muted py-3">
@@ -335,129 +342,7 @@ $customFields = $fieldModel->getActiveByEntityType('user');
     </form>
 </div>
 
-<?php ob_start(); ?>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const changePasswordCheckbox = document.getElementById('change_password');
-        const passwordFields = document.querySelector('.password-fields');
-        const passwordInput = document.querySelector('input[name="password"]');
-        const confirmInput = document.querySelector('input[name="password_confirm"]');
-        const form = document.querySelector('form');
-        
-        function togglePasswordValidation(enable) {
-            if (passwordInput) {
-                passwordInput.disabled = !enable;
-                if (!enable) {
-                    passwordInput.removeAttribute('required');
-                    passwordInput.value = '';
-                }
-            }
-            if (confirmInput) {
-                confirmInput.disabled = !enable;
-                if (!enable) {
-                    confirmInput.removeAttribute('required');
-                    confirmInput.value = '';
-                }
-            }
-        }
-        
-        function validatePasswords() {
-            if (!changePasswordCheckbox || !changePasswordCheckbox.checked) {
-                return true;
-            }
-            
-            if (!passwordInput.value && !confirmInput.value) {
-                return true;
-            }
-            
-            if (passwordInput.value.length < 6) {
-                passwordInput.setCustomValidity('Пароль должен содержать минимум 6 символов');
-                return false;
-            } else {
-                passwordInput.setCustomValidity('');
-            }
-            
-            if (passwordInput.value !== confirmInput.value) {
-                confirmInput.setCustomValidity('Пароли не совпадают');
-                return false;
-            } else {
-                confirmInput.setCustomValidity('');
-            }
-            
-            return true;
-        }
-        
-        if (changePasswordCheckbox && passwordFields) {
-            if (!changePasswordCheckbox.checked) {
-                togglePasswordValidation(false);
-            } else {
-                togglePasswordValidation(true);
-            }
-            
-            changePasswordCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    passwordFields.style.display = 'block';
-                    togglePasswordValidation(true);
-                } else {
-                    passwordFields.style.display = 'none';
-                    togglePasswordValidation(false);
-                }
-            });
-            
-            passwordInput.addEventListener('input', function() {
-                if (changePasswordCheckbox.checked) {
-                    if (this.value.length > 0 && this.value.length < 6) {
-                        this.setCustomValidity('Пароль должен содержать минимум 6 символов');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                    validatePasswords();
-                }
-            });
-            
-            confirmInput.addEventListener('input', function() {
-                if (changePasswordCheckbox.checked) {
-                    validatePasswords();
-                }
-            });
-        }
-        
-        if (form) {
-            let isSubmitting = false;
-            
-            form.addEventListener('submit', function(e) {
-                const submitBtn = form.querySelector('button[type="submit"]');
-                
-                if (changePasswordCheckbox && changePasswordCheckbox.checked) {
-                    if (!validatePasswords()) {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-                
-                if (isSubmitting) {
-                    e.preventDefault();
-                    return false;
-                }
-                
-                isSubmitting = true;
-                
-                if (submitBtn) {
-                    const originalHtml = submitBtn.innerHTML;
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
-                    submitBtn.setAttribute('data-original-html', originalHtml);
-                }
-                
-                return true;
-            });
-            
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn && submitBtn.disabled && submitBtn.getAttribute('data-original-html')) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = submitBtn.getAttribute('data-original-html');
-            }
-        }
-    });
-</script>
-<?php admin_bottom_js(ob_get_clean()); ?>
+<?php
+    add_admin_css('templates/default/admin/assets/css/controllers/achievement-user.css');
+    add_admin_js('templates/default/admin/assets/js/controllers/user-achievements.js');
+?>

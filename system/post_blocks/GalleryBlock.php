@@ -176,13 +176,13 @@ class GalleryBlock extends BasePostBlock {
                                             <div class="col-md-12">
                                                 <div class="current-image-preview">
                                                     <div class="d-flex align-items-center gap-3 p-2 bg-light rounded">
-                                                        <img src="<?= htmlspecialchars($image['image_url']) ?>" 
+                                                        <img src="<?= html($image['image_url']) ?>" 
                                                             alt="Текущее изображение" 
                                                             class="rounded"
                                                             style="width: 60px; height: 60px; object-fit: cover;">
                                                         <div class="flex-grow-1">
                                                             <div class="small text-muted mb-1">Текущее изображение</div>
-                                                            <code class="small"><?= htmlspecialchars(basename($image['image_url'])) ?></code>
+                                                            <code class="small"><?= html(basename($image['image_url'])) ?></code>
                                                             <div class="form-check mt-2">
                                                                 <input class="form-check-input" type="checkbox" 
                                                                     name="remove_gallery_image_<?= $index ?>" 
@@ -196,7 +196,7 @@ class GalleryBlock extends BasePostBlock {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <input type="hidden" name="content[images][<?= $index ?>][image_url]" class="gallery-image-url" value="<?= htmlspecialchars($image['image_url']) ?>">
+                                            <input type="hidden" name="content[images][<?= $index ?>][image_url]" class="gallery-image-url" value="<?= html($image['image_url']) ?>">
                                         <?php endif; ?>
                                         
                                         <div class="col-md-6">
@@ -204,7 +204,7 @@ class GalleryBlock extends BasePostBlock {
                                             <input type="text" 
                                                 name="content[images][<?= $index ?>][alt_text]" 
                                                 class="form-control form-control-sm" 
-                                                value="<?= htmlspecialchars($image['alt_text'] ?? '') ?>" 
+                                                value="<?= html($image['alt_text'] ?? '') ?>" 
                                                 placeholder="Краткое описание изображения"
                                                 required>
                                         </div>
@@ -213,7 +213,7 @@ class GalleryBlock extends BasePostBlock {
                                             <input type="text" 
                                                 name="content[images][<?= $index ?>][caption]" 
                                                 class="form-control form-control-sm" 
-                                                value="<?= htmlspecialchars($image['caption'] ?? '') ?>" 
+                                                value="<?= html($image['caption'] ?? '') ?>" 
                                                 placeholder="Необязательная подпись к изображению">
                                         </div>
                                         <div class="col-12">
@@ -361,7 +361,7 @@ class GalleryBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-gallery">
                 </div>
             </div>
@@ -428,8 +428,8 @@ class GalleryBlock extends BasePostBlock {
             if (!empty($image['image_url'])) {
                 $previewHtml .= '
                 <div class="gallery-preview-item">
-                    <img src="' . htmlspecialchars($image['image_url']) . '" 
-                         alt="' . htmlspecialchars($image['alt_text'] ?? '') . '" 
+                    <img src="' . html($image['image_url']) . '" 
+                         alt="' . html($image['alt_text'] ?? '') . '" 
                          class="img-thumbnail">
                 </div>';
             }
@@ -555,11 +555,11 @@ class GalleryBlock extends BasePostBlock {
 
                 $itemHtml = $itemTemplate;
                 
-                $itemHtml = str_replace('{image_url}', htmlspecialchars($imageUrl), $itemHtml);
-                $itemHtml = str_replace('{alt_text}', htmlspecialchars($altText), $itemHtml);
+                $itemHtml = str_replace('{image_url}', html($imageUrl), $itemHtml);
+                $itemHtml = str_replace('{alt_text}', html($altText), $itemHtml);
                 
                 if ($showCaptions && !empty($caption)) {
-                    $itemHtml = str_replace('{caption}', '<div class="gallery-caption">' . htmlspecialchars($caption) . '</div>', $itemHtml);
+                    $itemHtml = str_replace('{caption}', '<div class="gallery-caption">' . html($caption) . '</div>', $itemHtml);
                 } else {
                     $itemHtml = str_replace('{caption}', '', $itemHtml);
                 }
@@ -589,15 +589,15 @@ class GalleryBlock extends BasePostBlock {
 
                 $captionHtml = '';
                 if ($showCaptions && !empty($caption)) {
-                    $captionHtml = '<div class="gallery-caption">' . htmlspecialchars($caption) . '</div>';
+                    $captionHtml = '<div class="gallery-caption">' . html($caption) . '</div>';
                 }
 
                 $lightboxAttr = $lightbox ? ' data-lightbox="gallery"' : '';
 
                 $itemsHtml .= '
                 <div class="gallery-item">
-                    <img src="' . htmlspecialchars($imageUrl) . '" 
-                        alt="' . htmlspecialchars($altText) . '" 
+                    <img src="' . html($imageUrl) . '" 
+                        alt="' . html($altText) . '" 
                         class="gallery-image"'
                         . $lightboxAttr . '>
                     ' . $captionHtml . '
@@ -611,8 +611,8 @@ class GalleryBlock extends BasePostBlock {
         $result = str_replace('{layout}', $layout, $result);
         $result = str_replace('{custom_class}', $customClass, $result);
         $result = str_replace('post-block-gallery', 'post-block-gallery columns-' . $columns . ' size-' . $imageSize, $result);
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
 
@@ -775,7 +775,7 @@ class GalleryBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Галерея</strong>
                                 <?php if ($layout !== 'grid'): ?>
-                                    <span class="badge bg-info badge-sm"><?= htmlspecialchars($layout) ?></span>
+                                    <span class="badge bg-info badge-sm"><?= html($layout) ?></span>
                                 <?php endif; ?>
                                 <?php if ($columns !== 3): ?>
                                     <span class="badge bg-secondary badge-sm"><?= $columns ?> кол.</span>
@@ -812,8 +812,8 @@ class GalleryBlock extends BasePostBlock {
                                     $caption = $image['caption'] ?? '';
                                 ?>
                                     <div class="gallery-preview-item position-relative">
-                                        <img src="<?= htmlspecialchars($imageUrl) ?>" 
-                                            alt="<?= htmlspecialchars($altText) ?>"
+                                        <img src="<?= html($imageUrl) ?>" 
+                                            alt="<?= html($altText) ?>"
                                             class="img-fluid rounded"
                                             style="width: 100%; height: 80px; object-fit: cover;">
                                         
@@ -829,7 +829,7 @@ class GalleryBlock extends BasePostBlock {
                             <div class="gallery-preview-info mt-3">
                                 <div class="row small text-muted">
                                     <div class="col-6">
-                                        <div><i class="bi bi-grid-3x3 me-1"></i>Макет: <strong><?= htmlspecialchars($layout) ?></strong></div>
+                                        <div><i class="bi bi-grid-3x3 me-1"></i>Макет: <strong><?= html($layout) ?></strong></div>
                                         <?php if ($showCaptions): ?>
                                             <div><i class="bi bi-card-text me-1"></i>Подписи включены</div>
                                         <?php endif; ?>

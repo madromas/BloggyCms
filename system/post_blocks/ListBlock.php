@@ -66,7 +66,7 @@ class ListBlock extends BasePostBlock {
                                 <input type="text" 
                                     name="content[items][]" 
                                     class="form-control" 
-                                    value="<?= htmlspecialchars(is_array($item) ? ($item['text'] ?? '') : (string)$item) ?>" 
+                                    value="<?= html(is_array($item) ? ($item['text'] ?? '') : (string)$item) ?>" 
                                     placeholder="Введите текст элемента списка">
                             </div>
                             <div class="col-2 text-end">
@@ -100,7 +100,7 @@ class ListBlock extends BasePostBlock {
             <input type="text" 
                    name="settings[custom_class]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($customClass) ?>" 
+                   value="<?= html($customClass) ?>" 
                    placeholder="my-list">
         </div>
         <?php
@@ -156,7 +156,7 @@ class ListBlock extends BasePostBlock {
                 }
                 
                 if (!empty($text)) {
-                    $itemHtml = str_replace('{item_text}', htmlspecialchars($text), $itemTemplate);
+                    $itemHtml = str_replace('{item_text}', html($text), $itemTemplate);
                     $itemsHtml .= $itemHtml;
                 }
             }
@@ -164,8 +164,8 @@ class ListBlock extends BasePostBlock {
             $result = preg_replace('/\{list_items\}.*?\{\/list_items\}/s', $itemsHtml, $result);
         }
         
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
 
@@ -402,7 +402,7 @@ class ListBlock extends BasePostBlock {
                                         }
                                     ?>
                                         <li class="mb-1" style="font-size: 14px; line-height: 1.4;">
-                                            <?= htmlspecialchars(mb_substr($text, 0, 60)) ?>
+                                            <?= html(mb_substr($text, 0, 60)) ?>
                                             <?php if (mb_strlen($text) > 60): ?>...<?php endif; ?>
                                         </li>
                                     <?php endforeach; ?>
@@ -425,7 +425,7 @@ class ListBlock extends BasePostBlock {
                                     </div>
                                     <div class="col-6">
                                         <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= htmlspecialchars($customClass) ?></strong></div>
+                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
                                         <?php endif; ?>
                                     </div>
                                 </div>

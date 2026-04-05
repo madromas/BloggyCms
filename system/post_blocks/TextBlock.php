@@ -75,7 +75,7 @@ class TextBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Текст (Rich)</strong>
                                 <?php if ($alignment !== 'left'): ?>
-                                    <span class="badge bg-secondary badge-sm"><?= htmlspecialchars($alignment) ?></span>
+                                    <span class="badge bg-secondary badge-sm"><?= html($alignment) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
@@ -93,7 +93,7 @@ class TextBlock extends BasePostBlock {
                 
                 <div class="preview-body full-text-content">
                     <?php if (!empty(trim(strip_tags($html)))): ?>
-                        <div class="text-content" style="text-align: <?= htmlspecialchars($alignment) ?>;">
+                        <div class="text-content" style="text-align: <?= html($alignment) ?>;">
                             <?= $html ?>
                         </div>
                     <?php else: ?>
@@ -176,7 +176,7 @@ class TextBlock extends BasePostBlock {
             <textarea name="content[content]" 
                       class="d-none" 
                       id="hidden-content-<?= $editorId ?>"
-                      required><?= htmlspecialchars($contentHtml) ?></textarea>
+                      required><?= html($contentHtml) ?></textarea>
             
             <div class="form-text">Поддерживается HTML. Выделите текст и используйте кнопки для форматирования.</div>
         </div>
@@ -230,7 +230,7 @@ class TextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-text-block">
                 </div>
             </div>
@@ -243,7 +243,7 @@ class TextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[font_size]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($fontSize) ?>" 
+                           value="<?= html($fontSize) ?>" 
                            placeholder="16px или 1rem">
                 </div>
             </div>
@@ -253,7 +253,7 @@ class TextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[line_height]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($lineHeight) ?>" 
+                           value="<?= html($lineHeight) ?>" 
                            placeholder="1.5 или 24px">
                 </div>
             </div>
@@ -303,13 +303,13 @@ class TextBlock extends BasePostBlock {
 
         $style = '';
         if ($fontSize) {
-            $style .= 'font-size: ' . htmlspecialchars($fontSize) . '; ';
+            $style .= 'font-size: ' . html($fontSize) . '; ';
         }
         if ($lineHeight) {
-            $style .= 'line-height: ' . htmlspecialchars($lineHeight) . '; ';
+            $style .= 'line-height: ' . html($lineHeight) . '; ';
         }
         if ($textAlign && $textAlign !== 'left') {
-            $style .= 'text-align: ' . htmlspecialchars($textAlign) . '; ';
+            $style .= 'text-align: ' . html($textAlign) . '; ';
         }
 
         $result = $template;
@@ -327,13 +327,13 @@ class TextBlock extends BasePostBlock {
             );
         }
         
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
         $result = str_replace('{text_align}', $textAlign, $result);
-        $result = str_replace('{font_size}', htmlspecialchars($fontSize), $result);
-        $result = str_replace('{line_height}', htmlspecialchars($lineHeight), $result);
+        $result = str_replace('{font_size}', html($fontSize), $result);
+        $result = str_replace('{line_height}', html($lineHeight), $result);
 
         return $result;
     }

@@ -61,7 +61,7 @@ class QuoteBlock extends BasePostBlock {
                     class="form-control" 
                     rows="4" 
                     placeholder="Введите текст цитаты..."
-                    required><?= htmlspecialchars($text) ?></textarea>
+                    required><?= html($text) ?></textarea>
         </div>
         
         <div class="row g-3">
@@ -70,7 +70,7 @@ class QuoteBlock extends BasePostBlock {
                 <input type="text" 
                     name="content[author]" 
                     class="form-control" 
-                    value="<?= htmlspecialchars($author) ?>" 
+                    value="<?= html($author) ?>" 
                     placeholder="Автор цитаты">
             </div>
             <div class="col-md-6">
@@ -78,7 +78,7 @@ class QuoteBlock extends BasePostBlock {
                 <input type="text" 
                     name="content[source]" 
                     class="form-control" 
-                    value="<?= htmlspecialchars($source) ?>" 
+                    value="<?= html($source) ?>" 
                     placeholder="Книга, статья и т.д.">
             </div>
         </div>
@@ -111,7 +111,7 @@ class QuoteBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-quote">
                 </div>
             </div>
@@ -154,17 +154,17 @@ class QuoteBlock extends BasePostBlock {
         }
 
         $result = $template;
-        $result = str_replace('{text}', nl2br(htmlspecialchars($text)), $result);
-        $result = str_replace('{author}', htmlspecialchars($author), $result);
-        $result = str_replace('{source}', htmlspecialchars($source), $result);
+        $result = str_replace('{text}', nl2br(html($text)), $result);
+        $result = str_replace('{author}', html($author), $result);
+        $result = str_replace('{source}', html($source), $result);
         $result = str_replace(
             'class="post-block-quote', 
             'class="post-block-quote align-' . $alignment . ' ' . $customClass . ' ' . $presetClass . ' ', 
             $result
         );
         
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
         $result = str_replace('{custom_class}', $customClass . ' ' . $presetClass, $result);
@@ -331,13 +331,13 @@ class QuoteBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Цитата</strong>
                                 <?php if ($alignment !== 'left'): ?>
-                                    <span class="badge bg-info badge-sm"><?= htmlspecialchars($alignment) ?></span>
+                                    <span class="badge bg-info badge-sm"><?= html($alignment) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($text) ?> симв.
                                 <?php if ($author): ?>
-                                    · <?= htmlspecialchars(mb_substr($author, 0, 15)) ?>
+                                    · <?= html(mb_substr($author, 0, 15)) ?>
                                     <?php if (mb_strlen($author) > 15): ?>...<?php endif; ?>
                                 <?php endif; ?>
                             </div>
@@ -353,22 +353,22 @@ class QuoteBlock extends BasePostBlock {
                 
                 <div class="preview-body">
                     <?php if (!empty(trim($text))): ?>
-                        <div class="quote-preview-container text-<?= htmlspecialchars($alignment) ?>">
+                        <div class="quote-preview-container text-<?= html($alignment) ?>">
                             <div class="quote-preview border-start border-3 border-primary ps-3 py-2 my-2" 
                                 style="background: #f8f9fa; border-radius: 0 4px 4px 0;">
                                 <div class="quote-text-preview" style="font-style: italic; color: #374151;">
                                     <i class="bi bi-quote me-1" style="font-size: 1.2em; color: #3b82f6;"></i>
-                                    <?= htmlspecialchars(mb_substr($previewText, 0, 100)) ?>
+                                    <?= html(mb_substr($previewText, 0, 100)) ?>
                                     <?php if (mb_strlen($previewText) > 100): ?>...<?php endif; ?>
                                 </div>
                                 
                                 <?php if ($author || $source): ?>
                                     <div class="quote-meta mt-2 small text-muted">
                                         <?php if ($author): ?>
-                                            <div><i class="bi bi-person me-1"></i><?= htmlspecialchars($author) ?></div>
+                                            <div><i class="bi bi-person me-1"></i><?= html($author) ?></div>
                                         <?php endif; ?>
                                         <?php if ($source): ?>
-                                            <div><i class="bi bi-book me-1"></i><?= htmlspecialchars($source) ?></div>
+                                            <div><i class="bi bi-book me-1"></i><?= html($source) ?></div>
                                         <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
@@ -377,13 +377,13 @@ class QuoteBlock extends BasePostBlock {
                                 <div class="row">
                                     <div class="col-6">
                                         <div>
-                                            <i class="bi bi-align-<?= htmlspecialchars($alignment) ?> me-1"></i>
-                                            Выравнивание: <strong><?= htmlspecialchars($alignment) ?></strong>
+                                            <i class="bi bi-align-<?= html($alignment) ?> me-1"></i>
+                                            Выравнивание: <strong><?= html($alignment) ?></strong>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= htmlspecialchars($customClass) ?></strong></div>
+                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
                                         <?php endif; ?>
                                     </div>
                                 </div>

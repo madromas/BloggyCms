@@ -49,7 +49,7 @@ class CustomHtmlBlock extends BasePostBlock {
             <textarea name="content[html_content]" 
                      id="html-editor-textarea" 
                      style="display: none;"
-                     required><?= htmlspecialchars($htmlContent) ?></textarea>
+                     required><?= html($htmlContent) ?></textarea>
             <div class="form-text">
                 Вставьте любой HTML код с подсветкой синтаксиса
             </div>
@@ -69,7 +69,7 @@ class CustomHtmlBlock extends BasePostBlock {
             <input type="text" 
                    name="settings[custom_class]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($customClass) ?>" 
+                   value="<?= html($customClass) ?>" 
                    placeholder="my-html-block">
         </div>
         <?php
@@ -185,7 +185,7 @@ class CustomHtmlBlock extends BasePostBlock {
         
         $blockClasses = trim('custom-html-block ' . $customClass . ' ' . $presetClass);
         if (!empty($blockClasses)) {
-            $result .= '<div class="' . htmlspecialchars($blockClasses) . '">';
+            $result .= '<div class="' . html($blockClasses) . '">';
         }
         
         $result .= $htmlContent;
@@ -198,8 +198,8 @@ class CustomHtmlBlock extends BasePostBlock {
         $replacements = [
             '{html_content}' => $result,
             '{custom_class}' => $customClass,
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];
@@ -254,7 +254,7 @@ class CustomHtmlBlock extends BasePostBlock {
         $htmlContent = $content['html_content'] ?? '<!-- Вставьте ваш HTML код здесь -->';
         $customClass = $settings['custom_class'] ?? '';
         
-        $previewHtml = htmlspecialchars($htmlContent);
+        $previewHtml = html($htmlContent);
         $htmlLength = strlen($htmlContent);
         
         if (strlen($previewHtml) > 150) {
@@ -277,7 +277,7 @@ class CustomHtmlBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Произвольный HTML</strong>
                                 <?php if ($customClass): ?>
-                                    <span class="badge bg-secondary badge-sm"><?= htmlspecialchars($customClass) ?></span>
+                                    <span class="badge bg-secondary badge-sm"><?= html($customClass) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">

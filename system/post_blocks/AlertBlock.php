@@ -93,7 +93,7 @@ class AlertBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Блок с предупреждением</strong>
-                                <span class="badge bg-<?= htmlspecialchars($type) ?> badge-sm"><?= htmlspecialchars($typeText) ?></span>
+                                <span class="badge bg-<?= html($type) ?> badge-sm"><?= html($typeText) ?></span>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($title) ?> симв. в заголовке
@@ -115,7 +115,7 @@ class AlertBlock extends BasePostBlock {
                 <div class="preview-body">
                     <?php if (!empty(trim($title)) || !empty(trim($contentText))): ?>
                         <div class="alert-preview-container">
-                            <div class="alert alert-<?= htmlspecialchars($type) ?> mb-0 border shadow-sm <?= $dismissible ? 'alert-dismissible' : '' ?>">
+                            <div class="alert alert-<?= html($type) ?> mb-0 border shadow-sm <?= $dismissible ? 'alert-dismissible' : '' ?>">
                                 <div class="d-flex align-items-start">
                                     <?php if ($showIcon): ?>
                                         <div class="me-3 flex-shrink-0">
@@ -126,14 +126,14 @@ class AlertBlock extends BasePostBlock {
                                     <div class="flex-grow-1">
                                         <?php if (!empty(trim($title))): ?>
                                             <div class="alert-title fw-bold mb-1">
-                                                <?= htmlspecialchars(mb_substr($title, 0, 30)) ?>
+                                                <?= html(mb_substr($title, 0, 30)) ?>
                                                 <?php if (mb_strlen($title) > 30): ?>...<?php endif; ?>
                                             </div>
                                         <?php endif; ?>
                                         
                                         <?php if (!empty(trim($contentText))): ?>
                                             <div class="alert-body small">
-                                                <?= htmlspecialchars(mb_substr($contentText, 0, 80)) ?>
+                                                <?= html(mb_substr($contentText, 0, 80)) ?>
                                                 <?php if (mb_strlen($contentText) > 80): ?>...<?php endif; ?>
                                             </div>
                                         <?php endif; ?>
@@ -149,8 +149,8 @@ class AlertBlock extends BasePostBlock {
                                 <div class="row">
                                     <div class="col-6">
                                         <div>
-                                            <i class="bi bi-circle-fill text-<?= htmlspecialchars($type) ?> me-1"></i>
-                                            Тип: <strong><?= htmlspecialchars($typeText) ?></strong>
+                                            <i class="bi bi-circle-fill text-<?= html($type) ?> me-1"></i>
+                                            Тип: <strong><?= html($typeText) ?></strong>
                                         </div>
                                         <div>
                                             <i class="bi bi-<?= $showIcon ? 'eye' : 'eye-slash' ?> me-1"></i>
@@ -159,7 +159,7 @@ class AlertBlock extends BasePostBlock {
                                     </div>
                                     <div class="col-6">
                                         <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= htmlspecialchars($customClass) ?></strong></div>
+                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
                                         <?php endif; ?>
                                         <div>
                                             <i class="bi bi-<?= $dismissible ? 'x-circle' : 'circle' ?> me-1"></i>
@@ -202,7 +202,7 @@ class AlertBlock extends BasePostBlock {
             <input type="text" 
                    name="content[title]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($title) ?>" 
+                   value="<?= html($title) ?>" 
                    placeholder="Например: Важно!">
             <div class="form-text">Заголовок сообщения. Если оставить пустым, будет показан только основной текст.</div>
         </div>
@@ -213,7 +213,7 @@ class AlertBlock extends BasePostBlock {
                      class="form-control" 
                      rows="4" 
                      placeholder="Введите текст сообщения..."
-                     required><?= htmlspecialchars($content) ?></textarea>
+                     required><?= html($content) ?></textarea>
             <div class="form-text">Основное содержание блока предупреждения.</div>
         </div>
         <?php
@@ -252,7 +252,7 @@ class AlertBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-alert">
                 </div>
             </div>
@@ -449,15 +449,15 @@ class AlertBlock extends BasePostBlock {
         
         $replacements = [
             '{type}' => $type,
-            '{title}' => htmlspecialchars($title),
+            '{title}' => html($title),
             '{content}' => $contentText,
             '{icon}' => $iconHtml,
             '{dismissible_class}' => $dismissible ? 'alert-dismissible' : '',
             '{dismiss_button}' => $dismissButton,
             '{custom_class}' => trim($customClass . ' ' . $presetClass),
             '{aria_live}' => 'aria-live="' . $ariaLive . '"',
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];

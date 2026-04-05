@@ -52,10 +52,10 @@ class ButtonBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Кнопка</strong>
                                 <?php if ($style !== 'primary'): ?>
-                                    <span class="badge bg-info badge-sm"><?= htmlspecialchars($style) ?></span>
+                                    <span class="badge bg-info badge-sm"><?= html($style) ?></span>
                                 <?php endif; ?>
                                 <?php if ($size !== 'medium'): ?>
-                                    <span class="badge bg-secondary badge-sm"><?= htmlspecialchars($size) ?></span>
+                                    <span class="badge bg-secondary badge-sm"><?= html($size) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
@@ -79,20 +79,20 @@ class ButtonBlock extends BasePostBlock {
                 
                 <div class="preview-body">
                     <?php if (!empty(trim($text))): ?>
-                        <div class="button-preview-container <?= htmlspecialchars($alignmentClass) ?>">
+                        <div class="button-preview-container <?= html($alignmentClass) ?>">
                             <a href="#" 
-                            class="btn btn-<?= htmlspecialchars($style) ?> <?= htmlspecialchars($sizeClass) ?> <?= htmlspecialchars($isFullWidth) ?>"
+                            class="btn btn-<?= html($style) ?> <?= html($sizeClass) ?> <?= html($isFullWidth) ?>"
                             style="pointer-events: none; cursor: default; opacity: 0.8;">
                                 <?php if ($iconBefore): ?>
-                                    <i class="<?= htmlspecialchars($iconBefore) ?> me-1"></i>
+                                    <i class="<?= html($iconBefore) ?> me-1"></i>
                                 <?php endif; ?>
-                                <?= htmlspecialchars($text) ?>
+                                <?= html($text) ?>
                                 <?php if ($iconAfter): ?>
-                                    <i class="<?= htmlspecialchars($iconAfter) ?> ms-1"></i>
+                                    <i class="<?= html($iconAfter) ?> ms-1"></i>
                                 <?php endif; ?>
                             </a>
                             <div class="mt-2 small text-muted">
-                                <span>URL: <?= htmlspecialchars($url) ?></span>
+                                <span>URL: <?= html($url) ?></span>
                                 <?php if ($target === '_blank'): ?>
                                     <span class="ms-2"><i class="bi bi-box-arrow-up-right"></i> Новое окно</span>
                                 <?php endif; ?>
@@ -171,7 +171,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="text" 
                            name="content[text]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($text) ?>" 
+                           value="<?= html($text) ?>" 
                            placeholder="Текст на кнопке"
                            required>
                 </div>
@@ -182,7 +182,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="url" 
                            name="content[url]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($url) ?>" 
+                           value="<?= html($url) ?>" 
                            placeholder="https://example.com"
                            required>
                 </div>
@@ -313,7 +313,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="color" 
                            name="settings[bg_color]" 
                            class="form-control form-control-color" 
-                           value="<?= htmlspecialchars($bgColor) ?>">
+                           value="<?= html($bgColor) ?>">
                     <div class="form-text">Оставьте пустым для цвета по умолчанию</div>
                 </div>
             </div>
@@ -323,7 +323,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="color" 
                            name="settings[text_color]" 
                            class="form-control form-control-color" 
-                           value="<?= htmlspecialchars($textColor) ?>">
+                           value="<?= html($textColor) ?>">
                 </div>
             </div>
             <div class="col-md-4">
@@ -332,7 +332,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="color" 
                            name="settings[border_color]" 
                            class="form-control form-control-color" 
-                           value="<?= htmlspecialchars($borderColor) ?>">
+                           value="<?= html($borderColor) ?>">
                 </div>
             </div>
         </div>
@@ -344,7 +344,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-custom-button">
                 </div>
             </div>
@@ -354,7 +354,7 @@ class ButtonBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[rel]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($rel) ?>" 
+                           value="<?= html($rel) ?>" 
                            placeholder="noopener noreferrer">
                     <div class="form-text">Для SEO и безопасности ссылок</div>
                 </div>
@@ -408,10 +408,10 @@ class ButtonBlock extends BasePostBlock {
 
         return '
         <div class="post-block-button-preview ' . $alignmentClass . '">
-            <a href="' . htmlspecialchars($url) . '" 
+            <a href="' . html($url) . '" 
                class="btn btn-' . $style . ' ' . $sizeClass . '" 
                style="pointer-events: none; text-decoration: none;">
-                ' . htmlspecialchars($text) . '
+                ' . html($text) . '
             </a>
         </div>';
     }

@@ -39,6 +39,11 @@ class Controller {
      * @var array Загруженные модели
      */
     protected $models = [];
+
+    /**
+     * @var \BreadcrumbsManager Менеджер хлебных крошек
+     */
+    protected $breadcrumbs;
     
     /**
      * Конструктор контроллера
@@ -111,6 +116,10 @@ class Controller {
 
         if (!isset($data['pageTitle'])) {
             $data['pageTitle'] = $this->pageTitle;
+        }
+
+        if (!isset($data['breadcrumbs']) && isset($this->breadcrumbs)) {
+            $data['breadcrumbs'] = $this->breadcrumbs;
         }
         
         $data['app'] = $this->app;
@@ -284,10 +293,9 @@ class Controller {
     * @return void
     */
     protected function initAdminBreadcrumbs() {
-        if (strpos($_SERVER['REQUEST_URI'], ADMIN_URL) !== false) {
+        if (strpos($_SERVER['REQUEST_URI'], ADMIN_URL) !== false && !$this->breadcrumbs) {
             $this->breadcrumbs = new \BreadcrumbsManager($this->db);
             \BreadcrumbsHelper::setManager($this->breadcrumbs);
-            $this->addBreadcrumb('Панель управления', ADMIN_URL);
         }
     }
 
@@ -298,9 +306,11 @@ class Controller {
     * @return self
     */
     protected function addBreadcrumb($title, $url = null) {
-        if ($this->breadcrumbs) {
-            $this->breadcrumbs->add($title, $url);
+        if (!$this->breadcrumbs) {
+            $this->breadcrumbs = new \BreadcrumbsManager($this->db);
+            \BreadcrumbsHelper::setManager($this->breadcrumbs);
         }
+        $this->breadcrumbs->add($title, $url);
         return $this;
     }
 

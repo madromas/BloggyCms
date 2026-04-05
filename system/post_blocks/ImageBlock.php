@@ -42,7 +42,7 @@ class ImageBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Изображение</strong>
                                 <?php if ($size !== 'medium'): ?>
-                                    <span class="badge bg-info badge-sm"><?= htmlspecialchars($size) ?></span>
+                                    <span class="badge bg-info badge-sm"><?= html($size) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
@@ -67,10 +67,10 @@ class ImageBlock extends BasePostBlock {
                 
                 <div class="preview-body">
                     <?php if (!empty($url)): ?>
-                        <div class="image-content-container text-<?= htmlspecialchars($alignment) ?>">
+                        <div class="image-content-container text-<?= html($alignment) ?>">
                             <div class="image-wrapper position-relative d-inline-block">
-                                <img src="<?= htmlspecialchars($url) ?>" 
-                                     alt="<?= htmlspecialchars($alt) ?>"
+                                <img src="<?= html($url) ?>" 
+                                     alt="<?= html($alt) ?>"
                                      class="img-fluid rounded shadow-sm"
                                      style="max-width: 100%; max-height: 300px;"
                                      onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZm1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYjBiMWIyIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+'">
@@ -79,14 +79,14 @@ class ImageBlock extends BasePostBlock {
                             <?php if (!empty($alt)): ?>
                                 <div class="image-alt mt-2">
                                     <div class="small fw-semibold">Описание:</div>
-                                    <div class="small text-muted"><?= htmlspecialchars($alt) ?></div>
+                                    <div class="small text-muted"><?= html($alt) ?></div>
                                 </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($caption)): ?>
                                 <div class="image-caption mt-2">
                                     <div class="small fw-semibold">Подпись:</div>
-                                    <div class="small text-muted"><?= htmlspecialchars($caption) ?></div>
+                                    <div class="small text-muted"><?= html($caption) ?></div>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -164,17 +164,17 @@ class ImageBlock extends BasePostBlock {
         <input type="hidden" 
                name="content[image_url]" 
                class="image-url-input" 
-               value="<?= htmlspecialchars($imageUrl) ?>">
+               value="<?= html($imageUrl) ?>">
         <?php if ($imageUrl): ?>
         <div class="mb-4">
             <label class="form-label">Текущее изображение</label>
             <div class="current-image-preview border rounded p-3 text-center bg-light">
-                <img src="<?= htmlspecialchars($imageUrl) ?>" 
+                <img src="<?= html($imageUrl) ?>" 
                      alt="Текущее изображение" 
                      class="img-thumbnail"
                      style="max-height: 200px; max-width: 100%;">
                 <div class="mt-2">
-                    <small class="text-muted"><?= htmlspecialchars($imageUrl) ?></small>
+                    <small class="text-muted"><?= html($imageUrl) ?></small>
                 </div>
                 <div class="mt-2">
                     <div class="form-check">
@@ -193,7 +193,7 @@ class ImageBlock extends BasePostBlock {
             <input type="text" 
                    name="content[alt_text]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($altText) ?>" 
+                   value="<?= html($altText) ?>" 
                    placeholder="Описание изображения для SEO"
                    required>
             <div class="form-text">
@@ -206,7 +206,7 @@ class ImageBlock extends BasePostBlock {
             <textarea name="content[caption]" 
                       class="form-control" 
                       rows="2"
-                      placeholder="Необязательная подпись под изображением"><?= htmlspecialchars($caption) ?></textarea>
+                      placeholder="Необязательная подпись под изображением"><?= html($caption) ?></textarea>
         </div>
         <div class="new-image-preview mb-4" style="display: none;">
             <label class="form-label">Предпросмотр нового изображения</label>
@@ -246,7 +246,7 @@ class ImageBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-image-block">
                 </div>
             </div>
@@ -259,7 +259,7 @@ class ImageBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[width]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($width) ?>" 
+                           value="<?= html($width) ?>" 
                            placeholder="800px или 100%">
                 </div>
             </div>
@@ -269,7 +269,7 @@ class ImageBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[height]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($height) ?>" 
+                           value="<?= html($height) ?>" 
                            placeholder="600px">
                 </div>
             </div>
@@ -279,7 +279,7 @@ class ImageBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[image_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($imageClass) ?>" 
+                           value="<?= html($imageClass) ?>" 
                            placeholder="rounded shadow">
                 </div>
             </div>

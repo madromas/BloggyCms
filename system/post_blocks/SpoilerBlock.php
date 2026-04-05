@@ -70,7 +70,7 @@ class SpoilerBlock extends BasePostBlock {
             <input type="text" 
                    name="content[title]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($title) ?>" 
+                   value="<?= html($title) ?>" 
                    placeholder="Текст заголовка"
                    required>
             <div class="form-text">Текст, который будет виден когда спойлер закрыт</div>
@@ -82,7 +82,7 @@ class SpoilerBlock extends BasePostBlock {
                      class="form-control" 
                      rows="6" 
                      placeholder="Скрытый контент..."
-                     required><?= htmlspecialchars($content) ?></textarea>
+                     required><?= html($content) ?></textarea>
             <div class="form-text">Контент, который будет скрыт под спойлером</div>
         </div>
         <?php
@@ -165,7 +165,7 @@ class SpoilerBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-spoiler">
                 </div>
             </div>
@@ -278,14 +278,14 @@ class SpoilerBlock extends BasePostBlock {
         $result = $template;
         
         $result = str_replace('{custom_class}', trim($customClass . ' ' . $presetClass), $result);
-        $result = str_replace('{icon_position}', htmlspecialchars($iconPosition), $result);
+        $result = str_replace('{icon_position}', html($iconPosition), $result);
         $result = str_replace('{icon_before}', $iconBeforeHtml, $result);
         $result = str_replace('{icon_after}', $iconAfterHtml, $result);
-        $result = str_replace('{title}', htmlspecialchars($title), $result);
+        $result = str_replace('{title}', html($title), $result);
         $result = str_replace('{show_default}', $isOpen ? 'show' : '', $result);
         $result = str_replace('{content}', $contentText, $result);
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
         $result = str_replace('{aria_expanded}', $ariaExpanded, $result);
@@ -541,16 +541,16 @@ class SpoilerBlock extends BasePostBlock {
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center">
                                             <?php if (($iconPosition === 'icon-before' || $iconPosition === 'icon-both') && !empty($previewIcon)): ?>
-                                                <i class="<?= htmlspecialchars($previewIcon) ?> me-2 text-primary"></i>
+                                                <i class="<?= html($previewIcon) ?> me-2 text-primary"></i>
                                             <?php endif; ?>
                                             
                                             <span class="fw-semibold" style="color: #374151;">
-                                                <?= htmlspecialchars(mb_substr($title, 0, 40)) ?>
+                                                <?= html(mb_substr($title, 0, 40)) ?>
                                                 <?php if (mb_strlen($title) > 40): ?>...<?php endif; ?>
                                             </span>
                                             
                                             <?php if (($iconPosition === 'icon-after' || $iconPosition === 'icon-both') && !empty($previewIcon)): ?>
-                                                <i class="<?= htmlspecialchars($previewIcon) ?> ms-2 text-primary"></i>
+                                                <i class="<?= html($previewIcon) ?> ms-2 text-primary"></i>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -570,7 +570,7 @@ class SpoilerBlock extends BasePostBlock {
                                 
                                 <?php if (!empty(trim($contentText))): ?>
                                     <div class="spoiler-text-preview small" style="color: #6b7280; line-height: 1.5;">
-                                        <?= htmlspecialchars(mb_substr(strip_tags($contentText), 0, 80)) ?>
+                                        <?= html(mb_substr(strip_tags($contentText), 0, 80)) ?>
                                         <?php if (mb_strlen(strip_tags($contentText)) > 80): ?>...<?php endif; ?>
                                     </div>
                                 <?php else: ?>
@@ -585,11 +585,11 @@ class SpoilerBlock extends BasePostBlock {
                                 <div class="row">
                                     <div class="col-6">
                                         <div><i class="bi bi-<?= $isOpen ? 'unlock' : 'lock' ?> me-1"></i>По умолчанию: <strong><?= $isOpen ? 'Открыт' : 'Закрыт' ?></strong></div>
-                                        <div><i class="bi bi-gear me-1"></i>Иконки: <strong><?= htmlspecialchars($iconPositionText) ?></strong></div>
+                                        <div><i class="bi bi-gear me-1"></i>Иконки: <strong><?= html($iconPositionText) ?></strong></div>
                                     </div>
                                     <div class="col-6">
                                         <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= htmlspecialchars($customClass) ?></strong></div>
+                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
                                         <?php endif; ?>
                                         <div><i class="bi bi-play-circle me-1"></i>Анимация: <strong><?= $animation ? 'Да' : 'Нет' ?></strong></div>
                                     </div>

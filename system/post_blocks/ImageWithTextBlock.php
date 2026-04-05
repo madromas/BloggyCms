@@ -90,14 +90,14 @@ class ImageWithTextBlock extends BasePostBlock {
                 <input type="hidden" 
                        name="content[image_url]" 
                        class="image-url-input" 
-                       value="<?= htmlspecialchars($imageUrl) ?>">
+                       value="<?= html($imageUrl) ?>">
 
                 <div class="mb-4">
                     <label class="form-label">Alt текст *</label>
                     <input type="text" 
                            name="content[alt_text]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($altText) ?>" 
+                           value="<?= html($altText) ?>" 
                            placeholder="Описание изображения для SEO"
                            required>
                 </div>
@@ -113,12 +113,12 @@ class ImageWithTextBlock extends BasePostBlock {
                 <div class="mb-4">
                     <label class="form-label">Текущее изображение</label>
                     <div class="current-image-preview border rounded p-3 text-center bg-light">
-                        <img src="<?= htmlspecialchars($imageUrl) ?>" 
+                        <img src="<?= html($imageUrl) ?>" 
                              alt="Текущее изображение" 
                              class="img-thumbnail"
                              style="max-height: 200px;">
                         <div class="mt-2">
-                            <small class="text-muted"><?= htmlspecialchars($imageUrl) ?></small>
+                            <small class="text-muted"><?= html($imageUrl) ?></small>
                         </div>
                         <div class="mt-2">
                             <div class="form-check">
@@ -139,7 +139,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="content[title]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($title) ?>" 
+                           value="<?= html($title) ?>" 
                            placeholder="Введите заголовок">
                     <div class="form-text small">
                         Опционально. Отображается над текстовым описанием
@@ -152,7 +152,7 @@ class ImageWithTextBlock extends BasePostBlock {
                               class="form-control" 
                               rows="10"
                               placeholder="Текст описания рядом с изображением..."
-                              required><?= htmlspecialchars($textContent) ?></textarea>
+                              required><?= html($textContent) ?></textarea>
                     <div class="form-text small">
                         Поддерживает HTML разметку
                     </div>
@@ -263,7 +263,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[width]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($width) ?>" 
+                           value="<?= html($width) ?>" 
                            placeholder="400px или 50%">
                 </div>
             </div>
@@ -273,7 +273,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[height]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($height) ?>" 
+                           value="<?= html($height) ?>" 
                            placeholder="300px">
                 </div>
             </div>
@@ -283,7 +283,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[gap]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($gap) ?>" 
+                           value="<?= html($gap) ?>" 
                            placeholder="30px">
                 </div>
             </div>
@@ -296,7 +296,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[image_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($imageClass) ?>" 
+                           value="<?= html($imageClass) ?>" 
                            placeholder="rounded shadow">
                 </div>
             </div>
@@ -306,7 +306,7 @@ class ImageWithTextBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-image-text-block">
                 </div>
             </div>
@@ -398,16 +398,16 @@ class ImageWithTextBlock extends BasePostBlock {
             $titleClass = 'title-' . $titleAlign;
             $titleHtml = sprintf(
                 '<%1$s class="%2$s text-dark mb-3 has-anim fade visible">%3$s</%1$s>',
-                htmlspecialchars($titleTag),
+                html($titleTag),
                 $titleClass,
-                htmlspecialchars($title)
+                html($title)
             );
         }
         
         $result = str_replace('{layout}', $layout, $result);
         $result = str_replace('{custom_class}', trim($customClass . ' ' . $presetClass), $result);
-        $result = str_replace('{image_url}', htmlspecialchars($imageUrl), $result);
-        $result = str_replace('{alt_text}', htmlspecialchars($altText), $result);
+        $result = str_replace('{image_url}', html($imageUrl), $result);
+        $result = str_replace('{alt_text}', html($altText), $result);
         $result = str_replace('{image_class}', trim($imageClass . ' ' . $sizeClass), $result);
         $result = str_replace('{width_attr}', $widthAttr, $result);
         $result = str_replace('{height_attr}', $heightAttr, $result); 
@@ -417,8 +417,8 @@ class ImageWithTextBlock extends BasePostBlock {
         $result = str_replace('text-content', 'text-content ' . $textAlignClass, $result);
         $verticalAlignClass = 'align-' . $verticalAlign;
         $result = str_replace('post-block-image-with-text', 'post-block-image-with-text ' . $verticalAlignClass, $result);
-        $result = str_replace('{preset_id}', $presetId ? htmlspecialchars($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? htmlspecialchars($presetName) : '', $result);
+        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
+        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
         $result = str_replace('{block_type}', $this->getSystemName(), $result);
         $result = str_replace('{block_name}', $this->getName(), $result);
         $result = str_replace('{text_align}', $textAlign, $result);
@@ -798,7 +798,7 @@ class ImageWithTextBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Изображение с текстом</strong>
-                                <span class="badge bg-info badge-sm"><?= htmlspecialchars($layoutText) ?></span>
+                                <span class="badge bg-info badge-sm"><?= html($layoutText) ?></span>
                             </div>
                             <div class="preview-stats">
                                 <?php if ($imageUrl): ?>
@@ -828,8 +828,8 @@ class ImageWithTextBlock extends BasePostBlock {
                                     <div class="col-<?= $layout === 'image-top' || $layout === 'image-bottom' ? '12' : '5' ?>">
                                         <div class="image-preview h-100 d-flex align-items-center justify-content-center bg-white border rounded p-2">
                                             <?php if ($imageUrl): ?>
-                                                <img src="<?= htmlspecialchars($imageUrl) ?>" 
-                                                    alt="<?= htmlspecialchars($altText) ?>"
+                                                <img src="<?= html($imageUrl) ?>" 
+                                                    alt="<?= html($altText) ?>"
                                                     class="img-fluid"
                                                     style="max-height: 80px; object-fit: contain;"
                                                     onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -844,15 +844,15 @@ class ImageWithTextBlock extends BasePostBlock {
                                         <div class="text-preview h-100">
                                             <?php if (!empty(trim($title))): ?>
                                                 <div class="title-preview mb-2">
-                                                    <div class="h6 mb-1" style="color: #3b82f6;"><?= htmlspecialchars(mb_substr($title, 0, 50)) ?></div>
-                                                    <div class="small text-muted">Заголовок (<?= htmlspecialchars($titleTag) ?>)</div>
+                                                    <div class="h6 mb-1" style="color: #3b82f6;"><?= html(mb_substr($title, 0, 50)) ?></div>
+                                                    <div class="small text-muted">Заголовок (<?= html($titleTag) ?>)</div>
                                                 </div>
                                             <?php endif; ?>
                                             
                                             <?php if (!empty(trim($textContent))): ?>
                                                 <div class="content-preview">
                                                     <div class="small" style="color: #374151; line-height: 1.4;">
-                                                        <?= htmlspecialchars(mb_substr(strip_tags($textContent), 0, 100)) ?>
+                                                        <?= html(mb_substr(strip_tags($textContent), 0, 100)) ?>
                                                         <?php if (mb_strlen(strip_tags($textContent)) > 100): ?>...<?php endif; ?>
                                                     </div>
                                                 </div>
@@ -870,12 +870,12 @@ class ImageWithTextBlock extends BasePostBlock {
                             <div class="image-text-preview-info mt-3">
                                 <div class="row small text-muted">
                                     <div class="col-6">
-                                        <div><i class="bi bi-layout-split <?= $layoutIcon ?> me-1"></i>Макет: <strong><?= htmlspecialchars($layoutText) ?></strong></div>
-                                        <div><i class="bi bi-arrows-angle-expand me-1"></i>Размер: <strong><?= htmlspecialchars($sizeText) ?></strong></div>
+                                        <div><i class="bi bi-layout-split <?= $layoutIcon ?> me-1"></i>Макет: <strong><?= html($layoutText) ?></strong></div>
+                                        <div><i class="bi bi-arrows-angle-expand me-1"></i>Размер: <strong><?= html($sizeText) ?></strong></div>
                                     </div>
                                     <div class="col-6">
-                                        <div><i class="bi bi-text-left me-1"></i>Выравнивание: <strong><?= htmlspecialchars($textAlign) ?></strong></div>
-                                        <div><i class="bi bi-arrows-vertical me-1"></i>Вертикально: <strong><?= htmlspecialchars($verticalAlign) ?></strong></div>
+                                        <div><i class="bi bi-text-left me-1"></i>Выравнивание: <strong><?= html($textAlign) ?></strong></div>
+                                        <div><i class="bi bi-arrows-vertical me-1"></i>Вертикально: <strong><?= html($verticalAlign) ?></strong></div>
                                     </div>
                                 </div>
                             </div>

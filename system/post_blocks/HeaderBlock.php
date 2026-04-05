@@ -77,8 +77,8 @@ class HeaderBlock extends BasePostBlock {
                 
                 <div class="preview-body">
                     <?php if (!empty(trim($text))): ?>
-                        <<?= $level ?> class="header-content" style="text-align: <?= htmlspecialchars($alignment) ?>; margin: 0;">
-                            <?= htmlspecialchars($text) ?>
+                        <<?= $level ?> class="header-content" style="text-align: <?= html($alignment) ?>; margin: 0;">
+                            <?= html($text) ?>
                         </<?= $level ?>>
                     <?php else: ?>
                         <div class="preview-empty-state">
@@ -111,22 +111,22 @@ class HeaderBlock extends BasePostBlock {
         
         ob_start();
         ?>
-        <div class="image-preview-container text-<?= htmlspecialchars($alignment) ?>">
+        <div class="image-preview-container text-<?= html($alignment) ?>">
             <div class="position-relative d-inline-block <?= $sizeClass ?>">
-                <img src="<?= htmlspecialchars($url) ?>" 
-                     alt="<?= htmlspecialchars($alt) ?>"
+                <img src="<?= html($url) ?>" 
+                     alt="<?= html($alt) ?>"
                      class="preview-image"
                      onerror="this.onerror=null; this.classList.add('image-error')">
                 <?php if (!empty($size) && $size !== 'medium'): ?>
                     <span class="badge bg-dark position-absolute top-0 end-0 m-1">
-                        <?= htmlspecialchars($size) ?>
+                        <?= html($size) ?>
                     </span>
                 <?php endif; ?>
             </div>
             <?php if (!empty($alt)): ?>
                 <div class="mt-2 small text-muted">
                     <i class="bi bi-card-text me-1"></i>
-                    <?= htmlspecialchars(mb_substr($alt, 0, 60)) ?>
+                    <?= html(mb_substr($alt, 0, 60)) ?>
                     <?php if (mb_strlen($alt) > 60): ?>...<?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -183,7 +183,7 @@ class HeaderBlock extends BasePostBlock {
             <input type="text" 
                    name="content[text]" 
                    class="form-control form-control-lg" 
-                   value="<?= htmlspecialchars($text) ?>" 
+                   value="<?= html($text) ?>" 
                    placeholder="Введите текст заголовка"
                    required>
             <div class="form-text">Введите основной текст заголовка</div>
@@ -237,7 +237,7 @@ class HeaderBlock extends BasePostBlock {
                     <input type="color" 
                            name="settings[text_color]" 
                            class="form-control form-control-color" 
-                           value="<?= htmlspecialchars($textColor) ?>" 
+                           value="<?= html($textColor) ?>" 
                            title="Выберите цвет текста">
                     <div class="form-text">Оставьте пустым для цвета по умолчанию</div>
                 </div>
@@ -249,7 +249,7 @@ class HeaderBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-custom-class"
                            pattern="[a-zA-Z0-9-_ ]+">
                     <div class="form-text">Только буквы, цифры, дефисы и подчеркивания</div>
@@ -278,7 +278,7 @@ class HeaderBlock extends BasePostBlock {
         $class = trim("post-block-header {$alignment} {$customClass}");
         $style = $textColor ? " style=\"color: {$textColor}\"" : '';
 
-        return "<{$level} class=\"{$class}\"{$style}>" . htmlspecialchars($text) . "</{$level}>";
+        return "<{$level} class=\"{$class}\"{$style}>" . html($text) . "</{$level}>";
     }
 
     public function processFrontend($content, $settings = []): string {
@@ -432,19 +432,19 @@ class HeaderBlock extends BasePostBlock {
         $presetName = $settings['preset_name'] ?? '';
         $style = '';
         if (!empty($textColor)) {
-            $style = ' style="color: ' . htmlspecialchars($textColor) . '"';
+            $style = ' style="color: ' . html($textColor) . '"';
         }
         
         $result = $template;
         $replacements = [
-            '{text}' => htmlspecialchars($text),
+            '{text}' => html($text),
             '{level}' => $level,
             '{alignment}' => $alignment,
             '{custom_class}' => $customClass,
             '{style}' => $style,
             '{text_color}' => $textColor,
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];

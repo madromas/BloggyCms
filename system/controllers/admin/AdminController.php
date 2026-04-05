@@ -1,6 +1,13 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 class AdminController extends Controller {
+
+
+
     private $userModel;
 
     protected $controllerInfo = [
@@ -178,6 +185,9 @@ class AdminController extends Controller {
      */
     public function templatesAction() {
         $this->pageTitle = 'Управление шаблонами';
+        
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Управление шаблонами сайта');
         
         $templates = $this->getAvailableTemplates();
         $currentTemplate = SettingsHelper::get('site', 'site_template', 'default');

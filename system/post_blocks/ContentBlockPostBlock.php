@@ -51,10 +51,10 @@ class ContentBlockPostBlock extends BasePostBlock {
                     <option value="">-- Выберите контент-блок --</option>
                     <?php foreach ($contentBlocks as $block): ?>
                         <option value="<?= $block['id'] ?>" 
-                                data-name="<?= htmlspecialchars($block['name']) ?>"
-                                data-type="<?= htmlspecialchars($block['block_type'] ?? 'DefaultBlock') ?>"
+                                data-name="<?= html($block['name']) ?>"
+                                data-type="<?= html($block['block_type'] ?? 'DefaultBlock') ?>"
                                 <?= $selectedBlockId == $block['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($block['name']) ?> 
+                            <?= html($block['name']) ?> 
                             (ID: <?= $block['id'] ?>, Slug: <?= $block['slug'] ?>, Type: <?= $block['block_type'] ?? 'DefaultBlock' ?>)
                         </option>
                     <?php endforeach; ?>
@@ -63,18 +63,18 @@ class ContentBlockPostBlock extends BasePostBlock {
                     Выберите готовый контент-блок для вставки
                 </div>
                 
-                <input type="hidden" name="content[content_block_name]" id="content-block-name" value="<?= htmlspecialchars($selectedBlockName) ?>">
-                <input type="hidden" name="content[content_block_type]" id="content-block-type" value="<?= htmlspecialchars($currentContent['content_block_type'] ?? '') ?>">
+                <input type="hidden" name="content[content_block_name]" id="content-block-name" value="<?= html($selectedBlockName) ?>">
+                <input type="hidden" name="content[content_block_type]" id="content-block-type" value="<?= html($currentContent['content_block_type'] ?? '') ?>">
                 
                 <div id="content-block-preview" class="mt-3 p-3 border rounded bg-light" style="<?= empty($selectedBlockId) ? 'display:none;' : '' ?>">
                     <?php if (!empty($selectedBlockId)): ?>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>Выбранный блок:</strong>
-                            <span class="badge bg-primary" id="preview-block-name"><?= htmlspecialchars($selectedBlockName) ?></span>
+                            <span class="badge bg-primary" id="preview-block-name"><?= html($selectedBlockName) ?></span>
                         </div>
                         <div class="text-muted small">
                             ID: <span id="preview-block-id"><?= $selectedBlockId ?></span><br>
-                            Type: <span id="preview-block-type"><?= htmlspecialchars($currentContent['content_block_type'] ?? 'DefaultBlock') ?></span>
+                            Type: <span id="preview-block-type"><?= html($currentContent['content_block_type'] ?? 'DefaultBlock') ?></span>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -141,7 +141,7 @@ class ContentBlockPostBlock extends BasePostBlock {
             <div class="d-flex align-items-center mb-2">
                 <i class="bi bi-grid-3x3-gap text-primary me-2"></i>
                 <strong>Контент-блок:</strong>
-                <span class="badge bg-primary ms-2">' . htmlspecialchars($blockName) . '</span>
+                <span class="badge bg-primary ms-2">' . html($blockName) . '</span>
             </div>
             <div class="text-muted small">
                 ID: ' . $blockId . '
@@ -305,10 +305,10 @@ class ContentBlockPostBlock extends BasePostBlock {
         $result = $template;
         $replacements = [
             '{content_block_html}' => $blockHtml,
-            '{content_block_id}' => $blockId ? htmlspecialchars($blockId) : '',
-            '{content_block_name}' => $blockName ? htmlspecialchars($blockName) : '',
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{content_block_id}' => $blockId ? html($blockId) : '',
+            '{content_block_name}' => $blockName ? html($blockName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];
@@ -340,14 +340,14 @@ class ContentBlockPostBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Контент-блок</strong>
                                 <?php if ($blockType): ?>
-                                    <span class="badge bg-info badge-sm"><?= htmlspecialchars($blockType) ?></span>
+                                    <span class="badge bg-info badge-sm"><?= html($blockType) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
                                 <?php if ($blockId): ?>
-                                    ID: <?= htmlspecialchars($blockId) ?>
+                                    ID: <?= html($blockId) ?>
                                     <?php if ($blockName): ?>
-                                        · <?= htmlspecialchars(mb_substr($blockName, 0, 20)) ?>
+                                        · <?= html(mb_substr($blockName, 0, 20)) ?>
                                         <?php if (mb_strlen($blockName) > 20): ?>...<?php endif; ?>
                                     <?php endif; ?>
                                 <?php else: ?>
@@ -373,20 +373,20 @@ class ContentBlockPostBlock extends BasePostBlock {
                                     <div class="flex-grow-1">
                                         <strong>Выбранный контент-блок:</strong>
                                     </div>
-                                    <span class="badge bg-primary">ID: <?= htmlspecialchars($blockId) ?></span>
+                                    <span class="badge bg-primary">ID: <?= html($blockId) ?></span>
                                 </div>
                                 
                                 <?php if ($blockName): ?>
                                     <div class="mb-2">
                                         <span class="fw-semibold">Название:</span>
-                                        <?= htmlspecialchars($blockName) ?>
+                                        <?= html($blockName) ?>
                                     </div>
                                 <?php endif; ?>
                                 
                                 <?php if ($blockType): ?>
                                     <div class="mb-2">
                                         <span class="fw-semibold">Тип блока:</span>
-                                        <span class="badge bg-secondary"><?= htmlspecialchars($blockType) ?></span>
+                                        <span class="badge bg-secondary"><?= html($blockType) ?></span>
                                     </div>
                                 <?php endif; ?>
                                 

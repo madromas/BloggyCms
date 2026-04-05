@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initEventHandlers() {
-    // Шаблоны
     document.querySelectorAll('.template-selector').forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();
@@ -37,13 +36,11 @@ function initEventHandlers() {
         });
     });
 
-    // Сохранение
     const saveBtn = document.getElementById('saveFile');
     if (saveBtn) {
         saveBtn.addEventListener('click', saveFile);
     }
     
-    // Обновление файла
     const refreshBtn = document.getElementById('refreshFile');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', function() {
@@ -53,7 +50,6 @@ function initEventHandlers() {
         });
     }
     
-    // Обновление списка файлов
     const refreshFilesBtn = document.getElementById('refreshFilesBtn');
     if (refreshFilesBtn) {
         refreshFilesBtn.addEventListener('click', function() {
@@ -61,14 +57,12 @@ function initEventHandlers() {
         });
     }
     
-    // Поиск
     const searchInput = document.getElementById('searchFiles');
     if (searchInput) {
         searchInput.addEventListener('input', function(e) {
             filterFiles(e.target.value);
         });
         
-        // Ctrl+F фокус на поиск
         document.addEventListener('keydown', function(e) {
             if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
                 e.preventDefault();
@@ -77,7 +71,6 @@ function initEventHandlers() {
         });
     }
     
-    // Переключение вида (дерево/список)
     const switchTreeBtn = document.getElementById('switchTree');
     const switchListBtn = document.getElementById('switchList');
     
@@ -97,7 +90,6 @@ function initEventHandlers() {
         });
     }
     
-    // Загрузка файлов
     const uploadBtn = document.getElementById('uploadFileBtn');
     if (uploadBtn) {
         uploadBtn.addEventListener('click', function() {
@@ -110,7 +102,6 @@ function initEventHandlers() {
         fileUpload.addEventListener('change', uploadFile);
     }
     
-    // Сворачивание/разворачивание всех папок
     const collapseAllBtn = document.getElementById('collapseAllFolders');
     const expandAllBtn = document.getElementById('expandAllFolders');
     
@@ -136,7 +127,6 @@ function initEventHandlers() {
         });
     }
     
-    // Закрытие информационной панели
     const closeInfoPanel = document.getElementById('closeInfoPanel');
     if (closeInfoPanel) {
         closeInfoPanel.addEventListener('click', function() {
@@ -145,7 +135,6 @@ function initEventHandlers() {
         });
     }
     
-    // Скачивание файла
     const downloadBtn = document.getElementById('downloadFileBtn');
     if (downloadBtn) {
         downloadBtn.addEventListener('click', function() {
@@ -155,7 +144,6 @@ function initEventHandlers() {
         });
     }
 
-    // Изменение в редакторе
     if (editor) {
         editor.session.on('change', function() {
             const saveBtn = document.getElementById('saveFile');
@@ -359,7 +347,6 @@ function renderTreeView(files, template) {
     
     fileList.innerHTML = renderNode(tree);
     
-    // Обработчики для папок
     document.querySelectorAll('.tree-folder-header').forEach(header => {
         header.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -378,7 +365,6 @@ function renderTreeView(files, template) {
         });
     });
     
-    // Обработчики для файлов
     document.querySelectorAll('.file-item-link').forEach(item => {
         item.addEventListener('click', function(e) {
             e.preventDefault();

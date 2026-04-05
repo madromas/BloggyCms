@@ -3,22 +3,15 @@
 namespace users\actions\achievements;
 
 /**
- * Действие отображения публичной страницы конкретного достижения
- * Показывает детальную информацию об ачивке, её условиях, статистику
- * и список пользователей, которые её получили (с пагинацией)
- * 
- * @package users\actions\achievements
- * @extends AdminAchievementAction
- */
+* Действие отображения публичной страницы конкретного достижения
+* @package users\actions\achievements
+*/
 class FrontShow extends AdminAchievementAction {
     
     /**
-     * Метод выполнения отображения страницы достижения
-     * Получает ID ачивки из параметров, загружает данные, проверяет доступность,
-     * собирает статистику и список пользователей, отображает страницу
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения страницы достижения
+    * @return void
+    */
     public function execute() {
         try {
             $id = $this->params['id'] ?? null;
@@ -55,12 +48,11 @@ class FrontShow extends AdminAchievementAction {
     }
     
     /**
-     * Обогащает данные ачивки дополнительной информацией
-     * 
-     * @param array $achievement Данные ачивки
-     * @param int $id ID ачивки
-     * @return void
-     */
+    * Обогащает данные ачивки дополнительной информацией 
+    * @param array $achievement Данные ачивки
+    * @param int $id ID ачивки
+    * @return void
+    */
     private function enrichAchievementData(&$achievement, $id) {
 
         $achievement['conditions'] = $this->userModel->getAchievementConditions($id);
@@ -76,11 +68,10 @@ class FrontShow extends AdminAchievementAction {
     }
     
     /**
-     * Получает пользователей с ачивкой с пагинацией
-     * 
-     * @param int $id ID ачивки
-     * @return array Массив с пользователями и данными пагинации
-     */
+    * Получает пользователей с ачивкой с пагинацией 
+    * @param int $id ID ачивки
+    * @return array Массив с пользователями и данными пагинации
+    */
     private function getAchievementUsers($id) {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $page = max(1, $page);
@@ -90,11 +81,10 @@ class FrontShow extends AdminAchievementAction {
     }
     
     /**
-     * Проверяет, есть ли у текущего пользователя данная ачивка
-     * 
-     * @param int $id ID ачивки
-     * @return bool true если есть
-     */
+    * Проверяет, есть ли у текущего пользователя данная ачивка
+    * @param int $id ID ачивки
+    * @return bool true если есть
+    */
     private function checkUserHasAchievement($id) {
         if (!isset($_SESSION['user_id'])) {
             return false;
@@ -104,13 +94,12 @@ class FrontShow extends AdminAchievementAction {
     }
     
     /**
-     * Отображает страницу с деталями ачивки
-     * 
-     * @param array $achievement Данные ачивки
-     * @param array $usersData Данные пользователей и пагинации
-     * @param bool $userHasAchievement Флаг наличия ачивки у текущего пользователя
-     * @return void
-     */
+    * Отображает страницу с деталями ачивки
+    * @param array $achievement Данные ачивки
+    * @param array $usersData Данные пользователей и пагинации
+    * @param bool $userHasAchievement Флаг наличия ачивки у текущего пользователя
+    * @return void
+    */
     private function renderAchievementPage($achievement, $usersData, $userHasAchievement) {
         $this->render('front/users/achievements/show', [
             'achievement' => $achievement,

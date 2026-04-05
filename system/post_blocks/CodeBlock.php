@@ -56,7 +56,7 @@ class CodeBlock extends BasePostBlock {
         
         $languageName = $languageNames[$language] ?? ucfirst($language);
 
-        $previewCode = htmlspecialchars($code);
+        $previewCode = html($code);
         if (strlen($previewCode) > 100) {
             $previewCode = substr($previewCode, 0, 100) . '...';
         }
@@ -73,7 +73,7 @@ class CodeBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Пример кода</strong>
-                                <span class="badge bg-primary badge-sm"><?= htmlspecialchars($languageName) ?></span>
+                                <span class="badge bg-primary badge-sm"><?= html($languageName) ?></span>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($code) ?> симв.
@@ -101,12 +101,12 @@ class CodeBlock extends BasePostBlock {
                                 <div class="code-preview-info">
                                     <?php if ($filename): ?>
                                         <span class="badge bg-secondary me-2">
-                                            <i class="bi bi-file-earmark-code"></i> <?= htmlspecialchars($filename) ?>
+                                            <i class="bi bi-file-earmark-code"></i> <?= html($filename) ?>
                                         </span>
                                     <?php endif; ?>
                                     <?php if ($showLanguageBadge): ?>
                                         <span class="badge bg-primary">
-                                            <?= htmlspecialchars($languageName) ?>
+                                            <?= html($languageName) ?>
                                         </span>
                                     <?php endif; ?>
                                 </div>
@@ -127,7 +127,7 @@ class CodeBlock extends BasePostBlock {
                             </div>
                             
                             <div class="code-preview-meta mt-2 small text-muted">
-                                <span><i class="bi bi-gear"></i> Тема: <?= htmlspecialchars($theme) ?></span>
+                                <span><i class="bi bi-gear"></i> Тема: <?= html($theme) ?></span>
                                 <?php if ($showLineNumbers): ?>
                                     <span class="ms-3"><i class="bi bi-list-ol"></i> С номерами строк</span>
                                 <?php endif; ?>
@@ -235,7 +235,7 @@ class CodeBlock extends BasePostBlock {
                     <input type="text" 
                            name="content[filename]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($filename) ?>" 
+                           value="<?= html($filename) ?>" 
                            placeholder="script.js, style.css, etc.">
                     <div class="form-text">
                         Отображается в заголовке блока с кодом
@@ -250,7 +250,7 @@ class CodeBlock extends BasePostBlock {
             <textarea name="content[code]" 
                      id="code-editor-textarea" 
                      style="display: none;"
-                     required><?= htmlspecialchars($code) ?></textarea>
+                     required><?= html($code) ?></textarea>
             <div class="form-text">
                 Поддерживается подсветка синтаксиса для различных языков программирования
             </div>
@@ -318,7 +318,7 @@ class CodeBlock extends BasePostBlock {
                     <input type="text" 
                            name="settings[custom_class]" 
                            class="form-control" 
-                           value="<?= htmlspecialchars($customClass) ?>" 
+                           value="<?= html($customClass) ?>" 
                            placeholder="my-code-block">
                 </div>
             </div>
@@ -380,7 +380,10 @@ class CodeBlock extends BasePostBlock {
         $code = $content['code'] ?? '// Ваш код здесь...';
         $language = $content['language'] ?? 'javascript';
         $filename = $content['filename'] ?? '';
-        $previewCode = $code;
+        
+        $escapedCode = html($code, ENT_QUOTES, 'UTF-8');
+        
+        $previewCode = $escapedCode;
         if (strlen($previewCode) > 150) {
             $previewCode = substr($previewCode, 0, 150) . '...';
         }
@@ -408,12 +411,12 @@ class CodeBlock extends BasePostBlock {
         <div class="post-block-code-preview card">
             <div class="card-header py-2">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-primary">' . htmlspecialchars($languageName) . '</span>
+                    <span class="badge bg-primary">' . html($languageName) . '</span>
                     <small class="text-muted">Пример кода</small>
                 </div>
             </div>
             <div class="card-body">
-                <pre class="m-0"><code>' . htmlspecialchars($previewCode) . '</code></pre>
+                <pre class="m-0"><code>' . $previewCode . '</code></pre>
             </div>
         </div>';
     }
@@ -615,14 +618,14 @@ class CodeBlock extends BasePostBlock {
         
         $languageBadgeHtml = '';
         if ($showLanguageBadge) {
-            $languageBadgeHtml = '<span class="code-language">' . htmlspecialchars($languageName) . '</span>';
+            $languageBadgeHtml = '<span class="code-language">' . html($languageName) . '</span>';
         }
 
         $lineNumbersClass = $showLineNumbers ? 'line-numbers' : '';
-        $filenameHtml = $filename ? '<span class="code-filename">' . htmlspecialchars($filename) . '</span>' : '';
+        $filenameHtml = $filename ? '<span class="code-filename">' . html($filename) . '</span>' : '';
         $result = $template;
         $replacements = [
-            '{code}' => htmlspecialchars($code),
+            '{code}' => $code,
             '{language}' => $language,
             '{language_badge}' => $languageBadgeHtml,
             '{filename}' => $filenameHtml,
@@ -630,8 +633,8 @@ class CodeBlock extends BasePostBlock {
             '{custom_class}' => $customClass,
             '{line_numbers}' => $lineNumbersClass,
             '{theme}' => $theme,
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];

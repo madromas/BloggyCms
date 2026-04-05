@@ -3,22 +3,15 @@
 namespace users\actions\achievements;
 
 /**
- * Действие отображения публичного списка всех достижений системы
- * Показывает все активные ачивки с дополнительной информацией: условия,
- * количество получивших пользователей, процент выполнения, превью пользователей
- * 
- * @package users\actions\achievements
- * @extends AdminAchievementAction
- */
+* Действие отображения публичного списка всех достижений системы
+* @package users\actions\achievements
+*/
 class FrontIndex extends AdminAchievementAction {
     
     /**
-     * Метод выполнения отображения публичного списка достижений
-     * Получает все активные ачивки, обогащает их дополнительной информацией,
-     * сортирует по редкости (от самых редких) и передает в шаблон
-     * 
-     * @return void
-     */
+    * Метод выполнения отображения публичного списка достижений
+    * @return void
+    */
     public function execute() {
         try {
             $this->addBreadcrumb('Главная', BASE_URL);
@@ -57,11 +50,10 @@ class FrontIndex extends AdminAchievementAction {
     }
     
     /**
-     * Обогащает данные одной ачивки дополнительной информацией
-     * 
-     * @param array &$achievement Ссылка на массив с данными ачивки
-     * @return void
-     */
+    * Обогащает данные одной ачивки дополнительной информацией 
+    * @param array &$achievement Ссылка на массив с данными ачивки
+    * @return void
+    */
     private function enrichAchievementData(&$achievement) {
         $achievement['conditions'] = $this->userModel->getAchievementConditions($achievement['id']);
         $achievement['unlocked_count'] = $this->userModel->getAchievementUnlockedCount($achievement['id']);
@@ -77,10 +69,9 @@ class FrontIndex extends AdminAchievementAction {
     }
     
     /**
-     * Получает массив ачивок текущего пользователя (если авторизован)
-     * 
-     * @return array Массив с ключами ID ачивок и значениями is_unlocked
-     */
+    * Получает массив ачивок текущего пользователя (если авторизован)
+    * @return array Массив с ключами ID ачивок и значениями is_unlocked
+    */
     private function getUserAchievements() {
         if (!isset($_SESSION['user_id'])) {
             return [];

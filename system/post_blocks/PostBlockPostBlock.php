@@ -79,9 +79,9 @@ class PostBlockPostBlock extends BasePostBlock {
                     <option value="">-- Выберите пост --</option>
                     <?php foreach ($posts as $post): ?>
                         <option value="<?= $post['id'] ?>" 
-                                data-title="<?= htmlspecialchars($post['title']) ?>"
+                                data-title="<?= html($post['title']) ?>"
                                 <?= $selectedPostId == $post['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($post['title']) ?> 
+                            <?= html($post['title']) ?> 
                             (ID: <?= $post['id'] ?>, Просмотры: <?= $post['views'] ?? 0 ?>)
                         </option>
                     <?php endforeach; ?>
@@ -89,12 +89,12 @@ class PostBlockPostBlock extends BasePostBlock {
                 <div class="form-text">
                     Выберите пост для вставки его данных
                 </div>
-                <input type="hidden" name="content[post_title]" id="post-title" value="<?= htmlspecialchars($selectedPostTitle) ?>">
+                <input type="hidden" name="content[post_title]" id="post-title" value="<?= html($selectedPostTitle) ?>">
                 <div id="post-preview" class="mt-3 p-3 border rounded bg-light" style="<?= empty($selectedPostId) ? 'display:none;' : '' ?>">
                     <?php if (!empty($selectedPostId)): ?>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>Выбранный пост:</strong>
-                            <span class="badge bg-primary" id="preview-post-title"><?= htmlspecialchars($selectedPostTitle) ?></span>
+                            <span class="badge bg-primary" id="preview-post-title"><?= html($selectedPostTitle) ?></span>
                         </div>
                         <div class="text-muted small">
                             ID: <span id="preview-post-id"><?= $selectedPostId ?></span> | 
@@ -120,7 +120,7 @@ class PostBlockPostBlock extends BasePostBlock {
             <input type="text" 
                    name="settings[custom_class]" 
                    class="form-control" 
-                   value="<?= htmlspecialchars($customClass) ?>" 
+                   value="<?= html($customClass) ?>" 
                    placeholder="my-post-block">
         </div>
         <?php
@@ -168,19 +168,19 @@ class PostBlockPostBlock extends BasePostBlock {
         $imageUrl = $hasImage ? BASE_URL . '/uploads/images/' . $postData['featured_image'] : '';
         $defaultImage = BASE_URL . '/assets/images/default-post-image.jpg';
         $replacements = [
-            '{post_id}' => htmlspecialchars($postData['id'] ?? ''),
-            '{post_title}' => htmlspecialchars($postData['title'] ?? ''),
-            '{post_url}' => htmlspecialchars($postUrl),
-            '{featured_image}' => htmlspecialchars($imageUrl),
-            '{default_image}' => htmlspecialchars($defaultImage),
+            '{post_id}' => html($postData['id'] ?? ''),
+            '{post_title}' => html($postData['title'] ?? ''),
+            '{post_url}' => html($postUrl),
+            '{featured_image}' => html($imageUrl),
+            '{default_image}' => html($defaultImage),
             '{views_count}' => $postData['views'] ?? 0,
             '{post_date}' => date('d.m.Y', strtotime($postData['created_at'] ?? '')),
-            '{author_name}' => htmlspecialchars($postData['author_name'] ?? ''),
-            '{category_name}' => htmlspecialchars($postData['category_name'] ?? ''),
-            '{category_url}' => htmlspecialchars($categoryUrl),
+            '{author_name}' => html($postData['author_name'] ?? ''),
+            '{category_name}' => html($postData['category_name'] ?? ''),
+            '{category_url}' => html($categoryUrl),
             '{custom_class}' => trim($customClass . ' ' . $presetClass),
-            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
-            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];
@@ -408,7 +408,7 @@ class PostBlockPostBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Запись блога</strong>
                                 <?php if ($postData && !empty($postData['category_name'])): ?>
-                                    <span class="badge bg-secondary badge-sm"><?= htmlspecialchars($postData['category_name']) ?></span>
+                                    <span class="badge bg-secondary badge-sm"><?= html($postData['category_name']) ?></span>
                                 <?php endif; ?>
                             </div>
                             <div class="preview-stats">
@@ -451,13 +451,13 @@ class PostBlockPostBlock extends BasePostBlock {
                                     <div class="col-md-8">
                                         <div class="p-3">
                                             <div class="h6 mb-2" style="color: #374151;">
-                                                <?= htmlspecialchars(mb_substr($postData['title'] ?? '', 0, 50)) ?>
+                                                <?= html(mb_substr($postData['title'] ?? '', 0, 50)) ?>
                                                 <?php if (mb_strlen($postData['title'] ?? '') > 50): ?>...<?php endif; ?>
                                             </div>
                                             
                                             <div class="small text-muted mb-2">
                                                 <i class="bi bi-person me-1"></i>
-                                                <?= htmlspecialchars($postData['author_name'] ?? 'Автор') ?>
+                                                <?= html($postData['author_name'] ?? 'Автор') ?>
                                                 <i class="bi bi-calendar ms-3 me-1"></i>
                                                 <?= !empty($postData['created_at']) ? date('d.m.Y', strtotime($postData['created_at'])) : 'Дата' ?>
                                                 <i class="bi bi-eye ms-3 me-1"></i>
@@ -466,7 +466,7 @@ class PostBlockPostBlock extends BasePostBlock {
                                             
                                             <div class="small">
                                                 <?php if (!empty($postData['category_name'])): ?>
-                                                    <span class="badge bg-light text-dark border"><?= htmlspecialchars($postData['category_name']) ?></span>
+                                                    <span class="badge bg-light text-dark border"><?= html($postData['category_name']) ?></span>
                                                 <?php else: ?>
                                                     <span class="text-muted">Без категории</span>
                                                 <?php endif; ?>
@@ -484,7 +484,7 @@ class PostBlockPostBlock extends BasePostBlock {
                                     </div>
                                     <div class="col-6">
                                         <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>CSS класс: <strong><?= htmlspecialchars($customClass) ?></strong></div>
+                                            <div><i class="bi bi-tag me-1"></i>CSS класс: <strong><?= html($customClass) ?></strong></div>
                                         <?php endif; ?>
                                         <div><i class="bi bi-file-earmark-text me-1"></i>Вид: <strong>Карточка</strong></div>
                                     </div>
