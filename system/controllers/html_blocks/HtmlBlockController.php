@@ -2,26 +2,15 @@
 
 /**
 * Контроллер HTML-блоков для фронтенда
-* Обрабатывает отображение HTML-блоков на сайте, загрузку их ресурсов и рендеринг контента
-* Поддерживает различные типы блоков через систему менеджеров типов
 * @package controllers
-* @extends Controller
 */
 class HtmlBlockController extends Controller {
     
-    /**
-     * @var HtmlBlockModel Модель для работы с HTML-блоками
-     */
     private $htmlBlockModel;
-    
-    /**
-     * @var HtmlBlockTypeManager Менеджер типов HTML-блоков
-     */
     private $blockTypeManager;
     
     /**
     * Конструктор контроллера HTML-блоков
-    * Инициализирует модели для работы с блоками и их типами
     * @param Database $db Объект подключения к базе данных
     */
     public function __construct($db) {
@@ -32,7 +21,6 @@ class HtmlBlockController extends Controller {
     
     /**
     * Действие: Отображение HTML-блока на фронтенде
-    * Загружает и рендерит HTML-блок по его slug, подключает необходимые ресурсы
     * @param string|null $slug URL-идентификатор блока
     * @return void
     */
@@ -98,7 +86,6 @@ class HtmlBlockController extends Controller {
     
     /**
     * Загрузка ресурсов блока из базы данных
-    * Подключает CSS и JavaScript файлы, а также инлайн-стили и скрипты
     * @param array $block Данные HTML-блока
     * @return void
     */
@@ -128,7 +115,6 @@ class HtmlBlockController extends Controller {
     
     /**
     * Статический метод для рендеринга ресурсов блока
-    * Используется для подключения ресурсов блока в других частях приложения
     * @param array $block Данные HTML-блока
     * @return void
     */

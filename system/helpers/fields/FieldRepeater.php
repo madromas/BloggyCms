@@ -1,23 +1,17 @@
 <?php
 
 /**
- * Поле типа "повторитель" (repeater) для системы полей
- * Позволяет создавать повторяющиеся группы полей с поддержкой различных типов
- * Включает JavaScript для динамического добавления/удаления элементов
- * 
- * @package Fields
- * @extends Field
- */
+* Поле типа "повторитель" (repeater) для системы полей 
+* @package Fields
+* @extends Field
+*/
 class FieldRepeater extends Field {
     
     /**
-     * Рендерит HTML-код поля-повторителя
-     * Создает структуру с существующими элементами, шаблоном для новых
-     * и JavaScript для управления добавлением/удалением
-     * 
-     * @param mixed $currentValue Текущее значение поля (массив элементов)
-     * @return string HTML-код поля
-     */
+    * Рендерит HTML-код поля-повторителя
+    * @param mixed $currentValue Текущее значение поля (массив элементов)
+    * @return string HTML-код поля
+    */
     public function render($currentValue = null) {
         $values = $currentValue !== null ? $currentValue : [];
         $subFieldsConfig = $this->options['fields'] ?? [];
@@ -28,44 +22,44 @@ class FieldRepeater extends Field {
         ?>
         <div class="repeater-field" data-field-name="<?= $this->name ?>">
             <div class="repeater-items row g-3">
-                <?php foreach ($values as $index => $item): ?>
-                <div class="<?= $cardColumnClass ?>">
-                    <div class="repeater-item card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center py-2">
-                            <span class="text-muted small">Элемент #<?= $index + 1 ?></span>
-                            <button type="button" class="btn btn-sm btn-outline-danger repeater-remove-btn">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="repeater-fields-container">
-                                <?php foreach ($subFieldsConfig as $fieldConfig): ?>
-                                    <?php
-                                    $fieldName = $fieldConfig['name'] ?? '';
-                                    $fieldTitle = $fieldConfig['title'] ?? '';
-                                    $fieldType = $fieldConfig['type'] ?? 'string';
-                                    $fieldValue = $item[$fieldName] ?? '';
-                                    ?>
-                                    <div class="repeater-field-item mb-3">
-                                        <label class="form-label small fw-bold mb-1"><?= $fieldTitle ?></label>
+                <?php foreach ($values as $index => $item) { ?>
+                    <div class="<?= $cardColumnClass ?>">
+                        <div class="repeater-item card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted small">Элемент #<?= $index + 1 ?></span>
+                                <button type="button" class="btn btn-sm btn-outline-danger repeater-remove-btn">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="repeater-fields-container">
+                                    <?php foreach ($subFieldsConfig as $fieldConfig) { ?>
                                         <?php
-                                        $hiddenFieldName = "settings[{$this->name}][{$index}][{$fieldName}]";
-                                        $fileFieldName = "{$this->name}[{$index}][{$fieldName}_file]";
-                                        $removeFieldName = "{$this->name}[{$index}][remove_{$fieldName}]";
-                                        
-                                        $this->renderFieldByType($fieldConfig, $fieldValue, $hiddenFieldName, $fileFieldName, $removeFieldName, $index, $fieldType);
-                                        
-                                        if (!empty($fieldConfig['hint'])) {
-                                            echo '<div class="form-text small text-muted mt-1">' . $fieldConfig['hint'] . '</div>';
-                                        }
+                                        $fieldName = $fieldConfig['name'] ?? '';
+                                        $fieldTitle = $fieldConfig['title'] ?? '';
+                                        $fieldType = $fieldConfig['type'] ?? 'string';
+                                        $fieldValue = $item[$fieldName] ?? '';
                                         ?>
-                                    </div>
-                                <?php endforeach; ?>
+                                        <div class="repeater-field-item mb-3">
+                                            <label class="form-label small fw-bold mb-1"><?= $fieldTitle ?></label>
+                                            <?php
+                                            $hiddenFieldName = "settings[{$this->name}][{$index}][{$fieldName}]";
+                                            $fileFieldName = "{$this->name}[{$index}][{$fieldName}_file]";
+                                            $removeFieldName = "{$this->name}[{$index}][remove_{$fieldName}]";
+                                            
+                                            $this->renderFieldByType($fieldConfig, $fieldValue, $hiddenFieldName, $fileFieldName, $removeFieldName, $index, $fieldType);
+                                            
+                                            if (!empty($fieldConfig['hint'])) {
+                                                echo '<div class="form-text small text-muted mt-1">' . $fieldConfig['hint'] . '</div>';
+                                            }
+                                            ?>
+                                        </div>
+                                    <?php } ?>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
             
             <button type="button" class="btn btn-outline-primary btn-sm repeater-add-btn mt-3">
@@ -83,7 +77,7 @@ class FieldRepeater extends Field {
                         </div>
                         <div class="card-body">
                             <div class="repeater-fields-container">
-                                <?php foreach ($subFieldsConfig as $fieldConfig): ?>
+                                <?php foreach ($subFieldsConfig as $fieldConfig) { ?>
                                     <?php
                                     $fieldName = $fieldConfig['name'] ?? '';
                                     $fieldTitle = $fieldConfig['title'] ?? '';
@@ -103,7 +97,7 @@ class FieldRepeater extends Field {
                                         }
                                         ?>
                                     </div>
-                                <?php endforeach; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -159,26 +153,26 @@ class FieldRepeater extends Field {
     }
 
     /**
-     * Определяет класс колонки для карточки репитера
-     */
+    * Определяет класс колонки для карточки репитера
+    */
     private function getCardColumnClass($columns) {
         switch ($columns) {
             case 2:
-                return 'col-md-6'; // 2 колонки
+                return 'col-md-6';
             case 3:
-                return 'col-md-4'; // 3 колонки
+                return 'col-md-4';
             case 4:
-                return 'col-md-3'; // 4 колонки
+                return 'col-md-3';
             case 6:
-                return 'col-md-2'; // 6 колонок
+                return 'col-md-2';
             default:
-                return 'col-12'; // 1 колонка
+                return 'col-12';
         }
     }
 
     /**
-     * Определяет класс колонки для поля внутри карточки
-     */
+    * Определяет класс колонки для поля внутри карточки
+    */
     private function getFieldColumnClass($fieldConfig) {
         if (isset($fieldConfig['field_column'])) {
             return "col-{$fieldConfig['field_column']}";
@@ -187,12 +181,11 @@ class FieldRepeater extends Field {
     }
     
     /**
-     * Определяет класс колонки для поля (сетка Bootstrap)
-     * Учитывает параметр column из конфигурации поля
-     * 
-     * @param array $fieldConfig Конфигурация поля
-     * @return string CSS класс для колонки
-     */
+    * Определяет класс колонки для поля (сетка Bootstrap)
+    * Учитывает параметр column из конфигурации поля 
+    * @param array $fieldConfig Конфигурация поля
+    * @return string CSS класс для колонки
+    */
     private function getColumnClass($fieldConfig) {
         if (isset($fieldConfig['column'])) {
             return "col-md-{$fieldConfig['column']}";
@@ -206,17 +199,16 @@ class FieldRepeater extends Field {
     }
     
     /**
-     * Рендерит поле в зависимости от его типа
-     * 
-     * @param array $config Конфигурация поля
-     * @param mixed $value Текущее значение
-     * @param string $hiddenFieldName Имя скрытого поля
-     * @param string $fileFieldName Имя поля для файла
-     * @param string $removeFieldName Имя поля для удаления
-     * @param string|int $index Индекс элемента
-     * @param string $fieldType Тип поля
-     * @param bool $isTemplate Флаг шаблона
-     */
+    * Рендерит поле в зависимости от его типа 
+    * @param array $config Конфигурация поля
+    * @param mixed $value Текущее значение
+    * @param string $hiddenFieldName Имя скрытого поля
+    * @param string $fileFieldName Имя поля для файла
+    * @param string $removeFieldName Имя поля для удаления
+    * @param string|int $index Индекс элемента
+    * @param string $fieldType Тип поля
+    * @param bool $isTemplate Флаг шаблона
+    */
     private function renderFieldByType($config, $value, $hiddenFieldName, $fileFieldName, $removeFieldName, $index, $fieldType, $isTemplate = false) {
         switch ($fieldType) {
             case 'string':
@@ -248,17 +240,15 @@ class FieldRepeater extends Field {
     }
     
     /**
-     * Рендерит поле blockimage для repeater
-     * Отображает превью изображения, чекбокс для удаления и поле загрузки
-     * 
-     * @param array $config Конфигурация поля
-     * @param string $value Текущее значение (путь к файлу)
-     * @param string $hiddenFieldName Имя скрытого поля
-     * @param string $fileFieldName Имя поля для файла
-     * @param string $removeFieldName Имя поля для удаления
-     * @param string|int $index Индекс элемента
-     * @param bool $isTemplate Флаг шаблона
-     */
+    * Рендерит поле blockimage для repeater 
+    * @param array $config Конфигурация поля
+    * @param string $value Текущее значение (путь к файлу)
+    * @param string $hiddenFieldName Имя скрытого поля
+    * @param string $fileFieldName Имя поля для файла
+    * @param string $removeFieldName Имя поля для удаления
+    * @param string|int $index Индекс элемента
+    * @param bool $isTemplate Флаг шаблона
+    */
     private function renderBlockImageField($config, $value, $hiddenFieldName, $fileFieldName, $removeFieldName, $index, $isTemplate = false) {
         $uploadPath = $config['upload_path'] ?? 'uploads/';
         $previewUrl = '';

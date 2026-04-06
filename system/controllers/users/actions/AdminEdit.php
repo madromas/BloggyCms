@@ -204,7 +204,6 @@ class AdminEdit extends UserAction {
         $currentValues = $this->getCurrentFieldValues($userId);
         
         foreach ($customFields as $field) {
-            
             try {
                 $value = $this->fieldManager->processFieldValue(
                     $field, 
@@ -215,21 +214,10 @@ class AdminEdit extends UserAction {
 
                 if ($value !== null) {
                     $this->fieldModel->saveFieldValue(
-                        $field['id'],
                         'user',
                         $userId,
-                        $value,
-                        $field['type'],
-                        $field['config']
-                    );
-                } else {
-                    $this->fieldModel->saveFieldValue(
-                        $field['id'],
-                        'user',
-                        $userId,
-                        $value,
-                        $field['type'],
-                        $field['config']
+                        $field['system_name'],
+                        $value
                     );
                 }
                 
@@ -237,7 +225,6 @@ class AdminEdit extends UserAction {
                 \Notification::error("Ошибка при сохранении поля {$field['name']}: " . $e->getMessage());
             }
         }
-    
     }
     
     /**

@@ -1,38 +1,15 @@
 <?php
 
 /**
- * Контроллер комментариев
- * Управляет всеми операциями с комментариями: добавление, редактирование, удаление, модерация
- * Обеспечивает взаимодействие между моделями и представлениями для работы с комментариями
- * 
- * @package controllers
- * @extends Controller
- */
+* Контроллер комментариев
+*/
 class CommentController extends Controller {
     
-    /**
-     * @var CommentModel Модель для работы с комментариями
-     */
     private $commentModel;
-    
-    /**
-     * @var PostModel Модель для работы с постами
-     */
     private $postModel;
-    
-    /**
-     * @var UserModel Модель для работы с пользователями
-     */
     private $userModel;
-    
-    /**
-     * @var CategoryModel Модель для работы с категориями
-     */
     private $categoryModel;
     
-    /**
-     * @var array Информация о контроллере для админ-панели
-     */
     protected $controllerInfo = [
         'name' => 'Комментарии',
         'author' => 'BloggyCMS', 
@@ -42,24 +19,19 @@ class CommentController extends Controller {
     ];
     
     /**
-     * Конструктор контроллера комментариев
-     * Инициализирует модели, проверяет права доступа и создает таблицы при необходимости
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор контроллера комментариев
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         
-        // Инициализация моделей
         $this->commentModel = new CommentModel($db);
         $this->postModel = new PostModel($db);
         $this->userModel = new UserModel($db);
         $this->categoryModel = new CategoryModel($db);
         
-        // Инициализация помощника аутентификации
         AuthHelper::init();
         
-        // Проверка прав доступа для админ-методов
         $currentAction = $_GET['action'] ?? '';
         if (strpos($currentAction, 'admin') === 0) {
             if (!$this->checkAdminAccess()) {
@@ -78,82 +50,65 @@ class CommentController extends Controller {
             }
         }
         
-        // Создание таблицы уведомлений при необходимости
         $this->createNotificationsTable();
     }
 
     /**
-     * Проверка прав администратора
-     * Использует Auth для проверки административных прав
-     *
-     * @return bool true если пользователь является администратором
-     */
+    * Проверка прав администратора
+    * @return bool true если пользователь является администратором
+    */
     private function checkAdminAccess() {
         return Auth::isAdmin();
     }
 
     /**
-     * Проверка типа запроса
-     * Определяет, является ли текущий запрос AJAX-запросом
-     *
-     * @return bool true если запрос является AJAX-запросом
-     */
+    * Проверка типа запроса
+    * @return bool true если запрос является AJAX-запросом
+    */
     private function isAjaxRequest() {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     /**
-     * Создание таблицы уведомлений
-     * Выполняет инициализацию таблицы уведомлений через соответствующую модель
-     *
-     * @return void
-     */
+    * Создание таблицы уведомлений
+    * @return void
+    */
     private function createNotificationsTable() {
         try {
             $notificationModel = new NotificationModel($this->db);
             $notificationModel->createTable();
-        } catch (Exception $e) {
-            // Ошибки создания таблицы логируются молча
-        }
+        } catch (Exception $e) {}
     }
     
     /**
-     * Получение аватара пользователя из данных комментария
-     * Возвращает URL аватара пользователя на основе информации в комментарии
-     *
-     * @param array $comment Данные комментария
-     * @return string URL аватара пользователя
-     */
+    * Получение аватара пользователя из данных комментария
+    * @param array $comment Данные комментария
+    * @return string URL аватара пользователя
+    */
     public function getUserAvatarFromComment($comment) {
-        // Если в комментарии уже есть информация об аватаре
+
         if (!empty($comment['author_avatar'])) {
             return $this->formatAvatarUrl($comment['author_avatar']);
         }
         
-        // Если есть user_id, получаем полную информацию о пользователе
         if (!empty($comment['user_id'])) {
             try {
                 $user = $this->userModel->getById($comment['user_id']);
                 if ($user && !empty($user['avatar'])) {
                     return $this->formatAvatarUrl($user['avatar']);
                 }
-            } catch (Exception $e) {
-                // Ошибки при получении пользователя игнорируются
-            }
+            } catch (Exception $e) {}
         }
         
-        // Аватар по умолчанию
         return BASE_URL . '/uploads/avatars/default.png';
     }
     
     /**
-     * Форматирование URL аватара
-     * Преобразует различные форматы хранения аватаров в полный URL
-     *
-     * @param string $avatar Значение аватара из базы данных
-     * @return string Полный URL аватара
-     */
+    * Форматирование URL аватара
+    * @param string $avatar Значение аватара из базы данных
+    * @return string Полный URL аватара
+    */
     private function formatAvatarUrl($avatar) {
         if (empty($avatar) || $avatar === 'default.jpg' || $avatar === 'default.png') {
             return BASE_URL . '/uploads/avatars/default.png';
@@ -171,14 +126,11 @@ class CommentController extends Controller {
     }
     
     /**
-     * Получение отображаемого имени пользователя из комментария
-     * Определяет наиболее подходящее имя для отображения на основе данных комментария
-     *
-     * @param array $comment Данные комментария
-     * @return string Имя пользователя для отображения
-     */
+    * Получение отображаемого имени пользователя из комментария
+    * @param array $comment Данные комментария
+    * @return string Имя пользователя для отображения
+    */
     public function getUserDisplayName($comment) {
-        // Если в комментарии есть информация об авторе
         if (!empty($comment['author_display_name'])) {
             return $comment['author_display_name'];
         }
@@ -191,7 +143,6 @@ class CommentController extends Controller {
             return $comment['author_name'];
         }
         
-        // Если есть user_id, получаем полную информацию о пользователе
         if (!empty($comment['user_id'])) {
             try {
                 $user = $this->userModel->getById($comment['user_id']);
@@ -202,41 +153,17 @@ class CommentController extends Controller {
                         return $user['username'];
                     }
                 }
-            } catch (Exception $e) {
-                // Ошибки при получении пользователя игнорируются
-            }
+            } catch (Exception $e) {}
         }
         
         return 'Аноним';
     }
     
     /**
-     * Получение данных комментария с расширенной информацией о пользователе, правах и группах
-     * Формирует полный набор данных комментария для отображения на фронтенде
-     *
-     * @param array $comment Базовые данные комментария из базы данных
-     * @return array Расширенные данные комментария:
-     * - id: ID комментария
-     * - post_id: ID поста
-     * - user_id: ID пользователя
-     * - parent_id: ID родительского комментария
-     * - content: текст комментария
-     * - status: статус комментария
-     * - created_at: дата создания (форматированная)
-     * - updated_at: дата редактирования (если был отредактирован)
-     * - was_edited: флаг редактирования
-     * - author_name: имя автора
-     * - author_avatar: URL аватара автора
-     * - is_pending: флаг ожидания модерации
-     * - is_own_comment: флаг принадлежности текущему пользователю
-     * - is_admin: флаг администратора
-     * - user_groups: группы пользователя
-     * - can_edit: право редактирования
-     * - can_delete: право удаления
-     * - can_reply: право ответа
-     */
+    * Получение данных комментария с расширенной информацией о пользователе, правах и группах
+    */
     public function getCommentWithUserData($comment) {
-        // Приведение parent_id к целому числу или null
+
         $parentId = isset($comment['parent_id']) && $comment['parent_id'] !== null 
             ? (int)$comment['parent_id'] 
             : null;
@@ -244,21 +171,17 @@ class CommentController extends Controller {
         $userId = isset($comment['user_id']) ? (int)$comment['user_id'] : null;
         $currentUserId = Auth::getUserId();
         
-        // Определение прав для этого комментария
         $canEdit = AuthHelper::canEditComment($userId);
         $canDelete = AuthHelper::canDeleteComment($userId);
         $canReply = AuthHelper::canAddComment();
         $isOwnComment = $currentUserId && $userId && $currentUserId == $userId;
         
-        // Получение групп пользователя
         $userGroups = [];
         if ($userId) {
             try {
-                // Получаем ID групп пользователя
                 $groupIds = $this->userModel->getUserGroups($userId);
                 
                 if (!empty($groupIds)) {
-                    // Получаем названия групп
                     foreach ($groupIds as $groupId) {
                         $group = $this->userModel->getGroupById($groupId);
                         if ($group) {
@@ -269,44 +192,33 @@ class CommentController extends Controller {
                         }
                     }
                 }
-            } catch (Exception $e) {
-                // Ошибки при получении групп игнорируются
-            }
+            } catch (Exception $e) {}
         }
         
-        // Проверка, является ли пользователь администратором
         $isAdmin = false;
         if ($userId) {
             try {
                 $user = $this->userModel->getById($userId);
                 $isAdmin = $user && (!empty($user['is_admin']) || $user['role'] === 'admin');
-            } catch (Exception $e) {
-                // Ошибки при проверке прав игнорируются
-            }
+            } catch (Exception $e) {}
         }
         
-        // Форматирование даты создания
         $createdAt = $comment['created_at'];
         $now = time();
         $commentTime = strtotime($createdAt);
         
-        // Если комментарий создан менее 5 минут назад, показываем "Только что"
-        if (($now - $commentTime) < 300) { // 300 секунд = 5 минут
+        if (($now - $commentTime) < 300) {
             $displayDate = 'Только что';
         } else {
             $displayDate = date('d.m.Y H:i', $commentTime);
         }
         
-        // Проверка, был ли комментарий отредактирован
         $wasEdited = false;
         $updatedAtDisplay = null;
         
         if (!empty($comment['updated_at'])) {
             $updatedAt = strtotime($comment['updated_at']);
             $createdAtTime = strtotime($comment['created_at']);
-            
-            // Проверяем, отличается ли updated_at от created_at более чем на 1 секунду
-            // (некоторые БД могут устанавливать updated_at даже при создании)
             $wasEdited = ($updatedAt - $createdAtTime) > 1;
             
             if ($wasEdited) {
@@ -337,15 +249,9 @@ class CommentController extends Controller {
     }
     
     /**
-     * Получение комментариев для поста с обработанными данными пользователей
-     * Формирует структурированное дерево комментариев с поддержкой вложенности
-     *
-     * @param int $postId ID поста
-     * @param bool $includePending Включать ли комментарии на модерации
-     * @return array Структурированные комментарии:
-     * - tree: дерево комментариев
-     * - total: общее количество комментариев (с учетом вложенности)
-     * - raw_count: количество комментариев в базе данных
+    * Получение комментариев для поста с обработанными данными пользователей
+    * @param int $postId ID поста
+    * @param bool $includePending Включать ли комментарии на модерации
      */
     public function getCommentsByPostWithUserData($postId, $includePending = false) {
         $viewAllPending = AuthHelper::canViewAllComments();
@@ -366,12 +272,10 @@ class CommentController extends Controller {
     }
 
     /**
-     * Рекурсивный подсчет всех комментариев в дереве
-     * Используется для подсчета общего количества комментариев с учетом вложенности
-     *
-     * @param array $comments Массив комментариев с вложенными ответами
-     * @return int Общее количество комментариев
-     */
+    * Рекурсивный подсчет всех комментариев в дереве
+    * @param array $comments Массив комментариев с вложенными ответами
+    * @return int Общее количество комментариев
+    */
     private function countCommentsRecursive($comments) {
         $count = 0;
         foreach ($comments as $comment) {
@@ -384,12 +288,10 @@ class CommentController extends Controller {
     }
 
     /**
-     * Получение одного комментария по ID (для AJAX-запросов)
-     * Возвращает полные данные комментария в формате JSON
-     *
-     * @param int $id ID комментария
-     * @return void Отправляет JSON-ответ
-     */
+    * Получение одного комментария по ID (для AJAX-запросов)
+    * @param int $id ID комментария
+    * @return void Отправляет JSON-ответ
+    */
     public function getCommentAction($id) {
         if (!$this->isAjaxRequest()) {
             http_response_code(400);
@@ -424,12 +326,10 @@ class CommentController extends Controller {
     }
 
     /**
-     * Построение дерева комментариев с поддержкой бесконечной вложенности
-     * Преобразует плоский массив комментариев в иерархическую структуру
-     *
-     * @param array $comments Плоский массив комментариев
-     * @return array Иерархическое дерево комментариев
-     */
+    * Построение дерева комментариев с поддержкой бесконечной вложенности
+    * @param array $comments Плоский массив комментариев
+    * @return array Иерархическое дерево комментариев
+    */
     private function buildCommentTree($comments) {
         $commentsByParent = [];
         foreach ($comments as $comment) {
@@ -453,7 +353,6 @@ class CommentController extends Controller {
                 }
             }
             
-            // Сортировка комментариев по дате создания (старые выше)
             usort($result, function($a, $b) {
                 return strtotime($a['created_at']) - strtotime($b['created_at']);
             });
@@ -465,10 +364,9 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Страница управления комментариями в админ-панели
-     * 
-     * @return mixed
-     */
+    * Действие: Страница управления комментариями в админ-панели
+    * @return mixed
+    */
     public function adminIndexAction() {
         $action = new \comments\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -476,11 +374,10 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Редактирование комментария в админ-панели
-     * 
-     * @param int $id ID комментария
-     * @return mixed
-     */
+    * Действие: Редактирование комментария в админ-панели
+    * @param int $id ID комментария
+    * @return mixed
+    */
     public function adminEditAction($id) {
         $action = new \comments\actions\AdminEdit($this->db, ['id' => $id]);
         $action->setController($this);
@@ -488,11 +385,10 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Удаление комментария в админ-панели
-     * 
-     * @param int $id ID комментария
-     * @return mixed
-     */
+    * Действие: Удаление комментария в админ-панели 
+    * @param int $id ID комментария
+    * @return mixed
+    */
     public function adminDeleteAction($id) {
         $action = new \comments\actions\AdminDelete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -500,11 +396,10 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Одобрение комментария в админ-панели
-     * 
-     * @param int $id ID комментария
-     * @return mixed
-     */
+    * Действие: Одобрение комментария в админ-панели
+    * @param int $id ID комментария
+    * @return mixed
+    */
     public function adminApproveAction($id) {
         $action = new \comments\actions\AdminApprove($this->db, ['id' => $id]);
         $action->setController($this);
@@ -512,10 +407,9 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Добавление нового комментария
-     * 
-     * @return mixed
-     */
+    * Действие: Добавление нового комментария
+    * @return mixed
+    */
     public function addAction() {
         $action = new \comments\actions\Add($this->db);
         $action->setController($this);
@@ -523,11 +417,10 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Удаление комментария пользователем
-     * 
-     * @param int $id ID комментария
-     * @return mixed
-     */
+    * Действие: Удаление комментария пользователем
+    * @param int $id ID комментария
+    * @return mixed
+    */
     public function deleteAction($id) {
         $action = new \comments\actions\Delete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -535,11 +428,10 @@ class CommentController extends Controller {
     }
     
     /**
-     * Действие: Редактирование комментария пользователем
-     * 
-     * @param int $id ID комментария
-     * @return mixed
-     */
+    * Действие: Редактирование комментария пользователем
+    * @param int $id ID комментария
+    * @return mixed
+    */
     public function editAction($id) {
         $action = new \comments\actions\Edit($this->db, ['id' => $id]);
         $action->setController($this);

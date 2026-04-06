@@ -1,42 +1,34 @@
 <?php
 
 /**
- * Поле типа "выпадающий список" для системы пользовательских полей
- * Позволяет выбрать одно значение из предопределенного списка опций
- * Поддерживает шорткоды для гибкого отображения выбранного значения
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "выпадающий список" для системы пользовательских полей
+* @package Fields
+*/
 class SelectField extends BaseField {
 
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'select'
-     */
+    * Возвращает тип поля
+    * @return string 'select'
+    */
     public function getType(): string {
         return 'select';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Список'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'Список'
+    */
     public function getName(): string {
         return 'Список';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает выпадающий список с опциями из настроек
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме 
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $options = $this->config['options'] ?? [];
@@ -54,14 +46,12 @@ class SelectField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Показывает выбранную опцию (метку, а не значение)
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре 
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         $options = $this->config['options'] ?? [];
         $label = $options[$value] ?? $value;
@@ -72,14 +62,12 @@ class SelectField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает выбранную опцию в виде бейджа
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         $options = $this->config['options'] ?? [];
         $label = $options[$value] ?? $value;
@@ -90,18 +78,15 @@ class SelectField extends BaseField {
     }
 
     /**
-     * Возвращает шорткод для поля выбора
-     * Регистрирует простой и парный варианты шорткода
-     * 
-     * @return string Имя шорткода
-     */
+    * Возвращает шорткод для поля выбора
+    * @return string Имя шорткода
+    */
     public function getShortcode(): string {
         $systemName = $this->getSystemName();
         $entityType = $this->getEntityType();
         
         $shortcodeName = $entityType . '_' . $systemName;
         
-        // Регистрируем два типа шорткодов: простой и парный
         Shortcodes::add($shortcodeName, function($attrs, $content = null) {
             if ($content !== null) {
                 return $this->renderPairedSelectShortcode($attrs, $content);
@@ -113,11 +98,10 @@ class SelectField extends BaseField {
     }
 
     /**
-     * Рендерит простой шорткод для select
-     * 
-     * @param array $attrs Атрибуты шорткода
-     * @return string Значение или метка выбранной опции
-     */
+    * Рендерит простой шорткод для select
+    * @param array $attrs Атрибуты шорткода
+    * @return string Значение или метка выбранной опции
+    */
     private function renderSimpleSelectShortcode($attrs): string {
         $entityId = $attrs['id'] ?? $this->entityId;
         $value = $this->getValue($entityId);
@@ -129,7 +113,6 @@ class SelectField extends BaseField {
         $options = $this->config['options'] ?? [];
         $displayValue = $options[$value] ?? $value;
         
-        // Возможность вернуть значение вместо метки
         if (isset($attrs['return']) && $attrs['return'] === 'value') {
             return htmlspecialchars($value);
         }
@@ -138,13 +121,11 @@ class SelectField extends BaseField {
     }
 
     /**
-     * Рендерит парный шорткод для select
-     * Позволяет обернуть выбранное значение в произвольный HTML
-     * 
-     * @param array $attrs Атрибуты шорткода
-     * @param string $content Содержимое шорткода (шаблон)
-     * @return string HTML результат
-     */
+    * Рендерит парный шорткод для select
+    * @param array $attrs Атрибуты шорткода
+    * @param string $content Содержимое шорткода (шаблон)
+    * @return string HTML результат
+    */
     private function renderPairedSelectShortcode($attrs, $content): string {
         $entityId = $attrs['id'] ?? $this->entityId;
         $value = $this->getValue($entityId);
@@ -156,7 +137,6 @@ class SelectField extends BaseField {
         $options = $this->config['options'] ?? [];
         $displayValue = $options[$value] ?? $value;
         
-        // Заменяем плейсхолдеры в контенте
         $result = $content;
         $result = str_replace('{value}', htmlspecialchars($value), $result);
         $result = str_replace('{label}', htmlspecialchars($displayValue), $result);
@@ -165,11 +145,9 @@ class SelectField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать опции списка и значение по умолчанию
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $options = $this->config['options'] ?? [];
         $optionsText = '';
@@ -195,14 +173,11 @@ class SelectField extends BaseField {
     }
     
     /**
-     * Обрабатывает конфигурацию поля после отправки формы
-     * Преобразует текстовый список опций в массив
-     * 
-     * @param array $config Исходная конфигурация
-     * @return array Обработанная конфигурация
-     */
+    * Обрабатывает конфигурацию поля после отправки формы
+    * @param array $config Исходная конфигурация
+    * @return array Обработанная конфигурация
+    */
     public function processConfig($config) {
-        // Преобразуем текстовый список опций в массив
         if (isset($config['options_text'])) {
             $options = [];
             $lines = explode("\n", $config['options_text']);

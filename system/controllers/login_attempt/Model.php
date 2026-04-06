@@ -1,34 +1,25 @@
 <?php
 
 /**
- * Модель попыток входа в систему
- * Управляет отслеживанием неудачных попыток входа, блокировкой IP и защитой от брутфорса
- * 
- * @package models
- */
+* Модель попыток входа в систему
+* @package models
+*/
 class LoginAttemptModel {
     
-    /**
-     * @var Database Объект подключения к базе данных
-     */
     private $db;
     
     /**
-     * Конструктор модели попыток входа
-     * Инициализирует подключение к базе данных
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор модели попыток входа
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
 
     /**
-     * Получение текущего IP адреса клиента
-     * Определяет IP с учетом прокси-серверов и заголовков
-     *
-     * @return string IP адрес клиента
-     */
+    * Получение текущего IP адреса клиента
+    * @return string IP адрес клиента
+    */
     public function getClientIP() {
         $ip = $_SERVER['HTTP_CLIENT_IP'] ?? 
               $_SERVER['HTTP_X_FORWARDED_FOR'] ?? 
@@ -38,7 +29,6 @@ class LoginAttemptModel {
               $_SERVER['REMOTE_ADDR'] ?? 
               '0.0.0.0';
         
-        // Обработка случая с несколькими IP через прокси
         if (strpos($ip, ',') !== false) {
             $ips = explode(',', $ip);
             $ip = trim($ips[0]);
@@ -48,12 +38,10 @@ class LoginAttemptModel {
     }
 
     /**
-     * Получение информации о попытках входа для IP адреса
-     * Извлекает данные о предыдущих неудачных попытках входа
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @return array|null Данные о попытках входа или null если записей нет
-     */
+    * Получение информации о попытках входа для IP адреса
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    * @return array|null Данные о попытках входа или null если записей нет
+    */
     public function getLoginAttempts($ip = null) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -65,7 +53,6 @@ class LoginAttemptModel {
         );
 
         if ($result) {
-            // Очистка старых записей при получении данных
             $this->cleanupOldRecords();
             
             return $result;
@@ -75,17 +62,11 @@ class LoginAttemptModel {
     }
 
     /**
-     * Увеличение счетчика попыток входа
-     * Инкрементирует счетчик неудачных попыток и блокирует IP при превышении лимита
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @param int $maxAttempts Максимальное количество попыток до блокировки
-     * @param int $blockTimeMinutes Время блокировки в минутах
-     * @return array Информация о текущих попытках:
-     * - attempts: текущее количество попыток
-     * - blocked_until: время разблокировки
-     * - is_blocked: флаг блокировки
-     */
+    * Увеличение счетчика попыток входа
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    * @param int $maxAttempts Максимальное количество попыток до блокировки
+    * @param int $blockTimeMinutes Время блокировки в минутах
+    */
     public function incrementAttempt($ip = null, $maxAttempts = 3, $blockTimeMinutes = 20) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -97,7 +78,6 @@ class LoginAttemptModel {
             $newAttempts = $attempts['attempts'] + 1;
             $blockedUntil = null;
 
-            // Блокировка при превышении лимита попыток
             if ($newAttempts >= $maxAttempts) {
                 $blockedUntil = date('Y-m-d H:i:s', time() + ($blockTimeMinutes * 60));
             }
@@ -113,7 +93,6 @@ class LoginAttemptModel {
                 'is_blocked' => $blockedUntil !== null
             ];
         } else {
-            // Первая попытка для этого IP
             $this->db->query(
                 "INSERT INTO login_attempts (ip_address, attempts, last_attempt) VALUES (?, 1, NOW())",
                 [$ip]
@@ -128,12 +107,10 @@ class LoginAttemptModel {
     }
 
     /**
-     * Сброс счетчика попыток входа
-     * Удаляет все записи о попытках входа для указанного IP
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @return void
-     */
+    * Сброс счетчика попыток входа
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    * @return void
+    */
     public function resetAttempts($ip = null) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -146,12 +123,10 @@ class LoginAttemptModel {
     }
 
     /**
-     * Проверка блокировки IP адреса
-     * Определяет, заблокирован ли IP из-за превышения лимита попыток входа
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @return bool true если IP заблокирован
-     */
+    * Проверка блокировки IP адреса
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    * @return bool true если IP заблокирован
+    */
     public function isBlocked($ip = null) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -166,12 +141,10 @@ class LoginAttemptModel {
     }
 
     /**
-     * Получение времени разблокировки IP
-     * Возвращает временную метку, когда IP будет разблокирован
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @return int Временная метка разблокировки или 0 если нет блокировки
-     */
+    * Получение времени разблокировки IP
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    * @return int Временная метка разблокировки или 0 если нет блокировки
+    */
     public function getUnlockTime($ip = null) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -186,15 +159,10 @@ class LoginAttemptModel {
     }
 
     /**
-     * Очистка старых записей о попытках входа
-     * Удаляет устаревшие записи для поддержания чистоты базы данных
-     *
-     * @return void
-     */
+    * Очистка старых записей о попытках входа
+    * @return void
+    */
     public function cleanupOldRecords() {
-        // Удаление записей:
-        // - Разблокированных записей старше 24 часов
-        // - Заблокированных записей, время блокировки которых истекло более часа назад
         $this->db->query(
             "DELETE FROM login_attempts WHERE 
             (blocked_until IS NULL AND last_attempt < DATE_SUB(NOW(), INTERVAL 24 HOUR)) OR
@@ -203,15 +171,9 @@ class LoginAttemptModel {
     }
 
     /**
-     * Получение статистики по попыткам входа для IP
-     * Возвращает полную информацию о попытках входа для указанного IP
-     *
-     * @param string|null $ip IP адрес (если null, используется текущий)
-     * @return array Статистика попыток входа:
-     * - attempts: количество попыток
-     * - is_blocked: флаг блокировки
-     * - blocked_until: время разблокировки
-     */
+    * Получение статистики по попыткам входа для IP
+    * @param string|null $ip IP адрес (если null, используется текущий)
+    */
     public function getAttemptsInfo($ip = null) {
         if (!$ip) {
             $ip = $this->getClientIP();
@@ -235,30 +197,24 @@ class LoginAttemptModel {
     }
 
     /**
-     * Умное увеличение счетчика попыток входа
-     * Комплексная проверка по нескольким идентификаторам для защиты от обхода блокировок
-     *
-     * @param string|null $username Имя пользователя (дополнительный идентификатор)
-     * @param int $maxAttempts Максимальное количество попыток для идентификатора клиента
-     * @param int $blockTimeMinutes Время блокировки в минутах
-     * @return bool true если любой из идентификаторов заблокирован
-     */
+    * Умное увеличение счетчика попыток входа
+    * @param string|null $username Имя пользователя (дополнительный идентификатор)
+    * @param int $maxAttempts Максимальное количество попыток для идентификатора клиента
+    * @param int $blockTimeMinutes Время блокировки в минутах
+    * @return bool true если любой из идентификаторов заблокирован
+    */
     public function smartIncrementAttempt($username = null, $maxAttempts = 5, $blockTimeMinutes = 30) {
-        // Получение идентификатора клиента (комбинация IP и User-Agent)
+
         $client = $this->getClientIdentifier();
         
-        // Увеличение счетчика для идентификатора клиента
         $clientAttempts = $this->incrementByIdentifier($client['identifier'], $maxAttempts, $blockTimeMinutes);
         
-        // Увеличение счетчика для IP (с большим лимитом)
         $ipAttempts = $this->incrementByIP($client['ip'], $maxAttempts + 3, $blockTimeMinutes);
         
-        // Увеличение счетчика для имени пользователя (если указано)
         if ($username) {
             $usernameAttempts = $this->incrementByUsername($username, $maxAttempts - 1, $blockTimeMinutes);
         }
         
-        // Блокировка если любой из счетчиков превысил лимит
         return $clientAttempts['is_blocked'] || $ipAttempts['is_blocked'] || 
                (isset($usernameAttempts) && $usernameAttempts['is_blocked']);
     }

@@ -1,71 +1,63 @@
 <?php
 
 /**
- * Система шорткодов
- * 
- * @package Helpers
- */
+* Система шорткодов
+* @package Helpers
+*/
 
 if (class_exists('ShortcodeRegistry')) {
     return;
 }
 
 /**
- * Класс для регистрации и обработки шорткодов
- */
+* Класс для регистрации и обработки шорткодов
+*/
 class ShortcodeRegistry {
-    /**
-     * @var array Зарегистрированные шорткоды
-     */
+
     private static $shortcodes = [];
     
     /**
-     * Регистрирует новый шорткод
-     * 
-     * @param string $name Имя шорткода
-     * @param callable $callback Функция обработки
-     */
+    * Регистрирует новый шорткод
+    * @param string $name Имя шорткода
+    * @param callable $callback Функция обработки
+    */
     public static function add($name, $callback) {
         $name = strtolower($name);
         self::$shortcodes[$name] = $callback;
     }
     
     /**
-     * Удаляет шорткод
-     * 
-     * @param string $name Имя шорткода
-     */
+    * Удаляет шорткод 
+    * @param string $name Имя шорткода
+    */
     public static function remove($name) {
         $name = strtolower($name);
         unset(self::$shortcodes[$name]);
     }
     
     /**
-     * Получает все зарегистрированные шорткоды
-     * 
-     * @return array Массив шорткодов
-     */
+    * Получает все зарегистрированные шорткоды
+    * @return array Массив шорткодов
+    */
     public static function getAll() {
         return self::$shortcodes;
     }
     
     /**
-     * Проверяет, зарегистрирован ли шорткод
-     * 
-     * @param string $name Имя шорткода
-     * @return bool
-     */
+    * Проверяет, зарегистрирован ли шорткод
+    * @param string $name Имя шорткода
+    * @return bool
+    */
     public static function has($name) {
         $name = strtolower($name);
         return isset(self::$shortcodes[$name]);
     }
     
     /**
-     * Обрабатывает шорткоды в контенте
-     * 
-     * @param string $content Контент для обработки
-     * @return string Обработанный контент
-     */
+    * Обрабатывает шорткоды в контенте
+    * @param string $content Контент для обработки
+    * @return string Обработанный контент
+    */
     public static function process(string $content): string {
         
         if (empty(self::$shortcodes)) {
@@ -104,7 +96,6 @@ class ShortcodeRegistry {
                 $name = strtolower($matches[1]);
                 $attrs = [];
                 
-                // Парсим атрибуты если есть
                 if (isset($matches[2])) {
                     $attrString = $matches[2];
                     
@@ -133,13 +124,12 @@ class ShortcodeRegistry {
 }
 
 /**
- * Основная функция обработки всех шорткодов в контенте
- * 
- * @param string $content Содержимое для обработки
- * @param array $posts Массив постов для шорткода {posts}
- * @param array $blocks Массив HTML-блоков для шорткода {add-block-*}
- * @return string Обработанное содержимое
- */
+* Основная функция обработки всех шорткодов в контенте
+* @param string $content Содержимое для обработки
+* @param array $posts Массив постов для шорткода {posts}
+* @param array $blocks Массив HTML-блоков для шорткода {add-block-*}
+* @return string Обработанное содержимое
+*/
 function process_shortcodes(string $content, array $posts = [], array $blocks = []): string {
     
     if (empty($content)) {

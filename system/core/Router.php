@@ -1,29 +1,30 @@
 <?php
 
 /**
- * Маршрутизатор для обработки URL запросов
- */
+* Маршрутизатор для обработки URL запросов
+*/
 class Router {
+
     /**
-     * @var array Маршруты системы
-     */
+    * @var array Маршруты системы
+    */
     private $routes = [];
     
     /**
-     * @var array Маршруты модулей
-     */
+    * @var array Маршруты модулей
+    */
     private $moduleRoutes = [];
     
     /**
-     * Конструктор Router
-     */
+    * Конструктор Router
+    */
     public function __construct() {
         $this->loadModuleRoutes();
     }
 
     /**
-     * Загружает маршруты модулей
-     */
+    * Загружает маршруты модулей
+    */
     private function loadModuleRoutes() {
         static $loaded = false;
 
@@ -84,11 +85,10 @@ class Router {
     }
     
     /**
-     * Сопоставляет URI с маршрутом
-     *
-     * @param string $uri URI для сопоставления
-     * @return array|false Данные маршрута или false
-     */
+    * Сопоставляет URI с маршрутом
+    * @param string $uri URI для сопоставления
+    * @return array|false Данные маршрута или false
+    */
     public function match($uri) {
         $uri = $this->cleanUri($uri);
         
@@ -118,13 +118,12 @@ class Router {
     }
 
     /**
-     * Проверяет соответствие паттерна URI
-     *
-     * @param string $pattern Паттерн маршрута
-     * @param string $uri URI для проверки
-     * @param array $route Данные маршрута
-     * @return bool Соответствует ли URI паттерну
-     */
+    * Проверяет соответствие паттерна URI
+    * @param string $pattern Паттерн маршрута
+    * @param string $uri URI для проверки
+    * @param array $route Данные маршрута
+    * @return bool Соответствует ли URI паттерну
+    */
     private function checkPattern($pattern, $uri, &$route) {
         if ($pattern === '' && $uri === '') {
             return true;
@@ -157,11 +156,10 @@ class Router {
     }
     
     /**
-     * Очищает URI от базового URL
-     *
-     * @param string $uri Исходный URI
-     * @return string Очищенный URI
-     */
+    * Очищает URI от базового URL
+    * @param string $uri Исходный URI
+    * @return string Очищенный URI
+    */
     private function cleanUri($uri) {
         $baseUrl = BASE_URL;
         if (!empty($baseUrl) && strpos($uri, $baseUrl) === 0) {
@@ -175,11 +173,10 @@ class Router {
     }
 
     /**
-     * Проверяет, является ли URI статическим файлом
-     *
-     * @param string $uri URI для проверки
-     * @return bool Является ли статическим файлом
-     */
+    * Проверяет, является ли URI статическим файлом
+    * @param string $uri URI для проверки
+    * @return bool Является ли статическим файлом
+    */
     private function isStaticFile($uri) {
         $staticExtensions = [
             'css', 'js', 'png', 'jpg', 'jpeg', 'gif', 'ico', 'svg',

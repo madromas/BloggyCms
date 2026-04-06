@@ -1,47 +1,38 @@
 <?php
 
 /**
- * Поле типа "мультивыбор" для системы пользовательских полей
- * Позволяет выбирать несколько значений из выпадающего списка
- * Сохраняет данные в формате JSON, поддерживает шорткоды и гибкое отображение
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "мультивыбор" для системы пользовательских полей
+* @package Fields
+*/
 class MultiSelectField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'multiselect'
-     */
+    * Возвращает тип поля
+    * @return string 'multiselect'
+    */
     public function getType(): string {
         return 'multiselect';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Список: мультивыбор'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'Список: мультивыбор'
+    */
     public function getName(): string {
         return 'Список: мультивыбор';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает select multiple с опциями из настроек
-     * 
-     * @param mixed $value Текущее значение поля (JSON строка)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме
+    * @param mixed $value Текущее значение поля (JSON строка)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $options = $this->config['options'] ?? [];
         
-        // Преобразование значения в массив
         $selectedValues = [];
         if (!empty($value)) {
             if (is_string($value)) {
@@ -65,14 +56,12 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Показывает выбранные опции в виде бейджей
-     * 
-     * @param mixed $value Значение поля (JSON строка)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре
+    * @param mixed $value Значение поля (JSON строка)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         $items = $this->getIterableData($value, $entityType, $entityId);
         
@@ -80,7 +69,6 @@ class MultiSelectField extends BaseField {
             return '<span class="text-muted">Не выбрано</span>';
         }
         
-        // По умолчанию рендерим как баджи
         $html = '<div class="field-multiselect d-flex flex-wrap gap-1">';
         foreach ($items as $item) {
             $html .= '<span class="badge bg-secondary">' . 
@@ -93,14 +81,12 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает первую выбранную опцию с индикатором количества
-     * 
-     * @param mixed $value Значение поля (JSON строка)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке 
+    * @param mixed $value Значение поля (JSON строка)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         $items = $this->getIterableData($value, $entityType, $entityId);
         $count = count($items);
@@ -122,40 +108,34 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Обрабатывает значение перед сохранением
-     * Преобразует массив в JSON строку
-     * 
-     * @param mixed $value Исходное значение
-     * @return string JSON строка
-     */
+    * Обрабатывает значение перед сохранением
+    * @param mixed $value Исходное значение
+    * @return string JSON строка
+    */
     public function processValue($value) {
-        // Сохраняем как JSON
+
         if (is_array($value)) {
             return json_encode(array_values($value));
         }
         
-        // Если пришла строка JSON, проверяем валидность
         if (is_string($value)) {
             $decoded = json_decode($value, true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                return $value; // Уже валидный JSON
+                return $value;
             }
         }
         
-        return json_encode([]); // По умолчанию пустой массив
+        return json_encode([]);
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать опции списка в формате "значение|Название"
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $options = $this->config['options'] ?? [];
         $optionsText = '';
         
-        // Преобразование массива опций в текстовый формат
         foreach ($options as $value => $label) {
             $optionsText .= htmlspecialchars($value) . "|" . htmlspecialchars($label) . "\n";
         }
@@ -170,14 +150,11 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Обрабатывает конфигурацию поля после отправки формы
-     * Преобразует текстовый список опций в массив
-     * 
-     * @param array $config Исходная конфигурация
-     * @return array Обработанная конфигурация
-     */
+    * Обрабатывает конфигурацию поля после отправки формы
+    * @param array $config Исходная конфигурация
+    * @return array Обработанная конфигурация
+    */
     public function processConfig($config) {
-        // Преобразование текстового списка опций в массив
         if (isset($config['options_text'])) {
             $options = [];
             $lines = explode("\n", $config['options_text']);
@@ -201,12 +178,10 @@ class MultiSelectField extends BaseField {
     }
 
     /**
-     * Валидирует значение поля
-     * Проверяет обязательность и наличие выбранных опций
-     * 
-     * @param mixed $value Значение для проверки
-     * @return bool true если значение корректно
-     */
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
     public function validate($value): bool {
         if (isset($this->config['required']) && $this->config['required']) {
             if (empty($value)) return false;
@@ -220,11 +195,10 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Получает значения как массив
-     * 
-     * @param mixed $value Значение поля
-     * @return array Массив выбранных значений
-     */
+    * Получает значения как массив 
+    * @param mixed $value Значение поля
+    * @return array Массив выбранных значений
+    */
     public function getValuesArray($value): array {
         if (empty($value)) {
             return [];
@@ -239,18 +213,15 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Возвращает шорткод для MultiSelectField
-     * Регистрирует простой и парный варианты шорткода
-     * 
-     * @return string Имя шорткода
-     */
+    * Возвращает шорткод для MultiSelectField
+    * @return string Имя шорткода
+    */
     public function getShortcode(): string {
         $systemName = $this->getSystemName();
         $entityType = $this->getEntityType();
         
         $shortcodeName = $entityType . '_' . $systemName;
         
-        // Регистрируем два типа шорткодов: простой и парный
         Shortcodes::add($shortcodeName, function($attrs, $content = null) {
             if ($content !== null) {
                 return $this->renderPairedShortcode($attrs, $content);
@@ -262,12 +233,10 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Рендерит простой шорткод (без содержимого)
-     * Поддерживает различные форматы вывода
-     * 
-     * @param array $attrs Атрибуты шорткода
-     * @return string HTML результат
-     */
+    * Рендерит простой шорткод (без содержимого)
+    * @param array $attrs Атрибуты шорткода
+    * @return string HTML результат
+    */
     private function renderSimpleShortcode($attrs): string {
         $entityId = $attrs['id'] ?? $this->entityId;
         $value = $this->getValue($entityId);
@@ -279,7 +248,7 @@ class MultiSelectField extends BaseField {
         $selectedValues = json_decode($value, true) ?? [];
         $options = $this->config['options'] ?? [];
         
-        $format = $attrs['format'] ?? 'list'; // list, badges, comma, count
+        $format = $attrs['format'] ?? 'list';
         $separator = $attrs['separator'] ?? ', ';
         $badgeClass = $attrs['badge_class'] ?? 'badge bg-secondary';
         
@@ -330,13 +299,11 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Рендерит парный шорткод для итерации по выбранным значениям
-     * Поддерживает условные блоки {if_first}, {if_last}, {if_even}, {if_odd}
-     * 
-     * @param array $attrs Атрибуты шорткода
-     * @param string $content Содержимое шорткода (шаблон для каждого элемента)
-     * @return string HTML результат
-     */
+    * Рендерит парный шорткод для итерации по выбранным значениям
+    * @param array $attrs Атрибуты шорткода
+    * @param string $content Содержимое шорткода (шаблон для каждого элемента)
+    * @return string HTML результат
+    */
     private function renderPairedShortcode($attrs, $content): string {
         $entityId = $attrs['id'] ?? $this->entityId;
         $value = $this->getValue($entityId);
@@ -355,12 +322,10 @@ class MultiSelectField extends BaseField {
             $counter++;
             $itemContent = $content;
             
-            // Замена простых плейсхолдеров
             $itemContent = str_replace('{index}', $counter, $itemContent);
             $itemContent = str_replace('{value}', htmlspecialchars($val), $itemContent);
             $itemContent = str_replace('{label}', htmlspecialchars($options[$val] ?? $val), $itemContent);
             
-            // Обработка условных блоков
             $itemContent = $this->processConditionalBlocks($itemContent, $counter, count($selectedValues));
             
             $result .= $itemContent;
@@ -370,29 +335,26 @@ class MultiSelectField extends BaseField {
     }
 
     /**
-     * Обрабатывает условные блоки в парном шорткоде
-     * 
-     * @param string $content Содержимое для обработки
-     * @param int $counter Текущая позиция (1-индексированная)
-     * @param int $total Общее количество элементов
-     * @return string Обработанное содержимое
-     */
+    * Обрабатывает условные блоки в парном шорткоде 
+    * @param string $content Содержимое для обработки
+    * @param int $counter Текущая позиция (1-индексированная)
+    * @param int $total Общее количество элементов
+    * @return string Обработанное содержимое
+    */
     private function processConditionalBlocks($content, $counter, $total) {
-        // {if_first}
+
         if ($counter === 1) {
             $content = preg_replace('/\{if_first\}(.*?)\{\/if_first\}/s', '$1', $content);
         } else {
             $content = preg_replace('/\{if_first\}(.*?)\{\/if_first\}/s', '', $content);
         }
         
-        // {if_last}
         if ($counter === $total) {
             $content = preg_replace('/\{if_last\}(.*?)\{\/if_last\}/s', '$1', $content);
         } else {
             $content = preg_replace('/\{if_last\}(.*?)\{\/if_last\}/s', '', $content);
         }
         
-        // {if_even} и {if_odd}
         if ($counter % 2 === 0) {
             $content = preg_replace('/\{if_even\}(.*?)\{\/if_even\}/s', '$1', $content);
             $content = preg_replace('/\{if_odd\}(.*?)\{\/if_odd\}/s', '', $content);
@@ -405,13 +367,11 @@ class MultiSelectField extends BaseField {
     }
 
     /**
-     * Подготавливает конфигурацию для отображения в форме
-     * 
-     * @param array $config Конфигурация поля
-     * @return array Подготовленная конфигурация
-     */
+    * Подготавливает конфигурацию для отображения в форме 
+    * @param array $config Конфигурация поля
+    * @return array Подготовленная конфигурация
+    */
     public function prepareConfigForForm(array $config): array {
-        // Если есть опции в виде массива, преобразуем их в текстовый формат
         if (isset($config['options']) && is_array($config['options'])) {
             $optionsText = '';
             foreach ($config['options'] as $value => $label) {
@@ -423,12 +383,11 @@ class MultiSelectField extends BaseField {
     }
     
     /**
-     * Форматирует значение для шорткода
-     * 
-     * @param mixed $value Значение поля
-     * @param array $attrs Атрибуты шорткода
-     * @return string Отформатированное значение
-     */
+    * Форматирует значение для шорткода
+    * @param mixed $value Значение поля
+    * @param array $attrs Атрибуты шорткода
+    * @return string Отформатированное значение
+    */
     protected function formatShortcodeValue($value, $attrs): string {
         return $this->renderSimpleShortcode(array_merge($attrs, ['id' => $this->entityId]));
     }

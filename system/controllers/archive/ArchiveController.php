@@ -2,18 +2,11 @@
 
 /**
 * Контроллер архива записей блога
-* Отвечает за отображение архивной страницы со всеми постами
 */
 class ArchiveController extends Controller {
-    /**
-    * @var PostModel Модель для работы с записями блога
-    */
+
     private $postModel;
 
-    /**
-    * @var array Метаинформация о контроллере
-    * Содержит название, автора, версию и описание функциональности
-    */
     protected $controllerInfo = [
         'name' => 'Архив записей блога',
         'author' => 'BloggyCMS',
@@ -24,8 +17,6 @@ class ArchiveController extends Controller {
     
     /**
     * Конструктор контроллера архива
-    * Инициализирует модель работы с постами для получения данных
-    *
     * @param Database $db Объект подключения к базе данных
     */
     public function __construct($db) {
@@ -34,11 +25,7 @@ class ArchiveController extends Controller {
     }
     
     /**
-    * Главное действие контроллера - отображение архива постов
-    * Делегирует выполнение специализированному классу действия (action)
-    * для обеспечения модульности и разделения ответственности
-    *
-    * @return mixed Результат выполнения действия (обычно HTML-контент)
+    * Отображение архива постов
     */
     public function indexAction() {
         $action = new \archive\actions\Index($this->db);

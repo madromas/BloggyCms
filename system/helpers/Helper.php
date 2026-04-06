@@ -1,41 +1,32 @@
 <?php
 
 /**
- * Функция для перенаправления на главную страницу фронта.
- * 
- * @return void
- */
-function go_home(): void
-{
+* Функция для перенаправления на главную страницу фронта.
+* @return void
+*/
+function go_home(): void {
     header('Location: /');
     exit;
 }
 
 /**
- * Функция для получения URL главной страницы.
- * 
- * @return string URL главной страницы.
- */
-function get_home_url(): string
-{
+* Функция для получения URL главной страницы.
+* @return string URL главной страницы.
+*/
+function get_home_url(): string {
     return BASE_URL;
 }
 
 /**
- * Функция для генерации пути к изображению в шаблоне.
- * 
- * Возвращает полный URL к изображению, находящемуся в папке assets/img/ шаблона.
- * 
- * @param string $file Имя файла изображения (например, "logo.png").
- * @param string $subpath Подпапка внутри assets/img/ (например, "logo/").
- * @return string Полный URL к изображению.
- */
-function front_image(string $file, string $subpath = ''): string
-{
-    // Убираем лишние слеши в начале и конце подпапки
+* Функция для генерации пути к изображению в шаблоне.
+* @param string $file Имя файла изображения (например, "logo.png").
+* @param string $subpath Подпапка внутри assets/img/ (например, "logo/").
+* @return string Полный URL к изображению.
+*/
+function front_image(string $file, string $subpath = ''): string {
+
     $subpath = trim($subpath, '/');
     
-    // Если подпапка указана, добавляем её к пути
     if (!empty($subpath)) {
         $subpath .= '/';
     }
@@ -44,12 +35,10 @@ function front_image(string $file, string $subpath = ''): string
 }
 
 /**
- * Выводит содержимое HTML-блока по его slug.
- * Загружает ассеты блока (CSS/JS) при первом вызове.
- * 
- * @param string $slug Уникальный идентификатор блока.
- * @return void
- */
+* Выводит содержимое HTML-блока по его slug.
+* @param string $slug Уникальный идентификатор блока.
+* @return void
+*/
 function render_html_block(string $slug): void {
     static $assets_loaded = [];
     static $loaded_blocks = [];
@@ -137,11 +126,10 @@ function render_html_block(string $slug): void {
 }
 
 /**
- * Предзагружает ассеты HTML-блоков без вывода содержимого.
- * 
- * @param array $slugs Массив слагов блоков для предзагрузки
- * @return void
- */
+* Предзагружает ассеты HTML-блоков без вывода содержимого.
+* @param array $slugs Массив слагов блоков для предзагрузки
+* @return void
+*/
 function preload_html_block_assets(array $slugs): void {
     static $preloaded = [];
     
@@ -166,13 +154,12 @@ function preload_html_block_assets(array $slugs): void {
 }
 
 /**
- * Загружает CSS и JS файлы для HTML-блока.
- * 
- * @param array $block Данные блока
- * @return void
- */
+* Загружает CSS и JS файлы для HTML-блока.
+* @param array $block Данные блока
+* @return void
+*/
 function load_html_block_assets($block): void {
-    // CSS файлы из базы данных
+
     if (!empty($block['css_files'])) {
         $cssFiles = json_decode($block['css_files'], true);
         foreach ($cssFiles as $cssFile) {
@@ -182,7 +169,6 @@ function load_html_block_assets($block): void {
         }
     }
     
-    // JS файлы из базы данных
     if (!empty($block['js_files'])) {
         $jsFiles = json_decode($block['js_files'], true);
         foreach ($jsFiles as $jsFile) {
@@ -192,17 +178,14 @@ function load_html_block_assets($block): void {
         }
     }
     
-    // Inline CSS
     if (!empty($block['inline_css'])) {
         front_inline_css($block['inline_css']);
     }
     
-    // Inline JS
     if (!empty($block['inline_js'])) {
         front_inline_js($block['inline_js']);
     }
     
-    // Системные активы типа блока
     if (!empty($block['block_type']) && $block['block_type'] !== 'DefaultBlock') {
         $db = Database::getInstance();
         $blockTypeManager = new HtmlBlockTypeManager($db);
@@ -211,11 +194,10 @@ function load_html_block_assets($block): void {
 }
 
 /**
- * Форматирует дату в формате "16 марта 2025".
- * 
- * @param string $date Дата в формате, понятном для strtotime
- * @return string Отформатированная дата
- */
+* Форматирует дату в формате "23 июня 2025".
+* @param string $date Дата в формате, понятном для strtotime
+* @return string Отформатированная дата
+*/
 function format_date($date) {
     if (!$date) return '';
     
@@ -234,12 +216,10 @@ function format_date($date) {
 }
 
 /**
- * Возвращает время, прошедшее с указанной даты в человекочитаемом формате.
- * Например: "5 минут назад", "2 часа назад", "3 дня назад".
- * 
- * @param string $date Дата в формате, понятном для strtotime
- * @return string Отформатированное время
- */
+* Возвращает время, прошедшее с указанной даты в человекочитаемом формате
+* @param string $date Дата в формате, понятном для strtotime
+* @return string Отформатированное время
+*/
 function time_ago($date) {
     if (!$date) return '';
     
@@ -268,7 +248,6 @@ function time_ago($date) {
     foreach ($intervals as $interval => $seconds) {
         $count = floor($diff / $seconds);
         if ($count > 0) {
-            // Функция для определения правильного окончания
             $form = function($n, $forms) {
                 return $n%10==1 && $n%100!=11 ? $forms[0] : ($n%10>=2 && $n%10<=4 && ($n%100<10 || $n%100>=20) ? $forms[1] : $forms[2]);
             };
@@ -281,11 +260,10 @@ function time_ago($date) {
 }
 
 /**
- * Форматирует число в сокращенном виде (например, 1.2K, 1.5M).
- * 
- * @param int $number Число для форматирования.
- * @return string Отформатированное число.
- */
+* Форматирует число в сокращенном виде (например, 1.2K, 1.5M) 
+* @param int $number Число для форматирования.
+* @return string Отформатированное число.
+*/
 function format_number(int $number): string
 {
     if ($number < 1000) {
@@ -298,13 +276,12 @@ function format_number(int $number): string
 }
 
 /**
- * Функция для вывода selected в select-опциях.
- * 
- * @param mixed $value Значение опции
- * @param mixed $current Текущее значение
- * @param bool $echo Выводить или возвращать
- * @return string HTML-атрибут selected
- */
+* Функция для вывода selected в select-опциях
+* @param mixed $value Значение опции
+* @param mixed $current Текущее значение
+* @param bool $echo Выводить или возвращать
+* @return string HTML-атрибут selected
+*/
 function selected($value, $current, $echo = true) {
     $result = $value == $current ? 'selected="selected"' : '';
     if ($echo) {
@@ -314,13 +291,12 @@ function selected($value, $current, $echo = true) {
 }
 
 /**
- * Функция для вывода checked в checkbox-опциях.
- * 
- * @param mixed $value Значение опции
- * @param mixed $current Текущее значение
- * @param bool $echo Выводить или возвращать
- * @return string HTML-атрибут checked
- */
+* Функция для вывода checked в checkbox-опциях
+* @param mixed $value Значение опции
+* @param mixed $current Текущее значение
+* @param bool $echo Выводить или возвращать
+* @return string HTML-атрибут checked
+*/
 function checked($value, $current, $echo = true) {
     $result = $value == $current ? 'checked="checked"' : '';
     if ($echo) {
@@ -330,11 +306,10 @@ function checked($value, $current, $echo = true) {
 }
 
 /**
- * Подключает фавиконку.
- * 
- * @param string|null $path Путь к фавиконке
- * @return string HTML-тег link для фавиконки
- */
+* Подключает фавиконку
+* @param string|null $path Путь к фавиконке
+* @return string HTML-тег link для фавиконки
+*/
 function favicon($path = null) {
     if ($path === null) {
         $path = BASE_URL . '/templates/default/admin/assets/img/favicon.png';
@@ -344,49 +319,43 @@ function favicon($path = null) {
 }
 
 /**
- * Возвращает название текущего активного шаблона.
- * 
- * @return string Название шаблона
- */
+* Возвращает название текущего активного шаблона
+* @return string Название шаблона
+*/
 function get_current_template(): string {
     return defined('CURRENT_TEMPLATE') ? CURRENT_TEMPLATE : 'default';
 }
 
 /**
- * Проверяет, доступен ли блок для текущего шаблона.
- * 
- * @param mixed $blockTemplate Шаблон блока
- * @return bool Всегда true (заглушка)
- */
+* Проверяет, доступен ли блок для текущего шаблона
+* @param mixed $blockTemplate Шаблон блока
+* @return bool Всегда true (заглушка)
+*/
 function is_block_available_for_template($blockTemplate): bool {
     return true;
 }
 
 /**
- * Склонение числительных в русском языке.
- * 
- * @param int $number Число
- * @param array $titles Массив форм слова [именительный, родительный, множественный]
- * @return string Правильная форма слова
- * 
- * @example plural(5, ['комментарий', 'комментария', 'комментариев']) // "комментариев"
- * @example plural(21, ['день', 'дня', 'дней']) // "день"
- */
+* Склонение числительных в русском языке.
+* @param int $number Число
+* @param array $titles Массив форм слова [именительный, родительный, множественный]
+* @return string Правильная форма слова 
+* @example plural(5, ['комментарий', 'комментария', 'комментариев']) // "комментариев"
+* @example plural(21, ['день', 'дня', 'дней']) // "день"
+*/
 function plural($number, $titles) {
     $lastTwoDigits = abs($number) % 100;
     $lastDigit = $lastTwoDigits % 10;
     
-    // исключения (11-14)
     if ($lastTwoDigits >= 11 && $lastTwoDigits <= 14) {
-        return $titles[2]; // множественная форма
+        return $titles[2];
     }
     
-    // Определяем форму по последней цифре
     if ($lastDigit == 1) {
-        return $titles[0]; // именительный падеж (1, 21, 31...)
+        return $titles[0];
     } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
-        return $titles[1]; // родительный падеж (2, 3, 4, 22, 23, 24...)
+        return $titles[1];
     } else {
-        return $titles[2]; // множественная форма (5-20, 25-30...)
+        return $titles[2];
     }
 }

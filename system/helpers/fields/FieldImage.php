@@ -1,35 +1,26 @@
 <?php
 
 /**
- * Поле типа "изображение" для системы полей
- * Позволяет загружать, просматривать и удалять изображения
- * Поддерживает два режима работы: обычный и административный
- * 
- * @package Fields
- * @extends Field
- */
+* Поле типа "изображение" для системы полей
+* @package Fields
+* @extends Field
+*/
 class FieldImage extends Field {
     
     /**
-     * Рендерит HTML-код поля для загрузки изображения
-     * Отображает текущее изображение (если есть), чекбокс для удаления
-     * и поле для загрузки нового файла
-     * 
-     * @param mixed $currentValue Текущее значение поля (имя файла)
-     * @return string HTML-код поля
-     */
+    * Рендерит HTML-код поля для загрузки изображения 
+    * @param mixed $currentValue Текущее значение поля (имя файла)
+    * @return string HTML-код поля
+    */
     public function render($currentValue = null) {
         $value = $currentValue !== null ? $currentValue : $this->options['default'];
         $uploadPath = $this->options['upload_path'] ?? 'uploads/';
         
-        // Формирование URL для превью
         $previewUrl = $value ? BASE_URL . '/' . $uploadPath . $value : '';
         
-        // Определение режима работы (админский или обычный)
         $isAdminMode = $this->options['admin_mode'] ?? false;
         
-        // ВАЖНО: Для файлов всегда используем простое имя, без settings[]
-        $fileFieldName = $this->name . '_file'; // Отдельное поле для файла
+        $fileFieldName = $this->name . '_file';
         $hiddenFieldName = $isAdminMode ? $this->name : "settings[{$this->name}]";
         $removeFieldName = $isAdminMode ? "remove_{$this->name}" : "remove_{$this->name}";
         

@@ -1,37 +1,26 @@
 <?php
 
 /**
- * Контроллер управления формами в админ-панели
- * Предоставляет интерфейс для создания, редактирования и управления формами сайта
- * 
- * @package controllers
- * @extends Controller
- */
+* Контроллер управления формами в админ-панели
+*/
 class AdminFormController extends Controller {
     
-    /**
-     * @var FormModel Модель для работы с формами
-     */
     private $formModel;
     
     /**
-     * Конструктор контроллера форм
-     * Инициализирует модель форм и проверяет права администратора
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор контроллера форм
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         $this->formModel = new FormModel($db);
         
-        // Проверка авторизации пользователя
         if (!isset($_SESSION['user_id'])) {
             \Notification::error('Пожалуйста, авторизуйтесь для доступа к панели управления');
             $this->redirect(ADMIN_URL . '/login');
             return;
         }
         
-        // Проверка административных прав
         if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
             \Notification::error('У вас нет прав доступа к панели управления');
             $this->redirect(BASE_URL);
@@ -40,11 +29,9 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Главная страница управления формами
-     * Отображает список всех форм в системе
-     * 
-     * @return mixed
-     */
+    * Действие: Главная страница управления формами
+    * @return mixed
+    */
     public function adminIndexAction() {
         $action = new \forms\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -52,11 +39,9 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Создание новой формы
-     * Отображает форму создания формы
-     * 
-     * @return mixed
-     */
+    * Действие: Создание новой формы
+    * @return mixed
+    */
     public function createAction() {
         $action = new \forms\actions\AdminCreate($this->db);
         $action->setController($this);
@@ -64,12 +49,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Редактирование существующей формы
-     * Отображает форму редактирования формы по ее ID
-     * 
-     * @param int $id ID редактируемой формы
-     * @return mixed
-     */
+    * Действие: Редактирование существующей формы
+    * @param int $id ID редактируемой формы
+    * @return mixed
+    */
     public function editAction($id) {
         $action = new \forms\actions\AdminEdit($this->db, ['id' => $id]);
         $action->setController($this);
@@ -77,12 +60,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Удаление формы
-     * Удаляет форму по ее ID
-     * 
-     * @param int $id ID удаляемой формы
-     * @return mixed
-     */
+    * Действие: Удаление формы
+    * @param int $id ID удаляемой формы
+    * @return mixed
+    */
     public function deleteAction($id) {
         $action = new \forms\actions\AdminDelete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -90,12 +71,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Получение структуры формы через AJAX
-     * Возвращает JSON с полями формы
-     * 
-     * @param int $id ID формы
-     * @return mixed JSON-ответ со структурой формы
-     */
+    * Действие: Получение структуры формы через AJAX
+    * @param int $id ID формы
+    * @return mixed JSON-ответ со структурой формы
+    */
     public function getStructureAction($id) {
         $action = new \forms\actions\AdminGetStructure($this->db, ['id' => $id]);
         $action->setController($this);
@@ -103,12 +82,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Предварительный просмотр формы
-     * Показывает как будет выглядеть форма на сайте
-     * 
-     * @param int $id ID формы для предпросмотра
-     * @return mixed
-     */
+    * Действие: Предварительный просмотр формы
+    * @param int $id ID формы для предпросмотра
+    * @return mixed
+    */
     public function previewAction($id) {
         $action = new \forms\actions\AdminPreview($this->db, ['id' => $id]);
         $action->setController($this);
@@ -116,12 +93,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Настройки формы
-     * Отображает настройки формы (уведомления, действия и т.д.)
-     * 
-     * @param int $id ID формы
-     * @return mixed
-     */
+    * Действие: Настройки формы
+    * @param int $id ID формы
+    * @return mixed
+    */
     public function settingsAction($id) {
         $action = new \forms\actions\AdminSettings($this->db, ['id' => $id]);
         $action->setController($this);
@@ -129,12 +104,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Переключение статуса формы
-     * Включает/выключает форму
-     * 
-     * @param int $id ID формы
-     * @return mixed
-     */
+    * Действие: Переключение статуса формы 
+    * @param int $id ID формы
+    * @return mixed
+    */
     public function toggleStatusAction($id) {
         $action = new \forms\actions\AdminToggleStatus($this->db, ['id' => $id]);
         $action->setController($this);
@@ -142,12 +115,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Просмотр отправок формы
-     * Показывает список всех отправок формы
-     * 
-     * @param int $id ID формы
-     * @return mixed
-     */
+    * Действие: Просмотр отправок формы
+    * @param int $id ID формы
+    * @return mixed
+    */
     public function showAction($id) {
         $action = new \forms\actions\AdminShow($this->db, ['id' => $id]);
         $action->setController($this);
@@ -155,12 +126,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Обработка отправки формы (публичная)
-     * Принимает данные формы от пользователей
-     * 
-     * @param string $slug Слаг формы
-     * @return mixed
-     */
+    * Действие: Обработка отправки формы (публичная)
+    * @param string $slug Слаг формы
+    * @return mixed
+    */
     public function submitAction($slug) {
         $action = new \forms\actions\FormSubmit($this->db, ['slug' => $slug]);
         $action->setController($this);
@@ -168,12 +137,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Просмотр формы (публичная)
-     * Отображает форму на сайте
-     * 
-     * @param string $slug Слаг формы
-     * @return mixed
-     */
+    * Действие: Просмотр формы (публичная)
+    * @param string $slug Слаг формы
+    * @return mixed
+    */
     public function viewAction($slug) {
         $action = new \forms\actions\FormView($this->db, ['slug' => $slug]);
         $action->setController($this);
@@ -181,11 +148,10 @@ class AdminFormController extends Controller {
     }
 
     /**
-     * Действие: Экспорт отправок в CSV
-     * 
-     * @param int $id ID формы
-     * @return mixed
-     */
+    * Действие: Экспорт отправок в CSV
+    * @param int $id ID формы
+    * @return mixed
+    */
     public function exportAction($id) {
         $action = new \forms\actions\AdminExport($this->db, ['id' => $id]);
         $action->setController($this);
@@ -193,11 +159,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Получение отправки через AJAX
-     * 
-     * @param int $id ID отправки
-     * @return mixed
-     */
+    * Действие: Получение отправки через AJAX
+    * @param int $id ID отправки
+    * @return mixed
+    */
     public function getSubmissionAction($id) {
         $action = new \forms\actions\AdminGetSubmission($this->db, ['id' => $id]);
         $action->setController($this);
@@ -205,11 +170,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Удаление отправки
-     * 
-     * @param int $id ID отправки
-     * @return mixed
-     */
+    * Действие: Удаление отправки
+    * @param int $id ID отправки
+    * @return mixed
+    */
     public function deleteSubmissionAction($id) {
         $action = new \forms\actions\AdminDeleteSubmission($this->db, ['id' => $id]);
         $action->setController($this);
@@ -217,11 +181,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Обновление статуса отправки
-     * 
-     * @param int $id ID отправки
-     * @return mixed
-     */
+    * Действие: Обновление статуса отправки
+    * @param int $id ID отправки
+    * @return mixed
+    */
     public function updateSubmissionStatusAction($id) {
         $action = new \forms\actions\AdminUpdateSubmissionStatus($this->db, ['id' => $id]);
         $action->setController($this);
@@ -229,11 +192,10 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Действие: Удаление всех отправок формы
-     * 
-     * @param int $id ID формы
-     * @return mixed
-     */
+    * Действие: Удаление всех отправок формы
+    * @param int $id ID формы
+    * @return mixed
+    */
     public function deleteAllSubmissionsAction($id) {
         $action = new \forms\actions\AdminDeleteAllSubmissions($this->db, ['id' => $id]);
         $action->setController($this);
@@ -241,15 +203,15 @@ class AdminFormController extends Controller {
     }
 
     /**
-     * Получение доступных шаблонов форм
-     */
+    * Получение доступных шаблонов форм
+    */
     public function getAvailableTemplates() {
         return $this->formModel->getAvailableTemplates();
     }
 
     /**
-     * Получение текущей темы
-     */
+    * Получение текущей темы
+    */
     public function getCurrentTheme() {
         if (defined('DEFAULT_TEMPLATE')) {
             return DEFAULT_TEMPLATE;
@@ -271,13 +233,11 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Рендеринг одного поля формы для конструктора
-     * Генерирует HTML-структуру для редактирования поля
-     *
-     * @param array $field Данные поля
-     * @param string $index Уникальный индекс поля в структуре
-     * @return string HTML-код поля
-     */
+    * Рендеринг одного поля формы для конструктора
+    * @param array $field Данные поля
+    * @param string $index Уникальный индекс поля в структуре
+    * @return string HTML-код поля
+    */
     public function renderFormField($field, $index) {
         $fieldType = $field['type'] ?? 'text';
         $fieldLabel = html($field['label'] ?? '');
@@ -352,8 +312,8 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Получение иконки для типа поля
-     */
+    * Получение иконки для типа поля
+    */
     private function getFieldTypeIcon($type) {
         $icons = [
             'text' => 'input-cursor-text',
@@ -375,8 +335,8 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Получение читаемого названия типа поля
-     */
+    * Получение читаемого названия типа поля
+    */
     private function getFieldTypeLabel($type) {
         $labels = [
             'text' => 'Текстовое поле',
@@ -398,8 +358,8 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Рендеринг превью поля
-     */
+    * Рендеринг превью поля
+    */
     private function renderFieldPreview($field) {
         $type = $field['type'] ?? 'text';
         $label = $field['label'] ?? '';
@@ -412,7 +372,7 @@ class AdminFormController extends Controller {
         ob_start();
         ?>
         <div class="form-preview">
-            <?php switch ($type): 
+            <?php switch ($type) {
                 case 'text':
                 case 'email':
                 case 'tel':
@@ -422,65 +382,65 @@ class AdminFormController extends Controller {
                     <div class="mb-2">
                         <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <input type="<?= $type ?>" 
-                               class="form-control form-control-sm" 
-                               value="<?= html($value) ?>"
-                               placeholder="<?= html($placeholder) ?>"
-                               disabled>
+                            class="form-control form-control-sm" 
+                            value="<?= html($value) ?>"
+                            placeholder="<?= html($placeholder) ?>"
+                            disabled>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 case 'textarea': ?>
                     <div class="mb-2">
                         <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <textarea class="form-control form-control-sm" 
-                                  placeholder="<?= html($placeholder) ?>"
-                                  rows="3"
-                                  disabled><?= html($value) ?></textarea>
+                                placeholder="<?= html($placeholder) ?>"
+                                rows="3"
+                                disabled><?= html($value) ?></textarea>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 case 'select': ?>
                     <div class="mb-2">
                         <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         <select class="form-select form-select-sm" disabled>
                             <option value=""><?= html($placeholder) ?></option>
-                            <?php foreach ($options as $option): ?>
+                            <?php foreach ($options as $option) { ?>
                                 <option value="<?= html($option['value'] ?? '') ?>"
                                         <?= ($value === ($option['value'] ?? '')) ? 'selected' : '' ?>>
                                     <?= html($option['label'] ?? '') ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php } ?>
                         </select>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 case 'checkbox': ?>
                     <div class="mb-2">
                         <div class="form-check">
                             <input type="checkbox" 
-                                   class="form-check-input" 
-                                   <?= !empty($value) ? 'checked' : '' ?>
-                                   disabled>
+                                class="form-check-input" 
+                                <?= !empty($value) ? 'checked' : '' ?>
+                                disabled>
                             <label class="form-check-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
                         </div>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 case 'radio': ?>
                     <div class="mb-2">
                         <label class="form-label small"><?= html($label) ?> <?= $required ? '<span class="text-danger">*</span>' : '' ?></label>
-                        <?php foreach ($options as $option): ?>
+                        <?php foreach ($options as $option) { ?>
                             <div class="form-check">
                                 <input type="radio" 
-                                       class="form-check-input" 
-                                       name="preview_<?= $name ?>"
-                                       <?= ($value === ($option['value'] ?? '')) ? 'checked' : '' ?>
-                                       disabled>
+                                    class="form-check-input" 
+                                    name="preview_<?= $name ?>"
+                                    <?= ($value === ($option['value'] ?? '')) ? 'selected' : '' ?>
+                                    disabled>
                                 <label class="form-check-label small"><?= html($option['label'] ?? '') ?></label>
                             </div>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </div>
-                <?php break;
+                    <?php break;
 
                 case 'file': ?>
                     <div class="mb-2">
@@ -490,11 +450,11 @@ class AdminFormController extends Controller {
                             <?= !empty($field['multiple']) ? 'multiple' : '' ?>
                             <?= !empty($field['accept']) ? 'accept="' . html($field['accept']) . '"' : '' ?>
                             disabled>
-                        <?php if (!empty($field['description'])): ?>
+                        <?php if (!empty($field['description'])) { ?>
                             <div class="form-text small"><?= html($field['description']) ?></div>
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 case 'submit': ?>
                     <div class="mb-2">
@@ -502,21 +462,21 @@ class AdminFormController extends Controller {
                             <?= html($label) ?>
                         </button>
                     </div>
-                <?php break;
+                    <?php break;
                 
                 default: ?>
                     <div class="alert alert-warning small p-2">
                         Превью недоступно для типа "<?= $type ?>"
                     </div>
-            <?php endswitch; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();
     }
     
     /**
-     * Получение всех доступных типов полей
-     */
+    * Получение всех доступных типов полей
+    */
     public function getAvailableFieldTypes() {
         return [
             'text' => [
@@ -601,8 +561,8 @@ class AdminFormController extends Controller {
     }
     
     /**
-     * Получение типов валидации
-     */
+    * Получение типов валидации
+    */
     public function getValidationTypes() {
         return [
             'required' => [
@@ -640,10 +600,9 @@ class AdminFormController extends Controller {
     }
 
     /**
-     * Действие: Генерация примера капчи через AJAX
-     * 
-     * @return mixed JSON-ответ с примером капчи
-     */
+    * Действие: Генерация примера капчи через AJAX
+    * @return mixed JSON-ответ с примером капчи
+    */
     public function generateCaptchaExampleAction() {
         header('Content-Type: application/json');
         
@@ -661,8 +620,8 @@ class AdminFormController extends Controller {
     }
 
     /**
-     * Генерация примера для капчи (для AJAX)
-     */
+    * Генерация примера для капчи (для AJAX)
+    */
     private function generateCaptchaExample($type = 'math', $customQuestion = '') {
         switch ($type) {
             case 'math':

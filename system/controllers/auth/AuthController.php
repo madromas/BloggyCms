@@ -2,23 +2,11 @@
 
 /**
 * Контроллер аутентификации и регистрации
-* Управляет всеми действиями, связанными с пользовательскими сессиями:
-* - Вход в систему
-* - Регистрация новых пользователей
-* - Выход из системы
-* - Восстановление пароля
-* - Административный вход
 */
 class AuthController extends Controller {
-    /**
-    * @var UserModel Модель для работы с пользователями
-    */
+
     private $userModel;
 
-    /**
-    * @var array Метаинформация о контроллере
-    * Содержит описание функциональности контроллера
-    */
     protected $controllerInfo = [
         'name' => 'Авторизация / Регистрация',
         'author' => 'BloggyCMS', 
@@ -29,8 +17,6 @@ class AuthController extends Controller {
     
     /**
     * Конструктор контроллера аутентификации
-    * Инициализирует модель пользователя для работы с данными аккаунтов
-    *
     * @param Database $db Объект подключения к базе данных
     */
     public function __construct($db) {
@@ -40,8 +26,6 @@ class AuthController extends Controller {
     
     /**
     * Действие входа пользователя в систему
-    * Обрабатывает аутентификацию по логину и паролю
-    *
     * @return mixed Результат выполнения действия авторизации
     */
     public function loginAction() {
@@ -52,8 +36,6 @@ class AuthController extends Controller {
     
     /**
     * Действие регистрации нового пользователя
-    * Обрабатывает создание нового аккаунта с валидацией данных
-    *
     * @return mixed Результат выполнения действия регистрации
     */
     public function registerAction() {
@@ -64,8 +46,6 @@ class AuthController extends Controller {
     
     /**
     * Действие выхода пользователя из системы
-    * Завершает текущую сессию и очищает данные аутентификации
-    *
     * @return mixed Результат выполнения действия выхода
     */
     public function logoutAction() {
@@ -76,8 +56,6 @@ class AuthController extends Controller {
 
     /**
     * Действие входа в административную панель
-    * Специализированный вход с проверкой прав администратора
-    *
     * @return mixed Результат выполнения действия административного входа
     */
     public function adminLoginAction() {
@@ -88,8 +66,6 @@ class AuthController extends Controller {
 
     /**
     * Действие восстановления пароля
-    * Инициирует процесс сброса пароля через email
-    *
     * @return mixed Результат выполнения действия восстановления пароля
     */
     public function forgotPasswordAction() {
@@ -100,8 +76,6 @@ class AuthController extends Controller {
     
     /**
     * Действие сброса пароля
-    * Обрабатывает установку нового пароля по токену сброса
-    *
     * @return mixed Результат выполнения действия сброса пароля
     */
     public function resetPasswordAction() {

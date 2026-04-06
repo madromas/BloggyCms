@@ -1,48 +1,36 @@
 <?php
 
-/**
- * Блок "Кнопка вверх"
- * Добавляет на страницу плавно появляющуюся кнопку для прокрутки страницы вверх.
- */
-class ScrollToTopBlock extends BaseHtmlBlock
-{
-    public function getName(): string
-    {
+class ScrollToTopBlock extends BaseHtmlBlock {
+
+    public function getName(): string {
         return "Кнопка вверх";
     }
 
-    public function getSystemName(): string
-    {
+    public function getSystemName(): string {
         return "ScrollToTopBlock";
     }
 
-    public function getDescription(): string
-    {
+    public function getDescription(): string {
         return "Добавляет кнопку для плавной прокрутки страницы вверх. Появляется после прокрутки.";
     }
 
-    public function getShortDescription(): string
-    {
+    public function getShortDescription(): string {
         return "Кнопка прокрутки вверх";
     }
 
-    public function getIcon(): string
-    {
+    public function getIcon(): string {
         return 'bi bi-arrow-up-circle';
     }
 
-    public function getVersion(): string
-    {
+    public function getVersion(): string {
         return '1.0.0';
     }
 
-    public function getTemplate(): string
-    {
+    public function getTemplate(): string {
         return 'all';
     }
 
-    public function getSettingsForm($currentSettings = []): string
-    {
+    public function getSettingsForm($currentSettings = []): string {
         $settings = array_merge($this->getDefaultSettings(), $currentSettings);
 
         $fieldsets = [];
@@ -173,8 +161,7 @@ class ScrollToTopBlock extends BaseHtmlBlock
         return ob_get_clean();
     }
 
-    private function getDefaultSettings(): array
-    {
+    private function getDefaultSettings(): array {
         return [
             'scroll_threshold' => 300,
             'animation_duration' => 500,
@@ -190,13 +177,11 @@ class ScrollToTopBlock extends BaseHtmlBlock
         ];
     }
 
-    public function validateSettings($settings): array
-    {
+    public function validateSettings($settings): array {
         return [true, []];
     }
 
-    public function prepareSettings($settings): array
-    {
+    public function prepareSettings($settings): array {
         if (!is_array($settings)) {
             return $this->getDefaultSettings();
         }

@@ -1,20 +1,18 @@
 <?php
 
 /**
- * Поле типа "цвет" для системы полей
- * Использует библиотеку Pickr (https://github.com/simonwep/pickr)
- * 
- * @package Fields
- * @extends Field
- */
+* Поле типа "цвет" для системы полей
+* Использует библиотеку Pickr (https://github.com/simonwep/pickr)
+* @package Fields
+* @extends Field
+*/
 class FieldColor extends Field {
     
     /**
-     * Рендерит HTML-код поля для выбора цвета
-     * 
-     * @param mixed $currentValue Текущее значение поля (HEX-код цвета)
-     * @return string HTML-код поля
-     */
+    * Рендерит HTML-код поля для выбора цвета 
+    * @param mixed $currentValue Текущее значение поля (HEX-код цвета)
+    * @return string HTML-код поля
+    */
     public function render($currentValue = null) {
         $value = $currentValue !== null ? $currentValue : $this->options['default'];
         
@@ -55,10 +53,9 @@ class FieldColor extends Field {
     }
     
     /**
-     * Получает настройки для Pickr
-     * 
-     * @return array
-     */
+    * Получает настройки для Pickr 
+    * @return array
+    */
     protected function getPickrOptions() {
         $defaultOptions = [
             'showInput' => true,

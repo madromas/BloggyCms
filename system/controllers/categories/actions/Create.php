@@ -62,12 +62,10 @@ class Create extends CategoryAction {
                                 ? $field['config'] 
                                 : json_decode($field['config'] ?? '{}', true);
                             $fieldModel->saveFieldValue(
-                                $field['id'], 
-                                'category', 
-                                $categoryId, 
-                                $value,
-                                $field['type'],
-                                $config
+                                'category',
+                                $categoryId,
+                                $field['system_name'],
+                                $value
                             );
                         }
                     } catch (\Exception $e) {

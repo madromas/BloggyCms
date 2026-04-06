@@ -1,24 +1,20 @@
 <?php
 
 /**
- * Вспомогательный класс для генерации пагинации
- * Предоставляет методы для создания HTML-кода навигации по страницам
- * с поддержкой кастомных шаблонов и fallback-рендеринга
- * 
- * @package Helpers
- */
+* Вспомогательный класс для генерации пагинации
+* @package Helpers
+*/
 class PaginationHelper {
     
     /**
-     * Генерирует HTML пагинации на основе количества элементов
-     * 
-     * @param int $currentPage Текущая страница
-     * @param int $totalItems Общее количество элементов
-     * @param int $perPage Элементов на странице
-     * @param string $baseUrl Базовый URL для ссылок
-     * @param array $options Дополнительные опции
-     * @return string HTML-код пагинации
-     */
+    * Генерирует HTML пагинации на основе количества элементов 
+    * @param int $currentPage Текущая страница
+    * @param int $totalItems Общее количество элементов
+    * @param int $perPage Элементов на странице
+    * @param string $baseUrl Базовый URL для ссылок
+    * @param array $options Дополнительные опции
+    * @return string HTML-код пагинации
+    */
     public static function render($currentPage, $totalItems, $perPage, $baseUrl, $options = []) {
         $totalPages = ceil($totalItems / $perPage);
         $baseUrl = self::normalizeBaseUrl($baseUrl);
@@ -34,14 +30,13 @@ class PaginationHelper {
     }
     
     /**
-     * Быстрый метод для стандартных случаев, когда известно только количество страниц
-     * 
-     * @param int $currentPage Текущая страница
-     * @param int $totalPages Всего страниц
-     * @param string $baseUrl Базовый URL для ссылок
-     * @param array $options Дополнительные опции
-     * @return string HTML-код пагинации
-     */
+    * Быстрый метод для стандартных случаев, когда известно только количество страниц
+    * @param int $currentPage Текущая страница
+    * @param int $totalPages Всего страниц
+    * @param string $baseUrl Базовый URL для ссылок
+    * @param array $options Дополнительные опции
+    * @return string HTML-код пагинации
+    */
     public static function simple($currentPage, $totalPages, $baseUrl, $options = []) {
         $baseUrl = self::normalizeBaseUrl($baseUrl);
         
@@ -54,14 +49,12 @@ class PaginationHelper {
     }
     
     /**
-     * Рендерит шаблон пагинации
-     * Ищет шаблон в теме, при отсутствии использует fallback
-     * 
-     * @param array $paginationData Данные пагинации
-     * @param string $baseUrl Базовый URL
-     * @param array $options Опции
-     * @return string HTML-код пагинации
-     */
+    * Рендерит шаблон пагинации
+    * @param array $paginationData Данные пагинации
+    * @param string $baseUrl Базовый URL
+    * @param array $options Опции
+    * @return string HTML-код пагинации
+    */
     private static function renderTemplate($paginationData, $baseUrl, $options = []) {
         $templatePath = self::getTemplatePath();
         
@@ -75,11 +68,9 @@ class PaginationHelper {
     }
     
     /**
-     * Получает путь к шаблону пагинации
-     * Ищет в разных возможных директориях темы
-     * 
-     * @return string Путь к файлу шаблона
-     */
+    * Получает путь к шаблону пагинации 
+    * @return string Путь к файлу шаблона
+    */
     private static function getTemplatePath() {
         $template = defined('DEFAULT_TEMPLATE') ? DEFAULT_TEMPLATE : 'default';
         
@@ -93,17 +84,15 @@ class PaginationHelper {
             }
         }
         
-        return $possiblePaths[0]; // Первый путь для создания файла
+        return $possiblePaths[0];
     }
     
     /**
-     * Базовая пагинация на случай если шаблон не найден
-     * Генерирует простую навигацию с Bootstrap классами
-     * 
-     * @param array $paginationData Данные пагинации
-     * @param string $baseUrl Базовый URL
-     * @return string HTML-код пагинации
-     */
+    * Базовая пагинация на случай если шаблон не найден 
+    * @param array $paginationData Данные пагинации
+    * @param string $baseUrl Базовый URL
+    * @return string HTML-код пагинации
+    */
     private static function generateFallbackPagination($paginationData, $baseUrl) {
         $currentPage = $paginationData['current_page'] ?? 1;
         $totalPages = $paginationData['total_pages'] ?? 1;
@@ -142,12 +131,10 @@ class PaginationHelper {
     }
     
     /**
-     * Нормализует базовый URL для пагинации
-     * Добавляет правильный разделитель (? или &) для параметра page
-     * 
-     * @param string $baseUrl Исходный URL
-     * @return string Нормализованный URL с разделителем
-     */
+    * Нормализует базовый URL для пагинации
+    * @param string $baseUrl Исходный URL
+    * @return string Нормализованный URL с разделителем
+    */
     private static function normalizeBaseUrl($baseUrl) {
         $baseUrl = rtrim($baseUrl, '/');
         

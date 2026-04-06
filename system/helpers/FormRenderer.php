@@ -1,19 +1,15 @@
 <?php
 
 /**
- * Класс для рендеринга и обработки HTML-форм
- * Предоставляет методы для отображения форм по ID или слагу, валидации,
- * отправки уведомлений и выполнения действий после отправки
- * 
- * @package Forms
- */
+* Класс для рендеринга и обработки HTML-форм
+* @package Forms
+*/
 class FormRenderer {
     
     /**
-     * Проверяет, существует ли класс Database, и возвращает подключение
-     * 
-     * @return object|null Подключение к базе данных
-     */
+    * Проверяет, существует ли класс Database, и возвращает подключение 
+    * @return object|null Подключение к базе данных
+    */
     private static function getDatabase() {
         if (class_exists('Database') && method_exists('Database', 'getInstance')) {
             return Database::getInstance();
@@ -24,12 +20,11 @@ class FormRenderer {
     }
     
     /**
-     * Рендерит форму по её ID
-     * 
-     * @param int $formId ID формы
-     * @param array $options Опции рендеринга
-     * @return string HTML-код формы
-     */
+    * Рендерит форму по её ID 
+    * @param int $formId ID формы
+    * @param array $options Опции рендеринга
+    * @return string HTML-код формы
+    */
     public static function renderById($formId, $options = []) {
         $db = self::getDatabase();
         $formModel = new FormModel($db);
@@ -43,12 +38,11 @@ class FormRenderer {
     }
     
     /**
-     * Рендерит форму по её слагу с учетом шаблона
-     * 
-     * @param string $formSlug Слаг формы
-     * @param array $options Опции рендеринга
-     * @return string HTML-код формы
-     */
+    * Рендерит форму по её слагу с учетом шаблона 
+    * @param string $formSlug Слаг формы
+    * @param array $options Опции рендеринга
+    * @return string HTML-код формы
+    */
     public static function render($formSlug, $options = []) {
         $db = self::getDatabase();
         $formModel = new FormModel($db);
@@ -70,13 +64,12 @@ class FormRenderer {
     }
     
     /**
-     * Рендерит форму с использованием кастомного шаблона
-     * 
-     * @param array $form Данные формы
-     * @param string $templateFile Путь к файлу шаблона
-     * @param array $options Опции рендеринга
-     * @return string HTML-код формы
-     */
+    * Рендерит форму с использованием кастомного шаблона 
+    * @param array $form Данные формы
+    * @param string $templateFile Путь к файлу шаблона
+    * @param array $options Опции рендеринга
+    * @return string HTML-код формы
+    */
     private static function renderCustomTemplate($form, $templateFile, $options = []) {
         $structure = $form['structure'] ?? [];
         $settings = $form['settings'] ?? [];
@@ -116,12 +109,11 @@ class FormRenderer {
     }
     
     /**
-     * Основной метод рендеринга формы
-     * 
-     * @param array $form Данные формы
-     * @param array $options Опции рендеринга
-     * @return string HTML-код формы
-     */
+    * Основной метод рендеринга формы 
+    * @param array $form Данные формы
+    * @param array $options Опции рендеринга
+    * @return string HTML-код формы
+    */
     private static function renderForm($form, $options = []) {
         $structure = $form['structure'] ?? [];
         $settings = $form['settings'] ?? [];
@@ -166,25 +158,25 @@ class FormRenderer {
             <input type="hidden" name="form_id" value="<?= $formId ?>">
             <input type="hidden" name="form_slug" value="<?= $formSlug ?>">
             
-            <?php if ($csrfToken): ?>
+            <?php if ($csrfToken) { ?>
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-            <?php endif; ?>
+            <?php } ?>
             
             <div class="form-fields">
-                <?php foreach ($structure as $field): ?>
+                <?php foreach ($structure as $field) { ?>
                     <?= self::renderField($field, $options) ?>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
             
-            <?php if ($captchaHtml): ?>
+            <?php if ($captchaHtml) { ?>
                 <?= $captchaHtml ?>
-            <?php endif; ?>
+            <?php } ?>
             
-            <?php if (!empty($form['description'])): ?>
+            <?php if (!empty($form['description'])) { ?>
                 <div class="form-description mb-3">
                     <small class="text-muted"><?= htmlspecialchars($form['description']) ?></small>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </form>
         
         <script>
@@ -257,8 +249,8 @@ class FormRenderer {
     }
     
     /**
-     * Рендерит капчу для защиты от спама
-     */
+    * Рендерит капчу для защиты от спама
+    */
     private static function renderCaptcha($settings) {
         $type = $settings['captcha_type'] ?? 'math';
         $secret = $settings['captcha_secret'] ?? 'bloggy_cms_captcha';
@@ -282,7 +274,7 @@ class FormRenderer {
             
             <div class="card bg-light">
                 <div class="card-body">
-                    <?php if ($type === 'image' && !empty($captchaData['image'])): ?>
+                    <?php if ($type === 'image' && !empty($captchaData['image'])) { ?>
                         <div class="mb-3">
                             <img src="<?= $captchaData['image'] ?>" 
                                 alt="Captcha" 
@@ -294,9 +286,9 @@ class FormRenderer {
                                 </button>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <h6 class="card-title"><?= htmlspecialchars($captchaData['question']) ?></h6>
-                    <?php endif; ?>
+                    <?php } ?>
                     
                     <input type="hidden" name="captcha_hash" value="<?= htmlspecialchars($encryptedAnswer) ?>">
                     <input type="text" 
@@ -314,8 +306,8 @@ class FormRenderer {
     }
 
     /**
-     * Генерирует данные капчи
-     */
+    * Генерирует данные капчи
+    */
     private static function generateCaptchaData($type, $settings) {
         switch ($type) {
             case 'math':
@@ -423,11 +415,10 @@ class FormRenderer {
     }
     
     /**
-     * Генерирует CSRF токен для формы
-     * 
-     * @param string $formSlug Слаг формы
-     * @return string Сгенерированный токен
-     */
+    * Генерирует CSRF токен для формы 
+    * @param string $formSlug Слаг формы
+    * @return string Сгенерированный токен
+    */
     public static function generateCsrfToken($formSlug) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -456,12 +447,11 @@ class FormRenderer {
     }
     
     /**
-     * Проверяет CSRF токен
-     * 
-     * @param string $token Токен для проверки
-     * @param string $formSlug Слаг формы
-     * @return bool true если токен валидный
-     */
+    * Проверяет CSRF токен 
+    * @param string $token Токен для проверки
+    * @param string $formSlug Слаг формы
+    * @return bool true если токен валидный
+    */
     public static function verifyCsrfToken($token, $formSlug) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -488,12 +478,11 @@ class FormRenderer {
     }
     
     /**
-     * Рендерит одно поле формы
-     * 
-     * @param array $field Данные поля
-     * @param array $options Опции рендеринга
-     * @return string HTML-код поля
-     */
+    * Рендерит одно поле формы 
+    * @param array $field Данные поля
+    * @param array $options Опции рендеринга
+    * @return string HTML-код поля
+    */
     private static function renderField($field, $options = []) {
         $type = $field['type'] ?? 'text';
         $name = $field['name'] ?? '';
@@ -519,14 +508,14 @@ class FormRenderer {
         ob_start();
         ?>
         <div class="form-group mb-3 field-<?= $type ?> <?= $field['class'] ?? '' ?>">
-            <?php if ($options['show_labels'] && $label && $type !== 'checkbox' && $type !== 'radio'): ?>
+            <?php if ($options['show_labels'] && $label && $type !== 'checkbox' && $type !== 'radio') { ?>
                 <label for="field-<?= $name ?>" class="form-label">
                     <?= htmlspecialchars($label) ?>
-                    <?php if ($required): ?>
+                    <?php if ($required) { ?>
                         <span class="text-danger">*</span>
-                    <?php endif; ?>
+                    <?php } ?>
                 </label>
-            <?php endif; ?>
+            <?php } ?>
             
             <?php switch ($type):
                 case 'text':
@@ -562,15 +551,15 @@ class FormRenderer {
                             <?= $required ? 'required' : '' ?>
                             <?= !empty($field['multiple']) ? 'multiple' : '' ?>
                             <?= $validationAttrs ?>>
-                        <?php if (!empty($placeholder)): ?>
+                        <?php if (!empty($placeholder)) { ?>
                             <option value=""><?= htmlspecialchars($placeholder) ?></option>
-                        <?php endif; ?>
-                        <?php foreach ($fieldOptions as $option): ?>
+                        <?php } ?>
+                        <?php foreach ($fieldOptions as $option) { ?>
                             <option value="<?= htmlspecialchars($option['value'] ?? '') ?>"
                                     <?= self::isOptionSelected($option['value'] ?? '', $value) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($option['label'] ?? '') ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
                     <?php break;
                 
@@ -586,16 +575,16 @@ class FormRenderer {
                                <?= $validationAttrs ?>>
                         <label for="field-<?= $name ?>" class="form-check-label">
                             <?= htmlspecialchars($label) ?>
-                            <?php if ($required): ?>
+                            <?php if ($required) { ?>
                                 <span class="text-danger">*</span>
-                            <?php endif; ?>
+                            <?php } ?>
                         </label>
                     </div>
                     <?php break;
                 
                 case 'radio': ?>
                     <div class="radio-group">
-                        <?php foreach ($fieldOptions as $index => $option): ?>
+                        <?php foreach ($fieldOptions as $index => $option) { ?>
                             <div class="form-check">
                                 <input type="radio" 
                                        id="field-<?= $name ?>-<?= $index ?>" 
@@ -609,7 +598,7 @@ class FormRenderer {
                                     <?= htmlspecialchars($option['label'] ?? '') ?>
                                 </label>
                             </div>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </div>
                     <?php break;
                 
@@ -630,25 +619,24 @@ class FormRenderer {
                     </div>
             <?php endswitch; ?>
             
-            <?php if ($options['show_descriptions'] && $description): ?>
+            <?php if ($options['show_descriptions'] && $description) { ?>
                 <div class="form-text"><?= htmlspecialchars($description) ?></div>
-            <?php endif; ?>
+            <?php } ?>
             
-            <?php if (!empty($validation)): ?>
+            <?php if (!empty($validation)) { ?>
                 <div class="invalid-feedback d-none"></div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();
     }
     
     /**
-     * Проверяет, выбрана ли опция
-     * 
-     * @param mixed $optionValue Значение опции
-     * @param mixed $fieldValue Значение поля
-     * @return bool true если выбрана
-     */
+    * Проверяет, выбрана ли опция
+    * @param mixed $optionValue Значение опции
+    * @param mixed $fieldValue Значение поля
+    * @return bool true если выбрана
+    */
     private static function isOptionSelected($optionValue, $fieldValue) {
         if (is_array($fieldValue)) {
             return in_array($optionValue, $fieldValue);
@@ -657,11 +645,10 @@ class FormRenderer {
     }
     
     /**
-     * Получает атрибуты валидации для поля
-     * 
-     * @param array $validation Массив правил валидации
-     * @return string Строка с HTML-атрибутами
-     */
+    * Получает атрибуты валидации для поля 
+    * @param array $validation Массив правил валидации
+    * @return string Строка с HTML-атрибутами
+    */
     private static function getValidationAttributes($validation) {
         $attrs = [];
         
@@ -703,13 +690,12 @@ class FormRenderer {
     }
     
     /**
-     * Валидирует данные формы на стороне сервера
-     * 
-     * @param array $form Данные формы
-     * @param array $data POST-данные
-     * @param array $files FILES-данные
-     * @return array Массив ошибок [поле => сообщение]
-     */
+    * Валидирует данные формы на стороне сервера
+    * @param array $form Данные формы
+    * @param array $data POST-данные
+    * @param array $files FILES-данные
+    * @return array Массив ошибок [поле => сообщение]
+    */
     public static function validateSubmission($form, $data, $files = []) {
         $errors = [];
         $structure = $form['structure'] ?? [];
@@ -769,15 +755,14 @@ class FormRenderer {
     }
     
     /**
-     * Проверяет правило валидации
-     * 
-     * @param string $rule Правило
-     * @param mixed $params Параметры
-     * @param mixed $value Значение
-     * @param string $label Название поля
-     * @param string $type Тип поля
-     * @return string|null Сообщение об ошибке или null
-     */
+    * Проверяет правило валидации
+    * @param string $rule Правило
+    * @param mixed $params Параметры
+    * @param mixed $value Значение
+    * @param string $label Название поля
+    * @param string $type Тип поля
+    * @return string|null Сообщение об ошибке или null
+    */
     private static function validateRule($rule, $params, $value, $label, $type) {
         switch ($rule) {
             case 'email':
@@ -828,13 +813,12 @@ class FormRenderer {
     }
     
     /**
-     * Проверяет тип поля
-     * 
-     * @param string $type Тип поля
-     * @param mixed $value Значение
-     * @param string $label Название поля
-     * @return string|null Сообщение об ошибке или null
-     */
+    * Проверяет тип поля 
+    * @param string $type Тип поля
+    * @param mixed $value Значение
+    * @param string $label Название поля
+    * @return string|null Сообщение об ошибке или null
+    */
     private static function validateFieldType($type, $value, $label) {
         if (empty($value)) return null;
         
@@ -865,12 +849,11 @@ class FormRenderer {
     }
     
     /**
-     * Проверяет файл
-     * 
-     * @param array $file Данные файла
-     * @param array $field Данные поля
-     * @return string|null Сообщение об ошибке или null
-     */
+    * Проверяет файл
+    * @param array $file Данные файла
+    * @param array $field Данные поля
+    * @return string|null Сообщение об ошибке или null
+    */
     private static function validateFile($file, $field) {
         $maxSize = $field['max_size'] ?? 5242880;
         $allowedTypes = $field['allowed_types'] ?? [];
@@ -893,13 +876,12 @@ class FormRenderer {
     }
     
     /**
-     * Отправляет уведомления по email
-     * 
-     * @param array $form Данные формы
-     * @param array $data Данные отправки
-     * @param int $submissionId ID отправки
-     * @return int Количество отправленных уведомлений
-     */
+    * Отправляет уведомления по email 
+    * @param array $form Данные формы
+    * @param array $data Данные отправки
+    * @param int $submissionId ID отправки
+    * @return int Количество отправленных уведомлений
+    */
     public static function sendNotifications($form, $data, $submissionId) {
         $notifications = $form['notifications'] ?? [];
         $sent = 0;
@@ -924,12 +906,11 @@ class FormRenderer {
     }
     
     /**
-     * Парсит шаблон email с подстановкой данных
-     * 
-     * @param string $template Шаблон
-     * @param array $data Данные
-     * @return string Обработанный шаблон
-     */
+    * Парсит шаблон email с подстановкой данных 
+    * @param string $template Шаблон
+    * @param array $data Данные
+    * @return string Обработанный шаблон
+    */
     private static function parseEmailTemplate($template, $data) {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
@@ -945,13 +926,12 @@ class FormRenderer {
     }
     
     /**
-     * Выполняет действия после отправки формы
-     * 
-     * @param array $form Данные формы
-     * @param array $data Данные отправки
-     * @param int $submissionId ID отправки
-     * @return int Количество выполненных действий
-     */
+    * Выполняет действия после отправки формы
+    * @param array $form Данные формы
+    * @param array $data Данные отправки
+    * @param int $submissionId ID отправки
+    * @return int Количество выполненных действий
+    */
     public static function executeActions($form, $data, $submissionId) {
         $actions = $form['actions'] ?? [];
         $executed = 0;

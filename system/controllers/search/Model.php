@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель для работы с поиском и историей поисковых запросов
- * Предоставляет методы для поиска постов, страниц, категорий, тегов, пользователей
- * и управления историей запросов
- * 
- * @package Models
- */
+* Модель для работы с поиском и историей поисковых запросов 
+* @package Models
+*/
 class SearchModel implements ModelAPI {
 
     use APIAware;
@@ -22,33 +19,27 @@ class SearchModel implements ModelAPI {
         'saveSearchQuery'
     ];
     
-    /** @var object Подключение к базе данных */
     private $db;
-    
-    /** @var SettingsModel Модель для работы с настройками */
     private $settings;
     
     /**
-     * Конструктор модели
-     * Инициализирует подключение к БД и модель настроек
-     * 
-     * @param object $db Подключение к базе данных
-     * @param SettingsModel|null $settings Модель настроек
-     */
+    * Конструктор модели
+    * @param object $db Подключение к базе данных
+    * @param SettingsModel|null $settings Модель настроек
+    */
     public function __construct($db, SettingsModel $settings = null) {
         $this->db = $db;
         $this->settings = $settings ?? new SettingsModel($db);
     }
     
     /**
-     * Поиск по всем типам контента
-     * 
-     * @param string $query Поисковый запрос
-     * @param string $type Тип контента (all, posts, pages, categories, tags, users)
-     * @param int $page Номер страницы
-     * @param int|null $perPage Количество результатов на странице
-     * @return array Массив с результатами поиска
-     */
+    * Поиск по всем типам контента 
+    * @param string $query Поисковый запрос
+    * @param string $type Тип контента (all, posts, pages, categories, tags, users)
+    * @param int $page Номер страницы
+    * @param int|null $perPage Количество результатов на странице
+    * @return array Массив с результатами поиска
+    */
     public function searchAll($query, $type = 'all', $page = 1, $perPage = null) {
         $perPage = $perPage ?? $this->settings->get('search')['search_per_page'] ?? 15;
         $offset = ($page - 1) * $perPage;
@@ -124,13 +115,12 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Поиск по постам
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Количество результатов на странице
-     * @return array Массив с результатами
-     */
+    * Поиск по постам
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Количество результатов на странице
+    * @return array Массив с результатами
+    */
     public function searchPosts($query, $page = 1, $perPage = 15) {
         $searchQuery = '%' . $query . '%';
         $offset = ($page - 1) * $perPage;
@@ -201,13 +191,12 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Поиск по страницам
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Количество результатов на странице
-     * @return array Массив с результатами
-     */
+    * Поиск по страницам 
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Количество результатов на странице
+    * @return array Массив с результатами
+    */
     public function searchPages($query, $page = 1, $perPage = 15) {
         $searchQuery = '%' . $query . '%';
         $offset = ($page - 1) * $perPage;
@@ -262,13 +251,12 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Поиск по категориям
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Количество результатов на странице
-     * @return array Массив с результатами
-     */
+    * Поиск по категориям 
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Количество результатов на странице
+    * @return array Массив с результатами
+    */
     public function searchCategories($query, $page = 1, $perPage = 15) {
         $searchQuery = '%' . $query . '%';
         $offset = ($page - 1) * $perPage;
@@ -311,13 +299,12 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Поиск по тегам
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Количество результатов на странице
-     * @return array Массив с результатами
-     */
+    * Поиск по тегам 
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Количество результатов на странице
+    * @return array Массив с результатами
+    */
     public function searchTags($query, $page = 1, $perPage = 15) {
         $searchQuery = '%' . $query . '%';
         $offset = ($page - 1) * $perPage;
@@ -357,13 +344,12 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Поиск по пользователям
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Количество результатов на странице
-     * @return array Массив с результатами
-     */
+    * Поиск по пользователям 
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Количество результатов на странице
+    * @return array Массив с результатами
+    */
     public function searchUsers($query, $page = 1, $perPage = 15) {
         $searchQuery = '%' . $query . '%';
         $offset = ($page - 1) * $perPage;
@@ -406,11 +392,10 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Получение популярных поисковых запросов (через теги)
-     * 
-     * @param int $limit Количество запросов (по умолчанию 6)
-     * @return array Массив с популярными поисковыми запросами
-     */
+    * Получение популярных поисковых запросов (через теги) 
+    * @param int $limit Количество запросов (по умолчанию 6)
+    * @return array Массив с популярными поисковыми запросами
+    */
     public function getSuggestedSearches($limit = 6) {
         $sql = "SELECT t.name as query, t.slug, COUNT(pt.post_id) as count
                 FROM tags t
@@ -423,11 +408,10 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Получение популярных поисковых запросов из истории
-     * 
-     * @param int $limit Количество запросов
-     * @return array Массив с популярными запросами
-     */
+    * Получение популярных поисковых запросов из истории
+    * @param int $limit Количество запросов
+    * @return array Массив с популярными запросами
+    */
     public function getPopularSearchQueries($limit = 10) {
         $limit = (int)$limit;
         return $this->db->fetchAll(
@@ -439,11 +423,10 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Получение последних поисковых запросов
-     * 
-     * @param int $limit Количество запросов
-     * @return array Массив с последними запросами
-     */
+    * Получение последних поисковых запросов
+    * @param int $limit Количество запросов
+    * @return array Массив с последними запросами
+    */
     public function getRecentSearchQueries($limit = 10) {
         $limit = (int)$limit;
         return $this->db->fetchAll(
@@ -455,11 +438,10 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Сохранение поискового запроса в историю
-     * 
-     * @param string $query Поисковый запрос
-     * @return void
-     */
+    * Сохранение поискового запроса в историю 
+    * @param string $query Поисковый запрос
+    * @return void
+    */
     public function saveSearchQuery($query) {
         $query = trim($query);
         if (empty($query) || mb_strlen($query) < 2) {
@@ -485,12 +467,11 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Получение всех поисковых запросов с пагинацией
-     * 
-     * @param int $page Номер страницы
-     * @param int $perPage Количество запросов на странице
-     * @return array Массив с запросами
-     */
+    * Получение всех поисковых запросов с пагинацией 
+    * @param int $page Номер страницы
+    * @param int $perPage Количество запросов на странице
+    * @return array Массив с запросами
+    */
     public function getAllSearchQueries($page = 1, $perPage = 20) {
         $page = (int)$page;
         $perPage = (int)$perPage;
@@ -518,11 +499,10 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Удаление конкретного поискового запроса
-     * 
-     * @param int $id ID запроса
-     * @return bool Результат операции
-     */
+    * Удаление конкретного поискового запроса 
+    * @param int $id ID запроса
+    * @return bool Результат операции
+    */
     public function deleteSearchQuery($id) {
         return $this->db->query(
             "DELETE FROM search_queries WHERE id = ?", 
@@ -531,10 +511,9 @@ class SearchModel implements ModelAPI {
     }
     
     /**
-     * Очистка всей истории поисковых запросов
-     * 
-     * @return bool Результат операции
-     */
+    * Очистка всей истории поисковых запросов 
+    * @return bool Результат операции
+    */
     public function clearSearchHistory() {
         return $this->db->query("TRUNCATE TABLE search_queries");
     }

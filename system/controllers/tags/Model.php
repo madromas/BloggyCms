@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель для работы с тегами в базе данных
- * Предоставляет методы для CRUD-операций с тегами, получения тегов постов,
- * поиска тегов, пагинации и генерации уникальных URL-адресов (slug)
- * 
- * @package Models
- */
+* Модель для работы с тегами в базе данных
+* @package Models
+*/
 class TagModel implements ModelAPI {
 
     use APIAware;
@@ -22,27 +19,19 @@ class TagModel implements ModelAPI {
         'searchByName'
     ];
     
-    /** @var object Подключение к базе данных */
     private $db;
     
     /**
-     * Конструктор модели
-     * Инициализирует подключение к базе данных
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор модели 
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
 
     /**
-     * Получить все теги с пагинацией
-     * 
-     * @param int $page Номер страницы (по умолчанию 1)
-     * @param int $perPage Количество тегов на странице (по умолчанию 12)
-     * @param string $orderBy Поле для сортировки: 'name', 'posts_count', 'created_at' (по умолчанию 'name')
-     * @return array Массив с тегами и информацией о пагинации
-     */
+    * Получить все теги с пагинацией
+    */
     public function getAllPaginated($page = 1, $perPage = 12, $orderBy = 'name') {
         $offset = ($page - 1) * $perPage;
         
@@ -78,11 +67,9 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Получить все теги без пагинации
-     * 
-     * @param string $orderBy Поле для сортировки: 'name', 'posts_count', 'created_at' (по умолчанию 'name')
-     * @return array Массив всех тегов
-     */
+    * Получить все теги без пагинации
+    * @return array Массив всех тегов
+    */
     public function getAll($orderBy = 'name') {
         $orderClause = match($orderBy) {
             'posts_count' => 'ORDER BY posts_count DESC, t.name ASC',
@@ -100,14 +87,8 @@ class TagModel implements ModelAPI {
     }
 
     /**
-     * Получить теги с фильтрацией по минимальному количеству постов
-     * 
-     * @param int $minPosts Минимальное количество постов (по умолчанию 1)
-     * @param int $page Номер страницы (по умолчанию 1)
-     * @param int $perPage Количество тегов на странице (по умолчанию 12)
-     * @param string $orderBy Поле для сортировки (по умолчанию 'name')
-     * @return array Массив с тегами и информацией о пагинации
-     */
+    * Получить теги с фильтрацией по минимальному количеству постов
+    */
     public function getFilteredTags($minPosts = 1, $page = 1, $perPage = 12, $orderBy = 'name') {
         $offset = ($page - 1) * $perPage;
         
@@ -149,31 +130,28 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Получить тег по ID
-     * 
-     * @param int $id ID тега
-     * @return array|null Данные тега или null
-     */
+    * Получить тег по ID
+    * @param int $id ID тега
+    * @return array|null Данные тега или null
+    */
     public function getById($id) {
         return $this->db->fetch("SELECT * FROM tags WHERE id = ?", [$id]);
     }
     
     /**
-     * Получить тег по URL-адресу (slug)
-     * 
-     * @param string $slug URL-адрес тега
-     * @return array|null Данные тега или null
-     */
+    * Получить тег по URL-адресу (slug) 
+    * @param string $slug URL-адрес тега
+    * @return array|null Данные тега или null
+    */
     public function getBySlug($slug) {
         return $this->db->fetch("SELECT * FROM tags WHERE slug = ?", [$slug]);
     }
 
     /**
-     * Получить теги, привязанные к посту
-     * 
-     * @param int $post_id ID поста
-     * @return array Массив тегов
-     */
+    * Получить теги, привязанные к посту 
+    * @param int $post_id ID поста
+    * @return array Массив тегов
+    */
     public function getForPost($post_id) {
         return $this->db->fetchAll(
             "SELECT t.* 
@@ -185,11 +163,10 @@ class TagModel implements ModelAPI {
     }    
     
     /**
-     * Создать новый тег
-     * 
-     * @param array $data Данные тега (name, image)
-     * @return int ID созданного тега
-     */
+    * Создать новый тег 
+    * @param array $data Данные тега (name, image)
+    * @return int ID созданного тега
+    */
     public function create($data) {
         $slug = $this->createUniqueSlug($data['name']);
 
@@ -213,12 +190,11 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Обновить существующий тег
-     * 
-     * @param int $id ID тега
-     * @param array $data Данные для обновления
-     * @return bool Результат выполнения запроса
-     */
+    * Обновить существующий тег
+    * @param int $id ID тега
+    * @param array $data Данные для обновления
+    * @return bool Результат выполнения запроса
+    */
     public function update($id, $data) {
 
         $oldTag = $this->getById($id);
@@ -248,11 +224,10 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Удалить тег и все связи с постами
-     * 
-     * @param int $id ID тега
-     * @return bool Результат выполнения запроса
-     */
+    * Удалить тег и все связи с постами 
+    * @param int $id ID тега
+    * @return bool Результат выполнения запроса
+    */
     public function delete($id) {
 
         $tag = $this->getById($id);
@@ -275,12 +250,11 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Создает уникальный URL-адрес (slug) из названия тега
-     * 
-     * @param string $name Название тега
-     * @param int|null $excludeId ID тега для исключения из проверки
-     * @return string Уникальный URL-адрес
-     */
+    * Создает уникальный URL-адрес (slug) из названия тега
+    * @param string $name Название тега
+    * @param int|null $excludeId ID тега для исключения из проверки
+    * @return string Уникальный URL-адрес
+    */
     private function createUniqueSlug($name, $excludeId = null) {
         $baseSlug = $this->generateSlug($name);
         $slug = $baseSlug;
@@ -295,12 +269,11 @@ class TagModel implements ModelAPI {
     }
 
     /**
-     * Проверяет, существует ли тег с таким названием
-     * 
-     * @param string $name Название для проверки
-     * @param int|null $excludeId ID для исключения
-     * @return bool true если существует
-     */
+    * Проверяет, существует ли тег с таким названием
+    * @param string $name Название для проверки
+    * @param int|null $excludeId ID для исключения
+    * @return bool true если существует
+    */
     public function isNameExists($name, $excludeId = null) {
         $sql = "SELECT COUNT(*) as count FROM tags WHERE name = ?";
         $params = [$name];
@@ -315,23 +288,21 @@ class TagModel implements ModelAPI {
     }
 
     /**
-     * Создает URL-адрес из названия (без проверки уникальности)
-     * 
-     * @param string $name Название тега
-     * @return string URL-адрес
-     */
+    * Создает URL-адрес из названия (без проверки уникальности)
+    * @param string $name Название тега
+    * @return string URL-адрес
+    */
     public function createSlugFromName($name) {
         return $this->generateSlug($name);
     }
 
     /**
-     * Получает посты, привязанные к тегу, с пагинацией
-     * 
-     * @param int $tagId ID тега
-     * @param int $page Номер страницы
-     * @param int $perPage Постов на странице
-     * @return array Массив с постами и информацией о пагинации
-     */
+    * Получает посты, привязанные к тегу, с пагинацией
+    * @param int $tagId ID тега
+    * @param int $page Номер страницы
+    * @param int $perPage Постов на странице
+    * @return array Массив с постами и информацией о пагинации
+    */
     public function getPostsByTag($tagId, $page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
         
@@ -368,11 +339,10 @@ class TagModel implements ModelAPI {
     }
 
     /**
-     * Создает тег с автоматической генерацией URL-адреса
-     * 
-     * @param string $name Название тега
-     * @return int ID созданного тега
-     */
+    * Создает тег с автоматической генерацией URL-адреса
+    * @param string $name Название тега
+    * @return int ID созданного тега
+    */
     public function createWithSlug($name) {
         $slug = $this->createUniqueSlug($name);
         
@@ -383,12 +353,11 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Проверяет, существует ли указанный URL-адрес
-     * 
-     * @param string $slug URL-адрес для проверки
-     * @param int|null $excludeId ID для исключения
-     * @return bool true если существует
-     */
+    * Проверяет, существует ли указанный URL-адрес
+    * @param string $slug URL-адрес для проверки
+    * @param int|null $excludeId ID для исключения
+    * @return bool true если существует
+    */
     private function isSlugExists($slug, $excludeId = null) {
         $sql = "SELECT COUNT(*) as count FROM tags WHERE slug = ?";
         $params = [$slug];
@@ -403,13 +372,11 @@ class TagModel implements ModelAPI {
     }
     
     /**
-     * Генерирует URL-адрес из строки (транслитерация, очистка)
-     * 
-     * @param string $string Исходная строка
-     * @return string Очищенная строка для использования в URL
-     */
+    * Генерирует URL-адрес из строки (транслитерация, очистка)
+    * @param string $string Исходная строка
+    * @return string Очищенная строка для использования в URL
+    */
     private function generateSlug($string) {
-        // Транслитерация
         $converter = array(
             'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
             'е' => 'e',    'ё' => 'e',    'ж' => 'zh',   'з' => 'z',    'и' => 'i',
@@ -429,8 +396,6 @@ class TagModel implements ModelAPI {
         );
         
         $string = strtr($string, $converter);
-        
-        // Преобразование в нижний регистр и замена не-ASCII символов
         $slug = mb_strtolower($string, 'UTF-8');
         $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
@@ -440,12 +405,11 @@ class TagModel implements ModelAPI {
     }
 
     /**
-     * Поиск тегов по названию (для автодополнения)
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $limit Максимальное количество результатов (по умолчанию 10)
-     * @return array Массив найденных тегов
-     */
+    * Поиск тегов по названию (для автодополнения)
+    * @param string $query Поисковый запрос
+    * @param int $limit Максимальное количество результатов (по умолчанию 10)
+    * @return array Массив найденных тегов
+    */
     public function searchByName($query, $limit = 10) {
         $limit = (int)$limit;
         

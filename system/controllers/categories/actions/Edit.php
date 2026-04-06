@@ -116,12 +116,10 @@ class Edit extends CategoryAction {
                                     : json_decode($field['config'] ?? '{}', true);
                                 
                                 $fieldModel->saveFieldValue(
-                                    $field['id'], 
-                                    'category', 
-                                    $id, 
-                                    $value,
-                                    $field['type'],
-                                    $config
+                                    'category',
+                                    $id,
+                                    $field['system_name'],
+                                    $value
                                 );
                             }
                         } catch (\Exception $e) {

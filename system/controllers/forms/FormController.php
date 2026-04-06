@@ -43,11 +43,11 @@ class FormController extends Controller {
         ob_start();
         ?>
         <div class="form-container form-<?= html($slug) ?>">
-            <?php if ($form['description']): ?>
+            <?php if ($form['description']) { ?>
                 <div class="form-description mb-4">
                     <?= nl2br(html($form['description'])) ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
             
             <form action="<?= BASE_URL ?>/form/<?= html($slug) ?>/submit" 
                   method="POST" 
@@ -57,23 +57,23 @@ class FormController extends Controller {
                   
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 
-                <?php foreach ($structure as $field): ?>
-                    <?php if ($field['type'] === 'submit'): ?>
+                <?php foreach ($structure as $field) { ?>
+                    <?php if ($field['type'] === 'submit') { ?>
                         <div class="form-group mb-3">
                             <button type="submit" class="btn btn-primary">
                                 <?= html($field['label'] ?? 'Отправить') ?>
                             </button>
                         </div>
-                    <?php elseif ($field['type'] !== 'hidden'): ?>
+                    <?php } elseif ($field['type'] !== 'hidden') { ?>
                         <div class="form-group mb-3">
                             <label for="field_<?= html($field['name']) ?>" class="form-label">
                                 <?= html($field['label'] ?? '') ?>
-                                <?php if (!empty($field['required'])): ?>
+                                <?php if (!empty($field['required'])) { ?>
                                     <span class="text-danger">*</span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </label>
                             
-                            <?php if (in_array($field['type'], ['text', 'email', 'tel', 'number', 'password'])): ?>
+                            <?php if (in_array($field['type'], ['text', 'email', 'tel', 'number', 'password'])) { ?>
                                 <input type="<?= $field['type'] ?>"
                                     id="field_<?= html($field['name']) ?>"
                                     name="<?= html($field['name']) ?>"
@@ -82,7 +82,7 @@ class FormController extends Controller {
                                     value="<?= html($field['default_value'] ?? '') ?>"
                                     <?= !empty($field['required']) ? 'required' : '' ?>>
                                     
-                            <?php elseif ($field['type'] === 'textarea'): ?>
+                            <?php } elseif ($field['type'] === 'textarea') { ?>
                                 <textarea id="field_<?= html($field['name']) ?>"
                                     name="<?= html($field['name']) ?>"
                                     class="form-control"
@@ -90,20 +90,20 @@ class FormController extends Controller {
                                     placeholder="<?= html($field['placeholder'] ?? '') ?>"
                                     <?= !empty($field['required']) ? 'required' : '' ?>><?= html($field['default_value'] ?? '') ?></textarea>
                                     
-                            <?php elseif ($field['type'] === 'select'): ?>
+                            <?php } elseif ($field['type'] === 'select') { ?>
                                 <select id="field_<?= html($field['name']) ?>"
                                     name="<?= html($field['name']) ?>"
                                     class="form-select"
                                     <?= !empty($field['required']) ? 'required' : '' ?>>
                                     <option value=""><?= html($field['placeholder'] ?? 'Выберите...') ?></option>
-                                    <?php foreach ($field['options'] ?? [] as $option): ?>
+                                    <?php foreach ($field['options'] ?? [] as $option) { ?>
                                     <option value="<?= html($option['value'] ?? '') ?>">
                                         <?= html($option['label'] ?? '') ?>
                                     </option>
-                                    <?php endforeach; ?>
+                                    <?php } ?>
                                 </select>
 
-                            <?php elseif ($field['type'] === 'file'): ?>
+                            <?php } elseif ($field['type'] === 'file') { ?>
                                 <input type="file"
                                     id="field_<?= html($field['name']) ?>"
                                     name="<?= html($field['name']) . (!empty($field['multiple']) ? '[]' : '') ?>"
@@ -112,18 +112,18 @@ class FormController extends Controller {
                                     <?= !empty($field['multiple']) ? 'multiple' : '' ?>
                                     <?= !empty($field['accept']) ? 'accept="' . html($field['accept']) . '"' : '' ?>>
 
-                            <?php endif; ?>
+                            <?php } ?>
                             
-                            <?php if (!empty($field['description'])): ?>
+                            <?php if (!empty($field['description'])) { ?>
                                 <div class="form-text"><?= html($field['description']) ?></div>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <input type="hidden" 
                                name="<?= html($field['name']) ?>" 
                                value="<?= html($field['default_value'] ?? '') ?>">
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                    <?php } ?>
+                <?php } ?>
             </form>
         </div>
         <?php

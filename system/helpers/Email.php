@@ -1,22 +1,18 @@
 <?php
 
 /**
- * Класс для отправки email-уведомлений пользователям
- * Использует стандартную PHP функцию mail() с HTML-форматированием
- * 
- * @package Core
- */
+* Класс для отправки email-уведомлений пользователям
+* @package Core
+*/
 class Email {
     
     /**
-     * Отправляет email для восстановления пароля
-     * Формирует HTML-письмо с ссылкой для сброса пароля
-     * 
-     * @param string $email Email получателя
-     * @param string $token Токен для сброса пароля
-     * @param string $username Имя пользователя
-     * @return bool Результат отправки (true/false)
-     */
+    * Отправляет email для восстановления пароля 
+    * @param string $email Email получателя
+    * @param string $token Токен для сброса пароля
+    * @param string $username Имя пользователя
+    * @return bool Результат отправки (true/false)
+    */
     public static function sendPasswordReset($email, $token, $username) {
         $siteName = \SettingsHelper::get('general', 'site_name', 'BloggyCMS');
         $siteEmail = \SettingsHelper::get('general', 'contact_email', 'noreply@bloggycms.com');
@@ -74,12 +70,11 @@ class Email {
     }
     
     /**
-     * Отправляет email с уведомлением об успешном изменении пароля
-     * 
-     * @param string $email Email получателя
-     * @param string $username Имя пользователя
-     * @return bool Результат отправки
-     */
+    * Отправляет email с уведомлением об успешном изменении пароля 
+    * @param string $email Email получателя
+    * @param string $username Имя пользователя
+    * @return bool Результат отправки
+    */
     public static function sendPasswordChanged($email, $username) {
         $siteName = \SettingsHelper::get('general', 'site_name', 'BloggyCMS');
         $siteEmail = \SettingsHelper::get('general', 'contact_email', 'noreply@bloggycms.com');
@@ -123,12 +118,11 @@ class Email {
     }
     
     /**
-     * Отправляет приветственное письмо после регистрации
-     * 
-     * @param string $email Email получателя
-     * @param string $username Имя пользователя
-     * @return bool Результат отправки
-     */
+    * Отправляет приветственное письмо после регистрации
+    * @param string $email Email получателя
+    * @param string $username Имя пользователя
+    * @return bool Результат отправки
+    */
     public static function sendWelcomeEmail($email, $username) {
         $siteName = \SettingsHelper::get('general', 'site_name', 'BloggyCMS');
         $siteEmail = \SettingsHelper::get('general', 'contact_email', 'noreply@bloggycms.com');

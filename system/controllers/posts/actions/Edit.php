@@ -371,12 +371,10 @@ class Edit extends PostAction {
             $config = is_array($field['config']) ? $field['config'] : json_decode($field['config'] ?? '{}', true);
             
             $fieldModel->saveFieldValue(
-                $field['id'], 
-                'post', 
-                $postId, 
-                $value,
-                $field['type'],
-                $config
+                'post',
+                $postId,
+                $field['system_name'],
+                $value
             );
             
         } catch (\Exception $e) {

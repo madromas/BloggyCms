@@ -13,12 +13,9 @@ class AdminController extends Controller {
     ];
     
     /**
-     * Конструктор контроллера администратора
-     * Инициализирует модель пользователя и проверяет аутентификацию
-     * для всех действий, кроме логина
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор контроллера администратора
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         $this->userModel = new UserModel($db);
@@ -37,11 +34,9 @@ class AdminController extends Controller {
     }
 
     /**
-     * Определяет текущее действие из URI
-     * Парсит URL для получения названия вызываемого метода
-     *
-     * @return string Название текущего действия или пустая строка
-     */
+    * Определяет текущее действие из URI
+    * @return string Название текущего действия или пустая строка
+    */
     private function getCurrentAction() {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $pathParts = explode('/', trim($uri, '/'));
@@ -54,11 +49,9 @@ class AdminController extends Controller {
     }
     
     /**
-     * Главная страница панели управления
-     * Отображает дашборд с ключевой статистикой и виджетами
-     *
-     * @throws Exception При ошибках
-     */
+    * Главная страница панели управления
+    * @throws Exception При ошибках
+    */
     public function indexAction() {
         $this->pageTitle = 'Bloggy';
         
@@ -124,8 +117,8 @@ class AdminController extends Controller {
     }
     
     /**
-     * Страница аутентификации администратора
-     */
+    * Страница аутентификации администратора
+    */
     public function loginAction() {
         if (isset($_SESSION['user_id'])) {
             Notification::info('Вы уже авторизованы');
@@ -161,8 +154,8 @@ class AdminController extends Controller {
     }
     
     /**
-     * Завершение сессии администратора
-     */
+    * Завершение сессии администратора
+    */
     public function logoutAction() {
         try {
             $username = $_SESSION['username'] ?? 'Пользователь';
@@ -175,8 +168,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Управление шаблонами сайта
-     */
+    * Управление шаблонами сайта
+    */
     public function templatesAction() {
         $this->pageTitle = 'Управление шаблонами';
         
@@ -193,8 +186,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Получение списка файлов шаблона
-     */
+    * API: Получение списка файлов шаблона
+    */
     public function getTemplateFilesAction() {
         header('Content-Type: application/json');
         
@@ -206,8 +199,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Получение содержимого файла шаблона
-     */
+    * API: Получение содержимого файла шаблона
+    */
     public function getTemplateFileAction() {
         header('Content-Type: application/json');
         
@@ -251,8 +244,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Сохранение изменений в файле шаблона
-     */
+    * API: Сохранение изменений в файле шаблона
+    */
     public function saveTemplateFileAction() {
         header('Content-Type: application/json');
         
@@ -302,8 +295,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Нормализация пути к файлу
-     */
+    * Нормализация пути к файлу
+    */
     private function normalizePath($path) {
         $path = str_replace('\\', '/', $path);
         $path = preg_replace('#/+#', '/', $path);
@@ -323,8 +316,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Получение списка доступных шаблонов
-     */
+    * Получение списка доступных шаблонов
+    */
     private function getAvailableTemplates() {
         $templates = [];
         $templatesPath = TEMPLATES_PATH;
@@ -345,8 +338,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Рекурсивное получение файлов шаблона с кэшированием
-     */
+    * Рекурсивное получение файлов шаблона с кэшированием
+    */
     private function getTemplateFiles($template) {
         $templatePath = TEMPLATES_PATH . '/' . $template;
         $frontPath = $templatePath . '/front';
@@ -422,8 +415,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Получает описание файла (для PHP-шаблонов)
-     */
+    * Получает описание файла (для PHP-шаблонов)
+    */
     private function getFileDescription($filePath) {
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
         
@@ -438,10 +431,10 @@ class AdminController extends Controller {
     }
 
     /**
-     * Парсер заголовка шаблона
-     * @param string $filePath Полный путь к файлу
-     * @return array ['is_template' => bool, 'description' => string]
-     */
+    * Парсер заголовка шаблона
+    * @param string $filePath Полный путь к файлу
+    * @return array ['is_template' => bool, 'description' => string]
+    */
     private function parseTemplateHeader($filePath) {
 
         $content = @file_get_contents($filePath, false, null, 0, 4096);
@@ -461,8 +454,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Получение метаинформации о файле
-     */
+    * Получение метаинформации о файле
+    */
     private function getFileInfo($fullPath, $relativePath) {
         $size = @filesize($fullPath);
         if ($size === false) $size = 0;
@@ -489,8 +482,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Форматирование размера файла
-     */
+    * Форматирование размера файла
+    */
     private function formatFileSize($size) {
         if ($size < 1024) {
             return $size . ' B';
@@ -502,8 +495,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Скачивание файла
-     */
+    * API: Скачивание файла
+    */
     public function downloadFileAction() {
         $template = $_GET['template'] ?? 'default';
         $filePath = $_GET['file'] ?? '';
@@ -533,8 +526,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Загрузка файла на сервер
-     */
+    * API: Загрузка файла на сервер
+    */
     public function uploadFileAction() {
         header('Content-Type: application/json');
         
@@ -605,8 +598,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * API: Создание папки front для шаблона
-     */
+    * API: Создание папки front для шаблона
+    */
     public function createFrontFolderAction() {
         header('Content-Type: application/json');
         
@@ -629,8 +622,8 @@ class AdminController extends Controller {
     }
 
     /**
-     * Проверка активных быстрых действий
-     */
+    * Проверка активных быстрых действий
+    */
     public function hasQuickActions() {
         $actions = [
             'add_post', 'add_page', 'add_category', 'add_tag',

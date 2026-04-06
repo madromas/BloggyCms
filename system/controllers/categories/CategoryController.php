@@ -2,16 +2,9 @@
 
 /**
 * Контроллер категорий блога
-* Управляет всеми операциями с категориями, включая:
-* - Просмотр категорий на фронтенде
-* - Административное управление категориями
-* - CRUD-операции с категориями
-* - Загрузка изображений
 */
 class CategoryController extends Controller {
-    /**
-    * @var CategoryModel Модель для работы с категориями
-    */
+
     private $categoryModel;
 
     protected $controllerInfo = [
@@ -24,12 +17,6 @@ class CategoryController extends Controller {
     
     /**
     * Получение настроек категорий по умолчанию
-    * Определяет стандартные параметры отображения категорий
-    *
-    * @return array Массив настроек по умолчанию:
-    * - category_layout: тип раскладки (grid/list)
-    * - show_category_images: показывать изображения категорий
-    * - category_posts_per_page: количество постов на странице
     */
     public function getDefaultSettings() {
         return [
@@ -41,22 +28,17 @@ class CategoryController extends Controller {
     
     /**
     * Конструктор контроллера категорий
-    * Инициализирует модель категорий и проверяет права доступа к админ-методам
-    *
     * @param Database $db Объект подключения к базе данных
     */
     public function __construct($db) {
         parent::__construct($db);
         $this->categoryModel = new CategoryModel($db);
         
-        // Проверка прав доступа для админ-методов
         $currentAction = $_GET['action'] ?? '';
         
-        // Если действие начинается с 'admin', проверяем права администратора
         if (strpos($currentAction, 'admin') === 0) {
             if (!$this->checkAdminAccess()) {
                 if ($this->isAjaxRequest()) {
-                    // Ответ в формате JSON для AJAX-запросов
                     http_response_code(403);
                     header('Content-Type: application/json');
                     die(json_encode([
@@ -64,7 +46,6 @@ class CategoryController extends Controller {
                         'message' => 'Доступ запрещен'
                     ]));
                 } else {
-                    // Редирект на страницу логина для обычных запросов
                     Notification::error('У вас нет прав доступа к этому разделу');
                     $this->redirect(ADMIN_URL . '/login');
                     exit;
@@ -75,8 +56,6 @@ class CategoryController extends Controller {
 
     /**
     * Проверка прав администратора
-    * Определяет, авторизован ли пользователь как администратор
-    *
     * @return bool true если пользователь является администратором
     */
     private function checkAdminAccess() {
@@ -85,8 +64,6 @@ class CategoryController extends Controller {
 
     /**
     * Определение типа запроса (AJAX или обычный)
-    * Проверяет заголовки запроса на наличие XMLHttpRequest
-    *
     * @return bool true если запрос выполнен через AJAX
     */
     private function isAjaxRequest() {
@@ -96,8 +73,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие админ-панели категорий
-    * Отображает список всех категорий для управления
-    *
     * @return mixed Результат выполнения действия
     */
     public function adminIndexAction() {
@@ -108,8 +83,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие создания новой категории
-    * Обрабатывает форму добавления категории
-    *
     * @return mixed Результат выполнения действия
     */
     public function createAction() {
@@ -120,8 +93,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие редактирования существующей категории
-    * Обрабатывает форму изменения данных категории
-    *
     * @param int $id Идентификатор редактируемой категории
     * @return mixed Результат выполнения действия
     */
@@ -133,8 +104,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие удаления категории
-    * Удаляет категорию и связанные с ней данные
-    *
     * @param int $id Идентификатор удаляемой категории
     * @return mixed Результат выполнения действия
     */
@@ -146,8 +115,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие отображения категории на фронтенде
-    * Показывает страницу категории со списком постов
-    *
     * @param string $slug URL-идентификатор категории
     * @return mixed Результат выполнения действия
     */
@@ -159,8 +126,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие проверки пароля защищенной категории
-    * Обрабатывает доступ к категориям с ограниченным доступом
-    *
     * @param int $id Идентификатор категории
     * @return mixed Результат выполнения действия
     */
@@ -172,8 +137,6 @@ class CategoryController extends Controller {
     
     /**
     * Действие изменения порядка категорий
-    * Обрабатывает перетаскивание и сортировку категорий
-    *
     * @return mixed Результат выполнения действия
     */
     public function reorderAction() {
@@ -184,8 +147,6 @@ class CategoryController extends Controller {
 
     /**
     * Действие загрузки изображения категории
-    * Обрабатывает загрузку файлов через интерфейс администратора
-    *
     * @return mixed Результат выполнения действия
     */
     public function uploadImageAction() {
@@ -196,8 +157,6 @@ class CategoryController extends Controller {
 
     /**
      * Действие отображения всех категорий на фронте
-     * Показывает страницу со списком всех категорий
-     *
      * @return mixed Результат выполнения действия
      */
     public function indexAction() {

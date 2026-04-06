@@ -1,42 +1,41 @@
 <?php
 
 /**
- * Менеджер для управления контроллерами приложения
- */
+* Менеджер для управления контроллерами приложения
+*/
 class ControllerManager {
+
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     private $db;
     
     /**
-     * @var array Массив обнаруженных контроллеров
-     */
+    * @var array Массив обнаруженных контроллеров
+    */
     private $controllers = [];
     
     /**
-     * Конструктор ControllerManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
+    * Конструктор ControllerManager
+    * @param mixed $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->discoverControllers();
     }
     
     /**
-     * Обнаруживает все контроллеры в системе
-     */
+    * Обнаруживает все контроллеры в системе
+    */
     private function discoverControllers() {
         $controllersPath = BASE_PATH . '/system/controllers';
         $this->scanControllersDirectory($controllersPath);
     }
     
     /**
-     * Рекурсивно сканирует директорию с контроллерами
-     *
-     * @param string $path Путь к директории
-     */
+    * Рекурсивно сканирует директорию с контроллерами
+    * @param string $path Путь к директории
+    */
     private function scanControllersDirectory($path) {
         if (!is_dir($path)) return;
         
@@ -54,11 +53,10 @@ class ControllerManager {
     }
 
     /**
-     * Ищет контроллеры в директории
-     *
-     * @param string $dirPath Путь к директории
-     * @param string $dirName Имя директории
-     */
+    * Ищет контроллеры в директории
+    * @param string $dirPath Путь к директории
+    * @param string $dirName Имя директории
+    */
     private function findControllersInDirectory($dirPath, $dirName) {
         $phpFiles = glob($dirPath . '/*.php');
         
@@ -73,12 +71,11 @@ class ControllerManager {
     }
     
     /**
-     * Загружает информацию о контроллере
-     *
-     * @param string $dirName Имя директории
-     * @param string $controllerName Имя контроллера
-     * @param string $controllerFile Путь к файлу контроллера
-     */
+    * Загружает информацию о контроллере
+    * @param string $dirName Имя директории
+    * @param string $controllerName Имя контроллера
+    * @param string $controllerFile Путь к файлу контроллера
+    */
     private function loadControllerInfo($dirName, $controllerName, $controllerFile) {
         if (!file_exists($controllerFile)) return;
         
@@ -117,11 +114,10 @@ class ControllerManager {
     }
     
     /**
-     * Преобразует имя контроллера в отображаемое имя
-     *
-     * @param string $controllerName Имя контроллера
-     * @return string Отображаемое имя
-     */
+    * Преобразует имя контроллера в отображаемое имя
+    * @param string $controllerName Имя контроллера
+    * @return string Отображаемое имя
+    */
     private function getControllerDisplayName($controllerName) {
         $name = preg_replace('/^Admin/', '', $controllerName);
         $name = preg_replace('/([a-z])([A-Z])/', '$1 $2', $name);
@@ -129,12 +125,11 @@ class ControllerManager {
     }
     
     /**
-     * Проверяет наличие настроек у контроллера
-     *
-     * @param string $dirName Имя директории
-     * @param string $controllerFile Путь к файлу контроллера
-     * @return bool Есть ли настройки
-     */
+    * Проверяет наличие настроек у контроллера
+    * @param string $dirName Имя директории
+    * @param string $controllerFile Путь к файлу контроллера
+    * @return bool Есть ли настройки
+    */
     private function checkControllerHasSettings($dirName, $controllerFile) {
         $controllerDir = dirname($controllerFile);
         $settingsFile = $controllerDir . '/Settings.php';
@@ -163,10 +158,9 @@ class ControllerManager {
     }
     
     /**
-     * Получить контроллеры с настройками
-     *
-     * @return array Массив контроллеров с настройками
-     */
+    * Получить контроллеры с настройками
+    * @return array Массив контроллеров с настройками
+    */
     public function getControllersWithSettings() {
         return array_filter($this->controllers, function($controller) {
             return $controller['has_settings'];
@@ -174,45 +168,41 @@ class ControllerManager {
     }
     
     /**
-     * Получить контроллер по ключу
-     *
-     * @param string $key Ключ контроллера
-     * @return array|null Данные контроллера
-     */
+    * Получить контроллер по ключу
+    * @param string $key Ключ контроллера
+    * @return array|null Данные контроллера
+    */
     public function getController($key) {
         return $this->controllers[$key] ?? null;
     }
     
     /**
-     * Получить настройки контроллера
-     *
-     * @param string $key Ключ контроллера
-     * @return mixed Настройки контроллера
-     */
+    * Получить настройки контроллера
+    * @param string $key Ключ контроллера
+    * @return mixed Настройки контроллера
+    */
     public function getControllerSettings($key) {
         $settingsModel = new SettingsModel($this->db);
         return $settingsModel->get('controller_' . $key);
     }
     
     /**
-     * Сохранить настройки контроллера
-     *
-     * @param string $key Ключ контроллера
-     * @param mixed $settings Настройки для сохранения
-     * @return bool Результат сохранения
-     */
+    * Сохранить настройки контроллера
+    * @param string $key Ключ контроллера
+    * @param mixed $settings Настройки для сохранения
+    * @return bool Результат сохранения
+    */
     public function saveControllerSettings($key, $settings) {
         $settingsModel = new SettingsModel($this->db);
         return $settingsModel->save('controller_' . $key, $settings);
     }
     
     /**
-     * Получить HTML форму настроек контроллера
-     *
-     * @param string $key Ключ контроллера
-     * @param mixed $currentSettings Текущие настройки
-     * @return string HTML форма настроек
-     */
+    * Получить HTML форму настроек контроллера
+    * @param string $key Ключ контроллера
+    * @param mixed $currentSettings Текущие настройки
+    * @return string HTML форма настроек
+    */
     public function getControllerSettingsForm($key, $currentSettings) {
         $controller = $this->getController($key);
         if (!$controller || !$controller['has_settings']) {

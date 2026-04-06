@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель дополнительных полей
- * Управляет созданием, хранением и отображением пользовательских полей для различных сущностей системы
- * Обеспечивает интеграцию с FieldManager для обработки различных типов полей
- * 
- * @package models
- */
+* Модель дополнительных полей
+* @package models
+*/
 class FieldModel implements ModelAPI {
 
     use APIAware;
@@ -22,33 +19,22 @@ class FieldModel implements ModelAPI {
         'renderFieldList'
     ];
     
-    /**
-     * @var Database Объект подключения к базе данных
-     */
     private $db;
-    
-    /**
-     * @var FieldManager Менеджер полей для обработки типов и значений
-     */
     private $fieldManager;
     
     /**
-     * Конструктор модели полей
-     * Инициализирует подключение к БД и создает экземпляр менеджера полей
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор модели полей
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->fieldManager = new FieldManager($db);
     }
     
     /**
-     * Получение всех полей системы с количеством использования
-     * Возвращает полный список всех пользовательских полей с информацией о частоте использования
-     *
-     * @return array Массив полей с данными об использовании
-     */
+    * Получение всех полей системы с количеством использования
+    * @return array Массив полей с данными об использовании
+    */
     public function getAll() {
         return $this->db->fetchAll("
             SELECT f.*, 
@@ -61,13 +47,11 @@ class FieldModel implements ModelAPI {
     }
 
     /**
-     * Получение поля по системному имени и типу сущности
-     * Используется для доступа к полю по его уникальному идентификатору в рамках сущности
-     *
-     * @param string $systemName Уникальное системное имя поля
-     * @param string $entityType Тип сущности (post, category, user и т.д.)
-     * @return array|null Данные поля или null если не найдено
-     */
+    * Получение поля по системному имени и типу сущности
+    * @param string $systemName Уникальное системное имя поля
+    * @param string $entityType Тип сущности (post, category, user и т.д.)
+    * @return array|null Данные поля или null если не найдено
+    */
     public function getFieldBySystemName($systemName, $entityType) {
         return $this->db->fetch(
             "SELECT * FROM fields WHERE system_name = ? AND entity_type = ?",
@@ -76,12 +60,10 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение всех полей для указанного типа сущности
-     * Возвращает все поля, связанные с конкретным типом сущности
-     *
-     * @param string $entityType Тип сущности
-     * @return array Массив полей для сущности
-     */
+    * Получение всех полей для указанного типа сущности
+    * @param string $entityType Тип сущности
+    * @return array Массив полей для сущности
+    */
     public function getByEntityType($entityType) {
         return $this->db->fetchAll("
             SELECT * FROM fields 
@@ -91,12 +73,10 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение активных полей для указанного типа сущности
-     * Возвращает только включенные поля для сущности
-     *
-     * @param string $entityType Тип сущности
-     * @return array Массив активных полей
-     */
+    * Получение активных полей для указанного типа сущности
+    * @param string $entityType Тип сущности
+    * @return array Массив активных полей
+    */
     public function getActiveByEntityType($entityType) {
         return $this->db->fetchAll("
             SELECT * FROM fields 
@@ -106,24 +86,20 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение поля по ID
-     * Возвращает данные поля по его идентификатору в базе данных
-     *
-     * @param int $id ID поля
-     * @return array|null Данные поля или null если не найдено
-     */
+    * Получение поля по ID
+    * @param int $id ID поля
+    * @return array|null Данные поля или null если не найдено
+    */
     public function getById($id) {
         return $this->db->fetch("SELECT * FROM fields WHERE id = ?", [$id]);
     }
     
     /**
-     * Получение всех значений полей для конкретной сущности
-     * Возвращает ассоциативный массив, где ключ - системное имя поля, значение - значение поля
-     *
-     * @param int $entityId ID сущности
-     * @param string $entityType Тип сущности
-     * @return array Массив значений полей
-     */
+    * Получение всех значений полей для конкретной сущности
+    * @param int $entityId ID сущности
+    * @param string $entityType Тип сущности
+    * @return array Массив значений полей
+    */
     public function getFieldValues($entityId, $entityType) {
         $result = $this->db->fetchAll("
             SELECT f.system_name, fv.value 
@@ -141,14 +117,12 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение значения поля для конкретной сущности
-     * Извлекает сохраненное значение поля по системному имени и идентификаторам сущности
-     *
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @param string $fieldSystemName Системное имя поля
-     * @return mixed Значение поля или null если не найдено
-     */
+    * Получение значения поля для конкретной сущности
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @param string $fieldSystemName Системное имя поля
+    * @return mixed Значение поля или null если не найдено
+    */
     public function getFieldValue($entityType, $entityId, $fieldSystemName) {
         $result = $this->db->fetch("
             SELECT fv.value 
@@ -161,13 +135,11 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Создание нового поля
-     * Добавляет новое пользовательское поле в систему с проверкой уникальности
-     *
-     * @param array $data Массив данных поля
-     * @return int ID созданного поля
-     * @throws Exception При ошибках валидации или дублировании системного имени
-     */
+    * Создание нового поля
+    * @param array $data Массив данных поля
+    * @return int ID созданного поля
+    * @throws Exception При ошибках валидации или дублировании системного имени
+    */
     public function create($data) {
 
         if (!isset($data['system_name']) || !isset($data['entity_type'])) {
@@ -204,14 +176,12 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Обновление существующего поля
-     * Изменяет данные поля с проверкой уникальности системного имени
-     *
-     * @param int $id ID обновляемого поля
-     * @param array $data Массив данных для обновления
-     * @return bool Результат выполнения запроса
-     * @throws Exception При ошибках валидации или дублировании системного имени
-     */
+    * Обновление существующего поля
+    * @param int $id ID обновляемого поля
+    * @param array $data Массив данных для обновления
+    * @return bool Результат выполнения запроса
+    * @throws Exception При ошибках валидации или дублировании системного имени
+    */
     public function update($id, $data) {
         if (!isset($data['system_name'])) {
             throw new Exception('Отсутствует обязательное поле system_name');
@@ -253,24 +223,20 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Удаление поля
-     * Удаляет поле и все его значения из системы
-     *
-     * @param int $id ID удаляемого поля
-     * @return bool Результат выполнения запроса
-     */
+    * Удаление поля
+    * @param int $id ID удаляемого поля
+    * @return bool Результат выполнения запроса
+    */
     public function delete($id) {
         $this->db->query("DELETE FROM field_values WHERE field_id = ?", [$id]);
         return $this->db->query("DELETE FROM fields WHERE id = ?", [$id]);
     }
     
     /**
-     * Получение количества полей для типа сущности
-     * Подсчитывает общее число полей для указанного типа сущности
-     *
-     * @param string $entityType Тип сущности
-     * @return int Количество полей
-     */
+    * Получение количества полей для типа сущности
+    * @param string $entityType Тип сущности
+    * @return int Количество полей
+    */
     public function getCountByEntityType($entityType) {
         $result = $this->db->fetch(
             "SELECT COUNT(*) as count FROM fields WHERE entity_type = ?",
@@ -280,25 +246,21 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Получение доступных типов полей
-     * Возвращает список всех поддерживаемых типов полей из FieldManager
-     *
-     * @return array Массив типов полей
-     */
+    * Получение доступных типов полей
+    * @return array Массив типов полей
+    */
     public function getFieldTypes() {
         return $this->fieldManager->getAvailableFieldTypes();
     }
     
     /**
-     * Генерация HTML-кода для ввода значения поля
-     * Создает форму ввода для конкретного поля с учетом его типа и конфигурации
-     *
-     * @param array $field Данные поля
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код поля ввода
-     */
+    * Генерация HTML-кода для ввода значения поля
+    * @param array $field Данные поля
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код поля ввода
+    */
     public function renderFieldInput($field, $value, $entityType, $entityId): string {
         $config = [];
         
@@ -322,15 +284,13 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Генерация HTML-кода для отображения значения поля
-     * Форматирует значение поля для отображения на странице
-     *
-     * @param array $field Данные поля
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код отображения значения
-     */
+    * Генерация HTML-кода для отображения значения поля
+    * @param array $field Данные поля
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код отображения значения
+    */
     public function renderFieldDisplay($field, $value, $entityType, $entityId): string {
         $config = json_decode($field['config'] ?? '{}', true);
         return $this->fieldManager->renderFieldDisplay(
@@ -343,15 +303,13 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Генерация HTML-кода для отображения значения поля в списке
-     * Создает компактное представление значения для использования в таблицах и списках
-     *
-     * @param array $field Данные поля
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код отображения в списке
-     */
+    * Генерация HTML-кода для отображения значения поля в списке
+    * @param array $field Данные поля
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код отображения в списке
+    */
     public function renderFieldList($field, $value, $entityType, $entityId): string {
         $config = json_decode($field['config'] ?? '{}', true);
         return $this->fieldManager->renderFieldList(
@@ -364,16 +322,13 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Сохранение значения поля
-     * Обрабатывает и сохраняет значение поля через FieldManager
-     * Поддерживает обновление существующих значений и создание новых
-     *
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @param string $fieldSystemName Системное имя поля
-     * @param mixed $value Сохраняемое значение
-     * @return bool Результат выполнения запроса
-     */
+    * Сохранение значения поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @param string $fieldSystemName Системное имя поля
+    * @param mixed $value Сохраняемое значение
+    * @return bool Результат выполнения запроса
+    */
     public function saveFieldValue($entityType, $entityId, $fieldSystemName, $value) {
         $field = $this->getFieldBySystemName($fieldSystemName, $entityType);
         
@@ -414,13 +369,11 @@ class FieldModel implements ModelAPI {
     }
     
     /**
-     * Обработка конфигурации поля
-     * Валидирует и форматирует конфигурацию поля через FieldManager
-     *
-     * @param string $fieldType Тип поля
-     * @param array $config Конфигурация поля
-     * @return array Обработанная конфигурация
-     */
+    * Обработка конфигурации поля
+    * @param string $fieldType Тип поля
+    * @param array $config Конфигурация поля
+    * @return array Обработанная конфигурация
+    */
     public function processFieldConfig($fieldType, $config) {
         return $this->fieldManager->processFieldConfig($fieldType, $config);
     }

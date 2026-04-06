@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Класс для группировки полей в логические блоки (fieldset)
- * Управляет отображением, зависимостями и компоновкой полей в сетке Bootstrap
- * 
- * @package Fields
- */
+* Класс для группировки полей в логические блоки (fieldset)
+* @package Fields
+*/
 class Fieldset {
     
     /** @var string Заголовок группы */
@@ -21,14 +19,13 @@ class Fieldset {
     private $fields;
     
     /**
-     * Конструктор fieldset
-     * 
-     * @param string $title Заголовок группы
-     * @param array $options Опции группы:
-     * - icon: класс иконки (например 'bi bi-gear')
-     * - columns: режим колонок ('custom' или число, например '6', '4', '3')
-     * - fields: массив начальных полей
-     */
+    * Конструктор fieldset 
+    * @param string $title Заголовок группы
+    * @param array $options Опции группы:
+    * - icon: класс иконки (например 'bi bi-gear')
+    * - columns: режим колонок ('custom' или число, например '6', '4', '3')
+    * - fields: массив начальных полей
+    */
     public function __construct($title, $options = []) {
         $this->title = $title;
         $this->icon = $options['icon'] ?? '';
@@ -37,23 +34,20 @@ class Fieldset {
     }
     
     /**
-     * Добавляет поле в группу
-     * 
-     * @param Field $field Объект поля
-     * @return self Для цепочки вызовов
-     */
+    * Добавляет поле в группу 
+    * @param Field $field Объект поля
+    * @return self Для цепочки вызовов
+    */
     public function addField($field) {
         $this->fields[] = $field;
         return $this;
     }
     
     /**
-     * Рендерит всю группу полей
-     * Учитывает зависимости между полями и компоновку в сетке
-     * 
-     * @param array $currentSettings Текущие значения настроек
-     * @return string HTML-код группы
-     */
+    * Рендерит всю группу полей 
+    * @param array $currentSettings Текущие значения настроек
+    * @return string HTML-код группы
+    */
     public function render($currentSettings) {
         $formData = ['settings' => $currentSettings];
         
@@ -61,27 +55,24 @@ class Fieldset {
         ?>
         <div class="settings-group mb-4" data-fieldset-name="<?= htmlspecialchars($this->title) ?>">
             <h6 class="settings-group-title bg-light p-3 rounded">
-                <?php if ($this->icon): ?>
+                <?php if ($this->icon) { ?>
                     <i class="<?= $this->icon ?> me-2"></i>
-                <?php endif; ?>
+                <?php } ?>
                 <?= $this->title ?>
             </h6>
             <div class="p-3">
                 <div class="row">
                     <?php 
-                    // Группируем поля по родительским зависимостям
                     $groupedFields = $this->groupFieldsByDependency($formData);
                     
-                    foreach ($groupedFields as $fieldOrGroup):
+                    foreach ($groupedFields as $fieldOrGroup) {
                         if (is_array($fieldOrGroup)) {
-                            // Это группа зависимых полей
                             echo $this->renderDependentGroup($fieldOrGroup, $formData);
                         } else {
-                            // Одиночное поле
                             $field = $fieldOrGroup;
                             echo $this->renderSingleField($field, $formData);
                         }
-                    endforeach;
+                    }
                     ?>
                 </div>
             </div>
@@ -91,18 +82,15 @@ class Fieldset {
     }
 
     /**
-     * Группирует поля по зависимостям
-     * Зависимые поля помещаются в отдельную группу после их родительского поля
-     * 
-     * @param array $formData Данные формы
-     * @return array Массив, где элементы могут быть либо полями, либо массивами зависимых полей
-     */
+    * Группирует поля по зависимостям
+    * @param array $formData Данные формы
+    * @return array Массив, где элементы могут быть либо полями, либо массивами зависимых полей
+    */
     private function groupFieldsByDependency($formData) {
         $independentFields = [];
         $dependentFields = [];
         $dependencyMap = [];
         
-        // Разделение полей на независимые и зависимые
         foreach ($this->fields as $field) {
             if (method_exists($field, 'isConditional') && $field->isConditional()) {
                 $parentField = $this->getParentFieldName($field);
@@ -116,14 +104,12 @@ class Fieldset {
                 $independentFields[] = $field;
             }
         }
-        
-        // Построение результата с учетом порядка
+
         $result = [];
         foreach ($independentFields as $field) {
             $result[] = $field;
             $fieldName = $field->getName();
             
-            // Добавление зависимых полей после родителя
             if (isset($dependentFields[$fieldName])) {
                 $result[] = $dependentFields[$fieldName];
             }
@@ -133,11 +119,10 @@ class Fieldset {
     }
 
     /**
-     * Получает имя родительского поля из условия
-     * 
-     * @param Field $field Поле с условием
-     * @return string|null Имя родительского поля или null
-     */
+    * Получает имя родительского поля из условия 
+    * @param Field $field Поле с условием
+    * @return string|null Имя родительского поля или null
+    */
     private function getParentFieldName($field) {
         if (!method_exists($field, 'getShowCondition')) {
             return null;
@@ -152,20 +137,18 @@ class Fieldset {
     }
 
     /**
-     * Рендерит группу зависимых полей
-     * Зависимые поля отображаются вместе в отдельном контейнере
-     * 
-     * @param array $dependentFields Массив зависимых полей
-     * @param array $formData Данные формы
-     * @return string HTML-код группы зависимых полей
-     */
+    * Рендерит группу зависимых полей 
+    * @param array $dependentFields Массив зависимых полей
+    * @param array $formData Данные формы
+    * @return string HTML-код группы зависимых полей
+    */
     private function renderDependentGroup($dependentFields, $formData) {
         ob_start();
         ?>
         <div class="col-12 dependent-group-container mb-3">
             <div class="dependent-group">
                 <div class="row">
-                    <?php foreach ($dependentFields as $field): ?>
+                    <?php foreach ($dependentFields as $field) { ?>
                         <?php 
                         $conditionalAttrs = '';
                         if (method_exists($field, 'isConditional') && $field->isConditional()) {
@@ -180,7 +163,7 @@ class Fieldset {
                         <div class="<?= $colClass ?>"<?= $conditionalAttrs ?>>
                             <?= $field->render($formData['settings'][$field->getName()] ?? null) ?>
                         </div>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -189,12 +172,11 @@ class Fieldset {
     }
 
     /**
-     * Рендерит одиночное поле
-     * 
-     * @param Field $field Объект поля
-     * @param array $formData Данные формы
-     * @return string HTML-код поля в колонке
-     */
+    * Рендерит одиночное поле 
+    * @param Field $field Объект поля
+    * @param array $formData Данные формы
+    * @return string HTML-код поля в колонке
+    */
     private function renderSingleField($field, $formData) {
         $conditionalAttrs = '';
         if (method_exists($field, 'isConditional') && $field->isConditional()) {
@@ -215,26 +197,22 @@ class Fieldset {
     }
     
     /**
-     * Получает CSS класс для колонки поля
-     * 
-     * @param Field $field Объект поля
-     * @return string CSS класс для Bootstrap колонки
-     */
+    * Получает CSS класс для колонки поля
+    * @param Field $field Объект поля
+    * @return string CSS класс для Bootstrap колонки
+    */
     private function getFieldColumnClass($field) {
-        // Если включен кастомный режим, проверяем наличие параметра column у поля
+
         if ($this->columns === 'custom') {
             $options = method_exists($field, 'getOptions') ? $field->getOptions() : [];
             
-            // Проверяем, задана ли ширина для поля
             if (isset($options['column'])) {
                 return "col-md-{$options['column']}";
             }
             
-            // Если ширина не задана, используем значение по умолчанию
-            return "col-md-12"; // По умолчанию на всю ширину
+            return "col-md-12";
         }
         
-        // Стандартный режим - все поля одинаковой ширины
         if ($this->shouldFieldTakeFullWidth($field)) {
             return 'col-12';
         }
@@ -243,13 +221,11 @@ class Fieldset {
     }
     
     /**
-     * Проверяет, должно ли поле занимать всю ширину (col-12)
-     * 
-     * @param Field $field Объект поля
-     * @return bool true если поле должно быть на всю ширину
-     */
+    * Проверяет, должно ли поле занимать всю ширину (col-12) 
+    * @param Field $field Объект поля
+    * @return bool true если поле должно быть на всю ширину
+    */
     private function shouldFieldTakeFullWidth($field) {
-        // Проверка через опции поля
         if (method_exists($field, 'getOptions')) {
             $options = $field->getOptions();
             if (isset($options['full_width']) && $options['full_width'] === true) {
@@ -257,12 +233,10 @@ class Fieldset {
             }
         }
         
-        // Поле-уведомление всегда на всю ширину
         if ($field instanceof FieldAlert) {
             return true;
         }
         
-        // Проверка опций для условных полей
         if (method_exists($field, 'isConditional') && $field->isConditional()) {
             $options = $field->getOptions();
             if (isset($options['full_width']) && $options['full_width'] === true) {
@@ -274,10 +248,9 @@ class Fieldset {
     }
     
     /**
-     * Получает список всех условных полей в fieldset
-     * 
-     * @return array Массив полей, у которых есть условие показа
-     */
+    * Получает список всех условных полей в fieldset
+    * @return array Массив полей, у которых есть условие показа
+    */
     public function getConditionalFields() {
         $conditionalFields = [];
         foreach ($this->fields as $field) {

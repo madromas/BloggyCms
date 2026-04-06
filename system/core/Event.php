@@ -2,10 +2,10 @@
 /**
 * Система событий
 * Позволяет плагинам и контроллерам реагировать на события ядра
-*
 * @package Core
 */
 class Event {
+
     /**
     * @var array Список слушателей событий
     */
@@ -73,11 +73,8 @@ class Event {
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
                 
-                // ВАЖНО: Передаем аргументы позиционно, а не как ассоциативный массив
-                // Это предотвращает ошибку "Unknown named parameter" в PHP 8+
                 $callbackArgs = [];
                 if (is_array($args) && $acceptedArgs > 0) {
-                    // Берем только первые N элементов массива для позиционной передачи
                     $callbackArgs = array_slice(array_values($args), 0, $acceptedArgs);
                 }
                 
@@ -94,7 +91,6 @@ class Event {
     
     /**
     * Запускает событие с возможностью модификации значения
-    *
     * @param string $event Название события
     * @param mixed $value Значение для фильтрации
     * @param array $args Дополнительные аргументы
@@ -118,7 +114,6 @@ class Event {
                 $callback = $listener['callback'];
                 $acceptedArgs = $listener['acceptedArgs'];
                 
-                // Передаем value первым аргументом, затем дополнительные аргументы
                 $callbackArgs = [$result];
                 if (is_array($args) && $acceptedArgs > 1) {
                     $additionalArgs = array_slice(array_values($args), 0, $acceptedArgs - 1);
@@ -138,7 +133,6 @@ class Event {
     
     /**
     * Отписывает слушателя от события
-    *
     * @param string $event Название события
     * @param callable $callback Функция-обработчик
     * @param int $priority Приоритет
@@ -155,7 +149,6 @@ class Event {
     
     /**
     * Проверяет, есть ли слушатели у события
-    *
     * @param string $event Название события
     * @return bool
     */
@@ -165,7 +158,6 @@ class Event {
     
     /**
     * Инициализирует систему событий
-    *
     * @return void
     */
     public static function initialize() {
@@ -173,7 +165,6 @@ class Event {
             return;
         }
         
-        // Применяем отложенные слушатели
         foreach (self::$pendingListeners as $listener) {
             self::listen(
                 $listener['event'],
@@ -189,7 +180,6 @@ class Event {
     
     /**
     * Получает уникальный ID для callback
-    *
     * @param callable $callback
     * @return string
     */
@@ -211,7 +201,6 @@ class Event {
     
     /**
     * Очищает все слушатели
-    *
     * @return void
     */
     public static function reset() {

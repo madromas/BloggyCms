@@ -1,8 +1,8 @@
 <?php
 class QuickActionsHelper {
     /**
-     * Проверяет, есть ли активные быстрые действия
-     */
+    * Проверяет, есть ли активные быстрые действия
+    */
     public static function hasQuickActions() {
         $actions = [
             'add_post',
@@ -25,8 +25,8 @@ class QuickActionsHelper {
     }
     
     /**
-     * Получает классы позиции для кнопки
-     */
+    * Получает классы позиции для кнопки
+    */
     private static function getButtonPositionClass() {
         $position = SettingsHelper::get('controller_admin', 'position_btn', 'bottom-right');
         
@@ -40,8 +40,8 @@ class QuickActionsHelper {
     }
     
     /**
-     * Получает HTML для плавающей кнопки и модального окна
-     */
+    * Получает HTML для плавающей кнопки и модального окна
+    */
     public static function renderQuickActions() {
         if (!self::hasQuickActions()) {
             return '';
@@ -73,7 +73,7 @@ class QuickActionsHelper {
                     </div>
                     <div class="modal-body">
                         <div class="row g-3">
-                            <?php if(SettingsHelper::get('controller_admin', 'add_post') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_post') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/posts/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -87,9 +87,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_page') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_page') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/pages/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -103,9 +103,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_category') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_category') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/categories/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -119,9 +119,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_tag') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_tag') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/tags/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -135,9 +135,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_user') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_user') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/users/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -151,9 +151,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_content_block') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_content_block') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/html-blocks/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -167,9 +167,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_form') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_form') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/forms/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -183,9 +183,9 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
 
-                            <?php if(SettingsHelper::get('controller_admin', 'add_field') == true): ?>
+                            <?php if(SettingsHelper::get('controller_admin', 'add_field') == true) { ?>
                             <div class="col-6">
                                 <a href="<?= ADMIN_URL ?>/forms/create" class="btn btn-outline-secondary w-100 h-100 p-3 text-start quick-action-btn">
                                     <div class="d-flex align-items-center">
@@ -199,7 +199,7 @@ class QuickActionsHelper {
                                     </div>
                                 </a>
                             </div>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>

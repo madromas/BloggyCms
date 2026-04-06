@@ -1,21 +1,15 @@
 <?php
 
 /**
- * Контроллер управления постблоками в административной панели
- * Обрабатывает запросы, связанные с созданием, редактированием, настройкой
- * и управлением блоками контента (постблоками)
- * 
- * @package Controllers
- * @extends Controller
- */
+* Контроллер управления постблоками в административной панели 
+* @package Controllers
+*/
 class AdminPostBlockController extends Controller {
     
     /**
-     * Отображает список всех доступных постблоков
-     * Главная страница управления постблоками
-     * 
-     * @return void
-     */
+    * Отображает список всех доступных постблоков
+    * @return void
+    */
     public function adminIndexAction() {
         $action = new \postblocks\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -23,11 +17,10 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Отображает форму редактирования постблока
-     * 
-     * @param string|null $systemName Системное имя постблока
-     * @return void
-     */
+    * Отображает форму редактирования постблока
+    * @param string|null $systemName Системное имя постблока
+    * @return void
+    */
     public function editAction($systemName = null) {
         $action = new \postblocks\actions\AdminEdit($this->db);
         $action->setController($this);
@@ -36,11 +29,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Получает HTML-форму настроек для конкретного типа постблока
-     * Используется для AJAX-запросов при динамическом добавлении блоков
-     * 
-     * @return void
-     */
+    * Получает HTML-форму настроек для конкретного типа постблока
+    * @return void
+    */
     public function getSettingsFormAction() {
         $action = new \postblocks\actions\AdminGetSettingsForm($this->db);
         $action->setController($this);
@@ -48,10 +39,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Сохраняет постблок в базу данных
-     * 
-     * @return void
-     */
+    * Сохраняет постблок в базу данных
+    * @return void
+    */
     public function saveBlockAction() {
         $action = new \postblocks\actions\AdminSaveBlock($this->db);
         $action->setController($this);
@@ -59,10 +49,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Загружает файлы, связанные с постблоком (изображения, стили, скрипты)
-     * 
-     * @return void
-     */
+    * Загружает файлы, связанные с постблоком (изображения, стили, скрипты)
+    * @return void
+    */
     public function uploadBlockFilesAction() {
         $action = new \postblocks\actions\AdminUploadBlockFiles($this->db);
         $action->setController($this);
@@ -70,10 +59,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Получает контент по умолчанию для указанного типа постблока
-     * 
-     * @return void
-     */
+    * Получает контент по умолчанию для указанного типа постблока 
+    * @return void
+    */
     public function getDefaultContentAction() {
         $action = new \postblocks\actions\AdminGetDefaultContent($this->db);
         $action->setController($this);
@@ -81,10 +69,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Получает настройки по умолчанию для указанного типа постблока
-     * 
-     * @return void
-     */
+    * Получает настройки по умолчанию для указанного типа постблока
+    * @return void
+    */
     public function getDefaultSettingsAction() {
         $action = new \postblocks\actions\AdminGetDefaultSettings($this->db);
         $action->setController($this);
@@ -92,10 +79,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Получает HTML-шаблон для указанного типа постблока
-     * 
-     * @return void
-     */
+    * Получает HTML-шаблон для указанного типа постблока
+    * @return void
+    */
     public function getTemplateAction() {
         $action = new \postblocks\actions\AdminGetTemplate($this->db);
         $action->setController($this);
@@ -103,10 +89,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Сохраняет данные постблока (составной метод)
-     * 
-     * @return void
-     */
+    * Сохраняет данные постблока (составной метод) 
+    * @return void
+    */
     public function saveBlockDataAction() {
         $action = new \postblocks\actions\AdminSaveBlockData($this->db);
         $action->setController($this);
@@ -114,10 +99,9 @@ class AdminPostBlockController extends Controller {
     }
 
     /**
-     * Получает список пресетов для постблоков
-     * 
-     * @return void
-     */
+    * Получает список пресетов для постблоков
+    * @return void
+    */
     public function getPresetsAction() {
         $action = new \postblocks\actions\AdminGetPresets($this->db);
         $action->setController($this);
@@ -125,10 +109,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Создает новый пресет для постблока
-     * 
-     * @return void
-     */
+    * Создает новый пресет для постблока
+    * @return void
+    */
     public function createPresetAction() {
         $action = new \postblocks\actions\AdminPresetCreate($this->db);
         $action->setController($this);
@@ -136,10 +119,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Обновляет существующий пресет постблока
-     * 
-     * @return void
-     */
+    * Обновляет существующий пресет постблока 
+    * @return void
+    */
     public function updatePresetAction() {
         $action = new \postblocks\actions\AdminPresetUpdate($this->db);
         $action->setController($this);
@@ -147,10 +129,9 @@ class AdminPostBlockController extends Controller {
     }
     
     /**
-     * Удаляет пресет постблока
-     * 
-     * @return void
-     */
+    * Удаляет пресет постблока 
+    * @return void
+    */
     public function deletePresetAction() {
         $action = new \postblocks\actions\AdminPresetDelete($this->db);
         $action->setController($this);
@@ -158,10 +139,9 @@ class AdminPostBlockController extends Controller {
     }
 
     /**
-     * Получает HTML-предпросмотр постблока для административной панели
-     * 
-     * @return void
-     */
+    * Получает HTML-предпросмотр постблока для административной панели
+    * @return void
+    */
     public function adminGetPreviewAction() {
         $action = new \postblocks\actions\AdminGetPreview($this->db);
         $action->setController($this);

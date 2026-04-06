@@ -1,32 +1,33 @@
 <?php
 
 /**
- * Базовый контроллер для всех контроллеров приложения
- */
+* Базовый контроллер для всех контроллеров приложения
+*/
 class Controller {
+
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     protected $db;
     
     /**
-     * @var mixed Объект приложения
-     */
+    * @var mixed Объект приложения
+    */
     protected $app;
     
     /**
-     * @var string Заголовок страницы
-     */
+    * @var string Заголовок страницы
+    */
     protected $pageTitle = 'Панель управления';
     
     /**
-     * @var string Имя контроллера
-     */
+    * @var string Имя контроллера
+    */
     protected $controllerName;
     
     /**
-     * @var array Метаинформация о контроллере
-     */
+    * @var array Метаинформация о контроллере
+    */
     protected $controllerInfo = [
         'name' => 'Базовый контроллер',
         'author' => 'BloggyCMS',
@@ -36,21 +37,20 @@ class Controller {
     ];
     
     /**
-     * @var array Загруженные модели
-     */
+    * @var array Загруженные модели
+    */
     protected $models = [];
 
     /**
-     * @var \BreadcrumbsManager Менеджер хлебных крошек
-     */
+    * @var \BreadcrumbsManager Менеджер хлебных крошек
+    */
     protected $breadcrumbs;
     
     /**
-     * Конструктор контроллера
-     *
-     * @param mixed $db Подключение к базе данных
-     * @param mixed $app Объект приложения
-     */
+    * Конструктор контроллера
+    * @param mixed $db Подключение к базе данных
+    * @param mixed $app Объект приложения
+    */
     public function __construct($db, $app = null) {
         $this->db = $db;
         $this->app = $app;
@@ -64,49 +64,44 @@ class Controller {
     }
     
     /**
-     * Получить метаинформацию о контроллере
-     *
-     * @return array Метаинформация
-     */
+    * Получить метаинформацию о контроллере
+    * @return array Метаинформация
+    */
     public function getControllerInfo() {
         return $this->controllerInfo;
     }
     
     /**
-     * Получить настройки по умолчанию
-     *
-     * @return array Настройки по умолчанию
-     */
+    * Получить настройки по умолчанию
+    * @return array Настройки по умолчанию
+    */
     public function getDefaultSettings() {
         return [];
     }
     
     /**
-     * Получить путь к файлу настроек
-     *
-     * @return string Путь к файлу настроек
-     */
+    * Получить путь к файлу настроек
+    * @return string Путь к файлу настроек
+    */
     public function getSettingsPath() {
         $reflection = new ReflectionClass($this);
         return dirname($reflection->getFileName()) . '/Settings.php';
     }
     
     /**
-     * Проверить наличие настроек у контроллера
-     *
-     * @return bool Есть ли настройки
-     */
+    * Проверить наличие настроек у контроллера
+    * @return bool Есть ли настройки
+    */
     public function hasSettings() {
         return file_exists($this->getSettingsPath());
     }
     
     /**
-     * Рендерит шаблон с данными
-     *
-     * @param string $template Имя шаблона
-     * @param array $data Данные для передачи в шаблон
-     * @throws Exception Если файл шаблона не найден
-     */
+    * Рендерит шаблон с данными
+    * @param string $template Имя шаблона
+    * @param array $data Данные для передачи в шаблон
+    * @throws Exception Если файл шаблона не найден
+    */
     public function render($template, $data = []) {
         Event::trigger('controller.render.before', [
             'template' => $template,
@@ -176,21 +171,19 @@ class Controller {
     }
     
     /**
-     * Перенаправляет на указанный URL
-     *
-     * @param string $url URL для перенаправления
-     */
+    * Перенаправляет на указанный URL
+    * @param string $url URL для перенаправления
+    */
     public function redirect($url) {
         header('Location: ' . $url);
         exit;
     }
 
     /**
-     * Обрабатывает контент с шорткодами
-     *
-     * @param string $content Контент для обработки
-     * @return string Обработанный контент
-     */
+    * Обрабатывает контент с шорткодами
+    * @param string $content Контент для обработки
+    * @return string Обработанный контент
+    */
     public function processContent(string $content): string {
         if (class_exists('Shortcodes')) {
             return Shortcodes::process($content);
@@ -199,40 +192,36 @@ class Controller {
     }
 
     /**
-     * Установить параметры маршрута
-     *
-     * @param array $params Параметры маршрута
-     */
+    * Установить параметры маршрута
+    * @param array $params Параметры маршрута
+    */
     public function setRouteParams($params) {
         $this->routeParams = $params;
     }
 
     /**
-     * Получить параметр маршрута по индексу
-     *
-     * @param int|string $index Индекс параметра
-     * @return mixed Значение параметра
-     */
+    * Получить параметр маршрута по индексу
+    * @param int|string $index Индекс параметра
+    * @return mixed Значение параметра
+    */
     protected function getRouteParam($index) {
         return $this->routeParams[$index] ?? null;
     }
     
     /**
-     * Получить все параметры маршрута
-     *
-     * @return array Параметры маршрута
-     */
+    * Получить все параметры маршрута
+    * @return array Параметры маршрута
+    */
     protected function getRouteParams() {
         return $this->routeParams;
     }
 
     /**
-     * Загружает модель по имени
-     *
-     * @param string $modelName Имя модели
-     * @param string|null $alias Псевдоним для модели
-     * @return object|null Загруженная модель
-     */
+    * Загружает модель по имени
+    * @param string $modelName Имя модели
+    * @param string|null $alias Псевдоним для модели
+    * @return object|null Загруженная модель
+    */
     public function loadModel($modelName, $alias = null) {
         if (substr($modelName, -5) !== 'Model') {
             $modelName .= 'Model';
@@ -257,12 +246,11 @@ class Controller {
     }
     
     /**
-     * Магический геттер для доступа к моделям
-     *
-     * @param string $name Имя свойства
-     * @return mixed Значение свойства
-     * @throws Exception Если свойство не найдено
-     */
+    * Магический геттер для доступа к моделям
+    * @param string $name Имя свойства
+    * @return mixed Значение свойства
+    * @throws Exception Если свойство не найдено
+    */
     public function __get($name) {
         if (preg_match('/(.*)Model$/', $name, $matches)) {
             return $this->loadModel($name);
@@ -278,11 +266,10 @@ class Controller {
     }
     
     /**
-     * Проверяет, загружена ли модель
-     *
-     * @param string $name Имя модели
-     * @return bool Загружена ли модель
-     */
+    * Проверяет, загружена ли модель
+    * @param string $name Имя модели
+    * @return bool Загружена ли модель
+    */
     public function hasModel($name) {
         $modelName = ucfirst($name) . 'Model';
         return isset($this->models[$name]) || isset($this->models[$modelName]);

@@ -1,37 +1,27 @@
 <?php
 
 /**
- * Контроллер управления меню в админ-панели
- * Предоставляет интерфейс для создания, редактирования и управления меню сайта
- * 
- * @package controllers
- * @extends Controller
- */
+* Контроллер управления меню в админ-панели
+* @package controllers
+*/
 class AdminMenuController extends Controller {
     
-    /**
-     * @var MenuModel Модель для работы с меню
-     */
     private $menuModel;
     
     /**
-     * Конструктор контроллера меню
-     * Инициализирует модель меню и проверяет права администратора
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор контроллера меню
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         $this->menuModel = new MenuModel($db);
         
-        // Проверка авторизации пользователя
         if (!isset($_SESSION['user_id'])) {
             \Notification::error('Пожалуйста, авторизуйтесь для доступа к панели управления');
             $this->redirect(ADMIN_URL . '/login');
             return;
         }
         
-        // Проверка административных прав
         if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
             \Notification::error('У вас нет прав доступа к панели управления');
             $this->redirect(BASE_URL);
@@ -40,11 +30,9 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Главная страница управления меню
-     * Отображает список всех меню в системе
-     * 
-     * @return mixed
-     */
+    * Действие: Главная страница управления меню 
+    * @return mixed
+    */
     public function adminIndexAction() {
         $action = new \menu\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -52,11 +40,9 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Создание нового меню
-     * Отображает форму создания меню
-     * 
-     * @return mixed
-     */
+    * Действие: Создание нового меню
+    * @return mixed
+    */
     public function createAction() {
         $action = new \menu\actions\AdminCreate($this->db);
         $action->setController($this);
@@ -64,12 +50,10 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Редактирование существующего меню
-     * Отображает форму редактирования меню по его ID
-     * 
-     * @param int $id ID редактируемого меню
-     * @return mixed
-     */
+    * Действие: Редактирование существующего меню
+    * @param int $id ID редактируемого меню
+    * @return mixed
+    */
     public function editAction($id) {
         $action = new \menu\actions\AdminEdit($this->db, ['id' => $id]);
         $action->setController($this);
@@ -77,12 +61,10 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Удаление меню
-     * Удаляет меню по его ID
-     * 
-     * @param int $id ID удаляемого меню
-     * @return mixed
-     */
+    * Действие: Удаление меню
+    * @param int $id ID удаляемого меню
+    * @return mixed
+    */
     public function deleteAction($id) {
         $action = new \menu\actions\AdminDelete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -90,12 +72,10 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Получение структуры меню через AJAX
-     * Возвращает JSON с древовидной структурой пунктов меню
-     * 
-     * @param int $id ID меню
-     * @return mixed JSON-ответ со структурой меню
-     */
+    * Действие: Получение структуры меню через AJAX
+    * @param int $id ID меню
+    * @return mixed JSON-ответ со структурой меню
+    */
     public function getStructureAction($id) {
         $action = new \menu\actions\AdminGetStructure($this->db, ['id' => $id]);
         $action->setController($this);
@@ -103,12 +83,10 @@ class AdminMenuController extends Controller {
     }
     
     /**
-     * Действие: Предварительный просмотр меню
-     * Показывает как будет выглядеть меню на сайте
-     * 
-     * @param int $id ID меню для предпросмотра
-     * @return mixed
-     */
+    * Действие: Предварительный просмотр меню
+    * @param int $id ID меню для предпросмотра
+    * @return mixed
+    */
     public function previewAction($id) {
         $action = new \menu\actions\AdminPreview($this->db, ['id' => $id]);
         $action->setController($this);
@@ -116,13 +94,11 @@ class AdminMenuController extends Controller {
     }
 
     /**
-     * Рендеринг одного пункта меню для формы (рекурсивно)
-     * Генерирует HTML-структуру для редактирования пункта меню с поддержкой вложенности
-     *
-     * @param array $item Данные пункта меню
-     * @param string $index Уникальный индекс пункта в структуре
-     * @return string HTML-код пункта меню
-     */
+    * Рендеринг одного пункта меню для формы (рекурсивно)
+    * @param array $item Данные пункта меню
+    * @param string $index Уникальный индекс пункта в структуре
+    * @return string HTML-код пункта меню
+    */
     public function renderMenuItem($item, $index) {
         $title = html($item['title'] ?? '');
         $url = html($item['url'] ?? '');
@@ -216,16 +192,13 @@ class AdminMenuController extends Controller {
     }
 
     /**
-     * Получение всех групп пользователей
-     * Возвращает список групп пользователей включая группу "Гость"
-     *
-     * @return array Массив групп пользователей
-     */
+    * Получение всех групп пользователей
+    * @return array Массив групп пользователей
+    */
     public function getUserGroups() {
         $userModel = new UserModel($this->db);
         $groups = $userModel->getAllGroups();
-        
-        // Добавление группы "Гость" для неавторизованных пользователей
+
         $groups[] = [
             'id' => 'guest',
             'name' => 'Гость',

@@ -1,32 +1,32 @@
 <?php
 
 /**
- * Менеджер для управления постблоками в системе
- */
+* Менеджер для управления постблоками в системе
+*/
 class PostBlockManager {
+
     /**
-     * @var array Зарегистрированные постблоки
-     */
+    * @var array Зарегистрированные постблоки
+    */
     private $postBlocks = [];
     
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     private $db;
 
     /**
-     * Конструктор PostBlockManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
+    * Конструктор PostBlockManager
+    * @param mixed $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->loadPostBlocks();
     }
 
     /**
-     * Загружает все постблоки из папки
-     */
+    * Загружает все постблоки из папки
+    */
     private function loadPostBlocks() {
         $baseBlockFile = __DIR__ . '/BasePostBlock.php';
         if (file_exists($baseBlockFile)) {
@@ -68,10 +68,9 @@ class PostBlockManager {
     }
 
     /**
-     * Получает настройки блоков из базы данных
-     *
-     * @return array Настройки блоков
-     */
+    * Получает настройки блоков из базы данных
+    * @return array Настройки блоков
+    */
     private function getBlockSettingsFromDB() {
         try {
             $postBlockModel = new PostBlockModel($this->db);
@@ -82,19 +81,17 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает все доступные постблоки
-     *
-     * @return array Постблоки
-     */
+    * Возвращает все доступные постблоки
+    * @return array Постблоки
+    */
     public function getPostBlocks(): array {
         return $this->postBlocks;
     }
 
     /**
-     * Возвращает постблоки для использования в постах с учетом настроек из БД
-     *
-     * @return array Постблоки для постов
-     */
+    * Возвращает постблоки для использования в постах с учетом настроек из БД
+    * @return array Постблоки для постов
+    */
     public function getPostBlocksForPosts(): array {
         $dbSettings = $this->getBlockSettingsFromDB();
         
@@ -111,10 +108,9 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает постблоки для использования в страницах с учетом настроек из БД
-     *
-     * @return array Постблоки для страниц
-     */
+    * Возвращает постблоки для использования в страницах с учетом настроек из БД
+    * @return array Постблоки для страниц
+    */
     public function getPostBlocksForPages(): array {
         $dbSettings = $this->getBlockSettingsFromDB();
         
@@ -131,34 +127,31 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает конкретный постблок
-     *
-     * @param string $systemName Системное имя блока
-     * @return array|null Данные блока
-     */
+    * Возвращает конкретный постблок
+    * @param string $systemName Системное имя блока
+    * @return array|null Данные блока
+    */
     public function getPostBlock($systemName) {
         return $this->postBlocks[$systemName] ?? null;
     }
 
     /**
-     * Возвращает экземпляр класса блока
-     *
-     * @param string $systemName Системное имя блока
-     * @return BasePostBlock|null Экземпляр блока
-     */
+    * Возвращает экземпляр класса блока
+    * @param string $systemName Системное имя блока
+    * @return BasePostBlock|null Экземпляр блока
+    */
     public function getBlockInstance($systemName) {
         $postBlock = $this->getPostBlock($systemName);
         return $postBlock['class'] ?? null;
     }
 
     /**
-     * Обрабатывает контент блока на фронтенде
-     *
-     * @param array $content Данные контента
-     * @param string $systemName Системное имя блока
-     * @param array $settings Настройки блока
-     * @return string Обработанный HTML
-     */
+    * Обрабатывает контент блока на фронтенде
+    * @param array $content Данные контента
+    * @param string $systemName Системное имя блока
+    * @param array $settings Настройки блока
+    * @return string Обработанный HTML
+    */
     public function processPostBlockContent($content, $systemName, $settings = []) {
 
         $postBlock = $this->getPostBlock($systemName);
@@ -172,10 +165,9 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает блоки сгруппированные по категориям
-     *
-     * @return array Блоки по категориям
-     */
+    * Возвращает блоки сгруппированные по категориям
+    * @return array Блоки по категориям
+    */
     public function getPostBlocksByCategory(): array {
         $categories = [];
         
@@ -191,11 +183,10 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает настройки для JS с учетом фильтрации по типу контента
-     *
-     * @param string $contentType Тип контента (post/page)
-     * @return array Настройки блоков для JS
-     */
+    * Возвращает настройки для JS с учетом фильтрации по типу контента
+    * @param string $contentType Тип контента (post/page)
+    * @return array Настройки блоков для JS
+    */
     public function getPostBlocksForJS($contentType = 'post'): array {
         $blocks = [];
         $dbSettings = $this->getBlockSettingsFromDB();
@@ -222,10 +213,9 @@ class PostBlockManager {
     }
 
     /**
-     * Загружает активы для постблока в админке
-     *
-     * @param string $systemName Системное имя блока
-     */
+    * Загружает активы для постблока в админке
+    * @param string $systemName Системное имя блока
+    */
     public function loadPostBlockAssets($systemName) {
         $postBlock = $this->getPostBlock($systemName);
         if ($postBlock && $postBlock['class']) {
@@ -262,8 +252,8 @@ class PostBlockManager {
     }
     
     /**
-     * Загружает активы для всех постблоков с обработкой ошибок
-     */
+    * Загружает активы для всех постблоков с обработкой ошибок
+    */
     public function loadAllPostBlockAssets() {
         foreach ($this->postBlocks as $systemName => $block) {
             try {
@@ -275,10 +265,9 @@ class PostBlockManager {
     }
     
     /**
-     * Загружает фронтенд ассеты для постблока
-     *
-     * @param string $systemName Системное имя блока
-     */
+    * Загружает фронтенд ассеты для постблока
+    * @param string $systemName Системное имя блока
+    */
     public function loadPostBlockFrontendAssets($systemName) {
         $postBlock = $this->getPostBlock($systemName);
         if ($postBlock && $postBlock['class']) {
@@ -315,10 +304,9 @@ class PostBlockManager {
     }
     
     /**
-     * Загружает фронтенд ассеты для массива блоков
-     *
-     * @param array $blocksData Данные блоков
-     */
+    * Загружает фронтенд ассеты для массива блоков
+    * @param array $blocksData Данные блоков
+    */
     public function loadFrontendAssetsForBlocks(array $blocksData) {
         foreach ($blocksData as $blockData) {
             if (is_array($blockData) && isset($blockData['type'])) {
@@ -328,10 +316,9 @@ class PostBlockManager {
     }
 
     /**
-     * Получить информацию о всех постблоках для админки
-     *
-     * @return array Информация о постблоках
-     */
+    * Получить информацию о всех постблоках для админки
+    * @return array Информация о постблоках
+    */
     public function getAllPostBlocksInfo() {
         $blocks = [];
         
@@ -353,10 +340,9 @@ class PostBlockManager {
     }
 
     /**
-     * Возвращает все доступные блоки как экземпляры классов
-     *
-     * @return array Экземпляры блоков
-     */
+    * Возвращает все доступные блоки как экземпляры классов
+    * @return array Экземпляры блоков
+    */
     public function getAllBlocks() {
         $blocks = [];
         foreach ($this->postBlocks as $systemName => $block) {

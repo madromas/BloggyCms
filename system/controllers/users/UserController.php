@@ -1,21 +1,14 @@
 <?php
 
 /**
- * Контроллер для управления пользователями в публичной части сайта
- * Отображает профили пользователей и страницы достижений
- * 
- * @package Controllers
- * @extends Controller
- */
+* Контроллер для управления пользователями в публичной части сайта
+* @package Controllers
+*/
 class UserController extends Controller {
     
-    /** @var UserModel Модель для работы с пользователями */
     private $userModel;
-    
-    /** @var FieldModel Модель для работы с пользовательскими полями */
     private $fieldModel;
 
-    /** @var array Информация о контроллере для административной панели */
     protected $controllerInfo = [
         'name' => 'Пользователи',
         'author' => 'BloggyCMS', 
@@ -25,11 +18,9 @@ class UserController extends Controller {
     ];
 
     /**
-     * Конструктор контроллера
-     * Инициализирует модели пользователей и пользовательских полей
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор контроллера
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         $this->userModel = new UserModel($db);
@@ -37,10 +28,9 @@ class UserController extends Controller {
     }
 
     /**
-     * Отображает список пользователей (публичная часть)
-     * 
-     * @return void
-     */
+    * Отображает список пользователей (публичная часть) 
+    * @return void
+    */
     public function indexAction() {
         $action = new \users\actions\FrontIndex($this->db);
         $action->setController($this);
@@ -48,11 +38,10 @@ class UserController extends Controller {
     }
 
     /**
-     * Отображает публичный профиль пользователя по имени пользователя
-     * 
-     * @param string $username Имя пользователя
-     * @return void
-     */
+    * Отображает публичный профиль пользователя по имени пользователя 
+    * @param string $username Имя пользователя
+    * @return void
+    */
     public function showAction($username) {
         $action = new \users\actions\FrontShow($this->db, ['username' => $username]);
         $action->setController($this);
@@ -60,10 +49,9 @@ class UserController extends Controller {
     }
     
     /**
-     * Отображает страницу со списком всех достижений системы
-     * 
-     * @return void
-     */
+    * Отображает страницу со списком всех достижений системы 
+    * @return void
+    */
     public function achievementsAction() {
         $action = new \users\actions\achievements\FrontIndex($this->db);
         $action->setController($this);
@@ -71,12 +59,10 @@ class UserController extends Controller {
     }
     
     /**
-     * Отображает страницу конкретного достижения с информацией о нем
-     * и пользователях, которые его получили
-     * 
-     * @param int $id ID достижения
-     * @return void
-     */
+    * Отображает страницу конкретного достижения с информацией о нем 
+    * @param int $id ID достижения
+    * @return void
+    */
     public function achievementAction($id) {
         $action = new \users\actions\achievements\FrontShow($this->db, ['id' => $id]);
         $action->setController($this);

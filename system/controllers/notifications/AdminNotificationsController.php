@@ -1,22 +1,14 @@
 <?php
 
 /**
- * Контроллер управления уведомлениями в административной панели
- * Обрабатывает запросы, связанные с отображением и управлением уведомлениями
- * Поддерживает как обычные страницы, так и AJAX-запросы
- * 
- * @package Controllers
- * @extends Controller
- */
+* Контроллер управления уведомлениями в административной панели
+* @package Controllers
+*/
 class AdminNotificationsController extends Controller {
     
-    /** @var NotificationModel Модель для работы с уведомлениями */
     private $notificationModel;
-    
-    /** @var UserModel Модель для работы с пользователями */
     private $userModel;
     
-    /** @var array Информация о контроллере */
     protected $controllerInfo = [
         'name' => 'Уведомления',
         'author' => 'BloggyCMS',
@@ -26,38 +18,32 @@ class AdminNotificationsController extends Controller {
     ];
     
     /**
-     * Конструктор контроллера
-     * Инициализирует модели и проверяет права доступа
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор контроллера
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         
         $this->notificationModel = new NotificationModel($db);
         $this->userModel = new UserModel($db);
         
-        // Проверка прав доступа
         if (!$this->checkAdminAccess()) {
             $this->handleAccessDenied();
         }
     }
     
     /**
-     * Проверяет права доступа администратора
-     * 
-     * @return bool true если пользователь администратор, false в противном случае
-     */
+    * Проверяет права доступа администратора
+    * @return bool true если пользователь администратор, false в противном случае
+    */
     private function checkAdminAccess() {
         return Auth::isAdmin();
     }
     
     /**
-     * Обрабатывает ситуацию с отсутствием прав доступа
-     * В зависимости от типа запроса возвращает JSON-ошибку или редирект
-     * 
-     * @return void
-     */
+    * Обрабатывает ситуацию с отсутствием прав доступа
+    * @return void
+    */
     private function handleAccessDenied() {
         if ($this->isAjaxRequest()) {
             http_response_code(403);
@@ -74,21 +60,18 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Проверяет, является ли текущий запрос AJAX-запросом
-     * 
-     * @return bool true если запрос AJAX, false в противном случае
-     */
+    * Проверяет, является ли текущий запрос AJAX-запросом 
+    * @return bool true если запрос AJAX, false в противном случае
+    */
     private function isAjaxRequest() {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
     
     /**
-     * Получить количество непрочитанных уведомлений (AJAX)
-     * Используется для обновления счетчика в интерфейсе
-     * 
-     * @return void
-     */
+    * Получить количество непрочитанных уведомлений (AJAX) 
+    * @return void
+    */
     public function getUnreadCountAction() {
         try {
             $userId = Auth::getUserId();
@@ -102,11 +85,9 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Получить список уведомлений (AJAX)
-     * Поддерживает пагинацию и фильтрацию по статусу прочтения
-     * 
-     * @return void
-     */
+    * Получить список уведомлений (AJAX)
+    * @return void
+    */
     public function getListAction() {
         try {
             $userId = Auth::getUserId();
@@ -114,7 +95,6 @@ class AdminNotificationsController extends Controller {
             $offset = (int)($_GET['offset'] ?? 0);
             $unreadOnly = isset($_GET['unread_only']) ? (bool)$_GET['unread_only'] : false;
             
-            // Получение уведомлений с деталями
             $notifications = $this->notificationModel->getUserNotificationsWithDetails(
                 $userId, 
                 $limit, 
@@ -122,7 +102,6 @@ class AdminNotificationsController extends Controller {
                 $unreadOnly
             );
             
-            // Форматирование уведомлений для вывода
             $formatted = [];
             foreach ($notifications as $notification) {
                 $formatted[] = $this->formatNotification($notification);
@@ -139,11 +118,9 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Главная страница уведомлений
-     * Отображает список всех уведомлений пользователя
-     * 
-     * @return void
-     */
+    * Главная страница уведомлений
+    * @return void
+    */
     public function adminIndexAction() {
         $action = new \notifications\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -151,11 +128,10 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Отметить конкретное уведомление как прочитанное
-     * 
-     * @param int $id ID уведомления
-     * @return void
-     */
+    * Отметить конкретное уведомление как прочитанное
+    * @param int $id ID уведомления
+    * @return void
+    */
     public function adminMarkAsReadAction($id) {
         $action = new \notifications\actions\AdminMarkAsRead($this->db, ['id' => $id]);
         $action->setController($this);
@@ -163,10 +139,9 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Отметить все уведомления пользователя как прочитанные
-     * 
-     * @return void
-     */
+    * Отметить все уведомления пользователя как прочитанные 
+    * @return void
+    */
     public function adminMarkAllAsReadAction() {
         $action = new \notifications\actions\AdminMarkAllAsRead($this->db);
         $action->setController($this);
@@ -174,11 +149,10 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Удалить конкретное уведомление
-     * 
-     * @param int $id ID уведомления
-     * @return void
-     */
+    * Удалить конкретное уведомление
+    * @param int $id ID уведомления
+    * @return void
+    */
     public function adminDeleteAction($id) {
         $action = new \notifications\actions\AdminDelete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -186,10 +160,9 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Очистить все прочитанные уведомления
-     * 
-     * @return void
-     */
+    * Очистить все прочитанные уведомления
+    * @return void
+    */
     public function adminClearAction() {
         $action = new \notifications\actions\AdminClear($this->db);
         $action->setController($this);
@@ -197,16 +170,13 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Форматирует уведомление для вывода в интерфейсе
-     * Добавляет иконку, цвет, форматированное время и обрабатывает специфичные типы
-     * 
-     * @param array $notification Данные уведомления из БД
-     * @return array Отформатированное уведомление
-     */
+    * Форматирует уведомление для вывода в интерфейсе
+    * @param array $notification Данные уведомления из БД
+    * @return array Отформатированное уведомление
+    */
     private function formatNotification($notification) {
         $data = json_decode($notification['data'] ?? '{}', true);
         
-        // Базовое форматирование
         $result = [
             'id' => (int)$notification['id'],
             'type' => $notification['type'],
@@ -221,7 +191,6 @@ class AdminNotificationsController extends Controller {
             'created_at' => $notification['created_at']
         ];
         
-        // Специфичная обработка для разных типов уведомлений
         switch ($notification['type']) {
             case 'new_comment':
                 return $this->formatCommentNotification($notification, $data, $result);
@@ -241,13 +210,12 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Форматирует уведомление о новом комментарии
-     * 
-     * @param array $notification Исходное уведомление
-     * @param array $data Дополнительные данные
-     * @param array $result Базовый результат форматирования
-     * @return array Отформатированное уведомление
-     */
+    * Форматирует уведомление о новом комментарии 
+    * @param array $notification Исходное уведомление
+    * @param array $data Дополнительные данные
+    * @param array $result Базовый результат форматирования
+    * @return array Отформатированное уведомление
+    */
     private function formatCommentNotification($notification, $data, $result) {
         $postTitle = $data['post_title'] ?? 'Неизвестный пост';
         $authorName = $data['author_name'] ?? 'Аноним';
@@ -266,13 +234,12 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Форматирует уведомление о новом пользователе
-     * 
-     * @param array $notification Исходное уведомление
-     * @param array $data Дополнительные данные
-     * @param array $result Базовый результат форматирования
-     * @return array Отформатированное уведомление
-     */
+    * Форматирует уведомление о новом пользователе
+    * @param array $notification Исходное уведомление
+    * @param array $data Дополнительные данные
+    * @param array $result Базовый результат форматирования
+    * @return array Отформатированное уведомление
+    */
     private function formatNewUserNotification($notification, $data, $result) {
         $userName = $data['username'] ?? $notification['created_by_username'] ?? 'Новый пользователь';
         
@@ -283,13 +250,12 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Форматирует системное уведомление
-     * 
-     * @param array $notification Исходное уведомление
-     * @param array $data Дополнительные данные
-     * @param array $result Базовый результат форматирования
-     * @return array Отформатированное уведомление
-     */
+    * Форматирует системное уведомление
+    * @param array $notification Исходное уведомление
+    * @param array $data Дополнительные данные
+    * @param array $result Базовый результат форматирования
+    * @return array Отформатированное уведомление
+    */
     private function formatSystemNotification($notification, $data, $result) {
         return array_merge($result, [
             'title' => $notification['title'] ?? 'Системное уведомление',
@@ -298,11 +264,10 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Получить иконку для типа уведомления
-     * 
-     * @param string $type Тип уведомления
-     * @return string Название иконки Bootstrap Icons
-     */
+    * Получить иконку для типа уведомления
+    * @param string $type Тип уведомления
+    * @return string Название иконки Bootstrap Icons
+    */
     private function getNotificationIcon($type) {
         $icons = [
             'new_comment' => 'chat-dots',
@@ -316,11 +281,10 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Получить цвет для типа уведомления (для Bootstrap классов)
-     * 
-     * @param string $type Тип уведомления
-     * @return string Название цвета Bootstrap
-     */
+    * Получить цвет для типа уведомления (для Bootstrap классов)
+    * @param string $type Тип уведомления
+    * @return string Название цвета Bootstrap
+    */
     private function getNotificationColor($type) {
         $colors = [
             'new_comment' => 'primary',
@@ -334,12 +298,10 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Форматирует время в человекочитаемый формат
-     * Примеры: "Только что", "5 минут назад", "2 часа назад"
-     * 
-     * @param string $datetime Дата и время в формате MySQL
-     * @return string Отформатированное время
-     */
+    * Форматирует время в человекочитаемый формат
+    * @param string $datetime Дата и время в формате MySQL
+    * @return string Отформатированное время
+    */
     private function formatTime($datetime) {
         $now = time();
         $time = strtotime($datetime);
@@ -362,23 +324,21 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Склонение числительных для русского языка
-     * 
-     * @param int $number Число
-     * @param array $forms Массив форм слова [именительный, родительный единственное, родительное множественное]
-     * @return string Правильная форма слова
-     */
+    * Склонение числительных для русского языка 
+    * @param int $number Число
+    * @param array $forms Массив форм слова [именительный, родительный единственное, родительное множественное]
+    * @return string Правильная форма слова
+    */
     private function pluralize($number, $forms) {
         $cases = [2, 0, 1, 1, 1, 2];
         return $forms[($number % 100 > 4 && $number % 100 < 20) ? 2 : $cases[min($number % 10, 5)]];
     }
     
     /**
-     * Отправляет успешный JSON-ответ
-     * 
-     * @param array $data Дополнительные данные для ответа
-     * @return void
-     */
+    * Отправляет успешный JSON-ответ
+    * @param array $data Дополнительные данные для ответа
+    * @return void
+    */
     private function jsonSuccess($data = []) {
         header('Content-Type: application/json');
         echo json_encode(array_merge(['success' => true], $data));
@@ -386,12 +346,11 @@ class AdminNotificationsController extends Controller {
     }
     
     /**
-     * Отправляет JSON-ответ с ошибкой
-     * 
-     * @param string $message Сообщение об ошибке
-     * @param int $code HTTP-код ответа (по умолчанию 400)
-     * @return void
-     */
+    * Отправляет JSON-ответ с ошибкой
+    * @param string $message Сообщение об ошибке
+    * @param int $code HTTP-код ответа (по умолчанию 400)
+    * @return void
+    */
     private function jsonError($message, $code = 400) {
         http_response_code($code);
         header('Content-Type: application/json');

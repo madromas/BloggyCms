@@ -1,35 +1,25 @@
 <?php
 
 /**
- * Вспомогательный класс для управления резервными копиями шаблонов
- * Предоставляет методы для создания, очистки и получения статистики
- * по резервным копиям файлов
- * 
- * @package Helpers
- */
+* Вспомогательный класс для управления резервными копиями шаблонов
+* @package Helpers
+*/
 class BackupHelper {
     
     /** @var object Подключение к базе данных (для нестатических методов) */
     private $db;
     
     /**
-     * Конструктор класса
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор класса 
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
     
     /**
-     * Получает статистику по резервным копиям
-     * Сканирует директорию шаблонов на наличие файлов с расширением .backup.
-     * 
-     * @return array Статистика с полями:
-     *               - total_files: общее количество файлов
-     *               - total_size: общий размер (отформатированный)
-     *               - oldest_backup: дата самой старой копии
-     */
+    * Получает статистику по резервным копиям
+    */
     public static function getBackupStats() {
         $stats = [
             'total_files' => 0,
@@ -40,7 +30,6 @@ class BackupHelper {
         $templatesPath = TEMPLATES_PATH;
         $backupFiles = [];
         
-        // Рекурсивный поиск всех файлов .backup.
         try {
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($templatesPath, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -65,22 +54,18 @@ class BackupHelper {
             if ($oldestTime !== null) {
                 $stats['oldest_backup'] = date('d.m.Y H:i', $oldestTime);
             }
-        } catch (Exception $e) {
-            // Игнорируем ошибки
-        }
+        } catch (Exception $e) {}
         
-        // Форматируем размер
         $stats['total_size'] = self::formatFileSize($stats['total_size']);
         
         return $stats;
     }
     
     /**
-     * Форматирует размер файла в человекочитаемый вид
-     * 
-     * @param int $size Размер в байтах
-     * @return string Отформатированный размер (B, KB, MB)
-     */
+    * Форматирует размер файла в человекочитаемый вид 
+    * @param int $size Размер в байтах
+    * @return string Отформатированный размер (B, KB, MB)
+    */
     private static function formatFileSize($size) {
         if ($size < 1024) {
             return $size . ' B';
@@ -92,25 +77,21 @@ class BackupHelper {
     }
     
     /**
-     * Очищает старые резервные копии для конкретного файла
-     * Оставляет только указанное количество последних копий
-     * 
-     * @param string $filePath Путь к исходному файлу
-     * @return void
-     */
+    * Очищает старые резервные копии для конкретного файла
+    * @param string $filePath Путь к исходному файлу
+    * @return void
+    */
     public static function cleanupOldBackups($filePath) {
-        // Получаем настройки с правильными значениями по умолчанию
+
         $backupsEnabled = SettingsHelper::get('site', 'template_backups_enabled', false);
         $backupsCount = SettingsHelper::get('site', 'template_backups_count', 5);
         $cleanupMode = SettingsHelper::get('site', 'template_backups_cleanup', 'auto');
         
-        // Проверка существования настройки для обратной совместимости
         $settingExists = self::settingExists('site', 'template_backups_enabled');
         if (!$settingExists) {
-            $backupsEnabled = true; // обратная совместимость
+            $backupsEnabled = true;
         }
         
-        // Если бэкапы отключены или режим "никогда не удалять" - выход
         if (!$backupsEnabled || $cleanupMode === 'never') {
             return;
         }
@@ -121,12 +102,10 @@ class BackupHelper {
         
         $backups = glob($pattern);
         
-        // Сортировка по времени создания (новые сначала)
         usort($backups, function($a, $b) {
             return filemtime($b) - filemtime($a);
         });
         
-        // Удаление старых бэкапов, оставляя только $backupsCount последних
         if (count($backups) > $backupsCount) {
             for ($i = $backupsCount; $i < count($backups); $i++) {
                 @unlink($backups[$i]);
@@ -135,17 +114,13 @@ class BackupHelper {
     }
     
     /**
-     * Создает резервную копию файла
-     * Копия создается с добавлением временной метки: .backup.ГГГГ-ММ-ДД-ЧЧ-ММ-СС
-     * 
-     * @param string $filePath Путь к исходному файлу
-     * @return bool true при успешном создании, false при ошибке
-     */
+    * Создает резервную копию файла 
+    * @param string $filePath Путь к исходному файлу
+    * @return bool true при успешном создании, false при ошибке
+    */
     public static function createBackup($filePath) {
-        // Получение настройки
         $backupsEnabled = SettingsHelper::get('site', 'template_backups_enabled', false);
         
-        // Правильная проверка с учетом разных типов данных
         $isEnabled = ($backupsEnabled === true || $backupsEnabled === '1' || $backupsEnabled === 1);
         
         if (!$isEnabled) {
@@ -167,13 +142,11 @@ class BackupHelper {
     }
 
     /**
-     * Проверяет, существует ли настройка в базе данных
-     * Используется для обратной совместимости
-     * 
-     * @param string $section Секция настроек
-     * @param string $key Ключ настройки
-     * @return bool true если настройка существует
-     */
+    * Проверяет, существует ли настройка в базе данных
+    * @param string $section Секция настроек
+    * @param string $key Ключ настройки
+    * @return bool true если настройка существует
+    */
     private static function settingExists($section, $key) {
         try {
             $db = Database::getInstance();
@@ -183,22 +156,18 @@ class BackupHelper {
             );
             return $result['count'] > 0;
         } catch (Exception $e) {
-            // Если произошла ошибка, считаем что настройка не существует
             return false;
         }
     }
     
     /**
-     * Очищает все резервные копии
-     * Удаляет все файлы с расширением .backup. в директории шаблонов
-     * 
-     * @return int Количество удаленных файлов
-     */
+    * Очищает все резервные копии
+    * @return int Количество удаленных файлов
+    */
     public static function cleanupAllBackups() {
         $templatesPath = TEMPLATES_PATH;
         $deletedCount = 0;
         
-        // Рекурсивный поиск и удаление всех файлов .backup.
         try {
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($templatesPath, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -212,9 +181,7 @@ class BackupHelper {
                     }
                 }
             }
-        } catch (Exception $e) {
-            // Игнорируем ошибки
-        }
+        } catch (Exception $e) {}
         
         return $deletedCount;
     }

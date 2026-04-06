@@ -1,43 +1,34 @@
 <?php
 
 /**
- * Поле типа "изображение" для системы пользовательских полей
- * Позволяет загружать, просматривать и удалять изображения
- * Поддерживает валидацию размеров, типов файлов и работу с FileUpload хелпером
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "изображение" для системы пользовательских полей
+* @package Fields
+*/
 class ImageField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'image'
-     */
+    * Возвращает тип поля 
+    * @return string 'image'
+    */
     public function getType(): string {
         return 'image';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Изображение'
-     */
+    * Возвращает отображаемое название типа поля
+    * @return string 'Изображение'
+    */
     public function getName(): string {
         return 'Изображение';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Отображает текущее изображение (если есть), чекбокс для удаления
-     * и поле для загрузки нового файла
-     * 
-     * @param mixed $value Текущее значение поля (имя файла)
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме
+    * @param mixed $value Текущее значение поля (имя файла)
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $maxSize = $this->config['max_size'] ?? 2048;
@@ -81,14 +72,12 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Показывает изображение в увеличенном размере
-     * 
-     * @param mixed $value Значение поля (имя файла)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре 
+    * @param mixed $value Значение поля (имя файла)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">Изображение не загружено</span>';
         
@@ -103,14 +92,12 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает миниатюру изображения
-     * 
-     * @param mixed $value Значение поля (имя файла)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке 
+    * @param mixed $value Значение поля (имя файла)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">Нет</span>';
         
@@ -123,12 +110,10 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Валидирует значение поля
-     * Проверяет только обязательность, загрузка файла валидируется отдельно
-     * 
-     * @param mixed $value Значение для проверки
-     * @return bool true если значение корректно
-     */
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
     public function validate($value): bool {
         if (isset($this->config['required']) && $this->config['required'] && empty($value)) {
             return false;
@@ -137,34 +122,29 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Обрабатывает значение перед сохранением
-     * Для изображений возвращает имя файла как есть
-     * 
-     * @param mixed $value Исходное значение
-     * @return string Имя файла
-     */
+    * Обрабатывает значение перед сохранением
+    * @param mixed $value Исходное значение
+    * @return string Имя файла
+    */
     public function processValue($value) {
         return $value;
     }
     
     /**
-     * Указывает, что поле требует обработки файлов
-     * 
-     * @return bool true
-     */
+    * Указывает, что поле требует обработки файлов
+    * @return bool true
+    */
     public function requiresFileUpload(): bool {
         return true;
     }
     
     /**
-     * Обрабатывает загрузку файла
-     * Загружает новый файл, удаляет старый при необходимости
-     * 
-     * @param array $fileData Данные из $_FILES
-     * @param string|null $currentValue Текущее значение поля
-     * @return string|null Имя загруженного файла
-     * @throws Exception При ошибке загрузки
-     */
+    * Обрабатывает загрузку файла
+    * @param array $fileData Данные из $_FILES
+    * @param string|null $currentValue Текущее значение поля
+    * @return string|null Имя загруженного файла
+    * @throws Exception При ошибке загрузки
+    */
     public function processFileUpload($fileData, $currentValue = null) {
         if (empty($fileData['tmp_name'])) {
             return $currentValue;
@@ -189,11 +169,10 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Обрабатывает удаление файла
-     * 
-     * @param string|null $currentValue Текущее значение поля
-     * @return null Всегда возвращает null
-     */
+    * Обрабатывает удаление файла
+    * @param string|null $currentValue Текущее значение поля
+    * @return null Всегда возвращает null
+    */
     public function handleDelete($currentValue) {
         if (!empty($currentValue)) {
             $filePath = UPLOADS_PATH . '/images/' . $currentValue;
@@ -203,11 +182,9 @@ class ImageField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать максимальный размер файла и разрешенные форматы
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $maxSize = htmlspecialchars($this->config['max_size'] ?? '2048');
         $allowedTypes = htmlspecialchars($this->config['allowed_types'] ?? 'jpg,jpeg,png,gif,webp');

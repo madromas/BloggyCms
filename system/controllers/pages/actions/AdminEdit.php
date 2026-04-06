@@ -274,12 +274,10 @@ class AdminEdit extends PageAction {
                 : json_decode($field['config'] ?? '{}', true);
             
             $fieldModel->saveFieldValue(
-                $field['id'], 
-                'page', 
-                $this->id, 
-                $value,
-                $field['type'],
-                $config
+                'page',
+                $this->id,
+                $field['system_name'],
+                $value
             );
             
         } catch (\Exception $e) {

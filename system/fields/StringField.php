@@ -1,42 +1,35 @@
 <?php
 
 /**
- * Поле типа "текстовая строка" для системы пользовательских полей
- * Позволяет вводить однострочный текст с поддержкой валидации,
- * ограничений по длине и регулярных выражений
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "текстовая строка" для системы пользовательских полей 
+* @package Fields
+* @extends BaseField
+*/
 class StringField extends BaseField {
 
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'string'
-     */
+    * Возвращает тип поля
+    * @return string 'string'
+    */
     public function getType(): string {
         return 'string';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Текстовая строка'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'Текстовая строка'
+    */
     public function getName(): string {
         return 'Текстовая строка';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает input type="text" с поддержкой плейсхолдера и максимальной длины
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме 
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $placeholder = $this->config['placeholder'] ?? '';
         $maxlength = $this->config['maxlength'] ?? '';
@@ -54,38 +47,33 @@ class StringField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         return "<span class='field-string'>" . htmlspecialchars($value) . "</span>";
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Обрезает длинный текст до 50 символов с многоточием
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         $truncated = mb_strlen($value) > 50 ? mb_substr($value, 0, 50) . '...' : $value;
         return "<span title='" . htmlspecialchars($value) . "'>" . htmlspecialchars($truncated) . "</span>";
     }
     
     /**
-     * Валидирует значение поля
-     * Проверяет обязательность, максимальную длину и соответствие регулярному выражению
-     * 
-     * @param mixed $value Значение для проверки
-     * @return bool true если значение корректно
-     */
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
     public function validate($value): bool {
         if (isset($this->config['required']) && $this->config['required'] && empty($value)) {
             return false;
@@ -103,11 +91,9 @@ class StringField extends BaseField {
     }
 
     /**
-     * Возвращает шорткод для строкового поля
-     * Регистрирует шорткод с поддержкой форматирования
-     * 
-     * @return string Имя шорткода
-     */
+    * Возвращает шорткод для строкового поля 
+    * @return string Имя шорткода
+    */
     public function getShortcode(): string {
         $systemName = $this->getSystemName();
         $entityType = $this->getEntityType();
@@ -122,12 +108,10 @@ class StringField extends BaseField {
     }
 
     /**
-     * Рендерит шорткод для строкового поля
-     * Поддерживает преобразование регистра и обрезку длины
-     * 
-     * @param array $attrs Атрибуты шорткода
-     * @return string Отформатированное значение
-     */
+    * Рендерит шорткод для строкового поля 
+    * @param array $attrs Атрибуты шорткода
+    * @return string Отформатированное значение
+    */
     private function renderStringShortcode($attrs): string {
         $entityId = $attrs['id'] ?? $this->entityId;
         $value = $this->getValue($entityId);
@@ -138,7 +122,6 @@ class StringField extends BaseField {
         
         $formattedValue = $value;
         
-        // Преобразование регистра
         if (isset($attrs['uppercase']) && $attrs['uppercase'] === 'true') {
             $formattedValue = mb_strtoupper($formattedValue);
         }
@@ -151,7 +134,6 @@ class StringField extends BaseField {
             $formattedValue = mb_convert_case($formattedValue, MB_CASE_TITLE);
         }
         
-        // Обрезка длины
         if (isset($attrs['maxlength'])) {
             $maxLength = (int)$attrs['maxlength'];
             if (mb_strlen($formattedValue) > $maxLength) {
@@ -163,12 +145,9 @@ class StringField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать плейсхолдер, максимальную длину, регулярное выражение
-     * и значение по умолчанию
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели 
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $placeholder = htmlspecialchars($this->config['placeholder'] ?? '');
         $maxlength = htmlspecialchars($this->config['maxlength'] ?? '');

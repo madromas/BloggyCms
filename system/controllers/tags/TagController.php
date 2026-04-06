@@ -1,22 +1,14 @@
 <?php
 
 /**
- * Контроллер для управления тегами
- * Обрабатывает запросы, связанные с отображением, созданием, редактированием,
- * удалением тегов как в публичной части, так и в административной панели
- * 
- * @package Controllers
- * @extends Controller
- */
+* Контроллер для управления тегами
+* @package Controllers
+*/
 class TagController extends Controller {
     
-    /** @var TagModel Модель для работы с тегами */
     private $tagModel;
-    
-    /** @var PostModel Модель для работы с постами */
     private $postModel;
 
-    /** @var array Информация о контроллере для административной панели */
     protected $controllerInfo = [
         'name' => 'Теги',
         'author' => 'BloggyCMS', 
@@ -26,20 +18,17 @@ class TagController extends Controller {
     ];
 
     /**
-     * Возвращает настройки контроллера по умолчанию
-     * 
-     * @return array Пустой массив настроек
-     */
+    * Возвращает настройки контроллера по умолчанию 
+    * @return array Пустой массив настроек
+    */
     public function getDefaultSettings() {
         return [];
     }
     
     /**
-     * Конструктор контроллера
-     * Инициализирует модели и проверяет права доступа для административных действий
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор контроллера 
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         
@@ -66,29 +55,26 @@ class TagController extends Controller {
     }
 
     /**
-     * Проверяет, имеет ли текущий пользователь права администратора
-     * 
-     * @return bool true если пользователь администратор
-     */
+    * Проверяет, имеет ли текущий пользователь права администратора
+    * @return bool true если пользователь администратор
+    */
     private function checkAdminAccess() {
         return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
 
     /**
-     * Проверяет, является ли текущий запрос AJAX-запросом
-     * 
-     * @return bool true если запрос AJAX
-     */
+    * Проверяет, является ли текущий запрос AJAX-запросом 
+    * @return bool true если запрос AJAX
+    */
     private function isAjaxRequest() {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
     
     /**
-     * Отображает список тегов в публичной части
-     * 
-     * @return void
-     */
+    * Отображает список тегов в публичной части 
+    * @return void
+    */
     public function indexAction() {
         $action = new \tags\actions\Index($this->db);
         $action->setController($this);
@@ -96,10 +82,9 @@ class TagController extends Controller {
     }
     
     /**
-     * Отображает список тегов в административной панели
-     * 
-     * @return void
-     */
+    * Отображает список тегов в административной панели
+    * @return void
+    */
     public function adminIndexAction() {
         $action = new \tags\actions\AdminIndex($this->db);
         $action->setController($this);
@@ -107,10 +92,9 @@ class TagController extends Controller {
     }
     
     /**
-     * Отображает форму создания нового тега
-     * 
-     * @return void
-     */
+    * Отображает форму создания нового тега 
+    * @return void
+    */
     public function createAction() {
         $action = new \tags\actions\Create($this->db);
         $action->setController($this);
@@ -118,11 +102,10 @@ class TagController extends Controller {
     }
     
     /**
-     * Отображает форму редактирования существующего тега
-     * 
-     * @param int $id ID тега
-     * @return void
-     */
+    * Отображает форму редактирования существующего тега 
+    * @param int $id ID тега
+    * @return void
+    */
     public function editAction($id) {
         $action = new \tags\actions\Edit($this->db, ['id' => $id]);
         $action->setController($this);
@@ -130,11 +113,10 @@ class TagController extends Controller {
     }
     
     /**
-     * Удаляет тег
-     * 
-     * @param int $id ID тега
-     * @return void
-     */
+    * Удаляет тег
+    * @param int $id ID тега
+    * @return void
+    */
     public function deleteAction($id) {
         $action = new \tags\actions\Delete($this->db, ['id' => $id]);
         $action->setController($this);
@@ -142,11 +124,10 @@ class TagController extends Controller {
     }
     
     /**
-     * Отображает страницу с постами по тегу
-     * 
-     * @param string $slug URL-адрес тега
-     * @return void
-     */
+    * Отображает страницу с постами по тегу
+    * @param string $slug URL-адрес тега
+    * @return void
+    */
     public function showAction($slug) {
         $action = new \tags\actions\Show($this->db, ['slug' => $slug]);
         $action->setController($this);
@@ -154,10 +135,9 @@ class TagController extends Controller {
     }
     
     /**
-     * Поиск тегов (административная часть)
-     * 
-     * @return void
-     */
+    * Поиск тегов (административная часть)
+    * @return void
+    */
     public function searchAction() {
         $action = new \tags\actions\Search($this->db);
         $action->setController($this);
@@ -165,10 +145,9 @@ class TagController extends Controller {
     }
     
     /**
-     * Создание тега через AJAX (для автодополнения)
-     * 
-     * @return void
-     */
+    * Создание тега через AJAX (для автодополнения)
+    * @return void
+    */
     public function createAjaxAction() {
         $action = new \tags\actions\CreateAjax($this->db);
         $action->setController($this);

@@ -1,9 +1,8 @@
 <?php
 /**
- * API Helper - Единый интерфейс для работы с моделями
- * 
- * Автоматически находит все модели, реализующие ModelAPI
- */
+* API Helper - Единый интерфейс для работы с моделями 
+* Автоматически находит все модели, реализующие ModelAPI
+*/
 
 class API {
     
@@ -11,8 +10,8 @@ class API {
     private static $modelsMap = null;
     
     /**
-     * Сканирует все модели в системе
-     */
+    * Сканирует все модели в системе
+    */
     private static function scanModels() {
         if (self::$modelsMap !== null) {
             return;
@@ -60,8 +59,8 @@ class API {
     }
     
     /**
-     * Магический вызов
-     */
+    * Магический вызов
+    */
     public static function __callStatic($name, $arguments) {
         self::scanModels();
         
@@ -74,8 +73,8 @@ class API {
     }
     
     /**
-     * Получить прокси для модели
-     */
+    * Получить прокси для модели
+    */
     public static function model($name) {
         self::scanModels();
         
@@ -97,8 +96,8 @@ class API {
     }
     
     /**
-     * Вызвать метод модели
-     */
+    * Вызвать метод модели
+    */
     public static function call($modelName, $method, $args = []) {
         self::scanModels();
         
@@ -121,16 +120,16 @@ class API {
     }
     
     /**
-     * Получить список всех доступных моделей
-     */
+    * Получить список всех доступных моделей
+    */
     public static function getAvailableModels() {
         self::scanModels();
         return self::$modelsMap;
     }
     
     /**
-     * Получить методы модели
-     */
+    * Получить методы модели
+    */
     public static function getModelMethods($modelName) {
         self::scanModels();
         
@@ -146,16 +145,16 @@ class API {
     }
 
     /**
-     * Проверить существование модели
-     */
+    * Проверить существование модели
+    */
     public static function hasModel($modelName) {
         self::scanModels();
         return isset(self::$modelsMap[$modelName]);
     }
     
     /**
-     * Очистить кэш
-     */
+    * Очистить кэш
+    */
     public static function clearCache() {
         self::$instances = [];
         self::$modelsMap = null;

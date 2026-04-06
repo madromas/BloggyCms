@@ -1,33 +1,26 @@
 <?php
 
 /**
- * Модель для работы с блоками контента (постблоками) в базе данных
- * Предоставляет методы для работы с блоками в постах и страницах,
- * управления настройками блоков и пресетами
- * 
- * @package Models
- */
+* Модель для работы с блоками контента (постблоками) в базе данных
+* @package Models
+*/
 class PostBlockModel {
     
-    /** @var object Подключение к базе данных */
     private $db;
     
     /**
-     * Конструктор модели
-     * Инициализирует подключение к базе данных
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор модели 
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
     
     /**
-     * Получить все блоки поста
-     * 
-     * @param int $postId ID поста
-     * @return array Массив блоков с декодированными JSON-данными
-     */
+    * Получить все блоки поста
+    * @param int $postId ID поста
+    * @return array Массив блоков с декодированными JSON-данными
+    */
     public function getByPost($postId) {
         $blocks = $this->db->fetchAll("
             SELECT * FROM post_blocks 
@@ -35,7 +28,6 @@ class PostBlockModel {
             ORDER BY `order` ASC
         ", [$postId]);
         
-        // Декодируем JSON данные
         foreach ($blocks as &$block) {
             if (is_string($block['content'])) {
                 $decoded = json_decode($block['content'], true);
@@ -60,11 +52,10 @@ class PostBlockModel {
     }
     
     /**
-     * Получить все блоки страницы
-     * 
-     * @param int $pageId ID страницы
-     * @return array Массив блоков с декодированными JSON-данными
-     */
+    * Получить все блоки страницы
+    * @param int $pageId ID страницы
+    * @return array Массив блоков с декодированными JSON-данными
+    */
     public function getByPage($pageId) {
         $blocks = $this->db->fetchAll("
             SELECT * FROM page_blocks 
@@ -96,15 +87,14 @@ class PostBlockModel {
     }
     
     /**
-     * Создать блок для поста
-     * 
-     * @param int $postId ID поста
-     * @param string $type Тип блока
-     * @param mixed $content Контент блока
-     * @param array $settings Настройки блока
-     * @param int $order Порядковый номер
-     * @return bool Результат выполнения запроса
-     */
+    * Создать блок для поста
+    * @param int $postId ID поста
+    * @param string $type Тип блока
+    * @param mixed $content Контент блока
+    * @param array $settings Настройки блока
+    * @param int $order Порядковый номер
+    * @return bool Результат выполнения запроса
+    */
     public function createForPost($postId, $type, $content, $settings = [], $order = 0) {
         $sql = "INSERT INTO post_blocks (post_id, type, content, settings, `order`) VALUES (?, ?, ?, ?, ?)";
         return $this->db->query($sql, [
@@ -117,50 +107,41 @@ class PostBlockModel {
     }
     
     /**
-     * Создать блок для страницы
-     * Содержит дополнительную обработку и очистку данных
-     * 
-     * @param int $pageId ID страницы
-     * @param string $type Тип блока
-     * @param mixed $content Контент блока
-     * @param array $settings Настройки блока
-     * @param int $order Порядковый номер
-     * @return bool Результат выполнения запроса
-     */
+    * Создать блок для страницы
+    * @param int $pageId ID страницы
+    * @param string $type Тип блока
+    * @param mixed $content Контент блока
+    * @param array $settings Настройки блока
+    * @param int $order Порядковый номер
+    * @return bool Результат выполнения запроса
+    */
     public function createForPage($pageId, $type, $content, $settings = [], $order = 0) {
         if (!is_array($content)) {
-            // Если это JSON строка, декодируем
             if (is_string($content) && (strpos($content, '{') === 0 || strpos($content, '[') === 0)) {
                 $decoded = json_decode($content, true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                     $content = $decoded;
                 } else {
-                    // Если не JSON, создаем базовую структуру
                     $content = ['text' => $content];
                 }
             } else {
-                // Простая строка
                 $content = ['text' => $content];
             }
         }
 
-        // Очищаем данные от лишнего экранирования
         foreach ($content as $key => $value) {
             if (is_string($value)) {
                 $content[$key] = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-                // Убираем лишние слеши
                 $content[$key] = stripslashes($content[$key]);
             }
         }
 
-        // Убедимся, что settings - массив
         if (!is_array($settings)) {
             $settings = [];
         }
 
         $sql = "INSERT INTO page_blocks (page_id, type, content, settings, `order`) VALUES (?, ?, ?, ?, ?)";
         
-        // ВАЖНО: Сохраняем как JSON
         $contentJson = json_encode($content, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $settingsJson = json_encode($settings, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
@@ -174,31 +155,28 @@ class PostBlockModel {
     }
     
     /**
-     * Удалить все блоки поста
-     * 
-     * @param int $postId ID поста
-     * @return bool Результат выполнения запроса
-     */
+    * Удалить все блоки поста 
+    * @param int $postId ID поста
+    * @return bool Результат выполнения запроса
+    */
     public function deleteByPost($postId) {
         return $this->db->query("DELETE FROM post_blocks WHERE post_id = ?", [$postId]);
     }
     
     /**
-     * Удалить все блоки страницы
-     * 
-     * @param int $pageId ID страницы
-     * @return bool Результат выполнения запроса
-     */
+    * Удалить все блоки страницы 
+    * @param int $pageId ID страницы
+    * @return bool Результат выполнения запроса
+    */
     public function deleteByPage($pageId) {
         return $this->db->query("DELETE FROM page_blocks WHERE page_id = ?", [$pageId]);
     }
     
     /**
-     * Обновить порядок блоков
-     * 
-     * @param array $blocks Массив ID блоков с новым порядком
-     * @return void
-     */
+    * Обновить порядок блоков
+    * @param array $blocks Массив ID блоков с новым порядком
+    * @return void
+    */
     public function updateOrder($blocks) {
         foreach ($blocks as $order => $blockId) {
             $this->db->query("UPDATE post_blocks SET `order` = ? WHERE id = ?", [$order, $blockId]);
@@ -206,16 +184,14 @@ class PostBlockModel {
     }
 
     /**
-     * Получить блок по ID
-     * 
-     * @param int $id ID блока
-     * @return array|null Данные блока или null, если не найден
-     */
+    * Получить блок по ID 
+    * @param int $id ID блока
+    * @return array|null Данные блока или null, если не найден
+    */
     public function getById($id) {
         $block = $this->db->fetch("SELECT * FROM page_blocks WHERE id = ?", [$id]);
         
         if ($block) {
-            // Декодируем JSON данные как в getByPage
             if (is_string($block['content'])) {
                 $decoded = json_decode($block['content'], true);
                 if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
@@ -239,12 +215,11 @@ class PostBlockModel {
     }
 
     /**
-     * Обновить блок
-     * 
-     * @param int $id ID блока
-     * @param array $data Данные для обновления
-     * @return bool Результат выполнения запроса
-     */
+    * Обновить блок
+    * @param int $id ID блока
+    * @param array $data Данные для обновления
+    * @return bool Результат выполнения запроса
+    */
     public function update($id, $data) {
         $sql = "UPDATE post_blocks SET type = ?, content = ?, settings = ?, `order` = ? WHERE id = ?";
         return $this->db->query($sql, [
@@ -257,11 +232,10 @@ class PostBlockModel {
     }
 
     /**
-     * Получить настройки блока из БД
-     * 
-     * @param string $systemName Системное имя блока
-     * @return array Настройки блока
-     */
+    * Получить настройки блока из БД
+    * @param string $systemName Системное имя блока
+    * @return array Настройки блока
+    */
     public function getBlockSettings($systemName) {
         $settings = $this->db->fetch(
             "SELECT * FROM post_block_settings WHERE system_name = ?",
@@ -294,12 +268,11 @@ class PostBlockModel {
     }
 
     /**
-     * Обновить настройки блока
-     * 
-     * @param string $systemName Системное имя блока
-     * @param array $settings Новые настройки
-     * @return bool true при успехе, false при ошибке
-     */
+    * Обновить настройки блока
+    * @param string $systemName Системное имя блока
+    * @param array $settings Новые настройки
+    * @return bool true при успехе, false при ошибке
+    */
     public function updateBlockSettings($systemName, $settings) {
         try {
             $existing = $this->db->fetch(
@@ -348,11 +321,10 @@ class PostBlockModel {
     }
 
     /**
-     * Создать настройки по умолчанию для блока
-     * 
-     * @param string $systemName Системное имя блока
-     * @return array Настройки по умолчанию
-     */
+    * Создать настройки по умолчанию для блока 
+    * @param string $systemName Системное имя блока
+    * @return array Настройки по умолчанию
+    */
     private function createDefaultSettings($systemName) {
         $postBlockManager = new PostBlockManager($this->db);
         $block = $postBlockManager->getPostBlock($systemName);
@@ -379,10 +351,9 @@ class PostBlockModel {
     }
 
     /**
-     * Получить все настройки блоков
-     * 
-     * @return array Массив настроек, индексированный по системным именам
-     */
+    * Получить все настройки блоков
+    * @return array Массив настроек, индексированный по системным именам
+    */
     public function getAllBlockSettings() {
         $settings = $this->db->fetchAll("SELECT * FROM post_block_settings");
         
@@ -399,11 +370,10 @@ class PostBlockModel {
     }
 
     /**
-     * Получить все пресеты для блока
-     * 
-     * @param string $systemName Системное имя блока
-     * @return array Массив пресетов
-     */
+    * Получить все пресеты для блока
+    * @param string $systemName Системное имя блока
+    * @return array Массив пресетов
+    */
     public function getBlockPresets($systemName) {
         return $this->db->fetchAll("
             SELECT * FROM post_block_presets 
@@ -413,11 +383,10 @@ class PostBlockModel {
     }
 
     /**
-     * Получить конкретный пресет по ID
-     * 
-     * @param int $id ID пресета
-     * @return array|null Данные пресета или null, если не найден
-     */
+    * Получить конкретный пресет по ID
+    * @param int $id ID пресета
+    * @return array|null Данные пресета или null, если не найден
+    */
     public function getPreset($id) {
         return $this->db->fetch("
             SELECT * FROM post_block_presets WHERE id = ?
@@ -425,13 +394,12 @@ class PostBlockModel {
     }
 
     /**
-     * Создать новый пресет для блока
-     * 
-     * @param string $systemName Системное имя блока
-     * @param string $presetName Название пресета
-     * @param string $presetTemplate Шаблон пресета
-     * @return bool Результат выполнения запроса
-     */
+    * Создать новый пресет для блока
+    * @param string $systemName Системное имя блока
+    * @param string $presetName Название пресета
+    * @param string $presetTemplate Шаблон пресета
+    * @return bool Результат выполнения запроса
+    */
     public function createPreset($systemName, $presetName, $presetTemplate) {
         return $this->db->query(
             "INSERT INTO post_block_presets (block_system_name, preset_name, preset_template) 
@@ -441,13 +409,12 @@ class PostBlockModel {
     }
 
     /**
-     * Обновить существующий пресет
-     * 
-     * @param int $id ID пресета
-     * @param string $presetName Новое название пресета
-     * @param string $presetTemplate Новый шаблон пресета
-     * @return bool Результат выполнения запроса
-     */
+    * Обновить существующий пресет
+    * @param int $id ID пресета
+    * @param string $presetName Новое название пресета
+    * @param string $presetTemplate Новый шаблон пресета
+    * @return bool Результат выполнения запроса
+    */
     public function updatePreset($id, $presetName, $presetTemplate) {
         return $this->db->query(
             "UPDATE post_block_presets SET 
@@ -460,22 +427,20 @@ class PostBlockModel {
     }
 
     /**
-     * Удалить пресет
-     * 
-     * @param int $id ID пресета
-     * @return bool Результат выполнения запроса
-     */
+    * Удалить пресет
+    * @param int $id ID пресета
+    * @return bool Результат выполнения запроса
+    */
     public function deletePreset($id) {
         return $this->db->query("DELETE FROM post_block_presets WHERE id = ?", [$id]);
     }
 
     /**
-     * Получить пресет по имени
-     * 
-     * @param string $systemName Системное имя блока
-     * @param string $presetName Название пресета
-     * @return array|null Данные пресета или null, если не найден
-     */
+    * Получить пресет по имени 
+    * @param string $systemName Системное имя блока
+    * @param string $presetName Название пресета
+    * @return array|null Данные пресета или null, если не найден
+    */
     public function getPresetByName($systemName, $presetName) {
         return $this->db->fetch("
             SELECT * FROM post_block_presets 

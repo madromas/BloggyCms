@@ -2,8 +2,6 @@
 
 /**
 * Модель категорий блога
-* Обеспечивает взаимодействие с таблицей категорий в базе данных
-* Включает CRUD-операции, управление slug-ами, пагинацию и проверку структуры таблицы
 */
 class CategoryModel implements ModelAPI {
 
@@ -19,15 +17,10 @@ class CategoryModel implements ModelAPI {
         'checkPassword'
     ];
 
-    /**
-    * @var Database Объект подключения к базе данных
-    */
     private $db;
     
     /**
     * Конструктор модели категорий
-    * Инициализирует подключение к БД и проверяет существование таблицы
-    *
     * @param Database $db Объект подключения к базе данных
     */
     public function __construct($db) {
@@ -36,8 +29,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Получение всех категорий с количеством постов
-    * Возвращает список категорий с подсчетом связанных постов
-    *
     * @return array Массив категорий с информацией о количестве постов
     */
     public function getAll() {
@@ -54,8 +45,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Получение категории по ID
-    * Возвращает данные категории по ее идентификатору
-    *
     * @param int $id Идентификатор категории
     * @return array|null Данные категории или null если не найдена
     */
@@ -65,8 +54,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Получение категории по URL-идентификатору (slug)
-    * Возвращает данные категории по ее уникальному URL-адресу
-    *
     * @param string $slug URL-идентификатор категории
     * @return array|null Данные категории или null если не найдена
     */
@@ -77,8 +64,6 @@ class CategoryModel implements ModelAPI {
        
     /**
     * Создание новой категории
-    * Добавляет новую категорию в базу данных с автоматической генерацией slug
-    *
     * @param array $data Массив данных категории:
     * @return int ID созданной категории
     * @throws Exception При ошибках
@@ -123,8 +108,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Обновление существующей категории
-    * Изменяет данные категории с автоматической генерацией slug
-    *
     * @param int $id Идентификатор обновляемой категории
     * @param array $data Массив данных для обновления
     * @return bool Результат выполнения запроса
@@ -178,8 +161,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Удаление категории
-    * Удаляет категорию только если в ней нет постов
-    *
     * @param int $id Идентификатор удаляемой категории
     * @return bool Результат выполнения запроса
     * @throws Exception Если в категории есть посты
@@ -216,8 +197,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Перемещение всех постов из одной категории в другую
-    * Используется при удалении категории для сохранения постов
-    *
     * @param int $fromCategoryId Идентификатор исходной категории
     * @param int $toCategoryId Идентификатор целевой категории
     * @return bool Результат выполнения запроса
@@ -231,15 +210,13 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Удаление категории вместе со всеми постами
-    * Каскадное удаление категории и связанных с ней постов
-    *
     * @param int $id Идентификатор удаляемой категории
     * @return bool Результат выполнения запроса
     * @throws Exception При ошибках удаления
     */
     public function deleteWithPosts($id) {
         try {
-            // Удаляем все посты в категории
+
             $postModel = new PostModel($this->db);
             $posts = $this->db->fetchAll("SELECT id FROM posts WHERE category_id = ?", [$id]);
             
@@ -247,7 +224,6 @@ class CategoryModel implements ModelAPI {
                 $postModel->delete($post['id']);
             }
             
-            // Удаляем саму категорию
             return $this->db->query("DELETE FROM categories WHERE id = ?", [$id]);
             
         } catch (Exception $e) {
@@ -257,8 +233,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Проверка пароля для защищенной категории
-    * Верифицирует пароль для доступа к категории с ограниченным доступом
-    *
     * @param int $categoryId Идентификатор категории
     * @param string $password Введенный пароль
     * @return bool true если пароль верный или категория не защищена
@@ -275,8 +249,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Создание базового slug из названия
-    * Конвертирует название в URL-дружественную строку
-    *
     * @param string $name Исходное название категории
     * @return string Сгенерированный slug
     */
@@ -291,8 +263,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Создание уникального slug
-    * Генерирует slug и проверяет его уникальность в базе данных
-    *
     * @param string $name Исходное название или slug
     * @param int|null $excludeId ID категории для исключения (при обновлении)
     * @return string Уникальный slug
@@ -312,8 +282,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Проверка существования slug в базе данных
-    * Определяет, используется ли slug другими категориями
-    *
     * @param string $slug Проверяемый slug
     * @param int|null $excludeId ID категории для исключения из проверки
     * @return bool true если slug уже существует
@@ -333,8 +301,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Транслитерация русских символов в латинские
-    * Преобразует кириллицу в латиницу для создания slug
-    *
     * @param string $string Исходная строка с русскими символами
     * @return string Транслитерированная строка
     */
@@ -362,8 +328,6 @@ class CategoryModel implements ModelAPI {
     
     /**
     * Получение количества постов в категории
-    * Подсчитывает общее число постов в указанной категории
-    *
     * @param int $categoryId Идентификатор категории
     * @return int Количество постов
     */
@@ -377,7 +341,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Получение постов категории с пагинацией
-    * Возвращает посты категории с информацией о тегах и пагинацией
     */
     public function getPostsPaginated($categoryId, $page = 1, $perPage = 15) {
         $offset = ($page - 1) * $perPage;
@@ -435,8 +398,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Обновление порядка сортировки категории
-    * Изменяет значение sort_order для указанной категории
-    *
     * @param int $categoryId Идентификатор категории
     * @param int $sortOrder Новый порядок сортировки
     * @return bool Результат выполнения запроса
@@ -450,8 +411,6 @@ class CategoryModel implements ModelAPI {
 
     /**
     * Получение всех категорий с количеством опубликованных постов
-    * Возвращает категории отсортированные по порядку и названию
-    *
     * @return array Массив категорий с количеством постов
     */
     public function getAllOrdered() {

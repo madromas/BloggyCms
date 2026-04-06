@@ -47,13 +47,11 @@ class FragmentHelper {
     * Если модели еще не загружены, откладываем регистрацию
     */
     public static function registerShortcodes() {
-        // Если класс ShortcodeRegistry не существует, откладываем
         if (!class_exists('ShortcodeRegistry')) {
             self::scheduleDelayedRegistration();
             return;
         }
         
-        // Если FragmentModel не существует, откладываем
         if (!class_exists('FragmentModel')) {
             self::scheduleDelayedRegistration();
             return;
@@ -102,7 +100,6 @@ class FragmentHelper {
         
         self::$scheduled = true;
         
-        // Регистрируем обработчик события app.init
         if (class_exists('Event')) {
             Event::listen('app.init', function() {
                 self::registerShortcodes();

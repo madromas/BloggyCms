@@ -1,32 +1,32 @@
 <?php
 
 /**
- * Менеджер для управления типами HTML блоков
- */
+* Менеджер для управления типами HTML блоков
+*/
 class HtmlBlockTypeManager {
+
     /**
-     * @var array Зарегистрированные типы блоков
-     */
+    * @var array Зарегистрированные типы блоков
+    */
     private $blockTypes = [];
     
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     private $db;
 
     /**
-     * Конструктор HtmlBlockTypeManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
+    * Конструктор HtmlBlockTypeManager
+    * @param mixed $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->loadBlockTypes();
     }
 
     /**
-     * Загружает все типы блоков из папки и базы данных
-     */
+    * Загружает все типы блоков из папки и базы данных
+    */
     private function loadBlockTypes() {
         $baseBlockFile = __DIR__ . '/../html_blocks/BaseHtmlBlock.php';
         if (file_exists($baseBlockFile)) {
@@ -99,10 +99,9 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Возвращает все доступные типы блоков
-     *
-     * @return array Активные типы блоков
-     */
+    * Возвращает все доступные типы блоков
+    * @return array Активные типы блоков
+    */
     public function getBlockTypes() {
         $allBlockTypes = $this->getAllBlockTypes();
         
@@ -112,11 +111,10 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Проверяет, активен ли тип блока
-     *
-     * @param string $systemName Системное имя блока
-     * @return bool Активен ли блок
-     */
+    * Проверяет, активен ли тип блока
+    * @param string $systemName Системное имя блока
+    * @return bool Активен ли блок
+    */
     public function isBlockTypeActive($systemName) {
         $allBlockTypes = $this->getAllBlockTypes();
         
@@ -128,10 +126,9 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Возвращает ВСЕ типы блоков (включая неактивные)
-     *
-     * @return array Все типы блоков
-     */
+    * Возвращает ВСЕ типы блоков (включая неактивные)
+    * @return array Все типы блоков
+    */
     public function getAllBlockTypes() {
         foreach ($this->blockTypes as $systemName => &$type) {
             $dbBlock = $this->db->fetch(
@@ -160,20 +157,18 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Возвращает конкретный тип блока
-     *
-     * @param string $systemName Системное имя блока
-     * @return array|null Данные типа блока
-     */
+    * Возвращает конкретный тип блока
+    * @param string $systemName Системное имя блока
+    * @return array|null Данные типа блока
+    */
     public function getBlockType($systemName) {
         return $this->blockTypes[$systemName] ?? null;
     }
 
     /**
-     * Загружает CSS и JS файлы для типа блока в админке
-     *
-     * @param string $systemName Системное имя блока
-     */
+    * Загружает CSS и JS файлы для типа блока в админке
+    * @param string $systemName Системное имя блока
+    */
     public function loadBlockAssets($systemName) {
         $blockType = $this->getBlockType($systemName);
         if ($blockType && $blockType['class']) {
@@ -192,13 +187,12 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Обрабатывает контент блока на фронтенде
-     *
-     * @param string $systemName Системное имя блока
-     * @param array $settings Настройки блока
-     * @param string|null $template Шаблон блока
-     * @return string Обработанный HTML
-     */
+    * Обрабатывает контент блока на фронтенде
+    * @param string $systemName Системное имя блока
+    * @param array $settings Настройки блока
+    * @param string|null $template Шаблон блока
+    * @return string Обработанный HTML
+    */
     public function processBlockContent($systemName, $settings = [], $template = null) {
 
         if ($systemName === 'DefaultBlock') {
@@ -227,10 +221,9 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Загружает CSS и JS файлы для фронтенда типа блока
-     *
-     * @param string $systemName Системное имя блока
-     */
+    * Загружает CSS и JS файлы для фронтенда типа блока
+    * @param string $systemName Системное имя блока
+    */
     public function loadBlockFrontendAssets($systemName) {
         $blockType = $this->getBlockType($systemName);
         if ($blockType && $blockType['class']) {
@@ -254,13 +247,12 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Рендерит блок на фронтенде с подключением активов
-     *
-     * @param string $systemName Системное имя блока
-     * @param array $settings Настройки блока
-     * @param string|null $template Шаблон блока
-     * @return string Отрендеренный HTML
-     */
+    * Рендерит блок на фронтенде с подключением активов
+    * @param string $systemName Системное имя блока
+    * @param array $settings Настройки блока
+    * @param string|null $template Шаблон блока
+    * @return string Отрендеренный HTML
+    */
     public function renderBlockFront($systemName, $settings = [], $template = null): string {
         $this->loadBlockFrontendAssets($systemName);
         
@@ -274,11 +266,10 @@ class HtmlBlockTypeManager {
     }
 
     /**
-     * Загружает активы для всех используемых блоков на странице
-     *
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     */
+    * Загружает активы для всех используемых блоков на странице
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    */
     public function loadPageBlocksAssets($entityType, $entityId) {
         $contentBlockModel = new ContentBlock($this->db);
         $blocks = $contentBlockModel->getForEntity($entityType, $entityId);

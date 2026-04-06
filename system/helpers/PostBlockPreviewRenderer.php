@@ -1,35 +1,29 @@
 <?php
 
 /**
- * Класс для рендеринга предпросмотра пост-блоков
- * Предоставляет методы для отображения превью блоков в административной панели
- * Поддерживает кастомные превью от блоков и fallback-рендеринг
- * 
- * @package Core
- */
+* Класс для рендеринга предпросмотра пост-блоков
+* @package Core
+*/
 class PostBlockPreviewRenderer {
     
     /** @var PostBlockManager Менеджер пост-блоков */
     private $postBlockManager;
     
     /**
-     * Конструктор класса
-     * 
-     * @param PostBlockManager $postBlockManager Менеджер пост-блоков
-     */
+    * Конструктор класса 
+    * @param PostBlockManager $postBlockManager Менеджер пост-блоков
+    */
     public function __construct(PostBlockManager $postBlockManager) {
         $this->postBlockManager = $postBlockManager;
     }
     
     /**
-     * Рендерит превью блока
-     * Пытается получить превью от самого блока, при ошибке показывает fallback
-     * 
-     * @param string $blockType Тип блока
-     * @param array $content Контент блока
-     * @param array $settings Настройки блока
-     * @return string HTML-код превью
-     */
+    * Рендерит превью блока
+    * @param string $blockType Тип блока
+    * @param array $content Контент блока
+    * @param array $settings Настройки блока
+    * @return string HTML-код превью
+    */
     public function renderPreview($blockType, $content = [], $settings = []): string {
         $blockInstance = $this->postBlockManager->getBlockInstance($blockType);
         
@@ -51,17 +45,8 @@ class PostBlockPreviewRenderer {
     }
     
     /**
-     * Получает превью через AJAX в формате JSON
-     * 
-     * @param string $blockType Тип блока
-     * @param array $content Контент блока
-     * @param array $settings Настройки блока
-     * @return array Массив с результатом:
-     *               - success: bool
-     *               - html: HTML превью
-     *               - message: сообщение об ошибке (при ошибке)
-     *               - block_type: тип блока
-     */
+    * Получает превью через AJAX в формате JSON
+    */
     public function getPreviewViaAjax($blockType, $content = [], $settings = []): array {
         try {
             $html = $this->renderPreview($blockType, $content, $settings);
@@ -81,13 +66,11 @@ class PostBlockPreviewRenderer {
     }
     
     /**
-     * Рендерит превью по умолчанию (если блок не поддерживает кастомное превью)
-     * Показывает тип блока и JSON-представление контента
-     * 
-     * @param string $blockType Тип блока
-     * @param array $content Контент блока
-     * @return string HTML-код превью
-     */
+    * Рендерит превью по умолчанию (если блок не поддерживает кастомное превью)
+    * @param string $blockType Тип блока
+    * @param array $content Контент блока
+    * @return string HTML-код превью
+    */
     private function renderDefaultPreview($blockType, $content): string {
         ob_start();
         ?>
@@ -99,16 +82,16 @@ class PostBlockPreviewRenderer {
                 </div>
             </div>
             <div class="preview-body p-3">
-                <?php if (!empty($content)): ?>
+                <?php if (!empty($content)) { ?>
                     <div class="small text-muted">
                         <pre class="mb-0" style="font-size: 11px;"><?= htmlspecialchars(json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) ?></pre>
                     </div>
-                <?php else: ?>
+                <?php } else { ?>
                     <div class="text-center text-muted py-2">
                         <i class="bi bi-inbox"></i>
                         <div class="small">Нет данных</div>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
             </div>
         </div>
         <?php
@@ -116,13 +99,11 @@ class PostBlockPreviewRenderer {
     }
     
     /**
-     * Рендерит превью с ошибкой
-     * Показывает сообщение об ошибке в красном оформлении
-     * 
-     * @param string $blockType Тип блока
-     * @param string $error Текст ошибки
-     * @return string HTML-код превью с ошибкой
-     */
+    * Рендерит превью с ошибкой
+    * @param string $blockType Тип блока
+    * @param string $error Текст ошибки
+    * @return string HTML-код превью с ошибкой
+    */
     private function renderErrorPreview($blockType, $error): string {
         ob_start();
         ?>

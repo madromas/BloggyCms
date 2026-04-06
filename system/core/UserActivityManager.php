@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Менеджер для отслеживания активности пользователей
- */
+* Менеджер для отслеживания активности пользователей
+*/
 class UserActivityManager {
     
     private $db;
@@ -21,11 +21,10 @@ class UserActivityManager {
     }
     
     /**
-     * Обновляет активность пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return bool Результат обновления
-     */
+    * Обновляет активность пользователя 
+    * @param int $userId ID пользователя
+    * @return bool Результат обновления
+    */
     public function touch($userId) {
         if (!$userId) return false;
         
@@ -63,11 +62,10 @@ class UserActivityManager {
     }
     
     /**
-     * Проверяет онлайн статус пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return bool Онлайн ли пользователь
-     */
+    * Проверяет онлайн статус пользователя
+    * @param int $userId ID пользователя
+    * @return bool Онлайн ли пользователь
+    */
     public function isOnline($userId) {
         if (!$userId) return false;
         
@@ -126,11 +124,10 @@ class UserActivityManager {
     }
     
     /**
-     * Получает информацию о последней активности
-     * 
-     * @param int $userId ID пользователя
-     * @return array Информация об активности
-     */
+    * Получает информацию о последней активности 
+    * @param int $userId ID пользователя
+    * @return array Информация об активности
+    */
     public function getLastActivityInfo($userId) {
         try {
             $tableCheck = $this->db->fetch("SHOW TABLES LIKE 'user_activity'");
@@ -163,11 +160,10 @@ class UserActivityManager {
     }
     
     /**
-     * Форматирует время активности
-     * 
-     * @param string $timestamp Временная метка
-     * @return array Форматированное время
-     */
+    * Форматирует время активности 
+    * @param string $timestamp Временная метка
+    * @return array Форматированное время
+    */
     private function formatActivityTime($timestamp) {
         if (empty($timestamp)) {
             return ['human' => 'никогда', 'days' => 0];
@@ -197,8 +193,8 @@ class UserActivityManager {
     }
     
     /**
-     * Очищает кэш
-     */
+    * Очищает кэш
+    */
     public function clearCache() {
         $this->cache = [];
     }

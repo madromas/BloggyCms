@@ -1,98 +1,88 @@
 <?php
 
 /**
- * Абстрактный базовый класс для всех постблоков контента в постах/страницах
- */
+* Абстрактный базовый класс для всех постблоков контента в постах/страницах
+*/
 abstract class BasePostBlock {
+
     /**
-     * Возвращает название постблока для админки
-     *
-     * @return string Название постблока
-     */
+    * Возвращает название постблока для админки
+    * @return string Название постблока
+    */
     abstract public function getName(): string;
 
     /**
-     * Возвращает системное имя постблока (должно совпадать с именем класса)
-     *
-     * @return string Системное имя постблока
-     */
+    * Возвращает системное имя постблока (должно совпадать с именем класса)
+    * @return string Системное имя постблока
+    */
     abstract public function getSystemName(): string;
 
     /**
-     * Возвращает описание постблока
-     *
-     * @return string Описание постблока
-     */
+    * Возвращает описание постблока
+    * @return string Описание постблока
+    */
     abstract public function getDescription(): string;
 
     /**
-     * Возвращает иконку постблока (класс Bootstrap Icons)
-     *
-     * @return string CSS класс иконки
-     */
+    * Возвращает иконку постблока (класс Bootstrap Icons)
+    * @return string CSS класс иконки
+    */
     public function getIcon(): string {
         return 'bi bi-square';
     }
 
     /**
-     * Возвращает имя автора постблока
-     *
-     * @return string Имя автора
-     */
+    * Возвращает имя автора постблока
+    * @return string Имя автора
+    */
     public function getAuthor(): string {
         return 'BloggyCMS';
     }
 
     /**
-     * Возвращает версию постблока
-     *
-     * @return string Версия постблока
-     */
+    * Возвращает версию постблока
+    * @return string Версия постблока
+    */
     public function getVersion(): string {
         return '1.0.0';
     }
 
     /**
-     * Возвращает HTML-шаблон постблока с шорткодами для редактора
-     *
-     * @return string HTML шаблон
-     */
+    * Возвращает HTML-шаблон постблока с шорткодами для редактора
+    * @return string HTML шаблон
+    */
     public function getTemplateWithShortcodes(): string {
         return $this->getEditorHtml([], []);
     }
 
     /**
-     * Возвращает форму настроек постблока (HTML)
-     *
-     * @param array $currentSettings Текущие настройки
-     * @return string HTML код формы настроек
-     */
+    * Возвращает форму настроек постблока (HTML)
+    * @param array $currentSettings Текущие настройки
+    * @return string HTML код формы настроек
+    */
     abstract public function getSettingsForm($currentSettings = []): string;
 
     /**
-     * Возвращает форму контента постблока (HTML)
-     *
-     * @param array $currentContent Текущее содержимое
-     * @return string HTML код формы контента
-     */
+    * Возвращает форму контента постблока (HTML)
+    * @param array $currentContent Текущее содержимое
+    * @return string HTML код формы контента
+    */
     abstract public function getContentForm($currentContent = []): string;
 
     /**
-     * Возвращает HTML-код постблока для редактора (с шорткодами)
-     *
-     * @param array $settings Настройки постблока
-     * @param array $content Содержимое постблока
-     * @return string HTML код для редактора
-     */
+    * Возвращает HTML-код постблока для редактора (с шорткодами)
+    * @param array $settings Настройки постблока
+    * @param array $content Содержимое постблока
+    * @return string HTML код для редактора
+    */
     abstract public function getEditorHtml($settings = [], $content = []): string;
 
     /**
-     * Обрабатывает постблок на фронтенде с поддержкой пресетов
-     *
-     * @param array $content Данные постблока
-     * @param array $settings Настройки постблока
-     * @return string Обработанный HTML постблок
-     */
+    * Обрабатывает постблок на фронтенде с поддержкой пресетов
+    * @param array $content Данные постблока
+    * @param array $settings Настройки постблока
+    * @return string Обработанный HTML постблок
+    */
     public function processFrontend($content, $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -125,11 +115,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Получает шаблон для рендеринга с учетом пресетов
-     *
-     * @param array $settings Настройки постблока
-     * @return string HTML шаблон
-     */
+    * Получает шаблон для рендеринга с учетом пресетов
+    * @param array $settings Настройки постблока
+    * @return string HTML шаблон
+    */
     protected function getTemplateForRendering($settings): string {
         $presetId = $settings['preset_id'] ?? null;
         
@@ -144,10 +133,9 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Получить доступные пресеты для этого постблока
-     *
-     * @return array Массив пресетов
-     */
+    * Получить доступные пресеты для этого постблока
+    * @return array Массив пресетов
+    */
     public function getAvailablePresets() {
         try {
             $db = Database::getInstance();
@@ -159,11 +147,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Получить пресет по ID
-     *
-     * @param int $presetId ID пресета
-     * @return array|null Данные пресета
-     */
+    * Получить пресет по ID
+    * @param int $presetId ID пресета
+    * @return array|null Данные пресета
+    */
     public function getPreset($presetId) {
         try {
             $db = Database::getInstance();
@@ -175,11 +162,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Получить HTML для выбора пресета в форме контента
-     *
-     * @param array $currentSettings Текущие настройки
-     * @return string HTML код селектора пресетов
-     */
+    * Получить HTML для выбора пресета в форме контента
+    * @param array $currentSettings Текущие настройки
+    * @return string HTML код селектора пресетов
+    */
     public function getPresetSelector($currentSettings = []): string {
         $presets = $this->getAvailablePresets();
         $currentPresetId = $currentSettings['preset_id'] ?? '';
@@ -193,15 +179,15 @@ abstract class BasePostBlock {
         <div class="mb-4">
             <label class="form-label">Выберите пресет</label>
             <select name="settings[preset_id]" class="form-select preset-selector" 
-                    data-block-system-name="<?= htmlspecialchars($this->getSystemName()) ?>">
+                    data-block-system-name="<?= html($this->getSystemName()) ?>">
                 <option value="">-- Без пресета (стандартный шаблон) --</option>
-                <?php foreach ($presets as $preset): ?>
+                <?php foreach ($presets as $preset) { ?>
                     <option value="<?= $preset['id'] ?>" 
                             <?= $currentPresetId == $preset['id'] ? 'selected' : '' ?>
-                            data-template="<?= htmlspecialchars($preset['preset_template']) ?>">
-                        <?= htmlspecialchars($preset['preset_name']) ?>
+                            data-template="<?= html($preset['preset_template']) ?>">
+                        <?= html($preset['preset_name']) ?>
                     </option>
-                <?php endforeach; ?>
+                <?php } ?>
             </select>
             <div class="form-text">
                 Используйте сохраненные шаблоны для быстрой настройки внешнего вида постблока
@@ -218,11 +204,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Возвращает форму настроек постблока с учетом пресетов
-     *
-     * @param array $currentSettings Текущие настройки
-     * @return string HTML код формы настроек
-     */
+    * Возвращает форму настроек постблока с учетом пресетов
+    * @param array $currentSettings Текущие настройки
+    * @return string HTML код формы настроек
+    */
     public function getSettingsFormWithPresets($currentSettings = []): string {
         $presetSelector = $this->getPresetSelector($currentSettings);
         $customSettingsForm = $this->getSettingsForm($currentSettings);
@@ -231,10 +216,9 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Возвращает массив доступных шорткодов для этого постблока
-     *
-     * @return array Массив шорткодов
-     */
+    * Возвращает массив доступных шорткодов для этого постблока
+    * @return array Массив шорткодов
+    */
     public function getShortcodes(): array {
         return [
             '{block_id}' => 'Уникальный ID постблока',
@@ -247,82 +231,73 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Возвращает CSS файлы для админки
-     *
-     * @return array Массив CSS файлов
-     */
+    * Возвращает CSS файлы для админки
+    * @return array Массив CSS файлов
+    */
     public function getAdminCss(): array {
         return [];
     }
 
     /**
-     * Возвращает JS файлы для админки
-     *
-     * @return array Массив JS файлов
-     */
+    * Возвращает JS файлы для админки
+    * @return array Массив JS файлов
+    */
     public function getAdminJs(): array {
         return [];
     }
 
     /**
-     * CSS файлы для фронтенда
-     *
-     * @return array Массив CSS файлов
-     */
+    * CSS файлы для фронтенда
+    * @return array Массив CSS файлов
+    */
     public function getFrontendCss(): array {
         return [];
     }
     
     /**
-     * JS файлы для фронтенда
-     *
-     * @return array Массив JS файлов
-     */
+    * JS файлы для фронтенда
+    * @return array Массив JS файлов
+    */
     public function getFrontendJs(): array {
         return [];
     }
     
     /**
-     * Inline CSS для админки
-     *
-     * @return string Inline CSS
-     */
+    * Inline CSS для админки
+    * @return string Inline CSS
+    */
     public function getAdminInlineCss(): string {
         return '';
     }
     
     /**
-     * Inline JS для админки
-     *
-     * @return string Inline JS
-     */
+    * Inline JS для админки
+    * @return string Inline JS
+    */
     public function getAdminInlineJs(): string {
         return '';
     }
     
     /**
-     * Inline CSS для фронтенда
-     *
-     * @return string Inline CSS
-     */
+    * Inline CSS для фронтенда
+    * @return string Inline CSS
+    */
     public function getFrontendInlineCss(): string {
         return '';
     }
     
     /**
-     * Inline JS для фронтенда
-     *
-     * @return string Inline JS
-     */
+    * Inline JS для фронтенда
+    * @return string Inline JS
+    */
     public function getFrontendInlineJs(): string {
         return '';
     }
     
     /**
-     * Загружает все ресурсы постблока
-     *
-     * @param bool $isAdmin Для админки или фронтенда
-     */
+    * Загружает все ресурсы постблока
+    * @param bool $isAdmin Для админки или фронтенда
+    */
     public function loadAssets(bool $isAdmin = false): void {
         if ($isAdmin) {
             foreach ($this->getAdminCss() as $cssFile) {
@@ -364,8 +339,8 @@ abstract class BasePostBlock {
     }
     
     /**
-     * Автоматически загружает ассеты на фронтенде
-     */
+    * Автоматически загружает ассеты на фронтенде
+    */
     protected function autoLoadFrontendAssets(): void {
         static $loadedBlocks = [];
         
@@ -378,21 +353,19 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Валидирует настройки постблока
-     *
-     * @param array $settings Настройки
-     * @return array Массив [результат, сообщения об ошибках]
-     */
+    * Валидирует настройки постблока
+    * @param array $settings Настройки
+    * @return array Массив [результат, сообщения об ошибках]
+    */
     public function validateSettings($settings): array {
         return [true, []];
     }
 
     /**
-     * Подготавливает настройки перед сохранением
-     *
-     * @param array $settings Настройки
-     * @return array Подготовленные настройки
-     */
+    * Подготавливает настройки перед сохранением
+    * @param array $settings Настройки
+    * @return array Подготовленные настройки
+    */
     public function prepareSettings($settings): array {
         if (!is_array($settings)) {
             $settings = [];
@@ -408,11 +381,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Подготавливает контент перед сохранением
-     *
-     * @param array $content Контент
-     * @return array Подготовленный контент
-     */
+    * Подготавливает контент перед сохранением
+    * @param array $content Контент
+    * @return array Подготовленный контент
+    */
     public function prepareContent($content): array {
         if (!is_array($content)) {
             $content = [];
@@ -428,56 +400,50 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Можно ли использовать постблок в постах
-     *
-     * @return bool Результат проверки
-     */
+    * Можно ли использовать постблок в постах
+    * @return bool Результат проверки
+    */
     public function canUseInPosts(): bool {
         return true;
     }
 
     /**
-     * Можно ли использовать постблок в страницах
-     *
-     * @return bool Результат проверки
-     */
+    * Можно ли использовать постблок в страницах
+    * @return bool Результат проверки
+    */
     public function canUseInPages(): bool {
         return true;
     }
 
     /**
-     * Возвращает категорию постблока для организации в админке
-     *
-     * @return string Категория постблока
-     */
+    * Возвращает категорию постблока для организации в админке
+    * @return string Категория постблока
+    */
     public function getCategory(): string {
         return 'basic';
     }
 
     /**
-     * Возвращает содержимое по умолчанию для постблока
-     *
-     * @return array Контент по умолчанию
-     */
+    * Возвращает содержимое по умолчанию для постблока
+    * @return array Контент по умолчанию
+    */
     public function getDefaultContent(): array {
         return [];
     }
 
     /**
-     * Возвращает настройки по умолчанию для постблока
-     *
-     * @return array Настройки по умолчанию
-     */
+    * Возвращает настройки по умолчанию для постблока
+    * @return array Настройки по умолчанию
+    */
     public function getDefaultSettings(): array {
         return [];
     }
 
     /**
-     * Извлекает данные контента из HTML строки
-     *
-     * @param string $html HTML строка для парсинга
-     * @return array|null Массив с извлеченными данными
-     */
+    * Извлекает данные контента из HTML строки
+    * @param string $html HTML строка для парсинга
+    * @return array|null Массив с извлеченными данными
+    */
     public function extractFromHtml(string $html): ?array {
         $plainText = trim(strip_tags($html));
         if (!empty($plainText)) {
@@ -487,20 +453,18 @@ abstract class BasePostBlock {
     }
     
     /**
-     * Может ли постблок извлекать данные из HTML
-     *
-     * @return bool Результат проверки
-     */
+    * Может ли постблок извлекать данные из HTML
+    * @return bool Результат проверки
+    */
     public function canExtractFromHtml(): bool {
         return true;
     }
 
     /**
-     * Валидирует и нормализует данные контента
-     *
-     * @param mixed $content Контент
-     * @return array Нормализованный контент
-     */
+    * Валидирует и нормализует данные контента
+    * @param mixed $content Контент
+    * @return array Нормализованный контент
+    */
     public function validateAndNormalizeContent($content): array {
         if (is_string($content)) {
             $decoded = json_decode($content, true);
@@ -515,11 +479,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Валидирует и нормализует настройки
-     *
-     * @param mixed $settings Настройки
-     * @return array Нормализованные настройки
-     */
+    * Валидирует и нормализует настройки
+    * @param mixed $settings Настройки
+    * @return array Нормализованные настройки
+    */
     public function validateAndNormalizeSettings($settings): array {
         if (is_string($settings)) {
             $decoded = json_decode($settings, true);
@@ -534,24 +497,22 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Безопасный рендеринг контента - защита от двойного экранирования
-     *
-     * @param array $content Контент
-     * @param array $settings Настройки
-     * @return string Безопасный HTML
-     */
+    * Безопасный рендеринг контента - защита от двойного экранирования
+    * @param array $content Контент
+    * @param array $settings Настройки
+    * @return string Безопасный HTML
+    */
     protected function safeRender($content, $settings = []): string {
         return $this->processFrontend($content, $settings);
     }
 
     /**
-     * Рендер с шаблоном с защитой от двойной обработки
-     *
-     * @param array $content Контент
-     * @param array $settings Настройки
-     * @param string $template Шаблон
-     * @return string Отрендеренный HTML
-     */
+    * Рендер с шаблоном с защитой от двойной обработки
+    * @param array $content Контент
+    * @param array $settings Настройки
+    * @param string $template Шаблон
+    * @return string Отрендеренный HTML
+    */
     protected function renderWithTemplate($content, $settings, $template): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -564,7 +525,7 @@ abstract class BasePostBlock {
                 if (strip_tags($value) !== $value) {
                     $result = str_replace($placeholder, $value, $result);
                 } else {
-                    $result = str_replace($placeholder, htmlspecialchars($value), $result);
+                    $result = str_replace($placeholder, html($value), $result);
                 }
             }
         }
@@ -572,7 +533,7 @@ abstract class BasePostBlock {
         foreach ($settings as $key => $value) {
             $placeholder = '{' . $key . '}';
             if (strpos($result, $placeholder) !== false) {
-                $result = str_replace($placeholder, htmlspecialchars($value), $result);
+                $result = str_replace($placeholder, html($value), $result);
             }
         }
         
@@ -580,22 +541,20 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Проверяет, содержит ли строка HTML теги
-     *
-     * @param string $string Строка для проверки
-     * @return bool Результат проверки
-     */
+    * Проверяет, содержит ли строка HTML теги
+    * @param string $string Строка для проверки
+    * @return bool Результат проверки
+    */
     protected function containsHtml($string): bool {
         return $string !== strip_tags($string);
     }
 
     /**
-     * Возвращает HTML для превью в админке
-     *
-     * @param array $content Данные контента
-     * @param array $settings Настройки постблока
-     * @return string HTML код превью
-     */
+    * Возвращает HTML для превью в админке
+    * @param array $content Данные контента
+    * @param array $settings Настройки постблока
+    * @return string HTML код превью
+    */
     public function getPreviewHtml($content = [], $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -614,9 +573,9 @@ abstract class BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong><?= $this->getName() ?></strong>
-                                <?php if ($this->hasSettings($settings)): ?>
+                                <?php if ($this->hasSettings($settings)) { ?>
                                     <span class="badge bg-info badge-sm">Настроен</span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= $this->getPreviewStats($content, $settings) ?>
@@ -632,9 +591,9 @@ abstract class BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($hasContent): ?>
+                    <?php if ($hasContent) { ?>
                         <?= $this->renderPreviewContent($content, $settings) ?>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="<?= $this->getEmptyIcon() ?>"></i>
                             <div class="empty-text"><?= $this->getEmptyText() ?></div>
@@ -643,25 +602,25 @@ abstract class BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить контент
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
                 
-                <?php if ($hasContent): ?>
+                <?php if ($hasContent) { ?>
                     <div class="preview-footer">
                         <div class="preview-footer-content">
-                            <?php if ($this->hasSettings($settings)): ?>
+                            <?php if ($this->hasSettings($settings)) { ?>
                                 <span class="badge bg-light text-dark">
                                     <i class="bi bi-gear"></i> Настроено
                                 </span>
-                            <?php endif; ?>
-                            <?php if (!empty($settings['preset_name'])): ?>
+                            <?php } ?>
+                            <?php if (!empty($settings['preset_name'])) { ?>
                                 <span class="badge bg-info">
-                                    <i class="bi bi-stars"></i> <?= htmlspecialchars($settings['preset_name']) ?>
+                                    <i class="bi bi-stars"></i> <?= html($settings['preset_name']) ?>
                                 </span>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
             </div>
         </div>
         <?php
@@ -669,11 +628,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Проверяет, есть ли контент для превью
-     *
-     * @param array $content Контент
-     * @return bool Результат проверки
-     */
+    * Проверяет, есть ли контент для превью
+    * @param array $content Контент
+    * @return bool Результат проверки
+    */
     protected function hasPreviewContent($content): bool {
         if (empty($content)) {
             return false;
@@ -695,11 +653,10 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Проверяет, есть ли настройки
-     *
-     * @param array $settings Настройки
-     * @return bool Результат проверки
-     */
+    * Проверяет, есть ли настройки
+    * @param array $settings Настройки
+    * @return bool Результат проверки
+    */
     protected function hasSettings($settings): bool {
         if (empty($settings)) {
             return false;
@@ -716,12 +673,11 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Возвращает статистику для превью
-     *
-     * @param array $content Контент
-     * @param array $settings Настройки
-     * @return string Строка статистики
-     */
+    * Возвращает статистику для превью
+    * @param array $content Контент
+    * @param array $settings Настройки
+    * @return string Строка статистики
+    */
     protected function getPreviewStats($content, $settings): string {
         $stats = [];
         
@@ -741,51 +697,47 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Рендерит контент для превью
-     *
-     * @param array $content Контент
-     * @param array $settings Настройки
-     * @return string HTML код превью
-     */
+    * Рендерит контент для превью
+    * @param array $content Контент
+    * @param array $settings Настройки
+    * @return string HTML код превью
+    */
     protected function renderPreviewContent($content, $settings): string {
         if (isset($content['text'])) {
             $text = $content['text'];
             $preview = strip_tags($text);
             $preview = mb_substr($preview, 0, 150);
             
-            return '<div class="text-preview">' . nl2br(htmlspecialchars($preview)) . 
+            return '<div class="text-preview">' . nl2br(html($preview)) . 
                    (strlen(strip_tags($text)) > 150 ? '...' : '') . '</div>';
         }
         
         return '<pre class="small text-muted">' . 
-               htmlspecialchars(json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) . 
+               html(json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) . 
                '</pre>';
     }
 
     /**
-     * Иконка для пустого состояния
-     *
-     * @return string CSS класс иконки
-     */
+    * Иконка для пустого состояния
+    * @return string CSS класс иконки
+    */
     protected function getEmptyIcon(): string {
         return 'bi ' . $this->getIcon();
     }
 
     /**
-     * Текст для пустого состояния
-     *
-     * @return string Текст
-     */
+    * Текст для пустого состояния
+    * @return string Текст
+    */
     protected function getEmptyText(): string {
         return 'Контент не добавлен';
     }
 
     /**
-     * Нормализует данные контента для совместимости
-     *
-     * @param mixed $content Контент
-     * @return array Нормализованный контент
-     */
+    * Нормализует данные контента для совместимости
+    * @param mixed $content Контент
+    * @return array Нормализованный контент
+    */
     protected function normalizeContentData($content): array {
         if (empty($content)) {
             return [];
@@ -817,12 +769,11 @@ abstract class BasePostBlock {
     }
 
     /**
-     * Подготавливает контент для отображения в превью
-     *
-     * @param mixed $content Контент
-     * @param int $maxLength Максимальная длина
-     * @return string Подготовленный текст
-     */
+    * Подготавливает контент для отображения в превью
+    * @param mixed $content Контент
+    * @param int $maxLength Максимальная длина
+    * @return string Подготовленный текст
+    */
     protected function preparePreviewContent($content, $maxLength = 150): string {
         if (is_string($content)) {
             $text = strip_tags($content);
@@ -844,12 +795,11 @@ abstract class BasePostBlock {
     }
     
     /**
-     * Возвращает упрощенную версию HTML для быстрого превью
-     *
-     * @param array $content Данные контента
-     * @param array $settings Настройки постблока
-     * @return string Упрощенный HTML превью
-     */
+    * Возвращает упрощенную версию HTML для быстрого превью
+    * @param array $content Данные контента
+    * @param array $settings Настройки постблока
+    * @return string Упрощенный HTML превью
+    */
     public function getSimplePreview($content = [], $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -866,8 +816,8 @@ abstract class BasePostBlock {
                     <?php foreach ($content as $key => $value): ?>
                         <?php if (is_string($value) && !empty(trim($value))): ?>
                             <div class="preview-item">
-                                <small class="text-muted"><?= htmlspecialchars($key) ?>:</small>
-                                <div class="text-truncate"><?= htmlspecialchars(substr($value, 0, 100)) ?></div>
+                                <small class="text-muted"><?= html($key) ?>:</small>
+                                <div class="text-truncate"><?= html(substr($value, 0, 100)) ?></div>
                             </div>
                         <?php endif; ?>
                     <?php endforeach; ?>
@@ -881,35 +831,32 @@ abstract class BasePostBlock {
     }
     
     /**
-     * Можно ли показывать превью для этого постблока
-     *
-     * @return bool Результат проверки
-     */
+    * Можно ли показывать превью для этого постблока
+    * @return bool Результат проверки
+    */
     public function canShowPreview(): bool {
         return true;
     }
     
     /**
-     * Возвращает CSS для превью в админке
-     *
-     * @return array Массив CSS файлов
-     */
+    * Возвращает CSS для превью в админке
+    * @return array Массив CSS файлов
+    */
     public function getPreviewCss(): array {
         return [];
     }
     
     /**
-     * Возвращает JS для превью в админке
-     *
-     * @return array Массив JS файлов
-     */
+    * Возвращает JS для превью в админке
+    * @return array Массив JS файлов
+    */
     public function getPreviewJs(): array {
         return [];
     }
     
     /**
-     * Загружает ассеты для превью
-     */
+    * Загружает ассеты для превью
+    */
     public function loadPreviewAssets(): void {
         static $loaded = false;
         

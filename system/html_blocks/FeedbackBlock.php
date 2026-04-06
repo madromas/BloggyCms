@@ -1,9 +1,5 @@
 <?php
-/**
- * Блок "Обратная связь"
- * Двухколоночный блок с формой и контактной информацией
- * Поддерживает выбор формы и шаблона формы из папки блока
- */
+
 class FeedbackBlock extends BaseHtmlBlock {
     
     public function getName(): string {
@@ -30,9 +26,6 @@ class FeedbackBlock extends BaseHtmlBlock {
         return 'default';
     }
     
-    /**
-     * Получение списка доступных форм
-     */
     private function getAvailableForms(): array {
         $forms = ['' => '-- Выберите форму --'];
         try {
@@ -46,9 +39,6 @@ class FeedbackBlock extends BaseHtmlBlock {
         return $forms;
     }
     
-    /**
-     * Получение списка шаблонов форм из папки блока
-     */
     private function getAvailableFormTemplates(): array {
         $templates = ['default' => 'Стандартный шаблон'];
         $systemName = $this->getSystemName();
@@ -77,9 +67,6 @@ class FeedbackBlock extends BaseHtmlBlock {
         return $templates;
     }
     
-    /**
-     * Поиск пути к шаблону формы
-     */
     private function findFormTemplatePath($templateName): ?string {
         $systemName = $this->getSystemName();
         $currentTheme = defined('DEFAULT_TEMPLATE') ? DEFAULT_TEMPLATE : 'default';
@@ -95,18 +82,13 @@ class FeedbackBlock extends BaseHtmlBlock {
         return null;
     }
     
-    /**
-     * Рендеринг формы с использованием шаблона из папки блока
-     */
     private function renderFormWithTemplate($formSlug, $formTemplate, $formOptions = []): string {
         $templatePath = $this->findFormTemplatePath($formTemplate);
-        
-        // Если шаблон не найден — используем стандартный FormRenderer
+ 
         if (!$templatePath) {
             return FormRenderer::render($formSlug, $formOptions);
         }
-        
-        // Подготовка данных формы
+
         $db = Database::getInstance();
         $formModel = new FormModel($db);
         $form = $formModel->getBySlug($formSlug);
@@ -115,14 +97,12 @@ class FeedbackBlock extends BaseHtmlBlock {
             return '<div class="alert alert-warning">Форма не найдена или неактивна</div>';
         }
         
-        // Подготовка переменных для шаблона
         $structure = $form['structure'] ?? [];
         $settings = $form['settings'] ?? [];
         $formId = $form['id'];
         $formName = $form['name'];
         $actionUrl = BASE_URL . '/form/' . $formSlug . '/submit';
         
-        // Опции рендеринга
         $options = array_merge([
             'ajax' => $settings['ajax_enabled'] ?? true,
             'show_labels' => $settings['show_labels'] ?? true,
@@ -133,13 +113,11 @@ class FeedbackBlock extends BaseHtmlBlock {
             'submit_class' => 'feedback-submit-btn',
         ], $formOptions);
         
-        // ✅ ГЕНЕРАЦИЯ CSRF ТОКЕНА ЧЕРЕЗ FormRenderer (ВАЖНО!)
         $csrfToken = '';
         if ($options['csrf_protection']) {
             $csrfToken = FormRenderer::generateCsrfToken($formSlug);
         }
         
-        // Генерация капчи через CaptchaHelper
         $captchaHtml = '';
         $captchaData = null;
         if ($options['captcha'] && !empty($settings['captcha_enabled'])) {
@@ -152,7 +130,6 @@ class FeedbackBlock extends BaseHtmlBlock {
             }
         }
         
-        // Рендеринг шаблона
         extract([
             'form' => $form,
             'formId' => $formId,
@@ -179,7 +156,6 @@ class FeedbackBlock extends BaseHtmlBlock {
         
         $fieldsets = [];
         
-        // Секция: Форма
         $fieldsets[] = new \Fieldset('Настройки формы', [
             'icon' => 'bi bi-card-list',
             'columns' => 'custom',
@@ -215,7 +191,6 @@ class FeedbackBlock extends BaseHtmlBlock {
             ]
         ]);
         
-        // Секция: Контактная информация
         $fieldsets[] = new \Fieldset('Контактная информация', [
             'icon' => 'bi bi-info-circle',
             'columns' => 'custom',
@@ -270,7 +245,6 @@ class FeedbackBlock extends BaseHtmlBlock {
             ]
         ]);
         
-        // Секция: Внешний вид
         $fieldsets[] = new \Fieldset('Внешний вид', [
             'icon' => 'bi bi-palette',
             'columns' => 'custom',
@@ -331,7 +305,6 @@ class FeedbackBlock extends BaseHtmlBlock {
             ]
         ]);
         
-        // Секция: Дополнительно
         $fieldsets[] = new \Fieldset('Дополнительно', [
             'icon' => 'bi bi-gear',
             'columns' => '12',
@@ -423,7 +396,6 @@ class FeedbackBlock extends BaseHtmlBlock {
             }
         }
         
-        // Рендерим форму заранее
         $formHtml = '';
         if ($formExists) {
             $formHtml = $this->renderFormWithTemplate($formSlug, $formTemplate, [

@@ -1,42 +1,34 @@
 <?php
 
 /**
- * Поле типа "HTML-блок" для системы пользовательских полей
- * Позволяет вводить и сохранять произвольный HTML-код
- * Предназначен для хранения форматированного контента
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "HTML-блок" для системы пользовательских полей
+* @package Fields
+*/
 class HtmlField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'html'
-     */
+    * Возвращает тип поля
+    * @return string 'html'
+    */
     public function getType(): string {
         return 'html';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'HTML-блок'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'HTML-блок'
+    */
     public function getName(): string {
         return 'HTML-блок';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает текстовую область (textarea) для ввода HTML-кода
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме 
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $rows = $this->config['rows'] ?? 6;
@@ -52,27 +44,23 @@ class HtmlField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Возвращает значение напрямую (без экранирования) для корректного отображения HTML
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string Исходный HTML-код
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string Исходный HTML-код
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         return $value;
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Удаляет HTML-теги, обрезает длинный текст, добавляет всплывающую подсказку
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string Обрезанный текст без HTML-тегов
-     */
+    * Генерирует HTML для отображения значения поля в списке 
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string Обрезанный текст без HTML-тегов
+    */
     public function renderList($value, $entityType, $entityId): string {
         $stripped = strip_tags($value);
         $truncated = mb_strlen($stripped) > 50 ? mb_substr($stripped, 0, 50) . '...' : $stripped;
@@ -80,11 +68,9 @@ class HtmlField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать количество строк textarea и значение по умолчанию
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
         $rows = htmlspecialchars($this->config['rows'] ?? '6');

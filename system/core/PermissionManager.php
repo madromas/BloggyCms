@@ -1,28 +1,27 @@
 <?php
 
 /**
- * Менеджер для управления правами доступа пользователей
- */
+* Менеджер для управления правами доступа пользователей
+*/
 class PermissionManager {
+
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     private $db;
     
     /**
-     * Конструктор PermissionManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
+    * Конструктор PermissionManager
+    * @param mixed $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
     
     /**
-     * Загружает все permissions из всех контроллеров
-     *
-     * @return array Массив разрешений по контроллерам
-     */
+    * Загружает все permissions из всех контроллеров
+    * @return array Массив разрешений по контроллерам
+    */
     public function loadAllPermissions() {
         $permissions = [];
         $controllersPath = CONTROLLERS_PATH;
@@ -37,12 +36,11 @@ class PermissionManager {
     }
     
     /**
-     * Проверяет есть ли у пользователя право
-     *
-     * @param int $userId ID пользователя
-     * @param string $permissionKey Ключ разрешения
-     * @return bool Есть ли у пользователя право
-     */
+    * Проверяет есть ли у пользователя право
+    * @param int $userId ID пользователя
+    * @param string $permissionKey Ключ разрешения
+    * @return bool Есть ли у пользователя право
+    */
     public function can($userId, $permissionKey) {
         $sql = "SELECT COUNT(*) FROM users_groups ug
                 JOIN group_permissions gp ON ug.group_id = gp.group_id
@@ -52,11 +50,10 @@ class PermissionManager {
     }
     
     /**
-     * Проверяет права для текущего пользователя
-     *
-     * @param string $permissionKey Ключ разрешения
-     * @return bool Есть ли у текущего пользователя право
-     */
+    * Проверяет права для текущего пользователя
+    * @param string $permissionKey Ключ разрешения
+    * @return bool Есть ли у текущего пользователя право
+    */
     public function userCan($permissionKey) {
         if (!isset($_SESSION['user_id'])) {
             return false;

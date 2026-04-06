@@ -1,42 +1,34 @@
 <?php
 
 /**
- * Поле типа "цвет" для системы пользовательских полей
- * Позволяет выбирать цвет через стандартный HTML5 color picker
- * Отображает цвет в виде квадрата с кодом цвета
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "цвет" для системы пользовательских полей
+* @package Fields
+*/
 class ColorField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'color'
-     */
+    * Возвращает тип поля 
+    * @return string 'color'
+    */
     public function getType(): string {
         return 'color';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Выбор цвета'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'Выбор цвета'
+    */
     public function getName(): string {
         return 'Выбор цвета';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает комбинацию color picker и текстового поля для ввода HEX-кода
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         
@@ -57,14 +49,12 @@ class ColorField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Показывает цветной квадрат и HEX-код
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре 
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">Не указано</span>';
         
@@ -77,14 +67,12 @@ class ColorField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает миниатюрный цветной квадрат
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке 
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">-</span>';
         
@@ -92,11 +80,9 @@ class ColorField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет задать значение по умолчанию
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели 
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $defaultValue = htmlspecialchars($this->config['default_value'] ?? '#000000');
         

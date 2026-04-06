@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель для работы с пользователями, группами и достижениями
- * Предоставляет полный набор методов для аутентификации, CRUD-операций с пользователями,
- * управления группами, правами доступа и системой достижений (ачивок)
- * 
- * @package Models
- */
+* Модель для работы с пользователями, группами и достижениями
+* @package Models
+*/
 class UserModel implements ModelAPI {
 
     use APIAware;
@@ -33,26 +30,22 @@ class UserModel implements ModelAPI {
         'getUserGroupsWithDetails'
     ];
     
-    /** @var object Подключение к базе данных */
     private $db;
 
     /**
-     * Конструктор модели
-     * Инициализирует подключение к базе данных
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор модели 
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
 
     /**
-     * Аутентифицирует пользователя по имени пользователя и паролю
-     * 
-     * @param string $username Имя пользователя
-     * @param string $password Пароль
-     * @return array|false Данные пользователя или false при неудаче
-     */
+    * Аутентифицирует пользователя по имени пользователя и паролю 
+    * @param string $username Имя пользователя
+    * @param string $password Пароль
+    * @return array|false Данные пользователя или false при неудаче
+    */
     public function authenticate($username, $password) {
         $user = $this->db->fetch("SELECT * FROM users WHERE username = ?", [$username]);
         
@@ -66,11 +59,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает пользователя по ID
-     * 
-     * @param int $id ID пользователя
-     * @return array|null Данные пользователя с установленными значениями по умолчанию
-     */
+    * Получает пользователя по ID 
+    * @param int $id ID пользователя
+    * @return array|null Данные пользователя с установленными значениями по умолчанию
+    */
     public function getById($id) {
         $user = $this->db->fetch("SELECT * FROM users WHERE id = ?", [$id]);
         
@@ -91,13 +83,12 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет пароль пользователя
-     * 
-     * @param int $id ID пользователя
-     * @param string $currentPassword Текущий пароль
-     * @param string $newPassword Новый пароль
-     * @return bool Результат операции
-     */
+    * Обновляет пароль пользователя 
+    * @param int $id ID пользователя
+    * @param string $currentPassword Текущий пароль
+    * @param string $newPassword Новый пароль
+    * @return bool Результат операции
+    */
     public function updatePassword($id, $currentPassword, $newPassword) {
         $user = $this->getById($id);
         
@@ -110,15 +101,12 @@ class UserModel implements ModelAPI {
         ]);
     }
 
-    // ==================== МЕТОДЫ ДЛЯ АДМИНКИ ====================
-
     /**
-     * Получает всех пользователей с фильтрацией по роли и статусу
-     * 
-     * @param string|null $role Фильтр по роли
-     * @param string|null $status Фильтр по статусу
-     * @return array Массив пользователей
-     */
+    * Получает всех пользователей с фильтрацией по роли и статусу
+    * @param string|null $role Фильтр по роли
+    * @param string|null $status Фильтр по статусу
+    * @return array Массив пользователей
+    */
     public function getAllWithFilters($role = null, $status = null) {
         $sql = "SELECT * FROM users WHERE 1=1";
         $params = [];
@@ -139,11 +127,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает пользователя по имени пользователя
-     * 
-     * @param string $username Имя пользователя
-     * @return array|null Данные пользователя
-     */
+    * Получает пользователя по имени пользователя 
+    * @param string $username Имя пользователя
+    * @return array|null Данные пользователя
+    */
     public function getByUsername($username) {
         return $this->db->fetch(
             "SELECT * FROM users WHERE username = ?",
@@ -152,11 +139,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает пользователя по email
-     * 
-     * @param string $email Email пользователя
-     * @return array|null Данные пользователя
-     */
+    * Получает пользователя по email 
+    * @param string $email Email пользователя
+    * @return array|null Данные пользователя
+    */
     public function getByEmail($email) {
         return $this->db->fetch(
             "SELECT * FROM users WHERE email = ?",
@@ -165,11 +151,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Создает нового пользователя и добавляет его в группу по умолчанию
-     * 
-     * @param array $data Данные пользователя
-     * @return int ID созданного пользователя
-     */
+    * Создает нового пользователя и добавляет его в группу по умолчанию 
+    * @param array $data Данные пользователя
+    * @return int ID созданного пользователя
+    */
     public function create($data) {
         $fields = [];
         $placeholders = [];
@@ -186,20 +171,18 @@ class UserModel implements ModelAPI {
 
         $this->db->query($sql, $values);
         $userId = $this->db->lastInsertId();
-        
-        // ДОБАВЛЯЕМ ПОЛЬЗОВАТЕЛЯ В ГРУППУ ПО УМОЛЧАНИЮ
+
         $this->addUserToDefaultGroup($userId);
         
         return $userId;
     }
 
     /**
-     * Обновляет данные пользователя
-     * 
-     * @param int $id ID пользователя
-     * @param array $data Данные для обновления
-     * @return bool Результат операции
-     */
+    * Обновляет данные пользователя
+    * @param int $id ID пользователя
+    * @param array $data Данные для обновления
+    * @return bool Результат операции
+    */
     public function update($id, $data) {
         if (method_exists($this->db, 'update')) {
             $validFields = ['display_name', 'email', 'website', 'bio', 'avatar', 'password', 'username', 'role', 'status', 'last_login', 'last_admin_ip'];
@@ -240,12 +223,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Удаляет пользователя и все связанные данные (в транзакции)
-     * 
-     * @param int $id ID пользователя
-     * @return bool Результат операции
-     * @throws \Exception При ошибке
-     */
+    * Удаляет пользователя и все связанные данные (в транзакции) 
+    * @param int $id ID пользователя
+    * @return bool Результат операции
+    * @throws \Exception При ошибке
+    */
     public function delete($id) {
         try {
             $this->db->query("START TRANSACTION");
@@ -266,27 +248,24 @@ class UserModel implements ModelAPI {
     }
     
     /**
-     * Получает общее количество пользователей
-     * 
-     * @return int Количество пользователей
-     */
+    * Получает общее количество пользователей 
+    * @return int Количество пользователей
+    */
     public function getTotalCount() {
         $result = $this->db->fetch("SELECT COUNT(*) as count FROM users");
         return $result['count'] ?? 0;
     }
     
     /**
-     * Получает список администраторов
-     * 
-     * @return array Массив администраторов
-     */
+    * Получает список администраторов 
+    * @return array Массив администраторов
+    */
     public function getAdmins() {
         return $this->db->fetchAll("SELECT * FROM users WHERE role = 'admin' ORDER BY username");
     }
     
-   /**
+    /**
     * Получает список активных пользователей
-    * 
     * @return array Массив активных пользователей
     */
     public function getActiveUsers() {
@@ -298,12 +277,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Аутентифицирует пользователя по email и паролю
-     * 
-     * @param string $email Email
-     * @param string $password Пароль
-     * @return array|false Данные пользователя или false
-     */
+    * Аутентифицирует пользователя по email и паролю
+    * @param string $email Email
+    * @param string $password Пароль
+    * @return array|false Данные пользователя или false
+    */
     public function authenticateByEmail($email, $password) {
         $user = $this->db->fetch("SELECT * FROM users WHERE email = ?", [$email]);
         
@@ -314,35 +292,30 @@ class UserModel implements ModelAPI {
         return $user;
     }
 
-    // ==================== МЕТОДЫ ДЛЯ РАБОТЫ С ГРУППАМИ ====================
-
     /**
-     * Получает все группы пользователей
-     * 
-     * @return array Массив групп
-     */
+    * Получает все группы пользователей
+    * 
+    * @return array Массив групп
+    */
     public function getAllGroups() {
         return $this->db->fetchAll("SELECT * FROM user_groups ORDER BY name");
     }
 
     /**
-     * Получает группу по ID
-     * 
-     * @param int $id ID группы
-     * @return array|null Данные группы
-     */
+    * Получает группу по ID 
+    * @param int $id ID группы
+    * @return array|null Данные группы
+    */
     public function getGroupById($id) {
         return $this->db->fetch("SELECT * FROM user_groups WHERE id = ?", [$id]);
     }
 
     /**
-     * Создает новую группу пользователей
-     * 
-     * @param array $data Данные группы
-     * @return bool Результат операции
-     */
+    * Создает новую группу пользователей
+    * @param array $data Данные группы
+    * @return bool Результат операции
+    */
     public function createGroup($data) {
-        // Если устанавливается группа по умолчанию, снимаем флаг с других групп
         if (!empty($data['is_default'])) {
             $this->db->query("UPDATE user_groups SET is_default = 0");
         }
@@ -350,14 +323,12 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет данные группы
-     * 
-     * @param int $id ID группы
-     * @param array $data Данные для обновления
-     * @return bool Результат операции
-     */
+    * Обновляет данные группы 
+    * @param int $id ID группы
+    * @param array $data Данные для обновления
+    * @return bool Результат операции
+    */
     public function updateGroup($id, $data) {
-        // Если устанавливается группа по умолчанию, снимаем флаг с других групп
         if (!empty($data['is_default'])) {
             $this->db->query("UPDATE user_groups SET is_default = 0");
         }
@@ -365,26 +336,21 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Удаляет группу и все связанные данные
-     * 
-     * @param int $id ID группы
-     * @return bool Результат операции
-     */
+    * Удаляет группу и все связанные данные 
+    * @param int $id ID группы
+    * @return bool Результат операции
+    */
     public function deleteGroup($id) {
-        // Удаляем связи пользователей с группой
         $this->db->query("DELETE FROM users_groups WHERE group_id = ?", [$id]);
-        // Удаляем права группы
         $this->db->query("DELETE FROM group_permissions WHERE group_id = ?", [$id]);
-        // Удаляем саму группу
         return $this->db->query("DELETE FROM user_groups WHERE id = ?", [$id]);
     }
 
     /**
-     * Получает права доступа группы
-     * 
-     * @param int $groupId ID группы
-     * @return array Массив ключей прав
-     */
+    * Получает права доступа группы
+    * @param int $groupId ID группы
+    * @return array Массив ключей прав
+    */
     public function getGroupPermissions($groupId) {
         $permissions = $this->db->fetchAll("
             SELECT permission_key 
@@ -396,17 +362,14 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет права доступа группы
-     * 
-     * @param int $groupId ID группы
-     * @param array $permissions Массив ключей прав
-     * @return bool Результат операции
-     */
+    * Обновляет права доступа группы
+    * @param int $groupId ID группы
+    * @param array $permissions Массив ключей прав
+    * @return bool Результат операции
+    */
     public function updateGroupPermissions($groupId, $permissions) {
-        // Удаляем старые права
         $this->db->query("DELETE FROM group_permissions WHERE group_id = ?", [$groupId]);
         
-        // Добавляем новые права
         foreach ($permissions as $permission) {
             $this->db->insert('group_permissions', [
                 'group_id' => $groupId,
@@ -418,11 +381,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает пользователей с информацией о группах и фильтрацией
-     * 
-     * @param array $filters Массив фильтров (role, status, group, search)
-     * @return array Массив пользователей с группами
-     */
+    * Получает пользователей с информацией о группах и фильтрацией 
+    * @param array $filters Массив фильтров (role, status, group, search)
+    * @return array Массив пользователей с группами
+    */
     public function getUsersWithGroups($filters = []) {
         $sql = "
             SELECT 
@@ -437,25 +399,21 @@ class UserModel implements ModelAPI {
         
         $params = [];
         
-        // Фильтр по роли
         if (!empty($filters['role'])) {
             $sql .= " AND u.role = ?";
             $params[] = $filters['role'];
         }
         
-        // Фильтр по статусу
         if (!empty($filters['status'])) {
             $sql .= " AND u.status = ?";
             $params[] = $filters['status'];
         }
         
-        // Фильтр по группе
         if (!empty($filters['group'])) {
             $sql .= " AND ug.id = ?";
             $params[] = $filters['group'];
         }
         
-        // Поиск
         if (!empty($filters['search'])) {
             $sql .= " AND (u.username LIKE ? OR u.email LIKE ? OR u.display_name LIKE ?)";
             $searchTerm = "%{$filters['search']}%";
@@ -468,7 +426,6 @@ class UserModel implements ModelAPI {
         
         $users = $this->db->fetchAll($sql, $params);
         
-        // Преобразуем группы в массив
         foreach ($users as &$user) {
             $user['groups'] = [];
             if (!empty($user['group_names'])) {
@@ -492,10 +449,9 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает группу по умолчанию
-     * 
-     * @return array|null Данные группы
-     */
+    * Получает группу по умолчанию 
+    * @return array|null Данные группы
+    */
     public function getDefaultGroup() {
         $group = $this->db->fetch("SELECT * FROM user_groups WHERE is_default = 1 LIMIT 1");
         
@@ -503,17 +459,14 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет группы пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @param array $groupIds Массив ID групп
-     * @return bool Результат операции
-     */
+    * Обновляет группы пользователя 
+    * @param int $userId ID пользователя
+    * @param array $groupIds Массив ID групп
+    * @return bool Результат операции
+    */
     public function updateUserGroups($userId, $groupIds) {
-        // Удаляем старые связи
         $this->db->query("DELETE FROM users_groups WHERE user_id = ?", [$userId]);
         
-        // Добавляем новые связи
         foreach ($groupIds as $groupId) {
             $this->db->insert('users_groups', [
                 'user_id' => $userId,
@@ -525,11 +478,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает ID групп пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив ID групп
-     */
+    * Получает ID групп пользователя 
+    * @param int $userId ID пользователя
+    * @return array Массив ID групп
+    */
     public function getUserGroups($userId) {
         $groups = $this->db->fetchAll("
             SELECT ug.id 
@@ -542,25 +494,22 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Добавляет пользователя в группу по умолчанию
-     * 
-     * @param int $userId ID пользователя
-     * @return bool Результат операции
-     */
+    * Добавляет пользователя в группу по умолчанию
+    * @param int $userId ID пользователя
+    * @return bool Результат операции
+    */
     public function addUserToDefaultGroup($userId) {
         try {
-            // Получаем группу по умолчанию
+            
             $defaultGroup = $this->getDefaultGroup();
             
             if ($defaultGroup) {
-                // Проверяем, нет ли уже такой связи
                 $existing = $this->db->fetch(
                     "SELECT id FROM users_groups WHERE user_id = ? AND group_id = ?",
                     [$userId, $defaultGroup['id']]
                 );
                 
                 if (!$existing) {
-                    // Добавляем пользователя в группу по умолчанию
                     $result = $this->db->insert('users_groups', [
                         'user_id' => $userId,
                         'group_id' => $defaultGroup['id']
@@ -577,11 +526,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает группы пользователя с детальной информацией
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив групп
-     */
+    * Получает группы пользователя с детальной информацией
+    * @param int $userId ID пользователя
+    * @return array Массив групп
+    */
     public function getUserGroupsWithDetails($userId) {
         try {
             return $this->db->fetchAll(
@@ -598,12 +546,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет последний IP-адрес администратора
-     * 
-     * @param int $userId ID пользователя
-     * @param string $ip IP-адрес
-     * @return bool Результат операции
-     */
+    * Обновляет последний IP-адрес администратора 
+    * @param int $userId ID пользователя
+    * @param string $ip IP-адрес
+    * @return bool Результат операции
+    */
     public function updateLastAdminIP($userId, $ip) {
         return $this->db->query(
             "UPDATE users SET last_admin_ip = ? WHERE id = ?",
@@ -612,22 +559,20 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает последний IP-адрес администратора
-     * 
-     * @param string $username Имя пользователя
-     * @return string|null IP-адрес
-     */
+    * Получает последний IP-адрес администратора 
+    * @param string $username Имя пользователя
+    * @return string|null IP-адрес
+    */
     public function getLastAdminIP($username) {
         $user = $this->getByUsername($username);
         return $user['last_admin_ip'] ?? null;
     }
 
     /**
-     * Получает ID групп пользователя (с обработкой ошибок)
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив ID групп
-     */
+    * Получает ID групп пользователя (с обработкой ошибок) 
+    * @param int $userId ID пользователя
+    * @return array Массив ID групп
+    */
     public function getUserGroupIds($userId) {
         try {
             $result = $this->db->fetchAll(
@@ -637,125 +582,47 @@ class UserModel implements ModelAPI {
             
             return array_column($result, 'group_id');
         } catch (Exception $e) {
-            // В случае ошибки возвращаем пустой массив
             return [];
         }
     }
 
-    // ==================== МЕТОДЫ ДЛЯ ТАБЛИЦ АЧИВОК ====================
-
     /**
-     * Возвращает имя таблицы ачивок
-     * 
-     * @return string
-     */
+    * Возвращает имя таблицы ачивок 
+    * @return string
+    */
     public function getAchievementsTable() {
         return 'user_achievements';
     }
 
     /**
-     * Возвращает имя таблицы условий ачивок
-     * 
-     * @return string
-     */
+    * Возвращает имя таблицы условий ачивок
+    * @return string
+    */
     public function getAchievementConditionsTable() {
         return 'achievement_conditions';
     }
 
     /**
-     * Возвращает имя таблицы конфигурации ачивок
-     * 
-     * @return string
-     */
+    * Возвращает имя таблицы конфигурации ачивок 
+    * @return string
+    */
     public function getAchievementsConfigTable() {
         return 'achievements_config';
     }
 
     /**
-     * Возвращает имя таблицы данных ачивок пользователей
-     * 
-     * @return string
-     */
+    * Возвращает имя таблицы данных ачивок пользователей 
+    * @return string
+    */
     public function getAchievementsUserTable() {
         return 'user_achievements_data';
     }
 
     /**
-     * Создает таблицы для системы достижений
-     * 
-     * @return bool Результат операции
-     */
-    public function createAchievementsTables() {
-        $tables = [];
-        
-        // Таблица ачивок
-        $tables[] = "CREATE TABLE IF NOT EXISTS user_achievements (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            description TEXT,
-            icon VARCHAR(255) DEFAULT 'trophy',
-            icon_color VARCHAR(50) DEFAULT '#0088cc',
-            image VARCHAR(255) NULL,
-            type ENUM('auto', 'manual') DEFAULT 'auto',
-            is_active BOOLEAN DEFAULT 1,
-            priority INT DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY uk_achievement_name (name)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        // Таблица условий ачивок
-        $tables[] = "CREATE TABLE IF NOT EXISTS achievement_conditions (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            achievement_id INT NOT NULL,
-            condition_type ENUM('registration_days', 'comments_count', 'posts_count', 'likes_count', 'login_days') NOT NULL,
-            operator ENUM('>', '<', '=', '>=', '<=', '!=') NOT NULL,
-            value VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (achievement_id) REFERENCES user_achievements(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        // Таблица связи пользователей с ачивками
-        $tables[] = "CREATE TABLE IF NOT EXISTS user_achievements_data (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            achievement_id INT NOT NULL,
-            progress INT DEFAULT 0,
-            max_value INT DEFAULT 100,
-            is_unlocked BOOLEAN DEFAULT 0,
-            unlocked_at TIMESTAMP NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY uk_user_achievement (user_id, achievement_id),
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-            FOREIGN KEY (achievement_id) REFERENCES user_achievements(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        // Таблица наград за ачивки
-        $tables[] = "CREATE TABLE IF NOT EXISTS achievement_rewards (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            achievement_id INT NOT NULL,
-            reward_type ENUM('badge', 'title', 'permission', 'item') NOT NULL,
-            reward_data TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (achievement_id) REFERENCES user_achievements(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        foreach ($tables as $sql) {
-            $this->db->query($sql);
-        }
-        
-        return true;
-    }
-
-    // ==================== МЕТОДЫ ДЛЯ РАБОТЫ С АЧИВКАМИ ====================
-
-    /**
-     * Получает все достижения с фильтрацией
-     * 
-     * @param array $filters Массив фильтров (type, active, search)
-     * @return array Массив достижений
-     */
+    * Получает все достижения с фильтрацией 
+    * @param array $filters Массив фильтров (type, active, search)
+    * @return array Массив достижений
+    */
     public function getAllAchievements($filters = []) {
         $sql = "SELECT ua.*, 
                 COUNT(DISTINCT uad.user_id) as unlocked_count
@@ -793,11 +660,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает достижение по ID
-     * 
-     * @param int $id ID достижения
-     * @return array|null Данные достижения
-     */
+    * Получает достижение по ID
+    * @param int $id ID достижения
+    * @return array|null Данные достижения
+    */
     public function getAchievementById($id) {
         $achievement = $this->db->fetch(
             "SELECT * FROM user_achievements WHERE id = ?",
@@ -813,11 +679,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает условия достижения
-     * 
-     * @param int $achievementId ID достижения
-     * @return array Массив условий
-     */
+    * Получает условия достижения
+    * @param int $achievementId ID достижения
+    * @return array Массив условий
+    */
     public function getAchievementConditions($achievementId) {
         return $this->db->fetchAll(
             "SELECT * FROM achievement_conditions WHERE achievement_id = ? ORDER BY id",
@@ -826,11 +691,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Создает новое достижение
-     * 
-     * @param array $data Данные достижения
-     * @return int ID созданного достижения
-     */
+    * Создает новое достижение
+    * @param array $data Данные достижения
+    * @return int ID созданного достижения
+    */
     public function createAchievement($data) {
         $achievementData = [
             'name' => $data['name'],
@@ -844,7 +708,6 @@ class UserModel implements ModelAPI {
             $achievementData['image'] = $data['image'];
         }
         
-        // Выполняем вставку через query, а не insert
         $columns = array_keys($achievementData);
         $placeholders = array_fill(0, count($columns), '?');
         $values = array_values($achievementData);
@@ -854,8 +717,7 @@ class UserModel implements ModelAPI {
         
         $this->db->query($sql, $values);
         $achievementId = $this->db->lastInsertId();
-        
-        // Сохраняем условия если есть
+
         if (!empty($data['conditions']) && is_array($data['conditions'])) {
             foreach ($data['conditions'] as $condition) {
                 if (!empty($condition['type']) && !empty($condition['operator']) && isset($condition['value'])) {
@@ -872,12 +734,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет существующее достижение
-     * 
-     * @param int $id ID достижения
-     * @param array $data Данные для обновления
-     * @return bool Результат операции
-     */
+    * Обновляет существующее достижение 
+    * @param int $id ID достижения
+    * @param array $data Данные для обновления
+    * @return bool Результат операции
+    */
     public function updateAchievement($id, $data) {
         $achievementData = [
             'name' => $data['name'],
@@ -893,7 +754,6 @@ class UserModel implements ModelAPI {
             $achievementData['image'] = null;
         }
         
-        // Обновляем данные через query
         $fields = [];
         $values = [];
         
@@ -902,17 +762,14 @@ class UserModel implements ModelAPI {
             $values[] = $value;
         }
         
-        $values[] = $id; // Для WHERE условия
+        $values[] = $id;
         
         $sql = "UPDATE user_achievements SET " . implode(', ', $fields) . " WHERE id = ?";
         $updated = $this->db->query($sql, $values);
         
-        // Обновляем условия
         if (isset($data['conditions']) && is_array($data['conditions'])) {
-            // Удаляем старые условия
             $this->db->query("DELETE FROM achievement_conditions WHERE achievement_id = ?", [$id]);
             
-            // Добавляем новые
             foreach ($data['conditions'] as $condition) {
                 if (!empty($condition['type']) && !empty($condition['operator']) && isset($condition['value'])) {
                     $this->db->query(
@@ -928,35 +785,28 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Удаляет достижение
-     * 
-     * @param int $id ID достижения
-     * @return bool Результат операции
-     */
+    * Удаляет достижение 
+    * @param int $id ID достижения
+    * @return bool Результат операции
+    */
     public function deleteAchievement($id) {
-        // Проверяем существование таблицы achievement_rewards
         $tables = $this->db->fetchAll("SHOW TABLES LIKE 'achievement_rewards'");
         
-        // Удаляем связи с пользователями
         $this->db->query("DELETE FROM user_achievements_data WHERE achievement_id = ?", [$id]);
-        // Удаляем условия
         $this->db->query("DELETE FROM achievement_conditions WHERE achievement_id = ?", [$id]);
         
-        // Удаляем награды только если таблица существует
         if (!empty($tables)) {
             $this->db->query("DELETE FROM achievement_rewards WHERE achievement_id = ?", [$id]);
         }
         
-        // Удаляем ачивку
         return $this->db->query("DELETE FROM user_achievements WHERE id = ?", [$id]);
     }
 
     /**
-     * Получает достижения пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив достижений
-     */
+    * Получает достижения пользователя 
+    * @param int $userId ID пользователя
+    * @return array Массив достижений
+    */
     public function getUserAchievements($userId) {
         $sql = "SELECT ua.*, uad.progress, uad.max_value, uad.is_unlocked, uad.unlocked_at
                 FROM user_achievements ua
@@ -966,10 +816,8 @@ class UserModel implements ModelAPI {
         
         $achievements = $this->db->fetchAll($sql, [$userId]);
         
-        // Если запись не существует, создаем
         foreach ($achievements as &$achievement) {
             if ($achievement['progress'] === null) {
-                // Создаем запись прогресса
                 $this->initUserAchievement($userId, $achievement['id']);
                 $achievement['progress'] = 0;
                 $achievement['max_value'] = 100;
@@ -982,12 +830,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Инициализирует запись прогресса для достижения пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return void
-     */
+    * Инициализирует запись прогресса для достижения пользователя 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return void
+    */
     public function initUserAchievement($userId, $achievementId) {
         $exists = $this->db->fetch(
             "SELECT id FROM user_achievements_data WHERE user_id = ? AND achievement_id = ?",
@@ -1004,13 +851,12 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Обновляет прогресс пользователя по достижению
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @param int $progress Новый прогресс
-     * @return int Обновленный прогресс
-     */
+    * Обновляет прогресс пользователя по достижению 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @param int $progress Новый прогресс
+    * @return int Обновленный прогресс
+    */
     public function updateUserAchievementProgress($userId, $achievementId, $progress) {
         $data = $this->db->fetch(
             "SELECT * FROM user_achievements_data WHERE user_id = ? AND achievement_id = ?",
@@ -1022,7 +868,6 @@ class UserModel implements ModelAPI {
             $data = ['progress' => 0, 'is_unlocked' => 0];
         }
         
-        // Обновляем прогресс
         $newProgress = max($data['progress'], $progress);
         $this->db->query(
             "UPDATE user_achievements_data SET progress = ?, updated_at = NOW() 
@@ -1030,7 +875,6 @@ class UserModel implements ModelAPI {
             [$newProgress, $userId, $achievementId]
         );
         
-        // Проверяем условия разблокировки
         $achievement = $this->getAchievementById($achievementId);
         if ($achievement && $this->checkAchievementConditions($userId, $achievementId)) {
             $this->unlockAchievement($userId, $achievementId);
@@ -1040,12 +884,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Проверяет выполнение условий для достижения
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool true если все условия выполнены
-     */
+    * Проверяет выполнение условий для достижения 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool true если все условия выполнены
+    */
     public function checkAchievementConditions($userId, $achievementId) {
         $achievement = $this->getAchievementById($achievementId);
         if (!$achievement || $achievement['type'] !== 'auto') {
@@ -1057,16 +900,13 @@ class UserModel implements ModelAPI {
             return false;
         }
         
-        // Инициализируем запись прогресса если нет
         $this->initUserAchievement($userId, $achievementId);
         
         foreach ($conditions as $condition) {
             $userValue = $this->getUserStatValue($userId, $condition['condition_type']);
-            
-            // Обновляем прогресс
+
             $this->updateUserAchievementProgress($userId, $achievementId, $userValue);
             
-            // Проверяем условие
             if (!$this->evaluateCondition($userValue, $condition['operator'], $condition['value'])) {
                 return false;
             }
@@ -1076,12 +916,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает значение статистики пользователя по типу
-     * 
-     * @param int $userId ID пользователя
-     * @param string $statType Тип статистики
-     * @return int Значение
-     */
+    * Получает значение статистики пользователя по типу 
+    * @param int $userId ID пользователя
+    * @param string $statType Тип статистики
+    * @return int Значение
+    */
     public function getUserStatValue($userId, $statType) {
         $user = $this->getById($userId);
         if (!$user) {
@@ -1148,15 +987,13 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Проверяет выполнение условия сравнения
-     * 
-     * @param mixed $value Значение пользователя
-     * @param string $operator Оператор
-     * @param mixed $expected Ожидаемое значение
-     * @return bool Результат сравнения
-     */
+    * Проверяет выполнение условия сравнения
+    * @param mixed $value Значение пользователя
+    * @param string $operator Оператор
+    * @param mixed $expected Ожидаемое значение
+    * @return bool Результат сравнения
+    */
     public function evaluateCondition($value, $operator, $expected) {
-        // Преобразуем expected к числу если это число
         if (is_numeric($expected)) {
             $expected = (float)$expected;
             $value = (float)$value;
@@ -1174,12 +1011,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Разблокирует достижение для пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool Результат операции
-     */
+    * Разблокирует достижение для пользователя 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool Результат операции
+    */
     public function unlockAchievement($userId, $achievementId) {
         $data = $this->db->fetch(
             "SELECT is_unlocked FROM user_achievements_data WHERE user_id = ? AND achievement_id = ?",
@@ -1187,7 +1023,7 @@ class UserModel implements ModelAPI {
         );
         
         if ($data && $data['is_unlocked']) {
-            return true; // Уже разблокировано
+            return true;
         }
         
         $this->db->query(
@@ -1196,7 +1032,6 @@ class UserModel implements ModelAPI {
             [$userId, $achievementId]
         );
         
-        // Триггерим событие
         $achievement = $this->getAchievementById($achievementId);
         $this->triggerAchievementUnlocked($userId, $achievement);
         
@@ -1204,12 +1039,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Блокирует достижение для пользователя (снимает разблокировку)
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool Результат операции
-     */
+    * Блокирует достижение для пользователя (снимает разблокировку) 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool Результат операции
+    */
     public function lockAchievement($userId, $achievementId) {
         return $this->db->update('user_achievements_data', [
             'is_unlocked' => 0,
@@ -1218,37 +1052,32 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Назначает достижение пользователю (принудительно)
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool Результат операции
-     */
+    * Назначает достижение пользователю (принудительно)
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool Результат операции
+    */
     public function assignAchievementToUser($userId, $achievementId) {
-        // Создаем запись если нет
         $this->initUserAchievement($userId, $achievementId);
-        
-        // Разблокируем
+
         return $this->unlockAchievement($userId, $achievementId);
     }
 
     /**
-     * Удаляет достижение у пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool Результат операции
-     */
+    * Удаляет достижение у пользователя
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool Результат операции
+    */
     public function removeAchievementFromUser($userId, $achievementId) {
         return $this->lockAchievement($userId, $achievementId);
     }
 
     /**
-     * Получает количество пользователей, разблокировавших достижение
-     * 
-     * @param int $achievementId ID достижения
-     * @return int Количество
-     */
+    * Получает количество пользователей, разблокировавших достижение 
+    * @param int $achievementId ID достижения
+    * @return int Количество
+    */
     public function getAchievementUnlockedCount($achievementId) {
         $result = $this->db->fetch(
             "SELECT COUNT(*) as count FROM user_achievements_data 
@@ -1259,11 +1088,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает разблокированные достижения пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив достижений
-     */
+    * Получает разблокированные достижения пользователя 
+    * @param int $userId ID пользователя
+    * @return array Массив достижений
+    */
     public function getUserUnlockedAchievements($userId) {
         return $this->db->fetchAll(
             "SELECT ua.*, uad.unlocked_at 
@@ -1276,32 +1104,27 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Триггер события разблокировки достижения
-     * 
-     * @param int $userId ID пользователя
-     * @param array $achievement Данные достижения
-     * @return bool
-     */
+    * Триггер события разблокировки достижения 
+    * @param int $userId ID пользователя
+    * @param array $achievement Данные достижения
+    * @return bool
+    */
     public function triggerAchievementUnlocked($userId, $achievement) {
-        // Здесь можно добавить отправку уведомления, добавление в лог и т.д.
         return true;
     }
 
     /**
-     * Обновляет статистику пользователя и проверяет достижения
-     * 
-     * @param int $userId ID пользователя
-     * @param string $statType Тип статистики
-     * @return bool Результат
-     */
+    * Обновляет статистику пользователя и проверяет достижения 
+    * @param int $userId ID пользователя
+    * @param string $statType Тип статистики
+    * @return bool Результат
+    */
     public function updateUserStats($userId, $statType) {
-        // Получаем все автоматические активные ачивки
         $achievements = $this->db->fetchAll(
             "SELECT id FROM user_achievements WHERE type = 'auto' AND is_active = 1"
         );
         
         foreach ($achievements as $achievement) {
-            // Проверяем условия для каждой ачивки
             if ($this->checkAchievementConditions($userId, $achievement['id'])) {
                 $this->unlockAchievement($userId, $achievement['id']);
             }
@@ -1311,12 +1134,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает превью пользователей для ачивки
-     * 
-     * @param int $achievementId ID достижения
-     * @param int $limit Количество
-     * @return array Массив пользователей
-     */
+    * Получает превью пользователей для ачивки 
+    * @param int $achievementId ID достижения
+    * @param int $limit Количество
+    * @return array Массив пользователей
+    */
     public function getAchievementUsersPreview($achievementId, $limit = 5) {
         return $this->db->fetchAll("
             SELECT u.id, u.username, u.display_name, u.avatar, uad.unlocked_at
@@ -1329,13 +1151,12 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает всех пользователей с ачивкой с пагинацией
-     * 
-     * @param int $achievementId ID достижения
-     * @param int $page Номер страницы
-     * @param int $perPage На странице
-     * @return array Массив с пользователями и пагинацией
-     */
+    * Получает всех пользователей с ачивкой с пагинацией
+    * @param int $achievementId ID достижения
+    * @param int $page Номер страницы
+    * @param int $perPage На странице
+    * @return array Массив с пользователями и пагинацией
+    */
     public function getAchievementUsers($achievementId, $page = 1, $perPage = 20) {
         $offset = ($page - 1) * $perPage;
         
@@ -1348,7 +1169,6 @@ class UserModel implements ModelAPI {
             LIMIT ? OFFSET ?
         ", [$achievementId, $perPage, $offset]);
         
-        // Получаем общее количество
         $total = $this->db->fetch("
             SELECT COUNT(*) as count
             FROM user_achievements_data
@@ -1365,20 +1185,18 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Получает общее количество активных пользователей
-     * 
-     * @return int Количество
-     */
+    * Получает общее количество активных пользователей 
+    * @return int Количество
+    */
     public function getTotalUsersCount() {
         $result = $this->db->fetch("SELECT COUNT(*) as count FROM users WHERE status = 'active'");
         return $result['count'] ?? 0;
     }
 
     /**
-     * Получает общее количество разблокированных ачивок
-     * 
-     * @return int Количество
-     */
+    * Получает общее количество разблокированных ачивок
+    * @return int Количество
+    */
     public function getTotalUnlockedAchievements() {
         $result = $this->db->fetch("
             SELECT COUNT(DISTINCT user_id, achievement_id) as count 
@@ -1389,11 +1207,10 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Форматирует условия для отображения
-     * 
-     * @param array $conditions Массив условий
-     * @return array Массив отформатированных строк
-     */
+    * Форматирует условия для отображения 
+    * @param array $conditions Массив условий
+    * @return array Массив отформатированных строк
+    */
     public function formatConditions($conditions) {
         $formatted = [];
         $conditionTypes = [
@@ -1425,12 +1242,11 @@ class UserModel implements ModelAPI {
     }
 
     /**
-     * Проверяет, имеет ли пользователь конкретную ачивку
-     * 
-     * @param int $userId ID пользователя
-     * @param int $achievementId ID достижения
-     * @return bool true если имеет
-     */
+    * Проверяет, имеет ли пользователь конкретную ачивку 
+    * @param int $userId ID пользователя
+    * @param int $achievementId ID достижения
+    * @return bool true если имеет
+    */
     public function userHasAchievement($userId, $achievementId) {
         $result = $this->db->fetch(
             "SELECT is_unlocked FROM user_achievements_data 

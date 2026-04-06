@@ -1,28 +1,20 @@
 <?php
 
 /**
- * Контроллер для отображения страниц на фронтенде
- * 
- * @package Controllers
- * @extends Controller
- */
+* Контроллер для отображения страниц на фронтенде
+* @package Controllers
+* @extends Controller
+*/
 class PageController extends Controller {
     
-    /** @var PageModel Модель для работы со страницами */
     private $pageModel;
-    
-    /** @var PostBlockModel Модель для работы с блоками контента */
     private $postBlockModel;
-    
-    /** @var PostBlockManager Менеджер для обработки блоков и управления ассетами */
     private $postBlockManager;
     
     /**
-     * Конструктор контроллера
-     * Инициализирует модели и менеджер для работы со страницами и блоками
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор контроллера
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         parent::__construct($db);
         $this->pageModel = new PageModel($db);
@@ -31,12 +23,10 @@ class PageController extends Controller {
     }
     
     /**
-     * Отображает страницу по её URL-адресу (slug)
-     * Загружает страницу, её блоки и пользовательские поля, подготавливает контент для отображения
-     * 
-     * @param string|null $slug URL-адрес страницы
-     * @return void
-     */
+    * Отображает страницу по её URL-адресу (slug)
+    * @param string|null $slug URL-адрес страницы
+    * @return void
+    */
     public function showAction($slug = null) {
         $action = new \pages\actions\Show($this->db, ['slug' => $slug]);
         $action->setController($this);
@@ -44,12 +34,10 @@ class PageController extends Controller {
     }
     
     /**
-     * Подготавливает блоки страницы для отображения
-     * Загружает ассеты, обрабатывает контент и объединяет настройки
-     * 
-     * @param int $pageId ID страницы
-     * @return array Массив обработанных блоков
-     */
+    * Подготавливает блоки страницы для отображения 
+    * @param int $pageId ID страницы
+    * @return array Массив обработанных блоков
+    */
     private function preparePageBlocks($pageId) {
 
         $blocks = $this->postBlockModel->getByPage($pageId);
@@ -65,11 +53,10 @@ class PageController extends Controller {
     }
     
     /**
-     * Загружает фронтенд-ассеты (CSS, JS) для всех блоков на странице
-     * 
-     * @param array $blocks Массив блоков страницы
-     * @return void
-     */
+    * Загружает фронтенд-ассеты (CSS, JS) для всех блоков на странице 
+    * @param array $blocks Массив блоков страницы
+    * @return void
+    */
     private function loadBlockAssets($blocks) {
         $blocksData = [];
         foreach ($blocks as $block) {
@@ -82,12 +69,10 @@ class PageController extends Controller {
     }
     
     /**
-     * Обрабатывает отдельный блок страницы
-     * Декодирует JSON-данные, объединяет настройки и обрабатывает контент
-     * 
-     * @param array $block Данные блока из базы данных
-     * @return array Обработанный блок готовый к отображению
-     */
+    * Обрабатывает отдельный блок страницы 
+    * @param array $block Данные блока из базы данных
+    * @return array Обработанный блок готовый к отображению
+    */
     private function processSingleBlock($block) {
         $content = $this->decodeJsonIfNeeded($block['content']);
         $settings = $this->decodeJsonIfNeeded($block['settings'], true);
@@ -110,12 +95,11 @@ class PageController extends Controller {
     }
     
     /**
-     * Декодирует строку из JSON, если это необходимо
-     * 
-     * @param mixed $data Данные для декодирования
-     * @param bool $defaultArray Возвращать массив по умолчанию
-     * @return mixed Декодированные данные
-     */
+    * Декодирует строку из JSON, если это необходимо 
+    * @param mixed $data Данные для декодирования
+    * @param bool $defaultArray Возвращать массив по умолчанию
+    * @return mixed Декодированные данные
+    */
     private function decodeJsonIfNeeded($data, $defaultArray = false) {
         
         if (is_string($data)) {
@@ -136,12 +120,11 @@ class PageController extends Controller {
     }
     
     /**
-     * Подготавливает пользовательские поля для сущности
-     * 
-     * @param string $entityType Тип сущности (например, 'page')
-     * @param int $entityId ID сущности
-     * @return array Массив значений полей с метаданными
-     */
+    * Подготавливает пользовательские поля для сущности
+    * @param string $entityType Тип сущности (например, 'page')
+    * @param int $entityId ID сущности
+    * @return array Массив значений полей с метаданными
+    */
     private function prepareCustomFields($entityType, $entityId) {
         $fieldModel = new \FieldModel($this->db);
         $customFields = $fieldModel->getActiveByEntityType($entityType);
@@ -158,12 +141,11 @@ class PageController extends Controller {
     }
     
     /**
-     * Обрабатывает ошибки при загрузке страницы
-     * 
-     * @param string $message Сообщение об ошибке
-     * @param string $redirectUrl URL для перенаправления
-     * @return void
-     */
+    * Обрабатывает ошибки при загрузке страницы 
+    * @param string $message Сообщение об ошибке
+    * @param string $redirectUrl URL для перенаправления
+    * @return void
+    */
     private function handleError($message, $redirectUrl) {
         \Notification::error($message);
         $this->redirect($redirectUrl);

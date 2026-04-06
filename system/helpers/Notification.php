@@ -1,21 +1,16 @@
 <?php
 
 /**
- * Класс для управления уведомлениями (тостами) через сессию
- * Позволяет устанавливать сообщения разных типов, которые затем
- * могут быть отображены на следующей странице
- * 
- * @package Core
- */
+* Класс для управления уведомлениями (тостами) через сессию
+* @package Core
+*/
 class Notification {
     
     /**
-     * Устанавливает уведомление об успешной операции
-     * Сохраняет в сессию toast типа 'success'
-     * 
-     * @param string $message Текст уведомления
-     * @return void
-     */
+    * Устанавливает уведомление об успешной операции 
+    * @param string $message Текст уведомления
+    * @return void
+    */
     public static function success($message) {
         $_SESSION['toast'] = [
             'type' => 'success',
@@ -24,12 +19,10 @@ class Notification {
     }
 
     /**
-     * Устанавливает уведомление об ошибке
-     * Сохраняет в сессию toast типа 'danger'
-     * 
-     * @param string $message Текст уведомления
-     * @return void
-     */
+    * Устанавливает уведомление об ошибке
+    * @param string $message Текст уведомления
+    * @return void
+    */
     public static function error($message) {
         $_SESSION['toast'] = [
             'type' => 'danger',
@@ -38,12 +31,10 @@ class Notification {
     }
 
     /**
-     * Устанавливает предупреждающее уведомление
-     * Сохраняет в сессию toast типа 'warning'
-     * 
-     * @param string $message Текст уведомления
-     * @return void
-     */
+    * Устанавливает предупреждающее уведомление
+    * @param string $message Текст уведомления
+    * @return void
+    */
     public static function warning($message) {
         $_SESSION['toast'] = [
             'type' => 'warning',
@@ -52,12 +43,10 @@ class Notification {
     }
 
     /**
-     * Устанавливает информационное уведомление
-     * Сохраняет в сессию toast типа 'info'
-     * 
-     * @param string $message Текст уведомления
-     * @return void
-     */
+    * Устанавливает информационное уведомление
+    * @param string $message Текст уведомления
+    * @return void
+    */
     public static function info($message) {
         $_SESSION['toast'] = [
             'type' => 'info',

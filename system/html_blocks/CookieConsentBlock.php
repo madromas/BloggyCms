@@ -1,48 +1,36 @@
 <?php
 
-/**
- * Блок "Согласие с cookies"
- * Отображает уведомление о согласии с использованием cookies с возможностью настройки.
- */
-class CookieConsentBlock extends BaseHtmlBlock
-{
-    public function getName(): string
-    {
+class CookieConsentBlock extends BaseHtmlBlock {
+
+    public function getName(): string {
         return "Согласие с cookies";
     }
 
-    public function getSystemName(): string
-    {
+    public function getSystemName(): string {
         return "CookieConsentBlock";
     }
 
-    public function getDescription(): string
-    {
+    public function getDescription(): string {
         return "Отображает уведомление о согласии с использованием cookies. После согласия скрывается и запоминает выбор пользователя.";
     }
 
-    public function getShortDescription(): string
-    {
+    public function getShortDescription(): string {
         return "Уведомление о cookies";
     }
 
-    public function getIcon(): string
-    {
+    public function getIcon(): string {
         return 'bi bi-cookie';
     }
 
-    public function getVersion(): string
-    {
+    public function getVersion(): string {
         return '1.0.0';
     }
 
-    public function getTemplate(): string
-    {
+    public function getTemplate(): string {
         return 'all';
     }
 
-    public function getSettingsForm($currentSettings = []): string
-    {
+    public function getSettingsForm($currentSettings = []): string {
         $settings = array_merge($this->getDefaultSettings(), $currentSettings);
 
         $fieldsets = [];
@@ -184,8 +172,7 @@ class CookieConsentBlock extends BaseHtmlBlock
         return ob_get_clean();
     }
 
-    private function getDefaultSettings(): array
-    {
+    private function getDefaultSettings(): array {
         return [
             'message' => 'Мы используем cookies для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с нашей политикой обработки данных.',
             'accept_button_text' => 'Принять',
@@ -203,13 +190,11 @@ class CookieConsentBlock extends BaseHtmlBlock
         ];
     }
 
-    public function validateSettings($settings): array
-    {
+    public function validateSettings($settings): array {
         return [true, []];
     }
 
-    public function prepareSettings($settings): array
-    {
+    public function prepareSettings($settings): array {
         if (!is_array($settings)) {
             return $this->getDefaultSettings();
         }
@@ -231,8 +216,7 @@ class CookieConsentBlock extends BaseHtmlBlock
         return $prepared;
     }
 
-    public function processFrontend($settings = [], $templateName = null): string
-    {
+    public function processFrontend($settings = [], $templateName = null): string {
         $data = $settings;
         $data['cookie_name'] = $settings['cookie_name'] ?? 'cookie_consent';
         $data['auto_show'] = !empty($settings['auto_show']);

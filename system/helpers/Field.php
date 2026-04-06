@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Абстрактный базовый класс для всех типов полей в системе управления формами
- * Предоставляет общую функциональность для рендеринга, валидации и условного отображения
- * 
- * @package Fields
- */
+* Абстрактный базовый класс для всех типов полей в системе управления формами
+* @package Fields
+*/
 abstract class Field {
     
     /** @var string Имя поля */
@@ -15,22 +13,21 @@ abstract class Field {
     protected $options;
     
     /**
-     * Конструктор поля
-     * 
-     * @param string $name Имя поля
-     * @param array $options Опции поля:
-     * - title: заголовок поля
-     * - hint: подсказка под полем
-     * - default: значение по умолчанию
-     * - required: обязательность
-     * - placeholder: placeholder
-     * - class: дополнительные CSS классы
-     * - attributes: дополнительные HTML атрибуты
-     * - show: условие показа
-     * - show_class: класс для условного отображения
-     * - column: ширина колонки (для кастомной сетки)
-     * - full_width: признак поля на всю ширину
-     */
+    * Конструктор поля
+    * @param string $name Имя поля
+    * @param array $options Опции поля:
+    * - title: заголовок поля
+    * - hint: подсказка под полем
+    * - default: значение по умолчанию
+    * - required: обязательность
+    * - placeholder: placeholder
+    * - class: дополнительные CSS классы
+    * - attributes: дополнительные HTML атрибуты
+    * - show: условие показа
+    * - show_class: класс для условного отображения
+    * - column: ширина колонки (для кастомной сетки)
+    * - full_width: признак поля на всю ширину
+    */
     public function __construct($name, $options = []) {
         $this->name = $name;
         $this->options = array_merge([
@@ -49,50 +46,42 @@ abstract class Field {
     }
     
     /**
-     * Получает имя поля
-     * 
-     * @return string
-     */
+    * Получает имя поля
+    * @return string
+    */
     public function getName() {
         return $this->name;
     }
     
     /**
-     * Получает все опции поля
-     * 
-     * @return array Массив опций
-     */
+    * Получает все опции поля 
+    * @return array Массив опций
+    */
     public function getOptions() {
         return $this->options;
     }
     
     /**
-     * Получает ширину колонки для поля
-     * Используется в кастомном режиме Fieldset
-     * 
-     * @return int|null Ширина колонки (от 1 до 12) или null если не задана
-     */
+    * Получает ширину колонки для поля
+    * @return int|null Ширина колонки (от 1 до 12) или null если не задана
+    */
     public function getColumnWidth() {
         return $this->options['column'] ?? null;
     }
     
     /**
-     * Проверяет, должно ли поле занимать всю ширину
-     * 
-     * @return bool
-     */
+    * Проверяет, должно ли поле занимать всю ширину
+    * @return bool
+    */
     public function isFullWidth() {
-        // Проверка через full_width
         if (isset($this->options['full_width']) && $this->options['full_width'] === true) {
             return true;
         }
         
-        // Поле-уведомление всегда на всю ширину
         if ($this instanceof FieldAlert) {
             return true;
         }
         
-        // Проверка column = 12
         if (isset($this->options['column']) && $this->options['column'] == 12) {
             return true;
         }
@@ -101,31 +90,25 @@ abstract class Field {
     }
     
     /**
-     * Абстрактный метод для рендеринга поля
-     * Должен быть реализован в классах-наследниках
-     * 
-     * @param mixed $currentValue Текущее значение поля
-     * @return string HTML-код поля
-     */
+    * Абстрактный метод для рендеринга поля 
+    * @param mixed $currentValue Текущее значение поля
+    * @return string HTML-код поля
+    */
     abstract public function render($currentValue = null);
     
     /**
-     * Генерирует строку с HTML-атрибутами для поля ввода
-     * Включает name, class, placeholder, required и пользовательские атрибуты
-     * 
-     * @return string Строка с HTML-атрибутами
-     */
+    * Генерирует строку с HTML-атрибутами для поля ввода 
+    * @return string Строка с HTML-атрибутами
+    */
     protected function getAttributes() {
         $attrs = [];
         
-        // Для админских форм используем простое имя, для настроек - settings[name]
         if ($this->options['admin_mode'] ?? false) {
-            $attrs['name'] = $this->name; // Простое имя для админки
+            $attrs['name'] = $this->name;
         } else {
-            $attrs['name'] = "settings[{$this->name}]"; // Для настроек
+            $attrs['name'] = "settings[{$this->name}]";
         }
-        
-        // Определение класса в зависимости от типа поля
+
         if ($this instanceof FieldSelect) {
             $attrs['class'] = "form-select {$this->options['class']}";
         } else {
@@ -138,12 +121,10 @@ abstract class Field {
             $attrs['required'] = 'required';
         }
         
-        // Добавление пользовательских атрибутов
         foreach ($this->options['attributes'] as $key => $value) {
             $attrs[$key] = $value;
         }
         
-        // Сборка строки атрибутов
         $attributesString = '';
         foreach ($attrs as $key => $value) {
             if (!empty($value)) {
@@ -155,19 +136,17 @@ abstract class Field {
     }
     
     /**
-     * Оборачивает HTML поля в стандартную группу с заголовком и подсказкой
-     * 
-     * @param string $fieldHtml HTML-код поля
-     * @param array $formData Данные формы для условного отображения
-     * @return string Полный HTML группы поля
-     */
+    * Оборачивает HTML поля в стандартную группу с заголовком и подсказкой
+    * @param string $fieldHtml HTML-код поля
+    * @param array $formData Данные формы для условного отображения
+    * @return string Полный HTML группы поля
+    */
     protected function renderFieldGroup($fieldHtml, $formData = []) {
         $requiredBadge = $this->options['required'] ? ' <span class="text-danger">*</span>' : '';
         $hint = $this->options['hint'] ? '<div class="form-text">' . htmlspecialchars($this->options['hint']) . '</div>' : '';
         
         $conditionalAttrs = $this->getConditionalAttributes($formData);
         
-        // Индикатор зависимости
         $dependencyIndicator = '';
         if ($this->isConditional()) {
             $dependencyIndicator = $this->renderDependencyIndicator($formData);
@@ -186,11 +165,10 @@ abstract class Field {
     }
 
     /**
-     * Рендерит индикатор зависимости для условного поля
-     * 
-     * @param array $formData Данные формы
-     * @return string HTML индикатора
-     */
+    * Рендерит индикатор зависимости для условного поля 
+    * @param array $formData Данные формы
+    * @return string HTML индикатора
+    */
     protected function renderDependencyIndicator($formData) {
         $showCondition = $this->options['show'] ?? null;
         if (empty($showCondition)) {
@@ -205,18 +183,15 @@ abstract class Field {
         $isVisible = $this->shouldShow($formData);
         $visibilityClass = $isVisible ? '' : 'dependency-hidden';
         
-        // Возвращаем пустую строку (метод не завершен в оригинале)
         return '';
     }
 
     /**
-     * Извлекает имя родительского поля из условия
-     * 
-     * @param string $condition Условие показа
-     * @return string|null Имя поля или null
-     */
+    * Извлекает имя родительского поля из условия
+    * @param string $condition Условие показа
+    * @return string|null Имя поля или null
+    */
     protected function extractParentFieldFromCondition($condition) {
-        // Формат: "field:field_name = value"
         if (preg_match('/^field:(\w+)/', $condition, $matches)) {
             return $matches[1];
         }
@@ -224,75 +199,67 @@ abstract class Field {
     }
 
     /**
-     * Получает заголовок родительского поля
-     * 
-     * @param string $parentFieldName Имя родительского поля
-     * @return string Заголовок поля
-     */
+    * Получает заголовок родительского поля
+    * @param string $parentFieldName Имя родительского поля
+    * @return string Заголовок поля
+    */
     protected function getParentFieldTitle($parentFieldName) {
         return $parentFieldName;
     }
 
     /**
-     * Получает заголовок поля
-     * 
-     * @return string
-     */
+    * Получает заголовок поля 
+    * @return string
+    */
     public function getTitle() {
         return $this->options['title'] ?? '';
     }
     
     /**
-     * Получает подсказку поля
-     * 
-     * @return string
-     */
+    * Получает подсказку поля
+    * @return string
+    */
     public function getHint() {
         return $this->options['hint'] ?? '';
     }
     
     /**
-     * Получает placeholder поля
-     * 
-     * @return string
-     */
+    * Получает placeholder поля 
+    * @return string
+    */
     public function getPlaceholder() {
         return $this->options['placeholder'] ?? '';
     }
     
     /**
-     * Получает минимальное значение (для числовых полей)
-     * 
-     * @return mixed
-     */
+    * Получает минимальное значение (для числовых полей)
+    * @return mixed
+    */
     public function getMin() {
         return $this->options['min'] ?? null;
     }
     
     /**
-     * Получает максимальное значение (для числовых полей)
-     * 
-     * @return mixed
-     */
+    * Получает максимальное значение (для числовых полей)
+    * @return mixed
+    */
     public function getMax() {
         return $this->options['max'] ?? null;
     }
     
     /**
-     * Получает список опций (для select и multiselect)
-     * 
-     * @return array
-     */
+    * Получает список опций (для select и multiselect)
+    * @return array
+    */
     public function getSelectOptions() {
         return $this->options['options'] ?? [];
     }
 
     /**
-     * Проверяет, должно ли поле отображаться на основе условия
-     * 
-     * @param array $formData Данные формы
-     * @return bool true если поле должно быть видимо
-     */
+    * Проверяет, должно ли поле отображаться на основе условия 
+    * @param array $formData Данные формы
+    * @return bool true если поле должно быть видимо
+    */
     public function shouldShow($formData) {
         $showCondition = $this->options['show'] ?? null;
         
@@ -304,18 +271,12 @@ abstract class Field {
     }
 
     /**
-     * Парсит и вычисляет условие показа поля
-     * Поддерживает форматы:
-     * - field:field_name = value
-     * - field:field_name (проверка на истинность)
-     * - field:field_name in value1,value2,value3
-     * 
-     * @param string $condition Условие
-     * @param array $formData Данные формы
-     * @return bool Результат проверки
-     */
+    * Парсит и вычисляет условие показа поля
+    * @param string $condition Условие
+    * @param array $formData Данные формы
+    * @return bool Результат проверки
+    */
     protected function evaluateShowCondition($condition, $formData) {
-        // Формат: "field:field_name = value"
         if (preg_match('/^field:(\w+)\s*([!=<>]+)\s*(.+)$/', $condition, $matches)) {
             $targetField = $matches[1];
             $operator = $matches[2];
@@ -324,14 +285,12 @@ abstract class Field {
             return $this->compareValues($actualValue, $operator, $expectedValue);
         }
         
-        // Формат: "field:field_name" (просто проверка на истинность)
         if (preg_match('/^field:(\w+)$/', $condition, $matches)) {
             $targetField = $matches[1];
             $actualValue = $this->getFieldValue($targetField, $formData);
             return (bool)$actualValue;
         }
         
-        // Формат: "field:field_name in value1,value2,value3"
         if (preg_match('/^field:(\w+)\s+in\s+(.+)$/', $condition, $matches)) {
             $targetField = $matches[1];
             $expectedValues = array_map('trim', explode(',', $matches[2]));
@@ -343,12 +302,11 @@ abstract class Field {
     }
 
     /**
-     * Получает значение поля из данных формы
-     * 
-     * @param string $fieldName Имя поля
-     * @param array $formData Данные формы
-     * @return mixed Значение поля или null
-     */
+    * Получает значение поля из данных формы 
+    * @param string $fieldName Имя поля
+    * @param array $formData Данные формы
+    * @return mixed Значение поля или null
+    */
     protected function getFieldValue($fieldName, $formData) {
         if (isset($formData['settings'][$fieldName])) {
             return $formData['settings'][$fieldName];
@@ -360,13 +318,12 @@ abstract class Field {
     }
 
     /**
-     * Сравнивает значения по оператору
-     * 
-     * @param mixed $actual Фактическое значение
-     * @param string $operator Оператор сравнения
-     * @param mixed $expected Ожидаемое значение
-     * @return bool Результат сравнения
-     */
+    * Сравнивает значения по оператору
+    * @param mixed $actual Фактическое значение
+    * @param string $operator Оператор сравнения
+    * @param mixed $expected Ожидаемое значение
+    * @return bool Результат сравнения
+    */
     protected function compareValues($actual, $operator, $expected) {
         if ($expected === 'true') $expected = true;
         if ($expected === 'false') $expected = false;
@@ -385,11 +342,10 @@ abstract class Field {
     }
 
     /**
-     * Получает HTML-атрибуты для условного отображения через JavaScript
-     * 
-     * @param array $formData Данные формы
-     * @return string Строка с data-атрибутами
-     */
+    * Получает HTML-атрибуты для условного отображения через JavaScript 
+    * @param array $formData Данные формы
+    * @return string Строка с data-атрибутами
+    */
     public function getConditionalAttributes($formData) {
         $showCondition = $this->options['show'] ?? null;
         
@@ -404,19 +360,17 @@ abstract class Field {
     }
 
     /**
-     * Получает условие показа поля
-     * 
-     * @return string|null Условие или null
-     */
+    * Получает условие показа поля 
+    * @return string|null Условие или null
+    */
     public function getShowCondition() {
         return $this->options['show'] ?? null;
     }
 
     /**
-     * Проверяет, является ли поле условным (зависит от другого поля)
-     * 
-     * @return bool true если поле условное
-     */
+    * Проверяет, является ли поле условным (зависит от другого поля) 
+    * @return bool true если поле условное
+    */
     public function isConditional() {
         return !empty($this->options['show']);
     }

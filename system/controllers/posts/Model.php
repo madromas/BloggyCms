@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель для работы с постами в базе данных
- * Предоставляет полный набор методов для CRUD-операций с постами,
- * управления тегами, видимостью, лайками, закладками и фильтрацией
- * 
- * @package Models
- */
+* Модель для работы с постами в базе данных
+* @package Models
+*/
 class PostModel implements ModelAPI {
     use APIAware;
 
@@ -28,22 +25,15 @@ class PostModel implements ModelAPI {
         'getArchive'
     ];
     
-    /** @var object Подключение к базе данных */
     private $db;
-    
-    /** @var SettingsModel Модель для работы с настройками */
     private $settings;
-    
-    /** @var FieldManager Менеджер для работы с пользовательскими полями */
     private $fieldManager;
     
     /**
-     * Конструктор модели
-     * Инициализирует подключение к БД, настройки и менеджер полей
-     * 
-     * @param object $db Подключение к базе данных
-     * @param Settings|null $settings Модель настроек (опционально)
-     */
+    * Конструктор модели
+    * @param object $db Подключение к базе данных
+    * @param Settings|null $settings Модель настроек (опционально)
+    */
     public function __construct($db, Settings $settings = null) {
         $this->db = $db;
         $this->settings = $settings ?? new SettingsModel($db);
@@ -51,11 +41,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает все посты с информацией о категориях и авторах
-     * 
-     * @param int|null $limit Ограничение количества записей
-     * @return array Массив постов
-     */
+    * Получает все посты с информацией о категориях и авторах 
+    * @param int|null $limit Ограничение количества записей
+    * @return array Массив постов
+    */
     public function getAll($limit = null) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug,
                     u.username as author_name, u.display_name as author_display_name, u.avatar as author_avatar
@@ -72,7 +61,6 @@ class PostModel implements ModelAPI {
         
         foreach ($posts as &$post) {
             $post['author_slug'] = $post['author_name'] ?? 'author';
-            // Устанавливаем значение по умолчанию для allow_comments
             $post['allow_comments'] = $post['allow_comments'] ?? 1;
         }
         
@@ -80,11 +68,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает пост по ID
-     * 
-     * @param int $id ID поста
-     * @return array|null Данные поста или null
-     */
+    * Получает пост по ID 
+    * @param int $id ID поста
+    * @return array|null Данные поста или null
+    */
     public function getById($id) {
         $post = $this->db->fetch(
             "SELECT p.*, c.name as category_name 
@@ -95,7 +82,6 @@ class PostModel implements ModelAPI {
         );
         
         if ($post) {
-            // Устанавливаем значение по умолчанию для allow_comments
             $post['allow_comments'] = $post['allow_comments'] ?? 1;
         }
         
@@ -103,11 +89,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает пост по URL-адресу (slug) с полной информацией об авторе
-     * 
-     * @param string $slug URL-адрес поста
-     * @return array|null Данные поста или null
-     */
+    * Получает пост по URL-адресу (slug) с полной информацией об авторе
+    * @param string $slug URL-адрес поста
+    * @return array|null Данные поста или null
+    */
     public function getBySlug($slug) {
         $post = $this->db->fetch(
             "SELECT p.*, c.name as category_name, c.slug as category_slug, 
@@ -134,11 +119,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает теги поста
-     * 
-     * @param int $post_id ID поста
-     * @return array Массив тегов
-     */
+    * Получает теги поста
+    * @param int $post_id ID поста
+    * @return array Массив тегов
+    */
     public function getPostTags($post_id) {
         return $this->db->fetchAll(
             "SELECT t.* 
@@ -150,12 +134,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Создает новый пост
-     * 
-     * @param array $data Данные поста
-     * @return int ID созданного поста
-     * @throws Exception При ошибке создания
-     */
+    * Создает новый пост
+    * @param array $data Данные поста
+    * @return int ID созданного поста
+    * @throws Exception При ошибке создания
+    */
     public function create($data) {
         try {
             $sql = "INSERT INTO posts (
@@ -210,13 +193,12 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Обновляет существующий пост
-     * 
-     * @param int $id ID поста
-     * @param array $data Данные для обновления
-     * @return bool Результат выполнения запроса
-     * @throws Exception Если нет данных для обновления
-     */
+    * Обновляет существующий пост
+    * @param int $id ID поста
+    * @param array $data Данные для обновления
+    * @return bool Результат выполнения запроса
+    * @throws Exception Если нет данных для обновления
+    */
     public function update($id, $data) {
         try {
 
@@ -275,12 +257,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Удаляет пост и все связанные с ним данные (теги, блоки)
-     * 
-     * @param int $id ID поста
-     * @return bool Результат выполнения запроса
-     * @throws Exception При ошибке удаления
-     */
+    * Удаляет пост и все связанные с ним данные (теги, блоки) 
+    * @param int $id ID поста
+    * @return bool Результат выполнения запроса
+    * @throws Exception При ошибке удаления
+    */
     public function delete($id) {
         try {
 
@@ -291,21 +272,13 @@ class PostModel implements ModelAPI {
             }
             
             $this->db->beginTransaction();
-
             $this->db->query("DELETE FROM post_blocks WHERE post_id = ?", [$id]);
-
             $this->db->query("DELETE FROM post_likes WHERE post_id = ?", [$id]);
-
             $this->db->query("DELETE FROM bookmarks WHERE post_id = ?", [$id]);
-
             $this->db->query("DELETE FROM comments WHERE post_id = ?", [$id]);
-
             $this->db->query("DELETE FROM post_tags WHERE post_id = ?", [$id]);
-
             $this->db->query("DELETE FROM field_values WHERE entity_type = 'post' AND entity_id = ?", [$id]);
-
             $result = $this->db->query("DELETE FROM posts WHERE id = ?", [$id]);
-
             $this->db->commit();
 
             Event::trigger('post.deleted', [
@@ -322,12 +295,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Создает уникальный URL-адрес (slug) из заголовка
-     * 
-     * @param string $title Заголовок поста
-     * @param int|null $excludeId ID поста для исключения из проверки
-     * @return string Уникальный URL-адрес
-     */
+    * Создает уникальный URL-адрес (slug) из заголовка
+    * @param string $title Заголовок поста
+    * @param int|null $excludeId ID поста для исключения из проверки
+    * @return string Уникальный URL-адрес
+    */
     public function createSlug($title, $excludeId = null) {
         $baseSlug = $this->transliterate(mb_strtolower($title));
         $slug = $baseSlug;
@@ -342,12 +314,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Проверяет существование URL-адреса
-     * 
-     * @param string $slug URL-адрес
-     * @param int|null $excludeId ID для исключения
-     * @return bool true если существует
-     */
+    * Проверяет существование URL-адреса 
+    * @param string $slug URL-адрес
+    * @param int|null $excludeId ID для исключения
+    * @return bool true если существует
+    */
     private function isSlugExists($slug, $excludeId = null) {
         $sql = "SELECT COUNT(*) as count FROM posts WHERE slug = ?";
         $params = [$slug];
@@ -362,11 +333,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Транслитерирует строку в латиницу и очищает для использования в URL
-     * 
-     * @param string $string Исходная строка
-     * @return string Транслитерированная строка
-     */
+    * Транслитерирует строку в латиницу и очищает для использования в URL 
+    * @param string $string Исходная строка
+    * @return string Транслитерированная строка
+    */
     private function transliterate($string) {
         $converter = array(
             'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
@@ -387,13 +357,12 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает посты с пагинацией и фильтрацией по видимости
-     * 
-     * @param int $page Номер страницы
-     * @param int|null $perPage Постов на странице
-     * @param array $userGroups Группы пользователя
-     * @return array Массив с постами и информацией о пагинации
-     */
+    * Получает посты с пагинацией и фильтрацией по видимости 
+    * @param int $page Номер страницы
+    * @param int|null $perPage Постов на странице
+    * @param array $userGroups Группы пользователя
+    * @return array Массив с постами и информацией о пагинации
+    */
     public function getAllPaginated($page = 1, $perPage = null, $userGroups = []) {
         $page = (int)$page;
         
@@ -407,7 +376,6 @@ class PostModel implements ModelAPI {
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
         
-        // ИСПРАВЛЕННЫЙ запрос с подсчетом комментариев
         $sql = "
             SELECT 
                 p.*, 
@@ -422,14 +390,12 @@ class PostModel implements ModelAPI {
                     CONCAT(t.name, ':::', t.slug) 
                     SEPARATOR '|||'
                 ) as tag_data,
-                -- Добавляем подсчет комментариев
                 COALESCE(cm.comments_count, 0) as comments_count
             FROM posts p 
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN users u ON p.user_id = u.id
             LEFT JOIN post_tags pt ON p.id = pt.post_id
             LEFT JOIN tags t ON pt.tag_id = t.id
-            -- LEFT JOIN для подсчета одобренных комментариев
             LEFT JOIN (
                 SELECT post_id, COUNT(*) as comments_count
                 FROM comments 
@@ -441,10 +407,8 @@ class PostModel implements ModelAPI {
                     u.avatar, u.bio, u.website, cm.comments_count
             ORDER BY p.created_at DESC";
         
-        // Получаем ВСЕ посты без фильтрации по видимости
         $allPosts = $this->db->fetchAll($sql);
         
-        // Фильтруем по видимости на PHP уровне
         $visiblePosts = [];
         foreach ($allPosts as $post) {
             if ($this->checkPostVisibility($post['id'], $userGroups)) {
@@ -455,9 +419,7 @@ class PostModel implements ModelAPI {
         $totalPosts = count($visiblePosts);
         $posts = array_slice($visiblePosts, $offset, $perPage);
         
-        // Обработка тегов
         foreach ($posts as &$post) {
-            // Обработка тегов
             $tags = [];
             if (!empty($post['tag_data'])) {
                 $tagItems = explode('|||', $post['tag_data']);
@@ -474,10 +436,8 @@ class PostModel implements ModelAPI {
             $post['tags'] = $tags;
             unset($post['tag_data']);
             
-            // Убедимся, что comments_count есть
             $post['comments_count'] = (int)($post['comments_count'] ?? 0);
             
-            // Авторские данные
             $post['author_slug'] = $post['author_name'] ?? 'author';
         }
         
@@ -490,11 +450,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получить количество комментариев для списка постов
-     * 
-     * @param array $postIds Массив ID постов
-     * @return array Массив с количеством комментариев для каждого поста
-     */
+    * Получить количество комментариев для списка постов 
+    * @param array $postIds Массив ID постов
+    * @return array Массив с количеством комментариев для каждого поста
+    */
     public function getCommentsCountForPosts(array $postIds) {
         if (empty($postIds)) {
             return [];
@@ -509,7 +468,6 @@ class PostModel implements ModelAPI {
         
         $result = $this->db->fetchAll($sql, $postIds);
         
-        // Преобразуем в удобный массив
         $counts = [];
         foreach ($result as $row) {
             $counts[$row['post_id']] = (int)$row['count'];
@@ -519,11 +477,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получить количество комментариев для поста
-     * 
-     * @param int $postId ID поста
-     * @return int Количество комментариев
-     */
+    * Получить количество комментариев для поста
+    * @param int $postId ID поста
+    * @return int Количество комментариев
+    */
     public function getCommentsCountByPost($postId) {
         $sql = "SELECT COUNT(*) as count FROM comments 
                 WHERE post_id = ? AND status = 'approved'";
@@ -533,35 +490,27 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Строит условие для фильтрации по видимости постов
-     * 
-     * @param array $userGroups Группы пользователя
-     * @return array Массив с условием WHERE и параметрами
-     */
+    * Строит условие для фильтрации по видимости постов
+    * @param array $userGroups Группы пользователя
+    * @return array Массив с условием WHERE и параметрами
+    */
     private function buildVisibilityCondition($userGroups = []) {
         $conditions = [];
         $params = [];
         
-        // Если пользователь администратор - показываем все
         if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
             return ['where' => '', 'params' => []];
         }
         
-        // Если пользователь не авторизован - это гость
         if (empty($userGroups)) {
             $userGroups = ['guest'];
         } else {
-            // Убираем дубликаты перед использованием
             $userGroups = array_unique($userGroups);
         }
         
-        // ВАЖНО: Создаем полное условие видимости, которое должно вернуть TRUE для видимых постов
-        
-        // Условие 1: Пост должен быть доступен для группы пользователя ИЛИ доступен всем
         $showCondition = "(";
         $showCondition .= "show_to_groups IS NULL OR show_to_groups = '' OR show_to_groups = '[]' OR show_to_groups = '[\"\"]'";
         
-        // Добавляем проверку для каждой группы пользователя
         if (!empty($userGroups)) {
             foreach ($userGroups as $groupId) {
                 $showCondition .= " OR JSON_CONTAINS(show_to_groups, ?)";
@@ -570,11 +519,9 @@ class PostModel implements ModelAPI {
         }
         $showCondition .= ")";
         
-        // Условие 2: Пользователь не должен быть в скрытых группах
         $hideCondition = "(";
         $hideCondition .= "hide_from_groups IS NULL OR hide_from_groups = '' OR hide_from_groups = '[]' OR hide_from_groups = '[\"\"]'";
         
-        // Проверяем, что пользователь не входит в скрытые группы
         if (!empty($userGroups)) {
             foreach ($userGroups as $groupId) {
                 $hideCondition .= " AND NOT JSON_CONTAINS(hide_from_groups, ?)";
@@ -583,19 +530,17 @@ class PostModel implements ModelAPI {
         }
         $hideCondition .= ")";
         
-        // Объединяем условия: пост должен быть доступен И не скрыт
         $where = "AND (" . $showCondition . " AND " . $hideCondition . ")";
         
         return ['where' => $where, 'params' => $params];
     }
     
     /**
-     * Проверяет пароль для защищенного поста
-     * 
-     * @param int $postId ID поста
-     * @param string $password Введенный пароль
-     * @return bool true если пароль верный
-     */
+    * Проверяет пароль для защищенного поста 
+    * @param int $postId ID поста
+    * @param string $password Введенный пароль
+    * @return bool true если пароль верный
+    */
     public function checkPassword($postId, $password) {
         $post = $this->getById($postId);
         
@@ -607,11 +552,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Увеличивает счетчик просмотров поста
-     * 
-     * @param int $postId ID поста
-     * @return void
-     */
+    * Увеличивает счетчик просмотров поста
+    * @param int $postId ID поста
+    * @return void
+    */
     public function incrementViews($postId) {
         $this->db->query(
             "UPDATE posts SET views = views + 1 WHERE id = ?",
@@ -620,24 +564,21 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает количество просмотров поста
-     * 
-     * @param int $postId ID поста
-     * @return int Количество просмотров
-     */
+    * Получает количество просмотров поста 
+    * @param int $postId ID поста
+    * @return int Количество просмотров
+    */
     public function getViews($postId) {
         $post = $this->getById($postId);
         return $post ? $post['views'] : 0;
     }
 
     /**
-     * Получает рейтинг поста (количество лайков)
-     * 
-     * @param int $postId ID поста
-     * @return int Количество лайков
-     */
+    * Получает рейтинг поста (количество лайков) 
+    * @param int $postId ID поста
+    * @return int Количество лайков
+    */
     public function getRating($postId): int {
-        // Используем новую систему лайков
         $result = $this->db->fetch(
             "SELECT likes_count FROM posts WHERE id = ?",
             [$postId]
@@ -646,24 +587,20 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает голос пользователя (для обратной совместимости)
-     * 
-     * @param int $postId ID поста
-     * @param string $ipAddress IP-адрес
-     * @return int|null Всегда null для новой системы
-     */
+    * Получает голос пользователя (для обратной совместимости)
+    * @param int $postId ID поста
+    * @param string $ipAddress IP-адрес
+    * @return int|null Всегда null для новой системы
+    */
     public function getUserVote($postId, $ipAddress): ?int {
-        // Для совместимости возвращаем null, так как перешли на систему лайков
-        // Если нужно, можно адаптировать под новую систему
         return null;
     }
 
     /**
-     * Обрабатывает контент, заменяя шорткоды
-     * 
-     * @param string $content Исходный контент
-     * @return string Обработанный контент
-     */
+    * Обрабатывает контент, заменяя шорткоды 
+    * @param string $content Исходный контент
+    * @return string Обработанный контент
+    */
     public function processContent($content) {
         $htmlBlocks = $this->db->fetchAll("SELECT slug, content FROM html_blocks");
         $recentPosts = $this->getAll(10);
@@ -672,13 +609,12 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Создает пост с блоками контента
-     * 
-     * @param array $data Данные поста
-     * @param array $blocks Массив блоков
-     * @return int ID созданного поста
-     * @throws Exception При ошибке
-     */
+    * Создает пост с блоками контента 
+    * @param array $data Данные поста
+    * @param array $blocks Массив блоков
+    * @return int ID созданного поста
+    * @throws Exception При ошибке
+    */
     public function createWithBlocks($data, $blocks) {
         try {
             $postId = $this->create($data);
@@ -695,22 +631,20 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает пользовательские поля для поста
-     * 
-     * @param int $postId ID поста
-     * @return array Массив значений полей
-     */
+    * Получает пользовательские поля для поста
+    * @param int $postId ID поста
+    * @return array Массив значений полей
+    */
     public function getCustomFields($postId) {
         return $this->fieldManager->getFieldsForEntity('post', $postId);
     }
     
     /**
-     * Сохраняет пользовательские поля для поста
-     * 
-     * @param int $postId ID поста
-     * @param array $fieldData Данные полей
-     * @return void
-     */
+    * Сохраняет пользовательские поля для поста 
+    * @param int $postId ID поста
+    * @param array $fieldData Данные полей
+    * @return void
+    */
     public function saveCustomFields($postId, $fieldData) {
         foreach ($fieldData as $fieldId => $value) {
             $this->fieldManager->saveFieldValue($fieldId, 'post', $postId, $value);
@@ -718,23 +652,21 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает значение конкретного поля поста
-     * 
-     * @param int $postId ID поста
-     * @param string $fieldSystemName Системное имя поля
-     * @return mixed Значение поля
-     */
+    * Получает значение конкретного поля поста
+    * @param int $postId ID поста
+    * @param string $fieldSystemName Системное имя поля
+    * @return mixed Значение поля
+    */
     public function getFieldValue($postId, $fieldSystemName) {
         return $this->fieldManager->getFieldValue('post', $postId, $fieldSystemName);
     }
 
     /**
-     * Получает посты с фильтрацией по категории и статусу
-     * 
-     * @param int|null $categoryId ID категории
-     * @param string|null $status Статус поста
-     * @return array Массив постов
-     */
+    * Получает посты с фильтрацией по категории и статусу 
+    * @param int|null $categoryId ID категории
+    * @param string|null $status Статус поста
+    * @return array Массив постов
+    */
     public function getAllWithFilters($categoryId = null, $status = null) {
         $sql = "SELECT p.*, c.name as category_name 
                 FROM posts p 
@@ -759,11 +691,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает все посты пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив постов
-     */
+    * Получает все посты пользователя 
+    * @param int $userId ID пользователя
+    * @return array Массив постов
+    */
     public function getByUserId($userId) {
         return $this->db->fetchAll(
             "SELECT p.*, c.name as category_name, c.slug as category_slug
@@ -776,11 +707,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает опубликованные посты пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return array Массив постов
-     */
+    * Получает опубликованные посты пользователя
+    * @param int $userId ID пользователя
+    * @return array Массив постов
+    */
     public function getPublishedByUserId($userId) {
         return $this->db->fetchAll(
             "SELECT p.*, c.name as category_name, c.slug as category_slug
@@ -793,18 +723,16 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает посты по тегу с пагинацией
-     * 
-     * @param int $tagId ID тега
-     * @param int $page Номер страницы
-     * @param int $perPage Постов на странице
-     * @param array $userGroups Группы пользователя
-     * @return array Массив с постами и информацией о пагинации
-     */
+    * Получает посты по тегу с пагинацией 
+    * @param int $tagId ID тега
+    * @param int $page Номер страницы
+    * @param int $perPage Постов на странице
+    * @param array $userGroups Группы пользователя
+    * @return array Массив с постами и информацией о пагинации
+    */
     public function getPostsByTag($tagId, $page = 1, $perPage = 10, $userGroups = []) {
         $offset = ($page - 1) * $perPage;
         
-        // Создаем условие для фильтрации по видимости
         $visibilityCondition = $this->buildVisibilityCondition($userGroups);
         
         $sql = "SELECT DISTINCT p.*, 
@@ -844,10 +772,9 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает статистику по постам для админ-панели
-     * 
-     * @return array Статистика по статусам
-     */
+    * Получает статистику по постам для админ-панели
+    * @return array Статистика по статусам
+    */
     public function getAdminStats() {
         $stats = $this->db->fetchAll("
             SELECT 
@@ -866,11 +793,10 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает посты для RSS-ленты
-     * 
-     * @param int $limit Количество постов
-     * @return array Массив постов
-     */
+    * Получает посты для RSS-ленты 
+    * @param int $limit Количество постов
+    * @return array Массив постов
+    */
     public function getForRss($limit = 20) {
         return $this->db->fetchAll("
             SELECT 
@@ -888,13 +814,12 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Поиск постов по заголовку и содержимому
-     * 
-     * @param string $query Поисковый запрос
-     * @param int $page Номер страницы
-     * @param int $perPage Постов на странице
-     * @return array Массив с результатами поиска
-     */
+    * Поиск постов по заголовку и содержимому
+    * @param string $query Поисковый запрос
+    * @param int $page Номер страницы
+    * @param int $perPage Постов на странице
+    * @return array Массив с результатами поиска
+    */
     public function search($query, $page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
         $searchTerm = "%{$query}%";
@@ -929,12 +854,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает похожие посты по тегам
-     * 
-     * @param int $postId ID поста
-     * @param int $limit Количество постов
-     * @return array Массив похожих постов
-     */
+    * Получает похожие посты по тегам 
+    * @param int $postId ID поста
+    * @param int $limit Количество постов
+    * @return array Массив похожих постов
+    */
     public function getRelatedPosts($postId, $limit = 5) {
         return $this->db->fetchAll("
             SELECT DISTINCT p.*, c.name as category_name, c.slug as category_slug
@@ -952,10 +876,9 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает архив по годам и месяцам
-     * 
-     * @return array Массив с информацией об архиве
-     */
+    * Получает архив по годам и месяцам 
+    * @return array Массив с информацией об архиве
+    */
     public function getArchive() {
         return $this->db->fetchAll("
             SELECT 
@@ -970,12 +893,11 @@ class PostModel implements ModelAPI {
     }
     
     /**
-     * Получает посты за указанный месяц и год
-     * 
-     * @param int $year Год
-     * @param int $month Месяц
-     * @return array Массив постов
-     */
+    * Получает посты за указанный месяц и год 
+    * @param int $year Год
+    * @param int $month Месяц
+    * @return array Массив постов
+    */
     public function getPostsByArchive($year, $month) {
         $year = (int)$year;
         $month = (int)$month;
@@ -994,12 +916,11 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Проверяет видимость поста для пользователя
-     * 
-     * @param int $postId ID поста
-     * @param array $userGroups Группы пользователя
-     * @return bool true если пост виден
-     */
+    * Проверяет видимость поста для пользователя
+    * @param int $postId ID поста
+    * @param array $userGroups Группы пользователя
+    * @return bool true если пост виден
+    */
     public function checkPostVisibility($postId, $userGroups = []) {
         $post = $this->getById($postId);
         
@@ -1007,24 +928,19 @@ class PostModel implements ModelAPI {
             return false;
         }
         
-        // Если пользователь администратор - всегда показываем
         if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
             return true;
         }
         
-        // Если пользователь не авторизован - это гость
         if (empty($userGroups)) {
             $userGroups = ['guest'];
         }
-        
-        // Преобразуем ID в строки
+
         $userGroups = array_map('strval', $userGroups);
         
-        // Инициализируем массивы
         $showToGroups = [];
         $hideFromGroups = [];
         
-        // Декодируем JSON если он существует и не пустой
         if (!empty($post['show_to_groups']) && $post['show_to_groups'] !== '[]' && $post['show_to_groups'] !== '[""]') {
             $decoded = json_decode($post['show_to_groups'], true);
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
@@ -1042,20 +958,18 @@ class PostModel implements ModelAPI {
                 });
             }
         }
-        
-        // Если указаны группы для показа
+
         if (!empty($showToGroups)) {
             $intersection = array_intersect($showToGroups, $userGroups);
             if (empty($intersection)) {
-                return false; // Пользователь не входит в разрешенные группы
+                return false;
             }
         }
         
-        // Если указаны группы для скрытия
         if (!empty($hideFromGroups)) {
             $intersection = array_intersect($hideFromGroups, $userGroups);
             if (!empty($intersection)) {
-                return false; // Пользователь входит в группы, которым скрыт пост
+                return false;
             }
         }
         
@@ -1063,12 +977,11 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Проверяет, поставил ли пользователь лайк посту
-     * 
-     * @param int $postId ID поста
-     * @param int $userId ID пользователя
-     * @return bool true если лайк есть
-     */
+    * Проверяет, поставил ли пользователь лайк посту 
+    * @param int $postId ID поста
+    * @param int $userId ID пользователя
+    * @return bool true если лайк есть
+    */
     public function hasUserLiked($postId, $userId): bool {
         $like = $this->db->fetch(
             "SELECT id FROM post_likes WHERE post_id = ? AND user_id = ?",
@@ -1078,19 +991,17 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Переключает лайк поста (добавляет или удаляет)
-     * 
-     * @param int $postId ID поста
-     * @param int $userId ID пользователя
-     * @return array Массив с новым статусом и количеством лайков
-     * @throws Exception При ошибке
-     */
+    * Переключает лайк поста (добавляет или удаляет)
+    * @param int $postId ID поста
+    * @param int $userId ID пользователя
+    * @return array Массив с новым статусом и количеством лайков
+    * @throws Exception При ошибке
+    */
     public function toggleLike($postId, $userId): array {
         try {
             $hasLiked = $this->hasUserLiked($postId, $userId);
             
             if ($hasLiked) {
-                // Удаляем лайк
                 $this->db->query(
                     "DELETE FROM post_likes WHERE post_id = ? AND user_id = ?",
                     [$postId, $userId]
@@ -1106,7 +1017,6 @@ class PostModel implements ModelAPI {
                     'likes_count' => $this->getRating($postId)
                 ];
             } else {
-                // Добавляем лайк
                 $this->db->query(
                     "INSERT INTO post_likes (post_id, user_id, created_at) VALUES (?, ?, NOW())",
                     [$postId, $userId]
@@ -1128,11 +1038,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает количество лайков поста
-     * 
-     * @param int $postId ID поста
-     * @return int Количество лайков
-     */
+    * Получает количество лайков поста
+    * @param int $postId ID поста
+    * @return int Количество лайков
+    */
     public function getLikesCount($postId): int {
         $result = $this->db->fetch(
             "SELECT COUNT(*) as count FROM post_likes WHERE post_id = ?",
@@ -1142,12 +1051,11 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Проверяет, добавлен ли пост в закладки пользователем
-     * 
-     * @param int $postId ID поста
-     * @param int $userId ID пользователя
-     * @return bool true если в закладках
-     */
+    * Проверяет, добавлен ли пост в закладки пользователем 
+    * @param int $postId ID поста
+    * @param int $userId ID пользователя
+    * @return bool true если в закладках
+    */
     public function hasBookmark($postId, $userId): bool {
         $bookmark = $this->db->fetch(
             "SELECT id FROM bookmarks WHERE post_id = ? AND user_id = ?",
@@ -1157,19 +1065,17 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Переключает закладку поста (добавляет или удаляет)
-     * 
-     * @param int $postId ID поста
-     * @param int $userId ID пользователя
-     * @return array Массив с новым статусом и сообщением
-     * @throws Exception При ошибке
-     */
+    * Переключает закладку поста (добавляет или удаляет) 
+    * @param int $postId ID поста
+    * @param int $userId ID пользователя
+    * @return array Массив с новым статусом и сообщением
+    * @throws Exception При ошибке
+    */
     public function toggleBookmark($postId, $userId): array {
         try {
             $hasBookmark = $this->hasBookmark($postId, $userId);
             
             if ($hasBookmark) {
-                // Удаляем из закладок
                 $this->db->query(
                     "DELETE FROM bookmarks WHERE post_id = ? AND user_id = ?",
                     [$postId, $userId]
@@ -1180,7 +1086,6 @@ class PostModel implements ModelAPI {
                     'message' => 'Пост удален из закладок'
                 ];
             } else {
-                // Добавляем в закладки
                 $this->db->query(
                     "INSERT INTO bookmarks (post_id, user_id, created_at) VALUES (?, ?, NOW())",
                     [$postId, $userId]
@@ -1197,13 +1102,12 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает закладки пользователя с пагинацией
-     * 
-     * @param int $userId ID пользователя
-     * @param int $page Номер страницы
-     * @param int $perPage Закладок на странице
-     * @return array Массив с постами и информацией о пагинации
-     */
+    * Получает закладки пользователя с пагинацией
+    * @param int $userId ID пользователя
+    * @param int $page Номер страницы
+    * @param int $perPage Закладок на странице
+    * @return array Массив с постами и информацией о пагинации
+    */
     public function getUserBookmarks($userId, $page = 1, $perPage = 10) {
         $offset = ($page - 1) * $perPage;
         
@@ -1235,11 +1139,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает количество закладок пользователя
-     * 
-     * @param int $userId ID пользователя
-     * @return int Количество закладок
-     */
+    * Получает количество закладок пользователя 
+    * @param int $userId ID пользователя
+    * @return int Количество закладок
+    */
     public function getBookmarksCount($userId): int {
         $result = $this->db->fetch(
             "SELECT COUNT(*) as count FROM bookmarks WHERE user_id = ?",
@@ -1249,11 +1152,10 @@ class PostModel implements ModelAPI {
     }
 
     /**
-     * Получает только опубликованные посты
-     * 
-     * @param int|null $limit Ограничение количества
-     * @return array Массив опубликованных постов
-     */
+    * Получает только опубликованные посты 
+    * @param int|null $limit Ограничение количества
+    * @return array Массив опубликованных постов
+    */
     public function getPublished($limit = null) {
         $sql = "SELECT p.*, c.name as category_name, c.slug as category_slug,
                     u.username as author_name, u.display_name as author_display_name,

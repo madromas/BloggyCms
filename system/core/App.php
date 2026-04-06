@@ -1,29 +1,30 @@
 <?php
 
 /**
- * Основной класс приложения
- * Управляет инициализацией, маршрутизацией и выполнением запросов
- */
+* Основной класс приложения
+* Управляет инициализацией, маршрутизацией и выполнением запросов
+*/
 class App {
+
     /**
-     * @var Router Объект маршрутизатора
-     */
+    * @var Router Объект маршрутизатора
+    */
     private $router;
     
     /**
-     * @var Database Объект подключения к базе данных
-     */
+    * @var Database Объект подключения к базе данных
+    */
     private $db;
 
     /**
-     * @var array Загруженные хуки
-     */
+    * @var array Загруженные хуки
+    */
     private $hooks = [];
     
     /**
-     * Конструктор класса App
-     * Инициализирует сессию, подключение к БД и middleware
-     */
+    * Конструктор класса App
+    * Инициализирует сессию, подключение к БД и middleware
+    */
     public function __construct() {
         
         if (session_status() === PHP_SESSION_NONE) {
@@ -40,8 +41,8 @@ class App {
     }
 
     /**
-     * Загружает все хуки из папок hooks контроллеров
-     */
+    * Загружает все хуки из папок hooks контроллеров
+    */
     private function loadControllerHooks() {
         $controllersPath = __DIR__ . '/../controllers';
         
@@ -70,11 +71,10 @@ class App {
     }
 
     /**
-     * Загружает все хуки из указанной директории
-     * 
-     * @param string $hooksPath Путь к папке hooks
-     * @param string $controllerName Имя контроллера
-     */
+    * Загружает все хуки из указанной директории 
+    * @param string $hooksPath Путь к папке hooks
+    * @param string $controllerName Имя контроллера
+    */
     private function loadHooksFromDirectory($hooksPath, $controllerName) {
         $hookFiles = glob($hooksPath . '/*.php');
         
@@ -208,13 +208,12 @@ class App {
     }
     
     /**
-     * Вызов действия контроллера с передачей параметров
-     *
-     * @param object $controller Объект контроллера
-     * @param string $action Название метода действия
-     * @param array $params Параметры для передачи в метод
-     * @throws Exception Если метод не найден или не хватает параметров
-     */
+    * Вызов действия контроллера с передачей параметров
+    * @param object $controller Объект контроллера
+    * @param string $action Название метода действия
+    * @param array $params Параметры для передачи в метод
+    * @throws Exception Если метод не найден или не хватает параметров
+    */
     private function callControllerAction($controller, $action, $params) {
         if (!method_exists($controller, $action)) {
             throw new Exception("Action {$action} not found in controller " . get_class($controller));
@@ -238,19 +237,17 @@ class App {
     }
 
     /**
-     * Получение объекта маршрутизатора
-     *
-     * @return Router Объект маршрутизатора
-     */
+    * Получение объекта маршрутизатора
+    * @return Router Объект маршрутизатора
+    */
     public function getRouter() {
         return $this->router;
     }
 
     /**
-     * Получение объекта подключения к базе данных
-     *
-     * @return Database Объект подключения к БД
-     */
+    * Получение объекта подключения к базе данных
+    * @return Database Объект подключения к БД
+    */
     public function getDb() {
         return $this->db;
     }

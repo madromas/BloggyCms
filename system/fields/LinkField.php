@@ -1,42 +1,34 @@
 <?php
 
 /**
- * Поле типа "ссылка" для системы пользовательских полей
- * Позволяет вводить и отображать URL-адреса с возможностью настройки
- * текста ссылки и поведения (открытие в новой вкладке)
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "ссылка" для системы пользовательских полей
+* @package Fields
+*/
 class LinkField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'link'
-     */
+    * Возвращает тип поля 
+    * @return string 'link'
+    */
     public function getType(): string {
         return 'link';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Ссылка'
-     */
+    * Возвращает отображаемое название типа поля 
+    * @return string 'Ссылка'
+    */
     public function getName(): string {
         return 'Ссылка';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает input type="url" для ввода веб-адреса
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $placeholder = $this->config['placeholder'] ?? 'https://example.com';
@@ -52,14 +44,12 @@ class LinkField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Создает кликабельную ссылку с настраиваемым текстом и поведением
-     * 
-     * @param mixed $value Значение поля (URL)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре
+    * @param mixed $value Значение поля (URL)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">Не указана</span>';
         
@@ -70,14 +60,12 @@ class LinkField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает иконку-ссылку
-     * 
-     * @param mixed $value Значение поля (URL)
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке
+    * @param mixed $value Значение поля (URL)
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         if (empty($value)) return '<span class="text-muted">-</span>';
         
@@ -85,8 +73,8 @@ class LinkField extends BaseField {
     }
 
     /**
-     * Обрабатывает конфигурацию перед сохранением
-     */
+    * Обрабатывает конфигурацию перед сохранением
+    */
     public function processConfig(array $config): array {
         if (isset($config['placeholder'])) {
             $config['placeholder'] = trim($config['placeholder']);
@@ -104,13 +92,10 @@ class LinkField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет настроить плейсхолдер, текст ссылки, значение по умолчанию
-     * и поведение (открытие в новой вкладке)
-     * 
-     * @return string HTML-код формы настроек
-     */
-        public function getSettingsForm(): string {
+    * Возвращает HTML-форму для настройки поля в административной панели
+    * @return string HTML-код формы настроек
+    */
+    public function getSettingsForm(): string {
         $placeholder = htmlspecialchars($this->config['placeholder'] ?? 'https://example.com');
         $linkText = htmlspecialchars($this->config['link_text'] ?? '');
         $newTab = isset($this->config['new_tab']) && $this->config['new_tab'] ? 'checked' : '';

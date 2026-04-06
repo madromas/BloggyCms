@@ -1,28 +1,29 @@
 <?php
 
 /**
- * Класс для работы с базой данных (Singleton)
- */
+* Класс для работы с базой данных (Singleton)
+*/
 class Database {
+
     /**
-     * @var PDO Подключение к базе данных
-     */
+    * @var PDO Подключение к базе данных
+    */
     private $connection;
     
     /**
-     * @var string Префикс таблиц
-     */
+    * @var string Префикс таблиц
+    */
     private $prefix = '';
     
     /**
-     * @var self|null Единственный экземпляр класса
-     */
+    * @var self|null Единственный экземпляр класса
+    */
     private static $instance = null;
 
     /**
-     * Конструктор Database
-     * Создает подключение к базе данных с кодировкой utf8mb4
-     */
+    * Конструктор Database
+    * Создает подключение к базе данных с кодировкой utf8mb4
+    */
     public function __construct() {
         try {
             $this->connection = new PDO(
@@ -45,10 +46,10 @@ class Database {
     }
 
     /**
-     * Добавляет префикс к имени таблицы
-     * @param string $table Имя таблицы
-     * @return string Имя таблицы с префиксом
-     */
+    * Добавляет префикс к имени таблицы
+    * @param string $table Имя таблицы
+    * @return string Имя таблицы с префиксом
+    */
     private function prefixTable($table) {
         if (empty($this->prefix) || strpos($table, $this->prefix) === 0) {
             return $table;
@@ -57,11 +58,11 @@ class Database {
     }
 
     /**
-     * Обрабатывает SQL и добавляет префикс к таблицам
-     * Поддерживает: FROM, JOIN, INTO, UPDATE, TABLE, REFERENCES
-     * @param string $sql SQL запрос
-     * @return string Обработанный SQL
-     */
+    * Обрабатывает SQL и добавляет префикс к таблицам
+    * Поддерживает: FROM, JOIN, INTO, UPDATE, TABLE, REFERENCES
+    * @param string $sql SQL запрос
+    * @return string Обработанный SQL
+    */
     private function addPrefixToSql($sql) {
         if (empty($this->prefix)) {
             return $sql;
@@ -96,10 +97,9 @@ class Database {
     }
 
     /**
-     * Получить экземпляр базы данных (Singleton)
-     *
-     * @return self Экземпляр Database
-     */
+    * Получить экземпляр базы данных (Singleton)
+    * @return self Экземпляр Database
+    */
     public static function getInstance(): self {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -108,12 +108,11 @@ class Database {
     }
 
     /**
-     * Выполняет SQL запрос с параметрами
-     *
-     * @param string $sql SQL запрос
-     * @param array $params Параметры запроса
-     * @return PDOStatement Результат выполнения
-     */
+    * Выполняет SQL запрос с параметрами
+    * @param string $sql SQL запрос
+    * @param array $params Параметры запроса
+    * @return PDOStatement Результат выполнения
+    */
     public function query($sql, $params = []) {
         $sql = $this->addPrefixToSql($sql);
         
@@ -142,44 +141,40 @@ class Database {
     }
 
     /**
-     * Получает одну строку результата
-     *
-     * @param string $sql SQL запрос
-     * @param array $params Параметры запроса
-     * @return array|null Ассоциативный массив или null
-     */
+    * Получает одну строку результата
+    * @param string $sql SQL запрос
+    * @param array $params Параметры запроса
+    * @return array|null Ассоциативный массив или null
+    */
     public function fetch($sql, $params = []) {
         return $this->query($sql, $params)->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Получает все строки результата
-     *
-     * @param string $sql SQL запрос
-     * @param array $params Параметры запроса
-     * @return array Массив ассоциативных массивов
-     */
+    * Получает все строки результата
+    * @param string $sql SQL запрос
+    * @param array $params Параметры запроса
+    * @return array Массив ассоциативных массивов
+    */
     public function fetchAll($sql, $params = []) {
         return $this->query($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
-     * Получает ID последней вставленной записи
-     *
-     * @return string ID последней вставленной записи
-     */
+    * Получает ID последней вставленной записи
+    * @return string ID последней вставленной записи
+    */
     public function lastInsertId() {
         return $this->connection->lastInsertId();
     }
 
     /**
-     * Обновляет записи в таблице
-     *
-     * @param string $table Имя таблицы
-     * @param array $data Данные для обновления
-     * @param array $where Условия WHERE
-     * @return int Количество обновленных строк
-     */
+    * Обновляет записи в таблице
+    * @param string $table Имя таблицы
+    * @param array $data Данные для обновления
+    * @param array $where Условия WHERE
+    * @return int Количество обновленных строк
+    */
     public function update($table, $data, $where) {
         $table = $this->prefixTable($table);
         
@@ -206,39 +201,35 @@ class Database {
     }
 
     /**
-     * Начинает транзакцию
-     *
-     * @return bool Результат начала транзакции
-     */
+    * Начинает транзакцию
+    * @return bool Результат начала транзакции
+    */
     public function beginTransaction() {
         return $this->connection->beginTransaction();
     }
     
     /**
-     * Подтверждает транзакцию
-     *
-     * @return bool Результат подтверждения
-     */
+    * Подтверждает транзакцию
+    * @return bool Результат подтверждения
+    */
     public function commit() {
         return $this->connection->commit();
     }
     
     /**
-     * Откатывает транзакцию
-     *
-     * @return bool Результат отката
-     */
+    * Откатывает транзакцию
+    * @return bool Результат отката
+    */
     public function rollBack() {
         return $this->connection->rollBack();
     }
 
     /**
-     * Вставляет запись в таблицу
-     *
-     * @param string $table Имя таблицы
-     * @param array $data Данные для вставки
-     * @return PDOStatement Результат выполнения
-     */
+    * Вставляет запись в таблицу
+    * @param string $table Имя таблицы
+    * @param array $data Данные для вставки
+    * @return PDOStatement Результат выполнения
+    */
     public function insert($table, $data) {
         $table = $this->prefixTable($table);
 
@@ -263,12 +254,11 @@ class Database {
     }
 
     /**
-     * Удаляет записи из таблицы
-     *
-     * @param string $table Имя таблицы
-     * @param array $conditions Условия удаления
-     * @return PDOStatement Результат выполнения
-     */
+    * Удаляет записи из таблицы
+    * @param string $table Имя таблицы
+    * @param array $conditions Условия удаления
+    * @return PDOStatement Результат выполнения
+    */
     public function delete($table, $conditions) {
         $table = $this->prefixTable($table);
         
@@ -286,12 +276,11 @@ class Database {
     }
 
     /**
-     * Получить одно значение из первой строки результата
-     *
-     * @param string $sql SQL запрос
-     * @param array $params Параметры запроса
-     * @return mixed Значение или null
-     */
+    * Получить одно значение из первой строки результата
+    * @param string $sql SQL запрос
+    * @param array $params Параметры запроса
+    * @return mixed Значение или null
+    */
     public function fetchValue($sql, $params = []) {
         $result = $this->fetch($sql, $params);
         if ($result) {
@@ -301,10 +290,9 @@ class Database {
     }
 
     /**
-     * Проверяет поддержку utf8mb4 в базе данных
-     *
-     * @return bool Поддерживает ли база utf8mb4
-     */
+    * Проверяет поддержку utf8mb4 в базе данных
+    * @return bool Поддерживает ли база utf8mb4
+    */
     public function checkUtf8mb4Support() {
         try {
             $result = $this->fetch("SHOW VARIABLES LIKE 'character_set_database'");
@@ -316,11 +304,10 @@ class Database {
     }
 
     /**
-     * Проверяет кодировку таблицы
-     *
-     * @param string $tableName Имя таблицы
-     * @return string|null Кодировка таблицы
-     */
+    * Проверяет кодировку таблицы
+    * @param string $tableName Имя таблицы
+    * @return string|null Кодировка таблицы
+    */
     public function getTableCharset($tableName) {
         try {
             $tableName = $this->prefixTable($tableName);
@@ -338,11 +325,10 @@ class Database {
     }
 
     /**
-     * Изменяет кодировку таблицы на utf8mb4
-     *
-     * @param string $tableName Имя таблицы
-     * @return bool|PDOStatement Результат выполнения
-     */
+    * Изменяет кодировку таблицы на utf8mb4
+    * @param string $tableName Имя таблицы
+    * @return bool|PDOStatement Результат выполнения
+    */
     public function convertTableToUtf8mb4($tableName) {
         try {
             $tableName = $this->prefixTable($tableName);
@@ -357,9 +343,9 @@ class Database {
     }
     
     /**
-     * Публичный метод для получения префикса
-     * @return string Префикс таблиц
-     */
+    * Публичный метод для получения префикса
+    * @return string Префикс таблиц
+    */
     public function getPrefix() {
         return $this->prefix;
     }

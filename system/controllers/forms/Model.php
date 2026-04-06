@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель форм
- * Управляет созданием, хранением и извлечением форм сайта
- * Поддерживает поля форм, валидацию и отправки
- * 
- * @package models
- */
+* Модель форм
+* @package models
+*/
 class FormModel implements ModelAPI {
 
     use APIAware;
@@ -21,28 +18,21 @@ class FormModel implements ModelAPI {
         'validateFormStructure'
     ];
     
-    /**
-     * @var Database Объект подключения к базе данных
-     */
     private $db;
     
     /**
-     * Конструктор модели форм
-     * Инициализирует подключение к базе данных
-     *
-     * @param Database $db Объект подключения к базе данных
-     */
+    * Конструктор модели форм
+    * @param Database $db Объект подключения к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
     }
     
     /**
-     * Создание новой формы
-     * Добавляет запись формы в базу данных
-     *
-     * @param array $data Массив данных формы
-     * @return int ID созданной формы
-     */
+    * Создание новой формы
+    * @param array $data Массив данных формы
+    * @return int ID созданной формы
+    */
     public function create($data) {
         $data['created_at'] = date('Y-m-d H:i:s');
         $data['updated_at'] = date('Y-m-d H:i:s');
@@ -65,13 +55,11 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Обновление существующей формы
-     * Изменяет данные формы в базе данных
-     *
-     * @param int $id ID обновляемой формы
-     * @param array $data Массив данных для обновления
-     * @return bool Результат выполнения операции
-     */
+    * Обновление существующей формы
+    * @param int $id ID обновляемой формы
+    * @param array $data Массив данных для обновления
+    * @return bool Результат выполнения операции
+    */
     public function update($id, $data) {
         $data['updated_at'] = date('Y-m-d H:i:s');
         
@@ -92,23 +80,19 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Удаление формы
-     * Удаляет форму из базы данных по ее ID
-     *
-     * @param int $id ID удаляемой формы
-     * @return bool Результат выполнения операции
-     */
+    * Удаление формы
+    * @param int $id ID удаляемой формы
+    * @return bool Результат выполнения операции
+    */
     public function delete($id) {
         return $this->db->delete('forms', ['id' => $id]) > 0;
     }
     
     /**
-     * Получение формы по ID
-     * Возвращает данные формы по ее идентификатору
-     *
-     * @param int $id ID формы
-     * @return array|null Данные формы или null если не найдена
-     */
+    * Получение формы по ID
+    * @param int $id ID формы
+    * @return array|null Данные формы или null если не найдена
+    */
     public function getById($id) {
         $form = $this->db->fetch(
             "SELECT * FROM forms WHERE id = ?", 
@@ -123,12 +107,10 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение формы по слагу
-     * Возвращает данные формы по ее слагу
-     *
-     * @param string $slug Слаг формы
-     * @return array|null Данные формы или null если не найдена
-     */
+    * Получение формы по слагу
+    * @param string $slug Слаг формы
+    * @return array|null Данные формы или null если не найдена
+    */
     public function getBySlug($slug) {
         $form = $this->db->fetch(
             "SELECT * FROM forms WHERE slug = ? AND status = 'active'", 
@@ -143,11 +125,9 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение всех форм
-     * Возвращает список всех форм в системе отсортированных по дате создания
-     *
-     * @return array Массив всех форм
-     */
+    * Получение всех форм
+    * @return array Массив всех форм
+    */
     public function getAll() {
         $forms = $this->db->fetchAll(
             "SELECT * FROM forms ORDER BY created_at DESC"
@@ -172,11 +152,9 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение активных форм
-     * Возвращает список всех активных форм
-     *
-     * @return array Массив активных форм
-     */
+    * Получение активных форм
+    * @return array Массив активных форм
+    */
     public function getAllActive() {
         $forms = $this->db->fetchAll(
             "SELECT * FROM forms WHERE status = 'active' ORDER BY name ASC"
@@ -190,10 +168,9 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Декодирование данных формы из JSON
-     *
-     * @param array &$form Ссылка на массив формы
-     */
+    * Декодирование данных формы из JSON
+    * @param array &$form Ссылка на массив формы
+    */
     private function decodeFormData(&$form) {
         if (isset($form['structure'])) {
             $form['structure'] = json_decode($form['structure'], true) ?: [];
@@ -210,12 +187,10 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Валидация структуры формы
-     * Проверяет корректность полей формы
-     *
-     * @param array $structure Структура формы для проверки
-     * @return array Результат валидации [success, errors]
-     */
+    * Валидация структуры формы
+    * @param array $structure Структура формы для проверки
+    * @return array Результат валидации [success, errors]
+    */
     public function validateFormStructure($structure) {
         if (!is_array($structure)) {
             return [false, ['Структура формы должна быть массивом']];
@@ -266,12 +241,10 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Создание слага формы
-     * Генерирует уникальный слаг на основе имени
-     *
-     * @param string $name Имя формы
-     * @return string Уникальный слаг
-     */
+    * Создание слага формы
+    * @param string $name Имя формы
+    * @return string Уникальный слаг
+    */
     public function createSlug($name) {
         $slug = $this->transliterate($name);
         $slug = preg_replace('/[^a-z0-9_-]/', '-', $slug);
@@ -290,8 +263,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Транслитерация текста
-     */
+    * Транслитерация текста
+    */
     private function transliterate($text) {
         $cyr = [
             'а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п',
@@ -311,8 +284,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Проверка существования слага
-     */
+    * Проверка существования слага
+    */
     private function slugExists($slug) {
         $existing = $this->db->fetch(
             "SELECT id FROM forms WHERE slug = ?",
@@ -322,13 +295,12 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Сохранение отправки формы
-     *
-     * @param int $formId ID формы
-     * @param array $data Данные формы
-     * @param array $files Загруженные файлы
-     * @return int ID созданной отправки
-     */
+    * Сохранение отправки формы
+    * @param int $formId ID формы
+    * @param array $data Данные формы
+    * @param array $files Загруженные файлы
+    * @return int ID созданной отправки
+    */
     public function saveSubmission($formId, $data, $files = []) {
         $submissionData = [
             'form_id' => $formId,
@@ -350,8 +322,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Сохранение файлов отправки (с поддержкой multiple)
-     */
+    * Сохранение файлов отправки (с поддержкой multiple)
+    */
     private function saveSubmissionFiles($submissionId, $files) {
         $uploadPath = ROOT_PATH . '/uploads/forms';
         if (!is_dir($uploadPath)) {
@@ -387,8 +359,8 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Вспомогательный метод для сохранения одного файла
-     */
+    * Вспомогательный метод для сохранения одного файла
+    */
     private function saveSingleFile($submissionId, $fieldName, $file, $fullPath, $monthDir) {
         $fileName = time() . '_' . uniqid() . '_' . $this->sanitizeFileName($file['name']);
         $filePath = $fullPath . '/' . $fileName;
@@ -408,21 +380,20 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Очистка имени файла
-     */
+    * Очистка имени файла
+    */
     private function sanitizeFileName($filename) {
         $filename = preg_replace('/[^a-zA-Z0-9\._-]/', '_', $filename);
         return preg_replace('/_+/', '_', $filename);
     }
     
     /**
-     * Получение отправок формы
-     *
-     * @param int $formId ID формы
-     * @param int $limit Лимит записей
-     * @param int $offset Смещение
-     * @return array Массив отправок
-     */
+    * Получение отправок формы
+    * @param int $formId ID формы
+    * @param int $limit Лимит записей
+    * @param int $offset Смещение
+    * @return array Массив отправок
+    */
     public function getSubmissions($formId, $limit = 50, $offset = 0) {
         $submissions = $this->db->fetchAll(
             "SELECT * FROM form_submissions
@@ -451,8 +422,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение файлов отправки
-     */
+    * Получение файлов отправки
+    */
     private function getSubmissionFiles($submissionId) {
         return $this->db->fetchAll(
             "SELECT * FROM form_files WHERE submission_id = ?",
@@ -461,8 +432,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Удаление отправки
-     */
+    * Удаление отправки
+    */
     public function deleteSubmission($submissionId) {
         $files = $this->db->fetchAll(
             "SELECT * FROM form_files WHERE submission_id = ?",
@@ -488,8 +459,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Обновление статуса отправки
-     */
+    * Обновление статуса отправки
+    */
     public function updateSubmissionStatus($submissionId, $status) {
         return $this->db->update('form_submissions', 
             ['status' => $status], 
@@ -498,10 +469,9 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение статистики по формам
-     *
-     * @return array Статистика
-     */
+    * Получение статистики по формам
+    * @return array Статистика
+    */
     public function getStatistics() {
         $stats = [];
         
@@ -526,11 +496,10 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Экспорт отправок в CSV
-     *
-     * @param int $formId ID формы
-     * @return string CSV данные
-     */
+    * Экспорт отправок в CSV
+    * @param int $formId ID формы
+    * @return string CSV данные
+    */
     public function exportSubmissionsToCSV($formId) {
         $submissions = $this->getSubmissions($formId, 1000);
         if (empty($submissions)) return '';
@@ -586,8 +555,8 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получает текст статуса
-     */
+    * Получает текст статуса
+    */
     private function getStatusText($status) {
         $statuses = [
             'new' => 'Новый',
@@ -600,8 +569,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение количества отправок по статусам
-     */
+    * Получение количества отправок по статусам
+    */
     public function getSubmissionsCountByStatus($formId) {
         $result = $this->db->fetchAll(
             "SELECT status, COUNT(*) as count 
@@ -630,11 +599,10 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получение количества отправок формы
-     *
-     * @param int $formId ID формы
-     * @return int Количество отправок
-     */
+    * Получение количества отправок формы
+    * @param int $formId ID формы
+    * @return int Количество отправок
+    */
     public function getSubmissionsCount($formId) {
         $result = $this->db->fetch(
             "SELECT COUNT(*) as count FROM form_submissions WHERE form_id = ?",
@@ -646,8 +614,8 @@ class FormModel implements ModelAPI {
 
     
     /**
-     * Получение последних отправок
-     */
+    * Получение последних отправок
+    */
     public function getRecentSubmissions($limit = 10) {
         $submissions = $this->db->fetchAll("
             SELECT fs.*, f.name as form_name 
@@ -665,8 +633,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение статистики по дням
-     */
+    * Получение статистики по дням
+    */
     public function getDailyStatistics($days = 30) {
         $result = $this->db->fetchAll("
             SELECT 
@@ -682,8 +650,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Поиск отправок
-     */
+    * Поиск отправок
+    */
     public function searchSubmissions($formId, $searchTerm, $status = null) {
         $query = "
             SELECT * FROM form_submissions 
@@ -710,8 +678,8 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получает текущую тему
-     */
+    * Получает текущую тему
+    */
     public static function getCurrentTheme() {
         if (defined('DEFAULT_TEMPLATE')) {
             return DEFAULT_TEMPLATE;
@@ -721,10 +689,9 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получение доступных шаблонов форм
-     *
-     * @return array Массив шаблонов [id => название]
-     */
+    * Получение доступных шаблонов форм
+    * @return array Массив шаблонов [id => название]
+    */
     public function getAvailableTemplates() {
         $templates = [];
 
@@ -752,8 +719,8 @@ class FormModel implements ModelAPI {
     }
     
     /**
-     * Получение информации о шаблоне
-     */
+    * Получение информации о шаблоне
+    */
     private function getTemplateInfo($filePath) {
         $info = [
             'name' => basename($filePath, '.php'),
@@ -783,12 +750,11 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получение количества отправок за сегодня с IP
-     *
-     * @param int $formId ID формы
-     * @param string $ip IP адрес
-     * @return int Количество отправок
-     */
+    * Получение количества отправок за сегодня с IP
+    * @param int $formId ID формы
+    * @param string $ip IP адрес
+    * @return int Количество отправок
+    */
     public function getSubmissionsCountToday($formId, $ip = '') {
         $query = "SELECT COUNT(*) as count FROM form_submissions 
                 WHERE form_id = ? 
@@ -805,12 +771,11 @@ class FormModel implements ModelAPI {
     }
 
     /**
-     * Получение количества отправок с IP
-     *
-     * @param int $formId ID формы
-     * @param string $ip IP адрес
-     * @return int Количество отправок
-     */
+    * Получение количества отправок с IP
+    * @param int $formId ID формы
+    * @param string $ip IP адрес
+    * @return int Количество отправок
+    */
     public function getSubmissionsCountByIp($formId, $ip = '') {
         if (empty($ip)) {
             return 0;

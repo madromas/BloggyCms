@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Модель для работы со страницами в базе данных
- * Предоставляет методы для CRUD-операций со страницами, управления URL-адресами (slug)
- * и интеграции с блочной системой контента
- * 
- * @package Models
- */
+* Модель для работы со страницами в базе данных
+* @package Models
+*/
 class PageModel implements ModelAPI {
 
     use APIAware;
@@ -21,60 +18,47 @@ class PageModel implements ModelAPI {
         'getStats'
     ];
     
-    /** @var object Подключение к базе данных */
     private $db;
-    
-    /** @var PostBlockModel Модель для работы с блоками контента */
     private $postBlockModel;
     
     /**
-     * Конструктор модели
-     * Инициализирует подключение к БД и модель блоков
-     * 
-     * @param object $db Подключение к базе данных
-     */
+    * Конструктор модели
+    * @param object $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->postBlockModel = new PostBlockModel($db);
     }
     
     /**
-     * Получает список всех страниц
-     * 
-     * @return array Массив всех страниц, отсортированных по заголовку
-     */
+    * Получает список всех страниц 
+    * @return array Массив всех страниц, отсортированных по заголовку
+    */
     public function getAll() {
         return $this->db->fetchAll("SELECT * FROM pages ORDER BY title");
     }
     
     /**
-     * Получает страницу по её ID
-     * 
-     * @param int $id ID страницы
-     * @return array|null Данные страницы или null, если страница не найдена
-     */
+    * Получает страницу по её ID
+    * @param int $id ID страницы
+    * @return array|null Данные страницы или null, если страница не найдена
+    */
     public function getById($id) {
         return $this->db->fetch("SELECT * FROM pages WHERE id = ?", [$id]);
     }
     
     /**
-     * Получает страницу по её URL-адресу (slug)
-     * 
-     * @param string $slug URL-адрес страницы
-     * @return array|null Данные страницы или null, если страница не найдена
-     */
+    * Получает страницу по её URL-адресу (slug)
+    * @param string $slug URL-адрес страницы
+    * @return array|null Данные страницы или null, если страница не найдена
+    */
     public function getBySlug($slug) {
         return $this->db->fetch("SELECT * FROM pages WHERE slug = ?", [$slug]);
     }
     
     /**
-     * Создает новую страницу
-     *
-     * @param array $data Данные страницы:
-     * - title (string): Заголовок страницы
-     * - slug (string, optional): URL-адрес (если не указан — генерируется автоматически)
-     * @return int ID созданной страницы
-     */
+    * Создает новую страницу
+    */
     public function create($data) {
         $slug = !empty($data['slug']) 
             ? $this->createUniqueSlug($data['slug']) 
@@ -100,12 +84,11 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Обновляет существующую страницу
-     *
-     * @param int $id ID страницы
-     * @param array $data Данные для обновления
-     * @return bool Результат выполнения запроса
-     */
+    * Обновляет существующую страницу
+    * @param int $id ID страницы
+    * @param array $data Данные для обновления
+    * @return bool Результат выполнения запроса
+    */
     public function update($id, $data) {
 
         $oldPage = $this->getById($id);
@@ -137,11 +120,10 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Удаляет страницу и все связанные с ней блоки
-     * 
-     * @param int $id ID страницы
-     * @return bool Результат выполнения запроса
-     */
+    * Удаляет страницу и все связанные с ней блоки
+    * @param int $id ID страницы
+    * @return bool Результат выполнения запроса
+    */
     public function delete($id) {
         try {
 
@@ -178,38 +160,31 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Создает URL-адрес (slug) из заголовка
-     * Транслитерирует кириллицу, удаляет спецсимволы, заменяет пробелы на дефисы
-     * 
-     * @param string $title Заголовок страницы
-     * @return string Сгенерированный URL-адрес
-     */
+    * Создает URL-адрес (slug) из заголовка
+    * @param string $title Заголовок страницы
+    * @return string Сгенерированный URL-адрес
+    */
     private function createSlug($title) {
-        // Приведение к нижнему регистру
+
         $slug = mb_strtolower($title, 'UTF-8');
-        
-        // Транслитерация кириллицы в латиницу
+
         $slug = $this->transliterate($slug);
         
-        // Удаление всех символов, кроме букв, цифр и дефисов
         $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
         
-        // Замена множественных дефисов на один
         $slug = preg_replace('/-+/', '-', $slug);
         
-        // Удаление дефисов в начале и конце строки
         $slug = trim($slug, '-');
         
         return $slug;
     }
     
     /**
-     * Создает уникальный URL-адрес, добавляя числовой суффикс при необходимости
-     * 
-     * @param string $title Заголовок страницы
-     * @param int|null $excludeId ID страницы для исключения из проверки (при обновлении)
-     * @return string Уникальный URL-адрес
-     */
+    * Создает уникальный URL-адрес, добавляя числовой суффикс при необходимости
+    * @param string $title Заголовок страницы
+    * @param int|null $excludeId ID страницы для исключения из проверки (при обновлении)
+    * @return string Уникальный URL-адрес
+    */
     private function createUniqueSlug($title, $excludeId = null) {
         $baseSlug = $this->createSlug($title);
         $slug = $baseSlug;
@@ -224,12 +199,11 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Проверяет, существует ли уже указанный URL-адрес в базе данных
-     * 
-     * @param string $slug URL-адрес для проверки
-     * @param int|null $excludeId ID страницы для исключения из проверки
-     * @return bool true если URL уже существует, false если свободен
-     */
+    * Проверяет, существует ли уже указанный URL-адрес в базе данных 
+    * @param string $slug URL-адрес для проверки
+    * @param int|null $excludeId ID страницы для исключения из проверки
+    * @return bool true если URL уже существует, false если свободен
+    */
     private function isSlugExists($slug, $excludeId = null) {
         $sql = "SELECT COUNT(*) as count FROM pages WHERE slug = ?";
         $params = [$slug];
@@ -244,11 +218,10 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Транслитерирует кириллические символы в латиницу
-     * 
-     * @param string $string Строка для транслитерации
-     * @return string Транслитерированная строка
-     */
+    * Транслитерирует кириллические символы в латиницу 
+    * @param string $string Строка для транслитерации
+    * @return string Транслитерированная строка
+    */
     private function transliterate($string) {
         $converter = array(
             'а' => 'a',    'б' => 'b',    'в' => 'v',    'г' => 'g',    'д' => 'd',
@@ -272,30 +245,25 @@ class PageModel implements ModelAPI {
     }
 
     /**
-     * Получает блоки контента для указанной страницы
-     * 
-     * @param int $pageId ID страницы
-     * @return array Массив блоков контента
-     */
+    * Получает блоки контента для указанной страницы 
+    * @param int $pageId ID страницы
+    * @return array Массив блоков контента
+    */
     public function getBlocks($pageId) {
         return $this->postBlockModel->getByPage($pageId);
     }
     
     /**
-     * Создает страницу вместе с её блоками (для обратной совместимости)
-     * Выполняет операцию в транзакционном стиле
-     * 
-     * @param array $data Данные страницы
-     * @param array $blocks Массив блоков контента
-     * @return int ID созданной страницы
-     * @throws Exception При ошибке создания
-     */
+    * Создает страницу вместе с её блоками (для обратной совместимости)
+    * @param array $data Данные страницы
+    * @param array $blocks Массив блоков контента
+    * @return int ID созданной страницы
+    * @throws Exception При ошибке создания
+    */
     public function createWithBlocks($data, $blocks) {
         try {
-            // Создание страницы
             $pageId = $this->create($data);
             
-            // Добавление блоков
             foreach ($blocks as $order => $block) {
                 $this->postBlockModel->createForPage(
                     $pageId,
@@ -313,24 +281,19 @@ class PageModel implements ModelAPI {
     }
     
     /**
-     * Обновляет страницу вместе с её блоками (для обратной совместимости)
-     * Удаляет старые блоки и создает новые
-     * 
-     * @param int $pageId ID страницы
-     * @param array $data Данные для обновления
-     * @param array $blocks Массив новых блоков контента
-     * @return bool true при успешном обновлении
-     * @throws Exception При ошибке обновления
-     */
+    * Обновляет страницу вместе с её блоками (для обратной совместимости)
+    * @param int $pageId ID страницы
+    * @param array $data Данные для обновления
+    * @param array $blocks Массив новых блоков контента
+    * @return bool true при успешном обновлении
+    * @throws Exception При ошибке обновления
+    */
     public function updateWithBlocks($pageId, $data, $blocks) {
         try {
-            // Обновление страницы
             $this->update($pageId, $data);
             
-            // Удаление старых блоков
             $this->postBlockModel->deleteByPage($pageId);
             
-            // Добавление новых блоков
             foreach ($blocks as $order => $block) {
                 $this->postBlockModel->createForPage(
                     $pageId,
@@ -348,13 +311,9 @@ class PageModel implements ModelAPI {
     }
 
     /**
-     * Получает статистику по страницам
-     * 
-     * @return array Статистика с полями:
-     *               - total: Общее количество страниц
-     *               - published: Количество опубликованных
-     *               - draft: Количество черновиков
-     */
+    * Получает статистику по страницам
+    * @return array Статистика с полями: общее количество страниц, количество опубликованных, количество черновиков
+    */
     public function getStats() {
         return $this->db->fetch("
             SELECT 
@@ -366,11 +325,10 @@ class PageModel implements ModelAPI {
     }
 
     /**
-     * Ищет страницы по заголовку или URL-адресу
-     * 
-     * @param string $query Поисковый запрос
-     * @return array Массив найденных страниц
-     */
+    * Ищет страницы по заголовку или URL-адресу
+    * @param string $query Поисковый запрос
+    * @return array Массив найденных страниц
+    */
     public function search($query) {
         return $this->db->fetchAll("
             SELECT * FROM pages 
@@ -380,11 +338,10 @@ class PageModel implements ModelAPI {
     }
 
     /**
-     * Получает последние созданные страницы
-     * 
-     * @param int $limit Максимальное количество страниц (по умолчанию 10)
-     * @return array Массив последних страниц
-     */
+    * Получает последние созданные страницы 
+    * @param int $limit Максимальное количество страниц (по умолчанию 10)
+    * @return array Массив последних страниц
+    */
     public function getRecent($limit = 10) {
         return $this->db->fetchAll("
             SELECT * FROM pages 

@@ -1,43 +1,34 @@
 <?php
 
 /**
- * Поле типа "флаг" (булево значение) для системы пользовательских полей
- * Реализует переключатель (checkbox/switch) для хранения логических значений
- * С различными вариантами отображения в списках и детальном просмотре
- * 
- * @package Fields
- * @extends BaseField
- */
+* Поле типа "флаг" (булево значение) для системы пользовательских полей
+* @package Fields
+*/
 class FlagField extends BaseField {
     
     /**
-     * Возвращает тип поля
-     * 
-     * @return string 'flag'
-     */
+    * Возвращает тип поля 
+    * @return string 'flag'
+    */
     public function getType(): string {
         return 'flag';
     }
     
     /**
-     * Возвращает отображаемое название типа поля
-     * 
-     * @return string 'Флаг'
-     */
+    * Возвращает отображаемое название типа поля
+    * @return string 'Флаг'
+    */
     public function getName(): string {
         return 'Флаг';
     }
     
     /**
-     * Генерирует HTML для редактирования поля в форме
-     * Создает скрытое поле (для отправки 0 при выключенном чекбоксе)
-     * и видимый переключатель
-     * 
-     * @param mixed $value Текущее значение поля
-     * @param string $entityType Тип сущности (post, user, category и т.д.)
-     * @param int $entityId ID сущности
-     * @return string HTML-код для редактирования
-     */
+    * Генерирует HTML для редактирования поля в форме 
+    * @param mixed $value Текущее значение поля
+    * @param string $entityType Тип сущности (post, user, category и т.д.)
+    * @param int $entityId ID сущности
+    * @return string HTML-код для редактирования
+    */
     public function renderInput($value, $entityType, $entityId): string {
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $label = $this->config['label'] ?? 'Включено';
@@ -59,14 +50,12 @@ class FlagField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в детальном просмотре
-     * Показывает бейдж с текстом для true/false
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения
-     */
+    * Генерирует HTML для отображения значения поля в детальном просмотре
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения
+    */
     public function renderDisplay($value, $entityType, $entityId): string {
         $trueText = $this->config['true_text'] ?? 'Да';
         $falseText = $this->config['false_text'] ?? 'Нет';
@@ -79,14 +68,12 @@ class FlagField extends BaseField {
     }
     
     /**
-     * Генерирует HTML для отображения значения поля в списке
-     * Показывает иконку с цветовой индикацией
-     * 
-     * @param mixed $value Значение поля
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML-код для отображения в списке
-     */
+    * Генерирует HTML для отображения значения поля в списке
+    * @param mixed $value Значение поля
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML-код для отображения в списке
+    */
     public function renderList($value, $entityType, $entityId): string {
         if ($value) {
             return "<i class='bi bi-check-circle-fill text-success' title='Да'></i>";
@@ -96,12 +83,10 @@ class FlagField extends BaseField {
     }
     
     /**
-     * Обрабатывает значение перед сохранением в базу данных
-     * Преобразует различные представления булевых значений в 0 или 1
-     * 
-     * @param mixed $value Исходное значение
-     * @return int 1 для true, 0 для false
-     */
+    * Обрабатывает значение перед сохранением в базу данных
+    * @param mixed $value Исходное значение
+    * @return int 1 для true, 0 для false
+    */
     public function processValue($value) {
         if ($value === '1' || $value === 1 || $value === true) {
             return 1;
@@ -111,11 +96,9 @@ class FlagField extends BaseField {
     }
     
     /**
-     * Возвращает HTML-форму для настройки поля в административной панели
-     * Позволяет настроить текст переключателя, тексты для true/false и значение по умолчанию
-     * 
-     * @return string HTML-код формы настроек
-     */
+    * Возвращает HTML-форму для настройки поля в административной панели 
+    * @return string HTML-код формы настроек
+    */
     public function getSettingsForm(): string {
         $label = htmlspecialchars($this->config['label'] ?? 'Включено');
         $trueText = htmlspecialchars($this->config['true_text'] ?? 'Да');

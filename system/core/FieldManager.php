@@ -1,39 +1,39 @@
 <?php
 
 /**
- * Менеджер для управления полями в системе
- */
+* Менеджер для управления полями в системе
+*/
 class FieldManager {
+
     /**
-     * @var mixed Подключение к базе данных
-     */
+    * @var mixed Подключение к базе данных
+    */
     private $db;
     
     /**
-     * @var array Зарегистрированные классы полей
-     */
+    * @var array Зарегистрированные классы полей
+    */
     private static $fieldClasses = [];
     
     /**
-     * @var array Зарегистрированные шорткоды полей
-     */
+    * @var array Зарегистрированные шорткоды полей
+    */
     private $registeredShortcodes = [];
     
     /**
-     * @var string Путь к директории с полями
-     */
+    * @var string Путь к директории с полями
+    */
     private $fieldsPath;
     
     /**
-     * @var bool Флаг загрузки классов полей
-     */
+    * @var bool Флаг загрузки классов полей
+    */
     private static $loaded = false;
     
     /**
-     * Конструктор FieldManager
-     *
-     * @param mixed $db Подключение к базе данных
-     */
+    * Конструктор FieldManager
+    * @param mixed $db Подключение к базе данных
+    */
     public function __construct($db) {
         $this->db = $db;
         $this->fieldsPath = SYSTEM_PATH . '/fields';
@@ -45,8 +45,8 @@ class FieldManager {
     }
     
     /**
-     * Загружает классы полей
-     */
+    * Загружает классы полей
+    */
     private function loadFieldClasses(): void {
         self::$fieldClasses = [];
         
@@ -59,8 +59,8 @@ class FieldManager {
     }
     
     /**
-     * Загружает базовые поля из системной папки
-     */
+    * Загружает базовые поля из системной папки
+    */
     private function loadCoreFields(): void {
         if (!is_dir($this->fieldsPath)) {
             mkdir($this->fieldsPath, 0755, true);
@@ -88,8 +88,8 @@ class FieldManager {
     }
 
     /**
-     * Регистрирует шорткоды для всех полей
-     */
+    * Регистрирует шорткоды для всех полей
+    */
     public function registerFieldShortcodes(): void {
         try {
             $fieldModel = new FieldModel($this->db);
@@ -108,10 +108,9 @@ class FieldManager {
     }
 
     /**
-     * Регистрирует шорткод для конкретного поля
-     *
-     * @param array $field Данные поля
-     */
+    * Регистрирует шорткод для конкретного поля
+    * @param array $field Данные поля
+    */
     private function registerFieldShortcode(array $field): void {
         $fieldInstance = $this->getFieldInstance($field['type'], json_decode($field['config'] ?? '{}', true));
         
@@ -128,34 +127,31 @@ class FieldManager {
     }
 
     /**
-     * Получает шорткод для поля по ID
-     *
-     * @param int $fieldId ID поля
-     * @return string|null Имя шорткода
-     */
+    * Получает шорткод для поля по ID
+    * @param int $fieldId ID поля
+    * @return string|null Имя шорткода
+    */
     public function getFieldShortcode($fieldId): ?string {
         return $this->registeredShortcodes[$fieldId] ?? null;
     }
     
     /**
-     * Получает все зарегистрированные шорткоды полей
-     *
-     * @return array Массив шорткодов
-     */
+    * Получает все зарегистрированные шорткоды полей
+    * @return array Массив шорткодов
+    */
     public function getRegisteredShortcodes(): array {
         return $this->registeredShortcodes;
     }
 
     /**
-     * Обрабатывает значение поля
-     *
-     * @param array $field Данные поля
-     * @param array $postData POST данные
-     * @param array $filesData FILES данные
-     * @param array $currentValues Текущие значения
-     * @return mixed Обработанное значение
-     * @throws Exception При некорректных данных поля
-     */
+    * Обрабатывает значение поля
+    * @param array $field Данные поля
+    * @param array $postData POST данные
+    * @param array $filesData FILES данные
+    * @param array $currentValues Текущие значения
+    * @return mixed Обработанное значение
+    * @throws Exception При некорректных данных поля
+    */
     public function processFieldValue($field, $postData, $filesData, $currentValues = []) {
         $deleteKey = 'field_' . $field['system_name'] . '_delete';
 
@@ -216,12 +212,11 @@ class FieldManager {
     }
 
     /**
-     * Получает текущие значения всех полей для сущности
-     *
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return array Массив значений
-     */
+    * Получает текущие значения всех полей для сущности
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return array Массив значений
+    */
     public function getCurrentFieldValues($entityType, $entityId) {
         $fieldModel = new Field($this->db);
         $fields = $fieldModel->getActiveByEntityType($entityType);
@@ -235,12 +230,11 @@ class FieldManager {
     }
 
     /**
-     * Обрабатывает конфигурацию поля
-     *
-     * @param string $type Тип поля
-     * @param array $config Конфигурация
-     * @return array Обработанная конфигурация
-     */
+    * Обрабатывает конфигурацию поля
+    * @param string $type Тип поля
+    * @param array $config Конфигурация
+    * @return array Обработанная конфигурация
+    */
     public function processFieldConfig(string $type, array $config) {
         $field = $this->getFieldInstance($type, $config);
         if (!$field) {
@@ -255,14 +249,13 @@ class FieldManager {
     }
 
     /**
-     * Валидирует значение поля
-     *
-     * @param array $field Данные поля
-     * @param mixed $value Значение поля
-     * @param array $postData POST данные
-     * @param array $filesData FILES данные
-     * @return array Результат валидации
-     */
+    * Валидирует значение поля
+    * @param array $field Данные поля
+    * @param mixed $value Значение поля
+    * @param array $postData POST данные
+    * @param array $filesData FILES данные
+    * @return array Результат валидации
+    */
     public function validateFieldValue($field, $value, $postData, $filesData): array {
         if (!is_array($field) || !isset($field['type']) || !isset($field['system_name'])) {
             return ['is_valid' => false, 'message' => 'Некорректные данные поля'];
@@ -321,8 +314,8 @@ class FieldManager {
     }
     
     /**
-     * Создает базовые поля по умолчанию
-     */
+    * Создает базовые поля по умолчанию
+    */
     private function createDefaultFields(): void {
         $defaultFields = [
             'StringField' => "<?php
@@ -564,22 +557,20 @@ class FieldManager {
     }
     
     /**
-     * Регистрирует тип поля
-     *
-     * @param string $type Тип поля
-     * @param string $className Имя класса
-     */
+    * Регистрирует тип поля
+    * @param string $type Тип поля
+    * @param string $className Имя класса
+    */
     public function registerFieldType(string $type, string $className): void {
         self::$fieldClasses[$type] = $className;
     }
     
     /**
-     * Получает экземпляр поля
-     *
-     * @param string $type Тип поля
-     * @param array $config Конфигурация поля
-     * @return BaseField|null Экземпляр поля
-     */
+    * Получает экземпляр поля
+    * @param string $type Тип поля
+    * @param array $config Конфигурация поля
+    * @return BaseField|null Экземпляр поля
+    */
     public function getFieldInstance(string $type, $config = []): ?BaseField {
         if (is_string($config)) {
             $decoded = json_decode($config, true);
@@ -618,10 +609,9 @@ class FieldManager {
     }
     
     /**
-     * Получает доступные типы полей
-     *
-     * @return array Массив типов полей
-     */
+    * Получает доступные типы полей
+    * @return array Массив типов полей
+    */
     public function getAvailableFieldTypes(): array {
         $types = [];
         foreach (self::$fieldClasses as $type => $className) {
@@ -637,13 +627,12 @@ class FieldManager {
     }
 
     /**
-     * Создает обертку для полей старого формата
-     *
-     * @param string $type Тип поля
-     * @param array $config Конфигурация
-     * @param string $className Имя класса
-     * @return BaseField|null Экземпляр обертки
-     */
+    * Создает обертку для полей старого формата
+    * @param string $type Тип поля
+    * @param array $config Конфигурация
+    * @param string $className Имя класса
+    * @return BaseField|null Экземпляр обертки
+    */
     private function createWrapperInstance(string $type, array $config, string $className): ?BaseField {
         try {
             $instance = new $className($config);
@@ -707,16 +696,15 @@ class FieldManager {
     }
     
     /**
-     * Рендерит поле ввода
-     *
-     * @param string $type Тип поля
-     * @param string $systemName Системное имя
-     * @param mixed $value Значение
-     * @param array $config Конфигурация
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML код поля ввода
-     */
+    * Рендерит поле ввода
+    * @param string $type Тип поля
+    * @param string $systemName Системное имя
+    * @param mixed $value Значение
+    * @param array $config Конфигурация
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML код поля ввода
+    */
     public function renderFieldInput(string $type, string $systemName, $value, array $config, string $entityType, int $entityId): string {
         $field = $this->getFieldInstance($type, $config);
         if (!$field) {
@@ -729,15 +717,14 @@ class FieldManager {
     }
     
     /**
-     * Рендерит отображение значения поля
-     *
-     * @param string $type Тип поля
-     * @param mixed $value Значение
-     * @param array $config Конфигурация
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML код отображения
-     */
+    * Рендерит отображение значения поля
+    * @param string $type Тип поля
+    * @param mixed $value Значение
+    * @param array $config Конфигурация
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML код отображения
+    */
     public function renderFieldDisplay(string $type, $value, array $config, string $entityType, int $entityId): string {
         $field = $this->getFieldInstance($type, $config);
         if (!$field) {
@@ -752,15 +739,14 @@ class FieldManager {
     }
     
     /**
-     * Рендерит значение поля для списка
-     *
-     * @param string $type Тип поля
-     * @param mixed $value Значение
-     * @param array $config Конфигурация
-     * @param string $entityType Тип сущности
-     * @param int $entityId ID сущности
-     * @return string HTML код для списка
-     */
+    * Рендерит значение поля для списка
+    * @param string $type Тип поля
+    * @param mixed $value Значение
+    * @param array $config Конфигурация
+    * @param string $entityType Тип сущности
+    * @param int $entityId ID сущности
+    * @return string HTML код для списка
+    */
     public function renderFieldList(string $type, $value, array $config, string $entityType, int $entityId): string {
         $field = $this->getFieldInstance($type, $config);
         if (!$field) {
@@ -773,12 +759,11 @@ class FieldManager {
     }
     
     /**
-     * Получает форму настроек поля
-     *
-     * @param string $type Тип поля
-     * @param array $config Конфигурация
-     * @return string HTML форма настроек
-     */
+    * Получает форму настроек поля
+    * @param string $type Тип поля
+    * @param array $config Конфигурация
+    * @return string HTML форма настроек
+    */
     public function getFieldSettingsForm(string $type, array $config = []): string {
         $field = $this->getFieldInstance($type, $config);
         if (!$field) {
@@ -789,34 +774,31 @@ class FieldManager {
     }
     
     /**
-     * Получает зарегистрированные типы полей
-     *
-     * @return array Массив типов полей
-     */
+    * Получает зарегистрированные типы полей
+    * @return array Массив типов полей
+    */
     public function getRegisteredFieldTypes(): array {
         return array_keys(self::$fieldClasses);
     }
     
     /**
-     * Проверяет, зарегистрирован ли тип поля
-     *
-     * @param string $type Тип поля
-     * @return bool Зарегистрирован ли тип
-     */
+    * Проверяет, зарегистрирован ли тип поля
+    * @param string $type Тип поля
+    * @return bool Зарегистрирован ли тип
+    */
     public function isFieldTypeRegistered(string $type): bool {
         return isset(self::$fieldClasses[$type]);
     }
 
     /**
-     * Обрабатывает загрузку файла для поля
-     *
-     * @param string $fieldType Тип поля
-     * @param array $fileData Данные файла
-     * @param mixed $currentValue Текущее значение
-     * @param array $config Конфигурация
-     * @return mixed Результат обработки
-     * @throws Exception Если поле не поддерживает загрузку
-     */
+    * Обрабатывает загрузку файла для поля
+    * @param string $fieldType Тип поля
+    * @param array $fileData Данные файла
+    * @param mixed $currentValue Текущее значение
+    * @param array $config Конфигурация
+    * @return mixed Результат обработки
+    * @throws Exception Если поле не поддерживает загрузку
+    */
     public function handleFileUpload($fieldType, $fileData, $currentValue = null, $config = []) {
         $field = $this->getFieldInstance($fieldType, $config);
         if (!$field || !method_exists($field, 'handleUpload')) {
@@ -827,14 +809,13 @@ class FieldManager {
     }
 
     /**
-     * Обрабатывает удаление файла для поля
-     *
-     * @param string $fieldType Тип поля
-     * @param mixed $currentValue Текущее значение
-     * @param array $config Конфигурация
-     * @return mixed Результат удаления
-     * @throws Exception Если поле не поддерживает удаление
-     */
+    * Обрабатывает удаление файла для поля
+    * @param string $fieldType Тип поля
+    * @param mixed $currentValue Текущее значение
+    * @param array $config Конфигурация
+    * @return mixed Результат удаления
+    * @throws Exception Если поле не поддерживает удаление
+    */
     public function handleFileDelete($fieldType, $currentValue, $config = []) {
         $field = $this->getFieldInstance($fieldType, $config);
         if (!$field || !method_exists($field, 'handleDelete')) {
@@ -845,11 +826,10 @@ class FieldManager {
     }
 
     /**
-     * Получает поля для отображения в записи
-     *
-     * @param string $entityType Тип сущности
-     * @return array Массив полей
-     */
+    * Получает поля для отображения в записи
+    * @param string $entityType Тип сущности
+    * @return array Массив полей
+    */
     public function getFieldsForPostDisplay($entityType) {
         $fieldModel = new Field($this->db);
         $fields = $fieldModel->getActiveByEntityType($entityType);
@@ -860,11 +840,10 @@ class FieldManager {
     }
 
     /**
-     * Получает поля для отображения в списке
-     *
-     * @param string $entityType Тип сущности
-     * @return array Массив полей
-     */
+    * Получает поля для отображения в списке
+    * @param string $entityType Тип сущности
+    * @return array Массив полей
+    */
     public function getFieldsForListDisplay($entityType) {
         $fieldModel = new Field($this->db);
         $fields = $fieldModel->getActiveByEntityType($entityType);

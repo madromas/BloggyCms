@@ -1,33 +1,26 @@
 <?php
 
 /**
- * Класс для множественной загрузки и управления файлами
- * Поддерживает загрузку нескольких файлов одновременно, удаление,
- * валидацию типов и размеров, а также работу с изображениями
- * 
- * @package Core
- */
+* Класс для множественной загрузки и управления файлами 
+* @package Core
+*/
 class FilesUpload {
     
     /**
-     * Загружает несколько файлов в указанную директорию
-     * Обрабатывает как единичные файлы, так и множественные загрузки
-     * 
-     * @param array $files Массив файлов из $_FILES
-     * @param string $uploadDir Директория для загрузки
-     * @param array $allowedTypes Разрешенные расширения (например ['jpg', 'png'])
-     * @param int $maxSize Максимальный размер в КБ (по умолчанию 5120 = 5MB)
-     * @return array Массив результатов для каждого файла
-     */
+    * Загружает несколько файлов в указанную директорию 
+    * @param array $files Массив файлов из $_FILES
+    * @param string $uploadDir Директория для загрузки
+    * @param array $allowedTypes Разрешенные расширения (например ['jpg', 'png'])
+    * @param int $maxSize Максимальный размер в КБ (по умолчанию 5120 = 5MB)
+    * @return array Массив результатов для каждого файла
+    */
     public static function uploadMultiple($files, $uploadDir, $allowedTypes = [], $maxSize = 5120) {
         $results = [];
         
-        // Если передан один файл, преобразуем в массив для единообразия
         if (!isset($files['name']) || !is_array($files['name'])) {
             $files = self::normalizeFilesArray($files);
         }
         
-        // Обработка каждого файла
         for ($i = 0; $i < count($files['name']); $i++) {
             if ($files['error'][$i] !== UPLOAD_ERR_OK) {
                 $results[] = [
@@ -38,7 +31,6 @@ class FilesUpload {
                 continue;
             }
             
-            // Проверка размера файла
             if ($files['size'][$i] > $maxSize * 1024) {
                 $results[] = [
                     'success' => false,
@@ -48,7 +40,6 @@ class FilesUpload {
                 continue;
             }
             
-            // Проверка типа файла по расширению
             $fileExtension = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
             if (!empty($allowedTypes) && !in_array($fileExtension, $allowedTypes)) {
                 $results[] = [
@@ -59,16 +50,13 @@ class FilesUpload {
                 continue;
             }
             
-            // Создание директории если не существует
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
             
-            // Генерация уникального имени файла
             $fileName = uniqid() . '_' . self::sanitizeFileName($files['name'][$i]);
             $targetPath = $uploadDir . '/' . $fileName;
             
-            // Перемещение файла
             if (!move_uploaded_file($files['tmp_name'][$i], $targetPath)) {
                 $results[] = [
                     'success' => false,
@@ -92,21 +80,18 @@ class FilesUpload {
     }
     
     /**
-     * Загружает несколько изображений для блока галереи
-     * Специализированный метод с предустановленными параметрами
-     * 
-     * @param array $files Массив файлов из $_FILES
-     * @param string $subfolder Подпапка внутри images/
-     * @return array Массив результатов с добавленными URL
-     */
+    * Загружает несколько изображений для блока галереи
+    * @param array $files Массив файлов из $_FILES
+    * @param string $subfolder Подпапка внутри images/
+    * @return array Массив результатов с добавленными URL
+    */
     public static function uploadGalleryImages($files, $subfolder = 'gallery') {
         $uploadDir = UPLOADS_PATH . '/images/' . $subfolder;
         $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $maxSize = 5120; // 5MB
+        $maxSize = 5120;
         
         $results = self::uploadMultiple($files, $uploadDir, $allowedTypes, $maxSize);
         
-        // Добавление URL к успешным загрузкам
         foreach ($results as &$result) {
             if ($result['success']) {
                 $result['url'] = $subfolder . '/' . $result['file_name'];
@@ -117,12 +102,10 @@ class FilesUpload {
     }
     
     /**
-     * Нормализует массив файлов для единообразной обработки
-     * Преобразует структуру $_FILES в удобный для итерации формат
-     * 
-     * @param array $files Исходный массив файлов
-     * @return array Нормализованный массив
-     */
+    * Нормализует массив файлов для единообразной обработки 
+    * @param array $files Исходный массив файлов
+    * @return array Нормализованный массив
+    */
     private static function normalizeFilesArray($files) {
         $normalized = [];
         
@@ -136,7 +119,6 @@ class FilesUpload {
             $normalized[] = $files;
         }
         
-        // Преобразование обратно в формат с раздельными массивами
         $result = ['name' => [], 'type' => [], 'tmp_name' => [], 'error' => [], 'size' => []];
         
         foreach ($normalized as $file) {
@@ -151,11 +133,10 @@ class FilesUpload {
     }
     
     /**
-     * Удаляет несколько файлов по списку путей
-     * 
-     * @param array $filePaths Массив путей к файлам
-     * @return array Массив результатов удаления
-     */
+    * Удаляет несколько файлов по списку путей
+    * @param array $filePaths Массив путей к файлам
+    * @return array Массив результатов удаления
+    */
     public static function deleteMultiple($filePaths) {
         $results = [];
         
@@ -178,11 +159,10 @@ class FilesUpload {
     }
     
     /**
-     * Удаляет изображения галереи по именам файлов
-     * 
-     * @param array $fileNames Массив имен файлов в папке gallery
-     * @return array Массив результатов удаления
-     */
+    * Удаляет изображения галереи по именам файлов 
+    * @param array $fileNames Массив имен файлов в папке gallery
+    * @return array Массив результатов удаления
+    */
     public static function deleteGalleryImages($fileNames) {
         $results = [];
         
@@ -195,11 +175,10 @@ class FilesUpload {
     }
     
     /**
-     * Удаляет один файл (совместимость с FileUpload)
-     * 
-     * @param string $filePath Путь к файлу
-     * @return bool true при успешном удалении
-     */
+    * Удаляет один файл (совместимость с FileUpload) 
+    * @param string $filePath Путь к файлу
+    * @return bool true при успешном удалении
+    */
     public static function delete($filePath) {
         if (file_exists($filePath) && is_file($filePath)) {
             return unlink($filePath);
@@ -208,23 +187,20 @@ class FilesUpload {
     }
     
     /**
-     * Очищает имя файла от небезопасных символов
-     * Заменяет все кроме букв, цифр, точек, дефисов и подчеркиваний на '_'
-     * 
-     * @param string $fileName Исходное имя файла
-     * @return string Очищенное имя файла
-     */
+    * Очищает имя файла от небезопасных символов
+    * @param string $fileName Исходное имя файла
+    * @return string Очищенное имя файла
+    */
     private static function sanitizeFileName($fileName) {
         $fileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
         return preg_replace('/_{2,}/', '_', $fileName);
     }
     
     /**
-     * Возвращает текстовое описание ошибки загрузки по коду
-     * 
-     * @param int $errorCode Код ошибки из $_FILES
-     * @return string Описание ошибки
-     */
+    * Возвращает текстовое описание ошибки загрузки по коду 
+    * @param int $errorCode Код ошибки из $_FILES
+    * @return string Описание ошибки
+    */
     private static function getUploadError($errorCode) {
         $errors = [
             UPLOAD_ERR_INI_SIZE => 'Файл превышает максимальный размер',
@@ -240,11 +216,10 @@ class FilesUpload {
     }
     
     /**
-     * Проверяет, является ли файл изображением по MIME-типу
-     * 
-     * @param string $filePath Путь к файлу
-     * @return bool true если файл является изображением
-     */
+    * Проверяет, является ли файл изображением по MIME-типу
+    * @param string $filePath Путь к файлу
+    * @return bool true если файл является изображением
+    */
     public static function isImage($filePath) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -255,11 +230,10 @@ class FilesUpload {
     }
     
     /**
-     * Получает размеры изображения
-     * 
-     * @param string $filePath Путь к файлу
-     * @return array|null Массив с шириной, высотой и MIME-типом или null
-     */
+    * Получает размеры изображения 
+    * @param string $filePath Путь к файлу
+    * @return array|null Массив с шириной, высотой и MIME-типом или null
+    */
     public static function getImageDimensions($filePath) {
         if (!self::isImage($filePath)) {
             return null;
