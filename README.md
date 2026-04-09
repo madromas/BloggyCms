@@ -84,8 +84,8 @@ BloggyCMS — это гибкая и расширяемая платформа, 
 ## 🔗 Ссылки
 
 - [🌐 Официальный сайт проекта](https://bloggy.su)
-- [📘 Документация](https://github.com/pechora/BloggyCms/wiki)
-- [🐛 Сообщить об ошибке](https://github.com/pechora/BloggyCms/tasktracker)
+- [📘 Документация](https://github.com/pechoradev/BloggyCms/wiki)
+- [🐛 Сообщить об ошибке](https://github.com/pechoradev/BloggyCms/tasktracker)
 - [📦 Скачать](https://github.com/pechora/BloggyCms/releases)
 
 ---
