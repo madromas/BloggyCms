@@ -948,7 +948,7 @@ a:hover {
 .form-control, .tg-input {
   display: block;
   width: 100%;
-  padding: 12px;
+  padding: 12px 12px 12px 40px;
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--tg-text);
