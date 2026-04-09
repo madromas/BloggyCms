@@ -63,12 +63,6 @@ class FragmentModel implements ModelAPI {
         $fragment = $this->db->fetch($sql, [$id]);
         
         if ($fragment) {
-            if (isset($fragment['fields_config']) && is_string($fragment['fields_config'])) {
-                $decoded = json_decode($fragment['fields_config'], true);
-                $fragment['fields_config'] = is_array($decoded) ? $decoded : [];
-            } elseif (!isset($fragment['fields_config'])) {
-                $fragment['fields_config'] = [];
-            }
             
             if (isset($fragment['css_files']) && is_string($fragment['css_files'])) {
                 $decoded = json_decode($fragment['css_files'], true);
@@ -117,8 +111,8 @@ class FragmentModel implements ModelAPI {
         
         $sql = "INSERT INTO `{$this->tableName}` (
             system_name, name, description, css_files, js_files, 
-            inline_css, inline_js, fields_config, status, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            inline_css, inline_js, status, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $result = $this->db->query($sql, [
             $data['system_name'] ?? '',
@@ -128,7 +122,6 @@ class FragmentModel implements ModelAPI {
             $data['js_files'] ?? null,
             $data['inline_css'] ?? '',
             $data['inline_js'] ?? '',
-            $data['fields_config'] ?? null,
             $data['status'] ?? 'active',
             $data['created_at'],
             $data['updated_at']
@@ -156,7 +149,6 @@ class FragmentModel implements ModelAPI {
             js_files = ?,
             inline_css = ?,
             inline_js = ?,
-            fields_config = ?,
             status = ?,
             updated_at = ?
         WHERE id = ?";
@@ -169,7 +161,6 @@ class FragmentModel implements ModelAPI {
             $data['js_files'] ?? null,
             $data['inline_css'] ?? '',
             $data['inline_js'] ?? '',
-            $data['fields_config'] ?? null,
             $data['status'] ?? 'active',
             $data['updated_at'],
             $id
@@ -193,7 +184,7 @@ class FragmentModel implements ModelAPI {
     * @param string $systemName
     * @param int|null $excludeId
     * @return bool
-*/
+    */
     public function isSystemNameExists($systemName, $excludeId = null) {
         $sql = "SELECT COUNT(*) as count FROM `{$this->tableName}` WHERE system_name = ?";
         $params = [$systemName];
@@ -248,19 +239,7 @@ class FragmentModel implements ModelAPI {
             return false;
         }
         
-        $updateData = [
-            'system_name' => $fragment['system_name'],
-            'name' => $fragment['name'],
-            'description' => $fragment['description'] ?? '',
-            'css_files' => $fragment['css_files'] ?? [],
-            'js_files' => $fragment['js_files'] ?? [],
-            'inline_css' => $fragment['inline_css'] ?? '',
-            'inline_js' => $fragment['inline_js'] ?? '',
-            'status' => $fragment['status'] ?? 'active',
-            'fields_config' => $fields
-        ];
-        
-        return $this->update($fragmentId, $updateData);
+        return true;
     }
     
     /**
@@ -305,10 +284,6 @@ class FragmentModel implements ModelAPI {
             $data['js_files'] = json_encode($data['js_files'], JSON_UNESCAPED_UNICODE);
         }
         
-        if (isset($data['fields_config']) && is_array($data['fields_config'])) {
-            $data['fields_config'] = json_encode($data['fields_config'], JSON_UNESCAPED_UNICODE);
-        }
-        
         return $data;
     }
     
@@ -329,13 +304,6 @@ class FragmentModel implements ModelAPI {
             $data['js_files'] = is_array($decoded) ? $decoded : [];
         } elseif (!isset($data['js_files'])) {
             $data['js_files'] = [];
-        }
-        
-        if (isset($data['fields_config']) && is_string($data['fields_config']) && !empty($data['fields_config'])) {
-            $decoded = json_decode($data['fields_config'], true);
-            $data['fields_config'] = is_array($decoded) ? $decoded : [];
-        } elseif (!isset($data['fields_config'])) {
-            $data['fields_config'] = [];
         }
     }
 
