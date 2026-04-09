@@ -718,7 +718,7 @@ CREATE TABLE `{#}fragment_entries` (
 --
 -- Структура таблицы `{#}fragments_fields`
 --
-CREATE TABLE IF NOT EXISTS `fragments_fields` (
+CREATE TABLE IF NOT EXISTS `{#}fragments_fields` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `fragment_id` int(11) NOT NULL,
     `system_name` varchar(100) NOT NULL,

@@ -161,10 +161,10 @@
                                             <code class="text-muted"><?php echo html($field['system_name']); ?></code>
                                         </td>
                                         <td>
-                                            <span class="badge bg-secondary"><?php echo get_field_type_name($field['type']); ?></span>
+                                            <span class="badge bg-secondary"><?php echo $field['type']; ?></span>
                                         </td>
                                         <td>
-                                            <?php echo get_entity_name($field['entity_type']); ?>
+                                            <?php echo $field['entity_type']; ?>
                                         </td>
                                         <td>
                                             <span class="badge bg-<?php echo $field['is_active'] ? 'success' : 'danger'; ?>">
