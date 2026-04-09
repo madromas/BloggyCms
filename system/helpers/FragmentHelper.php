@@ -26,11 +26,6 @@ class FragmentHelper {
     private static $registered = false;
     
     /**
-    * @var bool Флаг, что отложенная регистрация запланирована
-    */
-    private static $scheduled = false;
-    
-    /**
     * Инициализация
     */
     private static function init() {
@@ -44,7 +39,6 @@ class FragmentHelper {
     
     /**
     * Регистрация шорткодов фрагментов
-    * Если модели еще не загружены, откладываем регистрацию
     */
     public static function registerShortcodes() {
         if (!class_exists('ShortcodeRegistry')) {
@@ -67,21 +61,18 @@ class FragmentHelper {
         
         foreach ($fragments as $fragment) {
             $systemName = $fragment['system_name'];
-
-            ShortcodeRegistry::add($systemName, function($attrs) use ($systemName) {
+            
+            ShortcodeRegistry::add('fragment:' . $systemName, function($attrs) use ($systemName) {
                 return self::renderFragment($systemName);
             });
             
-            ShortcodeRegistry::add($systemName, function($attrs, $content = null) use ($systemName) {
-                if ($content !== null) {
-                    return self::renderFragmentLoop($systemName, $content);
-                }
+            ShortcodeRegistry::add($systemName, function($attrs) use ($systemName) {
                 return self::renderFragment($systemName);
             });
             
             ShortcodeRegistry::add('ctype:' . $systemName, function($attrs, $content = null) use ($systemName) {
                 if ($content !== null) {
-                    return self::renderFragmentLoop($systemName, $content);
+                    return self::renderFragmentWithTemplate($systemName, $content);
                 }
                 return self::renderFragment($systemName);
             });
@@ -91,24 +82,63 @@ class FragmentHelper {
     }
     
     /**
-    * Планирует отложенную регистрацию шорткодов через событие app.init
+    * Рендеринг фрагмента с кастомным шаблоном (без цикла!)
+    * 
+    * @param string $systemName
+    * @param string $template
+    * @return string
     */
-    private static function scheduleDelayedRegistration() {
-        if (self::$scheduled) {
-            return;
+    public static function renderFragmentWithTemplate($systemName, $template) {
+        self::init();
+        
+        $fragment = self::$fragmentModel->getBySystemName($systemName);
+        
+        if (!$fragment || $fragment['status'] !== 'active') {
+            return '<!-- Фрагмент "' . htmlspecialchars($systemName) . '" не найден -->';
         }
         
-        self::$scheduled = true;
+        $entries = self::$entryModel->getByFragment($fragment['id']);
         
-        if (class_exists('Event')) {
-            Event::listen('app.init', function() {
-                self::registerShortcodes();
-            }, 100);
+        if (empty($entries)) {
+            return '<!-- Нет записей во фрагменте "' . htmlspecialchars($systemName) . '" -->';
         }
+        
+        $output = '';
+        $index = 0;
+        $total = count($entries);
+        
+        foreach ($entries as $entry) {
+            $index++;
+            $itemOutput = $template;
+            
+            $itemOutput = str_replace('{index}', $index, $itemOutput);
+            $itemOutput = str_replace('{total}', $total, $itemOutput);
+            $itemOutput = str_replace('{is_first}', $index === 1 ? 'true' : 'false', $itemOutput);
+            $itemOutput = str_replace('{is_last}', $index === $total ? 'true' : 'false', $itemOutput);
+            $itemOutput = str_replace('{is_even}', $index % 2 === 0 ? 'true' : 'false', $itemOutput);
+            $itemOutput = str_replace('{is_odd}', $index % 2 !== 0 ? 'true' : 'false', $itemOutput);
+            
+            $fields = self::$fragmentModel->getFields($fragment['id']);
+            
+            foreach ($fields as $field) {
+                $fieldName = $field['system_name'];
+                $value = $entry['data'][$fieldName] ?? '';
+                
+                $placeholder = '{field:' . $fieldName . '}';
+                $displayPlaceholder = '{field_display:' . $fieldName . '}';
+                
+                $itemOutput = str_replace($placeholder, htmlspecialchars($value), $itemOutput);
+                $itemOutput = str_replace($displayPlaceholder, self::renderFieldValue($field, $value), $itemOutput);
+            }
+            
+            $output .= $itemOutput;
+        }
+        
+        return $output;
     }
     
     /**
-    * Рендеринг фрагмента
+    * Рендеринг фрагмента (простой вывод)
     * 
     * @param string $systemName
     * @return string
@@ -127,63 +157,16 @@ class FragmentHelper {
         $entries = self::$entryModel->getByFragment($fragment['id']);
         $fields = self::$fragmentModel->getFields($fragment['id']);
         
-        ob_start();
-        self::renderFragmentContent($fragment, $entries, $fields);
-        return ob_get_clean();
-    }
-    
-    /**
-    * Рендеринг цикла фрагмента 
-    * @param string $systemName
-    * @param string $template
-    * @return string
-    */
-    public static function renderFragmentLoop($systemName, $template) {
-        self::init();
+        $templateFile = self::findFragmentTemplate($fragment['system_name']);
         
-        $fragment = self::$fragmentModel->getBySystemName($systemName);
-        
-        if (!$fragment || $fragment['status'] !== 'active') {
-            return '<!-- Фрагмент "' . htmlspecialchars($systemName) . '" не найден -->';
+        if ($templateFile && file_exists($templateFile)) {
+            ob_start();
+            extract(['fragment' => $fragment, 'entries' => $entries, 'fields' => $fields]);
+            include $templateFile;
+            return ob_get_clean();
+        } else {
+            return self::renderDefault($fragment, $entries, $fields);
         }
-        
-        $entries = self::$entryModel->getByFragment($fragment['id']);
-        $fields = self::$fragmentModel->getFields($fragment['id']);
-        
-        if (empty($entries)) {
-            return '';
-        }
-        
-        $output = '';
-        $index = 0;
-        $total = count($entries);
-        
-        foreach ($entries as $entry) {
-            $index++;
-            $itemOutput = $template;
-            
-            $itemOutput = str_replace('{index}', $index, $itemOutput);
-            $itemOutput = str_replace('{total}', $total, $itemOutput);
-            $itemOutput = str_replace('{is_first}', $index === 1 ? 'true' : 'false', $itemOutput);
-            $itemOutput = str_replace('{is_last}', $index === $total ? 'true' : 'false', $itemOutput);
-            $itemOutput = str_replace('{is_even}', $index % 2 === 0 ? 'true' : 'false', $itemOutput);
-            $itemOutput = str_replace('{is_odd}', $index % 2 !== 0 ? 'true' : 'false', $itemOutput);
-            
-            foreach ($fields as $field) {
-                $fieldName = $field['system_name'];
-                $value = $entry['data'][$fieldName] ?? '';
-                
-                $placeholder = '{field:' . $fieldName . '}';
-                $displayPlaceholder = '{field_display:' . $fieldName . '}';
-                
-                $itemOutput = str_replace($placeholder, htmlspecialchars($value), $itemOutput);
-                $itemOutput = str_replace($displayPlaceholder, self::renderFieldValue($field, $value), $itemOutput);
-            }
-            
-            $output .= $itemOutput;
-        }
-        
-        return $output;
     }
     
     /**
@@ -217,13 +200,36 @@ class FragmentHelper {
     }
     
     /**
-     * Рендеринг контента фрагмента
-     * 
-     * @param array $fragment
-     * @param array $entries
-     * @param array $fields
-     */
-    private static function renderFragmentContent($fragment, $entries, $fields) {
+    * Поиск шаблона фрагмента в теме
+    * @param string $systemName
+    * @return string|null
+    */
+    private static function findFragmentTemplate($systemName) {
+        $currentTheme = defined('DEFAULT_TEMPLATE') ? DEFAULT_TEMPLATE : 'default';
+        
+        $paths = [
+            BASE_PATH . "/templates/{$currentTheme}/front/fragments/{$systemName}.php",
+            BASE_PATH . "/templates/default/front/fragments/{$systemName}.php"
+        ];
+        
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+    * Стандартный рендеринг фрагмента
+    * @param array $fragment
+    * @param array $entries
+    * @param array $fields
+    * @return string
+    */
+    private static function renderDefault($fragment, $entries, $fields) {
+        ob_start();
         ?>
         <div class="fragment fragment-<?php echo htmlspecialchars($fragment['system_name']); ?>">
             <?php if (!empty($fragment['description'])) { ?>
@@ -238,7 +244,7 @@ class FragmentHelper {
                 </div>
             <?php } else { ?>
                 <div class="fragment-entries">
-                    <?php foreach ($entries as $index => $entry) { ?>
+                    <?php foreach ($entries as $entry) { ?>
                         <div class="fragment-entry">
                             <?php foreach ($fields as $field) { ?>
                                 <?php $value = $entry['data'][$field['system_name']] ?? null; ?>
@@ -257,11 +263,11 @@ class FragmentHelper {
             <?php } ?>
         </div>
         <?php
+        return ob_get_clean();
     }
     
     /**
     * Рендеринг значения поля
-    * 
     * @param array $field
     * @param mixed $value
     * @return string
@@ -275,5 +281,23 @@ class FragmentHelper {
             0
         );
     }
-
+    
+    /**
+    * Планирует отложенную регистрацию шорткодов
+    */
+    private static function scheduleDelayedRegistration() {
+        static $scheduled = false;
+        
+        if ($scheduled) {
+            return;
+        }
+        
+        $scheduled = true;
+        
+        if (class_exists('Event')) {
+            Event::listen('app.init', function() {
+                self::registerShortcodes();
+            }, 100);
+        }
+    }
 }

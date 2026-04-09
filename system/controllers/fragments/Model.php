@@ -213,12 +213,23 @@ class FragmentModel implements ModelAPI {
     * @return array
     */
     public function getFields($fragmentId) {
-        $fragment = $this->getById($fragmentId);
-        if (!$fragment || empty($fragment['fields_config'])) {
-            return [];
+        $fieldsTable = $this->getFieldsTableName();
+        
+        $fields = $this->db->fetchAll(
+            "SELECT * FROM `{$fieldsTable}` WHERE fragment_id = ? AND is_active = 1 ORDER BY sort_order ASC",
+            [$fragmentId]
+        );
+        
+        foreach ($fields as &$field) {
+            if ($field['config']) {
+                $decoded = json_decode($field['config'], true);
+                $field['config'] = is_array($decoded) ? $decoded : [];
+            } else {
+                $field['config'] = [];
+            }
         }
-
-        return is_array($fragment['fields_config']) ? $fragment['fields_config'] : [];
+        
+        return $fields;
     }
 
     public function getTableName() {
@@ -327,4 +338,179 @@ class FragmentModel implements ModelAPI {
             $data['fields_config'] = [];
         }
     }
+
+    /**
+    * Получение имени таблицы полей
+    * @return string
+    */
+    public function getFieldsTableName() {
+        return $this->db->getPrefix() . 'fragments_fields';
+    }
+
+    /**
+    * Получение полей фрагмента с пагинацией
+    * @param int $fragmentId
+    * @param int $page
+    * @param int $perPage
+    * @return array
+    */
+    public function getFieldsPaginated($fragmentId, $page = 1, $perPage = 20) {
+        $offset = ($page - 1) * $perPage;
+        $fieldsTable = $this->getFieldsTableName();
+        
+        $sql = "SELECT * FROM `{$fieldsTable}` WHERE fragment_id = ? ORDER BY sort_order ASC LIMIT ? OFFSET ?";
+        $fields = $this->db->fetchAll($sql, [$fragmentId, $perPage, $offset]);
+        
+        $totalSql = "SELECT COUNT(*) as count FROM `{$fieldsTable}` WHERE fragment_id = ?";
+        $totalResult = $this->db->fetch($totalSql, [$fragmentId]);
+        
+        foreach ($fields as &$field) {
+            if ($field['config']) {
+                $decoded = json_decode($field['config'], true);
+                $field['config'] = is_array($decoded) ? $decoded : [];
+            } else {
+                $field['config'] = [];
+            }
+        }
+        
+        return [
+            'fields' => $fields,
+            'total' => $totalResult['count'] ?? 0,
+            'pages' => ceil(($totalResult['count'] ?? 0) / $perPage),
+            'current_page' => $page
+        ];
+    }
+
+    /**
+    * Получение поля по ID
+    * @param int $fieldId
+    * @return array|null
+    */
+    public function getFieldById($fieldId) {
+        $fieldsTable = $this->getFieldsTableName();
+        $sql = "SELECT * FROM `{$fieldsTable}` WHERE id = ?";
+        $field = $this->db->fetch($sql, [$fieldId]);
+        
+        if ($field && $field['config']) {
+            $decoded = json_decode($field['config'], true);
+            $field['config'] = is_array($decoded) ? $decoded : [];
+        }
+        
+        return $field;
+    }
+
+    /**
+    * Создание поля фрагмента
+    * @param int $fragmentId
+    * @param array $data
+    * @return int
+    */
+    public function createField($fragmentId, $data) {
+        $fieldsTable = $this->getFieldsTableName();
+        $config = json_encode($data['config'] ?? [], JSON_UNESCAPED_UNICODE);
+        
+        $sql = "INSERT INTO `{$fieldsTable}` (
+            fragment_id, system_name, name, type, description, is_required, 
+            is_active, show_in_list, sort_order, config
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $this->db->query($sql, [
+            $fragmentId,
+            $data['system_name'],
+            $data['name'],
+            $data['type'],
+            $data['description'] ?? '',
+            $data['is_required'] ?? 0,
+            $data['is_active'] ?? 1,
+            $data['show_in_list'] ?? 0,
+            $data['sort_order'] ?? 0,
+            $config
+        ]);
+        
+        return $this->db->lastInsertId();
+    }
+
+    /**
+    * Обновление поля фрагмента
+    * @param int $fieldId
+    * @param array $data
+    * @return bool
+    */
+    public function updateField($fieldId, $data) {
+        $fieldsTable = $this->getFieldsTableName();
+        $config = json_encode($data['config'] ?? [], JSON_UNESCAPED_UNICODE);
+        
+        $sql = "UPDATE `{$fieldsTable}` SET 
+            system_name = ?,
+            name = ?,
+            type = ?,
+            description = ?,
+            is_required = ?,
+            is_active = ?,
+            show_in_list = ?,
+            config = ?
+        WHERE id = ?";
+        
+        return $this->db->query($sql, [
+            $data['system_name'],
+            $data['name'],
+            $data['type'],
+            $data['description'] ?? '',
+            $data['is_required'] ?? 0,
+            $data['is_active'] ?? 1,
+            $data['show_in_list'] ?? 0,
+            $config,
+            $fieldId
+        ]);
+    }
+
+    /**
+    * Удаление поля фрагмента
+    * @param int $fieldId
+    * @return bool
+    */
+    public function deleteField($fieldId) {
+        $fieldsTable = $this->getFieldsTableName();
+        $sql = "DELETE FROM `{$fieldsTable}` WHERE id = ?";
+        return $this->db->query($sql, [$fieldId]);
+    }
+
+    /**
+    * Обновление порядка полей
+    * @param array $order
+    * @return bool
+    */
+    public function reorderFields($order) {
+        $fieldsTable = $this->getFieldsTableName();
+        $success = true;
+        foreach ($order as $item) {
+            $sql = "UPDATE `{$fieldsTable}` SET sort_order = ? WHERE id = ?";
+            $result = $this->db->query($sql, [$item['order'], $item['id']]);
+            if (!$result) $success = false;
+        }
+        return $success;
+    }
+
+    /**
+    * Проверка существования системного имени поля
+    * @param int $fragmentId
+    * @param string $systemName
+    * @param int|null $excludeId
+    * @return bool
+    */
+    public function isFieldSystemNameExists($fragmentId, $systemName, $excludeId = null) {
+        $fieldsTable = $this->getFieldsTableName();
+        $sql = "SELECT COUNT(*) as count FROM `{$fieldsTable}` 
+                WHERE fragment_id = ? AND system_name = ?";
+        $params = [$fragmentId, $systemName];
+        
+        if ($excludeId) {
+            $sql .= " AND id != ?";
+            $params[] = $excludeId;
+        }
+        
+        $result = $this->db->fetch($sql, $params);
+        return $result['count'] > 0;
+    }
+
 }

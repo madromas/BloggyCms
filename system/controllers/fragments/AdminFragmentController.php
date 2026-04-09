@@ -132,4 +132,44 @@ class AdminFragmentController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
+
+    /**
+    * Создание поля фрагмента
+    * @param int $fragment_id
+    */
+    public function fieldCreateAction($fragment_id) {
+        $action = new \fragments\actions\AdminFieldCreate($this->db, ['fragment_id' => $fragment_id]);
+        $action->setController($this);
+        return $action->execute();
+    }
+
+    /**
+    * Редактирование поля фрагмента
+    * @param int $id
+    */
+    public function fieldEditAction($id) {
+        $action = new \fragments\actions\AdminFieldEdit($this->db, ['id' => $id]);
+        $action->setController($this);
+        return $action->execute();
+    }
+
+    /**
+    * Удаление поля фрагмента
+    * @param int $id
+    */
+    public function fieldDeleteAction($id) {
+        $action = new \fragments\actions\AdminFieldDelete($this->db, ['id' => $id]);
+        $action->setController($this);
+        return $action->execute();
+    }
+
+    /**
+    * Сортировка полей (AJAX)
+    */
+    public function fieldReorderAction() {
+        $action = new \fragments\actions\AdminFieldReorder($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
+
 }
