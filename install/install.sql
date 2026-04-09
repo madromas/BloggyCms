@@ -691,13 +691,12 @@ CREATE TABLE `{#}fragments` (
     `js_files` text COMMENT 'JS файлы (JSON)',
     `inline_css` text COMMENT 'Инлайн CSS',
     `inline_js` text COMMENT 'Инлайн JS',
-    `fields_config` text COMMENT 'Конфигурация полей (JSON)',
     `status` enum('active','inactive') DEFAULT 'active',
     `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
     `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     UNIQUE KEY `system_name` (`system_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 -- --------------------------------------------------------
 
 --
@@ -714,9 +713,29 @@ CREATE TABLE `{#}fragment_entries` (
     PRIMARY KEY (`id`),
     KEY `fragment_id` (`fragment_id`),
     KEY `sort_order` (`sort_order`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
+--
+-- Структура таблицы `{#}fragments_fields`
+--
+CREATE TABLE IF NOT EXISTS `fragments_fields` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `fragment_id` int(11) NOT NULL,
+    `system_name` varchar(100) NOT NULL,
+    `name` varchar(255) NOT NULL,
+    `type` varchar(50) NOT NULL DEFAULT 'string',
+    `description` text,
+    `is_required` tinyint(1) NOT NULL DEFAULT 0,
+    `is_active` tinyint(1) NOT NULL DEFAULT 1,
+    `show_in_list` tinyint(1) NOT NULL DEFAULT 0,
+    `sort_order` int(11) NOT NULL DEFAULT 0,
+    `config` text,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `fragment_id` (`fragment_id`),
+    UNIQUE KEY `unique_system_name_per_fragment` (`fragment_id`, `system_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Структура таблицы `{#}queue_tasks`
