@@ -948,7 +948,7 @@ a:hover {
 .form-control, .tg-input {
   display: block;
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: 12px 30px;
   font-size: 0.95rem;
   line-height: 1.5;
   color: var(--tg-text);
@@ -2741,6 +2741,9 @@ a:hover {
 .tg-achievement-image {
   width: 120px;
   height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--tg-shadow);
 }
 
 .tg-achievement-icon-placeholder {
@@ -3482,20 +3485,6 @@ a:hover {
     box-sizing: border-box;
 }
 
-.tg-category-icon,
-.tg-category-icon-wrapper {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--tg-surface);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--tg-primary);
-  overflow: hidden;
-}
-
 .tg-category-icon img,
 .tg-category-image {
   width: 100%;
@@ -3514,14 +3503,8 @@ a:hover {
 }
 
 .tg-category-name {
-  display: block;
   font-size: 14px;
-  font-weight: 500;
   color: var(--tg-text);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .tg-category-meta {
@@ -3639,15 +3622,7 @@ a:hover {
 }
 
 .tg-category-icon-large {
-  width: 80px;
-  height: 80px;
-  background: var(--tg-bg);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
+  height: 64px;
 }
 
 .tg-category-icon-large img {
@@ -6677,7 +6652,7 @@ a:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    text-align: center;
+
     color: #9ca3af;
     padding: 20px;
     color: #a0aec0;

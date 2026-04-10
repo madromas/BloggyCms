@@ -34,6 +34,23 @@ class AdminController extends Controller {
     }
 
     /**
+     * Проверка AJAX запроса
+     * @return bool
+     */
+    private function isAjaxRequest() {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
+            && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+    
+    /**
+     * Проверка прав администратора
+     * @return bool
+     */
+    private function checkAdminAccess() {
+        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
+    }
+
+    /**
     * Определяет текущее действие из URI
     * @return string Название текущего действия или пустая строка
     */
@@ -637,4 +654,101 @@ class AdminController extends Controller {
         }
         return false;
     }
+
+    /**
+    * Удаление папки install (AJAX)
+    */
+    public function deleteInstallFolderAction() {
+        header('Content-Type: application/json');
+        
+        if (!$this->checkAdminAccess()) {
+            echo json_encode(['success' => false, 'message' => 'Доступ запрещен']);
+            exit;
+        }
+        
+        if (!$this->isAjaxRequest()) {
+            echo json_encode(['success' => false, 'message' => 'Только AJAX запросы']);
+            exit;
+        }
+        
+        $installPath = dirname(dirname(__DIR__)) . '/install';
+        
+        if (!is_dir($installPath)) {
+            $installPath = ROOT_PATH . '/install';
+        }
+        if (!is_dir($installPath)) {
+            $installPath = __DIR__ . '/../../install';
+        }
+        if (!is_dir($installPath)) {
+            $installPath = BASE_PATH . '/install';
+        }
+        
+        error_log("[DEBUG] Trying to delete install folder at: " . $installPath);
+        
+        if (!is_dir($installPath)) {
+            echo json_encode(['success' => false, 'message' => 'Папка install не найдена по пути: ' . $installPath]);
+            exit;
+        }
+        
+        if (!is_writable(dirname($installPath))) {
+            echo json_encode(['success' => false, 'message' => 'Нет прав на запись в родительскую директорию. Обратитесь к хостеру.']);
+            exit;
+        }
+        
+        $result = $this->deleteDirectory($installPath);
+        
+        if ($result) {
+            $_SESSION['toast'] = [
+                'type' => 'success',
+                'message' => 'Папка install успешно удалена! Теперь твой сайт в безопасности.'
+            ];
+            echo json_encode(['success' => true, 'message' => 'Папка install удалена']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Не удалось удалить папку install. Проверьте права на запись.']);
+        }
+        exit;
+    }
+
+    /**
+    * Рекурсивное удаление директории с расширенной обработкой ошибок
+    * @param string $dir
+    * @return bool
+    */
+    private function deleteDirectory($dir) {
+        if (!file_exists($dir)) {
+            return true;
+        }
+        
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+        
+        $files = array_diff(scandir($dir), ['.', '..']);
+        
+        foreach ($files as $file) {
+            $path = $dir . '/' . $file;
+            
+            if (in_array($file, ['.htaccess', '.gitignore', 'index.html'])) {
+                @chmod($path, 0777);
+            }
+            
+            if (is_dir($path)) {
+                if (!$this->deleteDirectory($path)) {
+                    error_log("[DEBUG] Failed to delete directory: " . $path);
+                    return false;
+                }
+            } else {
+                @chmod($path, 0777);
+                if (!@unlink($path)) {
+                    error_log("[DEBUG] Failed to delete file: " . $path);
+                    return false;
+                }
+            }
+        }
+        
+        @chmod($dir, 0777);
+        
+        return @rmdir($dir);
+    }
+
 }

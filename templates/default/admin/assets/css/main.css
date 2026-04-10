@@ -4261,3 +4261,23 @@ h6.card-title {
 .custom-toast-debug .toast-close:hover {
     opacity: 1;
 }
+
+.install-alert {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+.install-alert .btn-close {
+    filter: brightness(0) invert(1);
+}
+.install-alert .btn-danger {
+    background-color: rgba(0,0,0,0.2);
+    border-color: rgba(255,255,255,0.3);
+}
+.install-alert .btn-danger:hover {
+    background-color: rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.5);
+}

@@ -10,5 +10,6 @@ return [
     'admin/templates/download-file' => ['controller' => 'Admin', 'action' => 'downloadFile', 'admin' => true],
     'admin/templates/upload-file' => ['controller' => 'Admin', 'action' => 'uploadFile', 'admin' => true],
     'admin/controllers' => ['controller' => 'Controllers', 'action' => 'adminIndex', 'admin' => true],
-    'admin/templates/create-front-folder' => ['controller' => 'Admin', 'action' => 'createFrontFolder', 'admin' => true]
+    'admin/templates/create-front-folder' => ['controller' => 'Admin', 'action' => 'createFrontFolder', 'admin' => true],
+    'admin/delete-install-folder' => ['controller' => 'Admin', 'action' => 'deleteInstallFolder', 'admin' => true]
 ];

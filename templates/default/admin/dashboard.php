@@ -29,6 +29,62 @@
         </div>
     </div>
 
+    <?php
+    $installPath = ROOT_PATH . '/install';
+    $installExists = is_dir($installPath);
+
+    if ($installExists) {
+        $days = 0;
+        $installDate = @filemtime($installPath);
+        if ($installDate) {
+            $days = floor((time() - $installDate) / 86400);
+        }
+        
+        $messages = [
+            '⚠️ Папка /install всё ещё здесь. Это как оставить ключи в машине с работающим двигателем.',
+            '🔴 Кто-то может переустановить твой сайт. Серьёзно, удали папку install.',
+            '🫣 Я стесняюсь об этом говорить, но /install всё ещё здесь.',
+            '💀 День ' . $days . ' без удаления install. Твоя безопасность на тонком льду.',
+            '🎯 Цель: удалить install. Прогресс: 0%. Нажми кнопку ниже.',
+            '🤡 Админ, который не удаляет install — это мем.',
+            '🚨 ВНИМАНИЕ! /install существует! Это не тест. УДАЛИ ЕЁ!',
+            '🔥 /install всё ещё здесь. Я не скажу, сколько раз напоминал. Но счётчик уже сбился.',
+            'Знаешь, где хранится папка install? Там же. Удали её, будь человеком.',
+            'Я бы мог молчать про install. Но я не буду. УДАЛИ ЕЁ!',
+            'Твоя папка install чувствует себя одиноко. Подари ей удаление.',
+            'Security Alert! Папка install существует! Это как оставить дверь в квартиру открытой.',
+            'Я не твоя мама, но удали папку install. Пожалуйста.',
+            '😈 Pssst... папка install всё там же. Хочешь, я никому не скажу? Ладно, скажу. УДАЛИ!',
+            '🎉 Поздравляю! Твой сайт в опасности уже ' . $days . ' дней. Удали install.',
+            '💀 Твоя безопасность покинула чат... потому что install всё там же.',
+        ];
+        
+        $randomMessage = $messages[array_rand($messages)];
+        ?>
+        
+        <div class="alert alert-danger alert-dismissible fade show install-alert" role="alert">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <?php echo bloggy_icon('bs', 'exclamation-triangle-fill', '28', '#fff'); ?>
+                    </div>
+                    <div>
+                        <strong class="fs-6">🚨 КРИТИЧЕСКАЯ УЯЗВИМОСТЬ!</strong><br>
+                        <span id="install-warning-message"><?php echo $randomMessage; ?></span>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-danger btn-sm" id="delete-install-folder-btn" style = "margin-right: 20px">
+                        <?php echo bloggy_icon('bs', 'trash', '16', '#fff', 'me-1'); ?>
+                        Удалить папку install
+                    </button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+        
+    <?php } ?>
+
     <div class="stats-grid">
         <?php if(SettingsHelper::get('controller_admin', 'all_posts') == true) { ?>
             <div class="stat-card stat-card-posts">
@@ -368,104 +424,147 @@
 
 <?php ob_start(); ?>
 <script>
-(function() {
-    const debugBtn = document.getElementById('debugToggleBtn');
-    if (!debugBtn) return;
-    
-    const bugIcon = debugBtn.querySelector('.bug-icon svg');
-    const statusDot = debugBtn.querySelector('.debug-status');
-    const currentState = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
-    
-    function showNotification(message, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = 'custom-toast-debug';
-        toast.innerHTML = `
-            <div class="toast-content">
-                <i class="bi ${isError ? 'bi-exclamation-triangle-fill' : 'bi-bug-fill'}" style="color: ${isError ? '#ffc107' : '#dc3545'}"></i>
-                <span>${message}</span>
-                <div class="toast-close">
-                    <i class="bi bi-x-lg"></i>
+    (function() {
+        const debugBtn = document.getElementById('debugToggleBtn');
+        if (!debugBtn) return;
+        
+        const bugIcon = debugBtn.querySelector('.bug-icon svg');
+        const statusDot = debugBtn.querySelector('.debug-status');
+        const currentState = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
+        
+        function showNotification(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast-debug';
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="bi ${isError ? 'bi-exclamation-triangle-fill' : 'bi-bug-fill'}" style="color: ${isError ? '#ffc107' : '#dc3545'}"></i>
+                    <span>${message}</span>
+                    <div class="toast-close">
+                        <i class="bi bi-x-lg"></i>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.remove();
+            });
+            
+            setTimeout(() => {
+                if (toast.parentNode) toast.remove();
+            }, 3000);
+        }
         
-        document.body.appendChild(toast);
-        
-        toast.querySelector('.toast-close').addEventListener('click', () => {
-            toast.remove();
-        });
-        
-        setTimeout(() => {
-            if (toast.parentNode) toast.remove();
-        }, 3000);
-    }
-    
-    function updateIconState(enabled) {
-        const svg = bugIcon;
-        if (svg) {
-            const paths = svg.querySelectorAll('path, circle, rect');
-            const newColor = enabled ? '#dc3545' : '#6c757d';
-            paths.forEach(path => {
-                path.setAttribute('fill', newColor);
-                if (path.hasAttribute('stroke')) {
-                    path.setAttribute('stroke', newColor);
+        function updateIconState(enabled) {
+            const svg = bugIcon;
+            if (svg) {
+                const paths = svg.querySelectorAll('path, circle, rect');
+                const newColor = enabled ? '#dc3545' : '#6c757d';
+                paths.forEach(path => {
+                    path.setAttribute('fill', newColor);
+                    if (path.hasAttribute('stroke')) {
+                        path.setAttribute('stroke', newColor);
+                    }
+                });
+            }
+            
+            if (statusDot) {
+                if (enabled) {
+                    statusDot.classList.add('active');
+                    statusDot.classList.add('pulse');
+                    setTimeout(() => statusDot.classList.remove('pulse'), 500);
+                } else {
+                    statusDot.classList.remove('active');
                 }
+            }
+        }
+        
+        function toggleDebugMode() {
+            const wasEnabled = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
+            
+            fetch(`${ADMIN_URL}/debug/toggle`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const isEnabled = data.debug_enabled;
+                    updateIconState(isEnabled);
+                    
+                    if (isEnabled) {
+                        showNotification('🐛 Режим отладки ВКЛЮЧЕН. Все ошибки будут сохраняться в лог.');
+                    } else {
+                        showNotification('Режим отладки ВЫКЛЮЧЕН. Логирование ошибок остановлено.');
+                    }
+                    
+                    const headerToggle = document.getElementById('headerDebugToggle');
+                    const pageToggle = document.getElementById('debugModeToggle');
+                    if (headerToggle) headerToggle.checked = isEnabled;
+                    if (pageToggle) pageToggle.checked = isEnabled;
+                } else {
+                    showNotification('Ошибка при переключении режима отладки: ' + (data.message || 'Неизвестная ошибка'), true);
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling debug mode:', error);
+                showNotification('Ошибка сети при переключении режима отладки', true);
             });
         }
         
-        if (statusDot) {
-            if (enabled) {
-                statusDot.classList.add('active');
-                statusDot.classList.add('pulse');
-                setTimeout(() => statusDot.classList.remove('pulse'), 500);
-            } else {
-                statusDot.classList.remove('active');
-            }
-        }
-    }
-    
-    function toggleDebugMode() {
-        const wasEnabled = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
-        
-        fetch(`${ADMIN_URL}/debug/toggle`, {
-            method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const isEnabled = data.debug_enabled;
-                updateIconState(isEnabled);
-                
-                if (isEnabled) {
-                    showNotification('🐛 Режим отладки ВКЛЮЧЕН. Все ошибки будут сохраняться в лог.');
-                } else {
-                    showNotification('Режим отладки ВЫКЛЮЧЕН. Логирование ошибок остановлено.');
-                }
-                
-                const headerToggle = document.getElementById('headerDebugToggle');
-                const pageToggle = document.getElementById('debugModeToggle');
-                if (headerToggle) headerToggle.checked = isEnabled;
-                if (pageToggle) pageToggle.checked = isEnabled;
-            } else {
-                showNotification('Ошибка при переключении режима отладки: ' + (data.message || 'Неизвестная ошибка'), true);
-            }
-        })
-        .catch(error => {
-            console.error('Error toggling debug mode:', error);
-            showNotification('Ошибка сети при переключении режима отладки', true);
+        debugBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleDebugMode();
         });
-    }
-    
-    debugBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        toggleDebugMode();
+        
+        debugBtn.addEventListener('mouseenter', function() {
+            const isEnabled = statusDot && statusDot.classList.contains('active');
+            debugBtn.title = isEnabled ? 'Режим отладки включен. Нажмите для выключения.' : 'Режим отладки выключен. Нажмите для включения.';
+        });
+    })();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteBtn = document.getElementById('delete-install-folder-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                if (confirm('Точно удалить папку install? После этого переустановить систему можно будет только вручную.')) {
+                    const btn = this;
+                    const originalHtml = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Удаление...';
+                    
+                    fetch(ADMIN_URL + '/delete-install-folder', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const alert = document.querySelector('.install-alert');
+                            if (alert) {
+                                alert.style.transition = 'opacity 0.5s';
+                                alert.style.opacity = '0';
+                                setTimeout(() => alert.remove(), 500);
+                            }
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            console.error(data.message);
+                            btn.disabled = false;
+                            btn.innerHTML = originalHtml;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        btn.disabled = false;
+                        btn.innerHTML = originalHtml;
+                    });
+                }
+            });
+        }
     });
-    
-    debugBtn.addEventListener('mouseenter', function() {
-        const isEnabled = statusDot && statusDot.classList.contains('active');
-        debugBtn.title = isEnabled ? 'Режим отладки включен. Нажмите для выключения.' : 'Режим отладки выключен. Нажмите для включения.';
-    });
-})();
 </script>
 <?php admin_bottom_js(ob_get_clean()); ?>
