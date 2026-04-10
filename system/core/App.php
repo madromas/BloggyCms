@@ -38,6 +38,9 @@ class App {
         
         $this->initFieldShortcodes();
         $this->loadControllerHooks();
+
+        $debugEnabled = SettingsHelper::get('general', 'debug_mode', false);
+        DebugHandler::init($debugEnabled, $this->db);
     }
 
     /**

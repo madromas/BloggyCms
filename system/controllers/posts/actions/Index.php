@@ -99,7 +99,12 @@ class Index extends PostAction {
                 }
                 
             } catch (\Exception $e) {
-}
+                DebugLogger::warning('Failed to get user groups in posts index', [
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
         
         $userGroups = array_unique($userGroups);

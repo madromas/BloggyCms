@@ -4150,3 +4150,114 @@ h6.card-title {
     color: #6c757d;
     padding: 0 8px;
 }
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.debug-icon-wrapper {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.debug-icon-wrapper:hover {
+    background: rgba(108, 117, 125, 0.1);
+    transform: scale(1.05);
+}
+
+.debug-icon-wrapper:active {
+    transform: scale(0.95);
+}
+
+.bug-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.debug-status {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+}
+
+.debug-status.active {
+    background-color: #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+@keyframes pulse-red {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.debug-status.active.pulse {
+    animation: pulse-red 0.5s ease-in-out;
+}
+
+.custom-toast-debug {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    background: #2c3e50;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.custom-toast-debug .toast-content {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.custom-toast-debug .toast-content i {
+    font-size: 20px;
+}
+
+.custom-toast-debug .toast-content span {
+    flex: 1;
+    font-size: 14px;
+}
+
+.custom-toast-debug .toast-close {
+    cursor: pointer;
+    padding: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.custom-toast-debug .toast-close:hover {
+    opacity: 1;
+}

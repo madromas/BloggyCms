@@ -50,7 +50,6 @@ class CommentController extends Controller {
             }
         }
         
-        $this->createNotificationsTable();
     }
 
     /**
@@ -68,17 +67,6 @@ class CommentController extends Controller {
     private function isAjaxRequest() {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-    }
-
-    /**
-    * Создание таблицы уведомлений
-    * @return void
-    */
-    private function createNotificationsTable() {
-        try {
-            $notificationModel = new NotificationModel($this->db);
-            $notificationModel->createTable();
-        } catch (Exception $e) {}
     }
     
     /**

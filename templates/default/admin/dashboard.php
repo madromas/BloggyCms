@@ -9,9 +9,22 @@
                     </h1>
                     <p class="dashboard-subtitle">Добро пожаловать в панель управления блога!</p>
                 </div>
-                <a href="/admin/settings?tab=components&controller=admin" class="settings-icon-link" title="Настройки компонентов админ-панели">
-                    <?php echo bloggy_icon('bs', 'gear', '32', '#0004ff;'); ?>
-                </a>
+                <div class="header-actions">
+                    <div class="debug-icon-wrapper" id="debugToggleBtn" title="Режим отладки">
+                        <?php 
+                        $debugEnabled = SettingsHelper::get('general', 'debug_mode', false);
+                        $bugColor = $debugEnabled ? '#dc3545' : '#6c757d';
+                        ?>
+                        <div class="bug-icon">
+                            <?php echo bloggy_icon('bs', 'bug', '28', $bugColor); ?>
+                        </div>
+                        <span class="debug-status <?php echo $debugEnabled ? 'active' : ''; ?>"></span>
+                    </div>
+
+                    <a href="/admin/settings?tab=components&controller=admin" class="settings-icon-link" title="Настройки компонентов админ-панели">
+                        <?php echo bloggy_icon('bs', 'gear', '28', '#0004ff'); ?>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -352,3 +365,107 @@
         </div>
     <?php } ?>
 </div>
+
+<?php ob_start(); ?>
+<script>
+(function() {
+    const debugBtn = document.getElementById('debugToggleBtn');
+    if (!debugBtn) return;
+    
+    const bugIcon = debugBtn.querySelector('.bug-icon svg');
+    const statusDot = debugBtn.querySelector('.debug-status');
+    const currentState = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
+    
+    function showNotification(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'custom-toast-debug';
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="bi ${isError ? 'bi-exclamation-triangle-fill' : 'bi-bug-fill'}" style="color: ${isError ? '#ffc107' : '#dc3545'}"></i>
+                <span>${message}</span>
+                <div class="toast-close">
+                    <i class="bi bi-x-lg"></i>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.remove();
+        });
+        
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 3000);
+    }
+    
+    function updateIconState(enabled) {
+        const svg = bugIcon;
+        if (svg) {
+            const paths = svg.querySelectorAll('path, circle, rect');
+            const newColor = enabled ? '#dc3545' : '#6c757d';
+            paths.forEach(path => {
+                path.setAttribute('fill', newColor);
+                if (path.hasAttribute('stroke')) {
+                    path.setAttribute('stroke', newColor);
+                }
+            });
+        }
+        
+        if (statusDot) {
+            if (enabled) {
+                statusDot.classList.add('active');
+                statusDot.classList.add('pulse');
+                setTimeout(() => statusDot.classList.remove('pulse'), 500);
+            } else {
+                statusDot.classList.remove('active');
+            }
+        }
+    }
+    
+    function toggleDebugMode() {
+        const wasEnabled = <?php echo SettingsHelper::get('general', 'debug_mode', false) ? 'true' : 'false'; ?>;
+        
+        fetch(`${ADMIN_URL}/debug/toggle`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const isEnabled = data.debug_enabled;
+                updateIconState(isEnabled);
+                
+                if (isEnabled) {
+                    showNotification('🐛 Режим отладки ВКЛЮЧЕН. Все ошибки будут сохраняться в лог.');
+                } else {
+                    showNotification('Режим отладки ВЫКЛЮЧЕН. Логирование ошибок остановлено.');
+                }
+                
+                const headerToggle = document.getElementById('headerDebugToggle');
+                const pageToggle = document.getElementById('debugModeToggle');
+                if (headerToggle) headerToggle.checked = isEnabled;
+                if (pageToggle) pageToggle.checked = isEnabled;
+            } else {
+                showNotification('Ошибка при переключении режима отладки: ' + (data.message || 'Неизвестная ошибка'), true);
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling debug mode:', error);
+            showNotification('Ошибка сети при переключении режима отладки', true);
+        });
+    }
+    
+    debugBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleDebugMode();
+    });
+    
+    debugBtn.addEventListener('mouseenter', function() {
+        const isEnabled = statusDot && statusDot.classList.contains('active');
+        debugBtn.title = isEnabled ? 'Режим отладки включен. Нажмите для выключения.' : 'Режим отладки выключен. Нажмите для включения.';
+    });
+})();
+</script>
+<?php admin_bottom_js(ob_get_clean()); ?>

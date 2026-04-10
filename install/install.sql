@@ -76,6 +76,32 @@ INSERT IGNORE INTO `{#}block_types` (`id`, `system_name`, `name`, `description`,
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `{#}debug_logs`
+-- Таблица для хранения данных Debug Controller
+--
+
+CREATE TABLE IF NOT EXISTS `{#}debug_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(50) NOT NULL COMMENT 'E_ERROR, E_WARNING, E_NOTICE, Exception',
+  `code` int(11) DEFAULT NULL COMMENT 'Код ошибки',
+  `message` text NOT NULL COMMENT 'Сообщение об ошибке',
+  `file` varchar(512) DEFAULT NULL COMMENT 'Файл, где произошла ошибка',
+  `line` int(11) DEFAULT NULL COMMENT 'Строка в файле',
+  `trace` longtext COMMENT 'Стек вызовов (JSON)',
+  `context` longtext COMMENT 'Контекст (переменные, сессии, запрос) (JSON)',
+  `url` text COMMENT 'URL, на котором произошла ошибка',
+  `method` varchar(10) DEFAULT NULL COMMENT 'HTTP метод (GET, POST)',
+  `ip` varchar(45) DEFAULT NULL COMMENT 'IP адрес пользователя',
+  `user_id` int(11) DEFAULT NULL COMMENT 'ID пользователя, если авторизован',
+  `is_fixed` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Пометка, что ошибка исправлена',
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `created_at` (`created_at`),
+  KEY `is_fixed` (`is_fixed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Логи ошибок для режима отладки';
+
+--
 -- Структура таблицы `{#}installed_addons`
 -- Таблица для хранения установленных пакетов дополнений
 --

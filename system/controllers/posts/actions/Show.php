@@ -279,7 +279,13 @@ class Show extends PostAction {
                     $userGroups = array_merge($userGroups, $userGroupIds);
                 }
                 
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                DebugLogger::warning('Failed to get user groups in post show', [
+                    'file' => __FILE__,
+                    'line' => __LINE__,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
         
         $userGroups = array_unique($userGroups);

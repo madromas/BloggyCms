@@ -54,6 +54,7 @@
                         ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 120],
                         ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 130],
                         ['section' => 'seo', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => 'SEO', 'priority' => 140],
+                        ['section' => 'debug', 'url' => ADMIN_URL . '/debug', 'icon' => 'bug', 'title' => 'Отладка', 'priority' => 145],
                         ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 150],
                         ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 160],
                     ];
