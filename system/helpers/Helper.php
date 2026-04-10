@@ -125,6 +125,46 @@ function render_html_block(string $slug): void {
     }
 }
 
+ /**
+ * Возвращает название типа поля.
+ * @param string $type Системное имя (например, 'string', 'number')
+ * @return string
+ */
+function get_field_type_name($type) {
+    static $type_names = [
+        'string'   => 'Строка',
+        'text'     => 'Текст',
+        'number'   => 'Число',
+        'list'     => 'Список',
+        'checkbox' => 'Флажок',
+        'date'     => 'Дата',
+        'color'    => 'Цвет',
+        'image'    => 'Изображение',
+        'html'     => 'HTML Блок'
+    ];
+
+    return isset($type_names[$type]) ? $type_names[$type] : ucfirst($type);
+}
+
+/**
+ * Возвращает название типа сущности.
+ * @param string $entity Системное имя (например, 'posts', 'pages')
+ * @return string
+ */
+if (!function_exists('get_entity_name')) {
+    function get_entity_name($entity) {
+        static $entity_names = [
+            'posts'      => 'Записи',
+            'pages'      => 'Страницы',
+            'categories' => 'Категории',
+            'users'      => 'Пользователи',
+            'comments'   => 'Комментарии'
+        ];
+
+        return isset($entity_names[$entity]) ? $entity_names[$entity] : ucfirst($entity);
+    }
+}
+
 /**
 * Предзагружает ассеты HTML-блоков без вывода содержимого.
 * @param array $slugs Массив слагов блоков для предзагрузки
