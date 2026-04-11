@@ -90,4 +90,4 @@ BloggyCMS — это гибкая и расширяемая платформа, 
 
 ---
 
-**© 2025-2026 BloggyCMS. [Первый в мире блога на BloggyCms](https://pechora-dev.ru)**
+**© 2025-2026 BloggyCMS. [Первый в мире блог на BloggyCms](https://pechora-dev.ru)**
