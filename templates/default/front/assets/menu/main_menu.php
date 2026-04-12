@@ -1,184 +1,80 @@
 <?php
-/**
- * Main Menu Template
- * Шаблон главного меню
- * 
- */
-
 $currentUrl = $_SERVER['REQUEST_URI'];
-$uniqueId = uniqid('menu-');
 ?>
-
-<ul class="tg-menu" id="<?php echo $uniqueId; ?>">
-    <?php foreach ($menuItems as $item) { ?>
-        <?php
-        $processedUrl = MenuRenderer::processUrl($item['url'] ?? '');
-        $hasChildren = !empty($item['children']);
-        $isActive = MenuRenderer::isActiveUrl($processedUrl, $currentUrl);
-        
-        $title = html($item['title'] ?? '', ENT_QUOTES, 'UTF-8');
-        $target = $item['target'] ?? '_self';
-        $itemClass = $item['class'] ?? '';
-        
-        $iconHtml = '';
-        if (!empty($item['icon']) && is_array($item['icon']) && !empty($item['icon']['id'])) {
-            $iconSet = $item['icon']['set'] ?? 'bs';
-            $iconId = $item['icon']['id'];
-            $iconSize = !empty($item['icon']['size']) ? $item['icon']['size'] : 18;
-            $iconColor = !empty($item['icon']['color']) ? $item['icon']['color'] : 'currentColor';
-            
-            $iconHtml = bloggy_icon($iconSet, $iconId, "$iconSize $iconSize", $iconColor, 'menu-icon');
-        }
-        
-        $liClasses = array('tg-menu-item');
-        if ($hasChildren) {
-            $liClasses[] = 'has-children';
-        }
-        if ($isActive) {
-            $liClasses[] = 'active';
-        }
-        if (!empty($itemClass)) {
-            $liClasses[] = html($itemClass, ENT_QUOTES, 'UTF-8');
-        }
-        
-        $itemUrl = html($processedUrl, ENT_QUOTES, 'UTF-8');
-        ?>
-        
-        <li class="<?php echo implode(' ', $liClasses); ?>">
-            <?php if ($hasChildren) { ?>
-                <a href="#" 
-                   class="tg-menu-link tg-menu-parent" 
-                   role="button" 
-                   aria-expanded="false"
-                   data-toggle="dropdown">
-                    <?php if ($iconHtml) { ?>
-                        <?php echo $iconHtml; ?>
-                    <?php } ?>
-                    <span class="menu-title"><?php echo $title; ?></span>
-                    <?php echo bloggy_icon('bs', 'chevron-down', '16 16', 'currentColor', 'menu-arrow'); ?>
+<ul class="menu">
+<?php foreach ($menuItems as $item) { ?>
+<?php
+    $url = MenuRenderer::processUrl($item['url'] ?? '');
+    $hasChildren = !empty($item['children']);
+    $isActive = MenuRenderer::isActiveUrl($url, $currentUrl);
+    $title = html($item['title'] ?? '', ENT_QUOTES, 'UTF-8');
+    $target = $item['target'] ?? '_self';
+    
+    $iconHtml = '';
+    if (!empty($item['icon']) && is_array($item['icon']) && !empty($item['icon']['id'])) {
+        $iconHtml = bloggy_icon($item['icon']['set'] ?? 'bs', $item['icon']['id'], '18 18', $item['icon']['color'] ?? 'currentColor', 'menu-icon');
+    }
+    $classes = ['menu-item'];
+    if ($hasChildren) $classes[] = 'has-children';
+    if ($isActive) $classes[] = 'active';
+?>
+<li class="<?= implode(' ', $classes) ?>">
+    <?php if ($hasChildren) { ?>
+    <a href="#" role="button" aria-expanded="false" data-submenu-toggle>
+        <?= $iconHtml ?>
+        <span class="menu-title"><?= $title ?></span>
+        <?= bloggy_icon('bs', 'chevron-down', '16 16', 'currentColor', 'menu-arrow') ?>
+    </a>
+    <ul class="submenu">
+        <?php foreach ($item['children'] as $child) { ?>
+            <?php
+                $childUrl = MenuRenderer::processUrl($child['url'] ?? '');
+                $childHasChildren = !empty($child['children']);
+                $childActive = MenuRenderer::isActiveUrl($childUrl, $currentUrl);
+                $childTitle = html($child['title'] ?? '', ENT_QUOTES, 'UTF-8');
+                $childIcon = !empty($child['icon']) && is_array($child['icon']) ? bloggy_icon($child['icon']['set'] ?? 'bs', $child['icon']['id'], '16 16', $child['icon']['color'] ?? 'currentColor', 'submenu-icon') : '';
+                $childClasses = ['submenu-item'];
+                if ($childHasChildren) $childClasses[] = 'has-children';
+                if ($childActive) $childClasses[] = 'active';
+            ?>
+            <li class="<?= implode(' ', $childClasses) ?>">
+                <?php if ($childHasChildren) { ?>
+                <a href="#" role="button" aria-expanded="false" data-submenu-toggle>
+                    <?= $childIcon ?>
+                    <span class="menu-title"><?= $childTitle ?></span>
+                    <?= bloggy_icon('bs', 'chevron-right', '14 14', 'currentColor', 'menu-arrow') ?>
                 </a>
-
-                <ul class="tg-submenu">
-                    <?php foreach ($item['children'] as $child) { ?>
-                        <?php
-                        $childProcessedUrl = MenuRenderer::processUrl($child['url'] ?? '');
-                        $childHasChildren = !empty($child['children']);
-                        $childIsActive = MenuRenderer::isActiveUrl($childProcessedUrl, $currentUrl);
-                        
-                        $childTitle = html($child['title'] ?? '', ENT_QUOTES, 'UTF-8');
-                        $childTarget = $child['target'] ?? '_self';
-                        $childClass = $child['class'] ?? '';
-                        $childIconHtml = '';
-                        if (!empty($child['icon']) && is_array($child['icon']) && !empty($child['icon']['id'])) {
-                            $childIconSet = $child['icon']['set'] ?? 'bs';
-                            $childIconId = $child['icon']['id'];
-                            $childIconSize = !empty($child['icon']['size']) ? $child['icon']['size'] : 16;
-                            $childIconColor = !empty($child['icon']['color']) ? $child['icon']['color'] : 'currentColor';
-                            
-                            $childIconHtml = bloggy_icon($childIconSet, $childIconId, "$childIconSize $childIconSize", $childIconColor, 'submenu-icon');
-                        }
-                        
-                        $childLiClasses = array('tg-submenu-item');
-                        if ($childHasChildren) {
-                            $childLiClasses[] = 'has-children';
-                        }
-                        if ($childIsActive) {
-                            $childLiClasses[] = 'active';
-                        }
-                        if (!empty($childClass)) {
-                            $childLiClasses[] = html($childClass, ENT_QUOTES, 'UTF-8');
-                        }
-                        
-                        $childUrl = html($childProcessedUrl, ENT_QUOTES, 'UTF-8');
-                        ?>
-                        
-                        <li class="<?php echo implode(' ', $childLiClasses); ?>">
-                            <?php if ($childHasChildren) { ?>
-                                <a href="#" 
-                                   class="tg-submenu-link tg-menu-parent" 
-                                   role="button" 
-                                   aria-expanded="false">
-                                    <?php if ($childIconHtml) { ?>
-                                        <?php echo $childIconHtml; ?>
-                                    <?php } ?>
-                                    <span class="menu-title"><?php echo $childTitle; ?></span>
-                                    <?php echo bloggy_icon('bs', 'chevron-right', '14 14', 'currentColor', 'menu-arrow'); ?>
-                                </a>
-                                
-                                <ul class="tg-submenu tg-submenu-nested">
-                                    <?php foreach ($child['children'] as $subchild) { ?>
-                                        <?php
-                                        $subchildProcessedUrl = MenuRenderer::processUrl($subchild['url'] ?? '');
-                                        $subchildIsActive = MenuRenderer::isActiveUrl($subchildProcessedUrl, $currentUrl);
-                                        
-                                        $subchildTitle = html($subchild['title'] ?? '', ENT_QUOTES, 'UTF-8');
-                                        $subchildTarget = $subchild['target'] ?? '_self';
-                                        $subchildClass = $subchild['class'] ?? '';
-                                        
-                                        $subchildIconHtml = '';
-                                        if (!empty($subchild['icon']) && is_array($subchild['icon']) && !empty($subchild['icon']['id'])) {
-                                            $subchildIconSet = $subchild['icon']['set'] ?? 'bs';
-                                            $subchildIconId = $subchild['icon']['id'];
-                                            $subchildIconSize = !empty($subchild['icon']['size']) ? $subchild['icon']['size'] : 16;
-                                            $subchildIconColor = !empty($subchild['icon']['color']) ? $subchild['icon']['color'] : 'currentColor';
-                                            
-                                            $subchildIconHtml = bloggy_icon($subchildIconSet, $subchildIconId, "$subchildIconSize $subchildIconSize", $subchildIconColor, 'submenu-icon');
-                                        }
-                                        
-                                        $subchildLiClasses = array('tg-submenu-item');
-                                        if ($subchildIsActive) {
-                                            $subchildLiClasses[] = 'active';
-                                        }
-                                        if (!empty($subchildClass)) {
-                                            $subchildLiClasses[] = html($subchildClass, ENT_QUOTES, 'UTF-8');
-                                        }
-                                        
-                                        $subchildUrl = html($subchildProcessedUrl, ENT_QUOTES, 'UTF-8');
-                                        ?>
-                                        
-                                        <li class="<?php echo implode(' ', $subchildLiClasses); ?>">
-                                            <a href="<?php echo $subchildUrl; ?>" 
-                                               class="tg-submenu-link <?php echo $subchildIsActive ? 'active' : ''; ?>"
-                                               target="<?php echo $subchildTarget; ?>">
-                                                <?php if ($subchildIconHtml) { ?>
-                                                    <?php echo $subchildIconHtml; ?>
-                                                <?php } ?>
-                                                <span class="menu-title"><?php echo $subchildTitle; ?></span>
-                                            </a>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
-                                
-                            <?php } else { ?>
-                                <a href="<?php echo $childUrl; ?>" 
-                                   class="tg-submenu-link <?php echo $childIsActive ? 'active' : ''; ?>"
-                                   target="<?php echo $childTarget; ?>">
-                                    <?php if ($childIconHtml) { ?>
-                                        <?php echo $childIconHtml; ?>
-                                    <?php } ?>
-                                    <span class="menu-title"><?php echo $childTitle; ?></span>
-                                </a>
-                            <?php } ?>
-                        </li>
-                    <?php } ?>
+                <ul class="submenu">
+                <?php foreach ($child['children'] as $subchild) { ?>
+                <?php
+                    $subUrl = MenuRenderer::processUrl($subchild['url'] ?? '');
+                    $subActive = MenuRenderer::isActiveUrl($subUrl, $currentUrl);
+                    $subTitle = html($subchild['title'] ?? '', ENT_QUOTES, 'UTF-8');
+                    $subIcon = !empty($subchild['icon']) && is_array($subchild['icon']) ? bloggy_icon($subchild['icon']['set'] ?? 'bs', $subchild['icon']['id'], '16 16', $subchild['icon']['color'] ?? 'currentColor', 'submenu-icon') : '';
+                ?>
+                <li class="submenu-item <?= $subActive ? 'active' : '' ?>">
+                    <a href="<?= html($subUrl, ENT_QUOTES, 'UTF-8') ?>" target="<?= $subchild['target'] ?? '_self' ?>">
+                        <?= $subIcon ?>
+                        <span class="menu-title"><?= $subTitle ?></span>
+                    </a>
+                </li>
+                <?php } ?>
                 </ul>
-                
-            <?php } else { ?>
-                <a href="<?php echo $itemUrl; ?>" 
-                   class="tg-menu-link <?php echo $isActive ? 'active' : ''; ?>"
-                   target="<?php echo $target; ?>">
-                    <?php if ($iconHtml) { ?>
-                        <?php echo $iconHtml; ?>
-                    <?php } ?>
-                    <span class="menu-title"><?php echo $title; ?></span>
+                <?php } else { ?>
+                <a href="<?= html($childUrl, ENT_QUOTES, 'UTF-8') ?>" target="<?= $child['target'] ?? '_self' ?>">
+                    <?= $childIcon ?>
+                    <span class="menu-title"><?= $childTitle ?></span>
                 </a>
-            <?php } ?>
-        </li>
+                <?php } ?>
+            </li>
+        <?php } ?>
+    </ul>
+    <?php } else { ?>
+        <a href="<?= html($url, ENT_QUOTES, 'UTF-8') ?>" target="<?= $target ?>">
+            <?= $iconHtml ?>
+            <span class="menu-title"><?= $title ?></span>
+        </a>
     <?php } ?>
+</li>
+<?php } ?>
 </ul>
-
-<button type="button" class="tg-mobile-toggle" aria-label="Меню" data-target="#<?php echo $uniqueId; ?>">
-    <span class="toggle-bar"></span>
-    <span class="toggle-bar"></span>
-    <span class="toggle-bar"></span>
-</button>

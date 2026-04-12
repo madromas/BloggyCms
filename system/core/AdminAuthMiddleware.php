@@ -15,9 +15,8 @@ class AdminAuthMiddleware {
             return;
         }
         
-        if ($currentUri === '/admin/login' || strpos($currentUri, '/admin/login') === 0) {
-            return;
-        }
+        $normalizedUri = rtrim(str_replace('\\', '/', $currentUri), '/') . '/';
+        if (strpos($normalizedUri, '/admin/login/') === 0) { return; }
 
         if (strpos($currentUri, '/admin') === 0) {
             if (!isset($_SESSION['user_id'])) {

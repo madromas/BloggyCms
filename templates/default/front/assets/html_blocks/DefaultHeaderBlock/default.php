@@ -1,128 +1,113 @@
 <?php
-/**
- * Header Block
- */
-
+$theme = $settings['theme'] ?? 'dark';
 $logoUrl = !empty($settings['logo_path']) ? BlockImageHelper::getImageUrl($settings['logo_path']) : '';
-$logoAlt = html($settings['logo_alt'] ?? 'Логотип сайта');
+$logoAlt = html($settings['logo_alt'] ?? 'Логотип');
 $siteName = html($settings['site_name'] ?? 'BloggyCMS');
 $logoLink = html($settings['logo_link'] ?? '/');
-$mainMenuContent = !empty($settings['main_menu_id']) ? MenuRenderer::renderById($settings['main_menu_id']) : '';
-$profileMenuContent = !empty($settings['profile_menu_id']) ? MenuRenderer::renderById($settings['profile_menu_id']) : '';
-$showSearch = !empty($settings['show_search']) && $settings['show_search'] == 1;
+$showSiteName = !empty($settings['show_site_name']);
+$mainMenuId = $settings['main_menu_id'] ?? '';
+$profileMenuId = $settings['profile_menu_id'] ?? '';
+$showSearch = !empty($settings['show_search']);
 $searchPlaceholder = html($settings['search_placeholder'] ?? 'Поиск...');
 $searchPage = html($settings['search_page'] ?? '/search');
-$stickyClass = !empty($settings['sticky_header']) && $settings['sticky_header'] == 1 ? 'tg-sticky' : '';
-$shadowClass = !empty($settings['show_shadow']) && $settings['show_shadow'] == 1 ? 'tg-shadow' : '';
-$containerClass = html($settings['container_type'] ?? 'tg-container');
-$headerHeight = html($settings['header_height'] ?? 'tg-py-3');
-$isLoggedIn = isset($_SESSION['user_id']);
-?>
+$stickyHeader = !empty($settings['sticky_header']);
+$showShadow = !empty($settings['show_shadow']);
+$containerClass = $settings['container_type'] ?? 'container';
+$heightClass = 'header-height--' . ($settings['header_height'] ?? 'md');
+$mobileBreakpoint = (int)($settings['mobile_breakpoint'] ?? 992);
+$headerClasses = ['site-header', "site-header--{$theme}", $heightClass];
+if ($stickyHeader) $headerClasses[] = 'is-sticky';
+if ($showShadow) $headerClasses[] = 'has-shadow';
 
-<header class="tg-header <?php echo $stickyClass; ?> <?php echo $shadowClass; ?>">
-    <div class="<?php echo $containerClass; ?>">
-        <div class="tg-header-inner <?php echo $headerHeight; ?>">
-            
-            <div class="tg-logo">
-                <a href="<?php echo $logoLink; ?>" class="tg-logo-link">
+$isLoggedIn = isset($_SESSION['user_id']);
+$currentUserId = $_SESSION['user_id'] ?? null;
+$userDisplayName = '';
+$userAvatarUrl = BASE_URL . '/uploads/avatars/default.jpg';
+$userProfileUrl = '/profile';
+if ($isLoggedIn && $currentUserId) {
+    try {
+        $db = DatabaseRegistry::getDb();
+        $user = (new UserModel($db))->getById($currentUserId);
+        if ($user) {
+            $userDisplayName = html($user['display_name'] ?? $user['username'] ?? 'Пользователь');
+            $userProfileUrl = '/profile/' . $user['username'];
+            if (!empty($user['avatar']) && $user['avatar'] !== 'default.jpg') {
+                $avatar = $user['avatar'];
+                $userAvatarUrl = strpos($avatar, 'http') === 0 ? $avatar : BASE_URL . '/uploads/avatars/' . $avatar;
+            }
+        }
+    } catch (Exception $e) { /* ignore */ }
+}
+
+$mainMenuHtml = !empty($mainMenuId) ? MenuRenderer::renderById($mainMenuId) : '';
+$profileMenuHtml = !empty($profileMenuId) ? MenuRenderer::renderById($profileMenuId) : '';
+$mainMenuHtml = str_replace('<a href="#"', '<a href="#" onclick="return false;"', $mainMenuHtml);
+$profileMenuHtml = str_replace('<a href="#"', '<a href="#" onclick="return false;"', $profileMenuHtml);
+?>
+<header class="<?= implode(' ', $headerClasses) ?>" data-header data-mobile-breakpoint="<?= $mobileBreakpoint ?>">
+    <div class="<?= $containerClass ?>">
+        <div class="header__inner">
+            <div class="header__brand">
+                <a href="<?= $logoLink ?>" class="header__logo-link" aria-label="<?= $siteName ?>">
                     <?php if ($logoUrl) { ?>
-                        <img src="<?php echo $logoUrl; ?>" alt="<?php echo $logoAlt; ?>" class="tg-logo-image">
+                    <img src="<?= $logoUrl ?>" alt="<?= $logoAlt ?>" class="header__logo-img" width="150" height="40" fetchpriority="high" decoding="async">
                     <?php } ?>
-                    <span class="tg-site-name"><?php echo $siteName; ?></span>
+                    <?php if ($showSiteName) { ?><span class="header__site-title"><?= $siteName ?></span><?php } ?>
                 </a>
             </div>
-
-            <nav class="tg-nav">
-                <?php echo $mainMenuContent; ?>
-            </nav>
-
-            <div class="tg-actions">
-                
-                <?php if ($showSearch) { ?>
-                <div class="tg-search">
-                    <form action="<?php echo $searchPage; ?>" method="get" class="tg-search-form">
-                        <input type="text" 
-                               name="q" 
-                               class="tg-search-input" 
-                               placeholder="<?php echo $searchPlaceholder; ?>"
-                               value="<?php echo html($_GET['q'] ?? ''); ?>"
-                               autocomplete="off">
-                        <button type="submit" class="tg-search-btn" aria-label="Поиск">
-                            <?php echo bloggy_icon('bs', 'search', '18 18', 'currentColor'); ?>
-                        </button>
-                    </form>
-                </div>
-                <?php } ?>
-
-                <div class="tg-user">
-                    <?php if ($isLoggedIn) { ?>
-                        <div class="tg-user-dropdown">
-                            <button class="tg-user-btn" type="button">
-                                <?php echo getUserAvatarHtml(); ?>
-                                <span class="tg-user-name"><?php echo getUserDisplayName(); ?></span>
-                                <?php echo bloggy_icon('bs', 'chevron-down', '14 14', 'currentColor', 'tg-user-arrow'); ?>
-                            </button>
-                            
-                            <?php if (!empty($profileMenuContent)) { ?>
-                            <div class="tg-user-menu">
-                                <?php echo $profileMenuContent; ?>
-                            </div>
-                            <?php } ?>
-                        </div>
-                    <?php } else { ?>
-                        <a href="/login" class="tg-login-btn">
-                            <?php echo bloggy_icon('bs', 'person', '18 18', 'currentColor', 'tg-mr-1'); ?>
-                            <span>Войти</span>
-                        </a>
+            <button class="header__burger" type="button" data-burger aria-label="Меню" aria-expanded="false">
+                <span class="header__burger-line"></span><span class="header__burger-line"></span><span class="header__burger-line"></span>
+            </button>
+            <nav class="header__nav" data-nav>
+                <div class="header__nav-inner">
+                    <?= $mainMenuHtml ?>
+                    <?php if (!$isLoggedIn) { ?>
+                    <div class="header__mobile-auth">
+                        <a href="/login" class="header__btn header__btn--primary">Войти</a>
+                        <a href="/register" class="header__btn header__btn--outline">Регистрация</a>
+                    </div>
                     <?php } ?>
                 </div>
+            </nav>
+            <div class="header__actions">
+                <?php if ($showSearch) { ?>
+                <button class="header__icon-btn" type="button" data-search-toggle aria-label="Поиск" aria-expanded="false"><?= bloggy_icon('bs', 'search', '20 20') ?></button>
+                <?php } ?>
+                <?php if ($isLoggedIn) { ?>
+                <div class="header__profile" data-profile>
+                    <button class="header__profile-btn" type="button" data-profile-toggle aria-label="Профиль" aria-expanded="false">
+                        <span class="header__avatar-wrapper"><img src="<?= $userAvatarUrl ?>" alt="" class="header__avatar" loading="lazy"></span>
+                        <span class="header__username"><?= $userDisplayName ?></span>
+                        <?= bloggy_icon('bs', 'chevron-down', '14 14', 'currentColor', 'header__chevron') ?>
+                    </button>
+                    <?php if ($profileMenuHtml) { ?>
+                    <div class="header__dropdown" data-profile-menu>
+                        <div class="header__dropdown-header">
+                            <span class="header__dropdown-name"><?= $userDisplayName ?></span>
+                            <a href="<?= $userProfileUrl ?>" class="header__dropdown-link">Профиль</a>
+                        </div>
+                        <div class="header__dropdown-divider"></div>
+                        <?= $profileMenuHtml ?>
+                    </div>
+                    <?php } ?>
+                </div>
+                <?php } else { ?>
+                <div class="header__desktop-auth"><a href="/login" class="header__btn header__btn--primary">Войти</a></div>
+                <?php } ?>
             </div>
         </div>
     </div>
+    <?php if ($showSearch) { ?>
+    <div class="header__search-panel" data-search-panel hidden>
+        <div class="<?= $containerClass ?>">
+            <form action="<?= $searchPage ?>" method="get" class="header__search-form">
+                <div class="header__search-input-wrapper">
+                    <?= bloggy_icon('bs', 'search', '18 18', 'currentColor', 'header__search-icon') ?>
+                    <input type="text" name="q" class="header__search-input" placeholder="<?= $searchPlaceholder ?>" value="<?= html($_GET['q'] ?? '') ?>" autocomplete="off">
+                </div>
+                <button type="submit" class="header__search-submit">Найти</button>
+            </form>
+        </div>
+    </div>
+    <?php } ?>
 </header>
-
-<?php
-function getUserDisplayName(): string {
-    $userId = $_SESSION['user_id'] ?? null;
-    if (!$userId) return 'Гость';
-    
-    try {
-        $db = DatabaseRegistry::getDb();
-        $userModel = new UserModel($db);
-        $user = $userModel->getById($userId);
-        return html($user['display_name'] ?? $user['username'] ?? 'Пользователь');
-    } catch (Exception $e) {
-        return 'Пользователь';
-    }
-}
-
-function getUserAvatarHtml(): string {
-    $userId = $_SESSION['user_id'] ?? null;
-    if (!$userId) return '';
-    
-    try {
-        $db = DatabaseRegistry::getDb();
-        $userModel = new UserModel($db);
-        $user = $userModel->getById($userId);
-        
-        if ($user && !empty($user['avatar']) && $user['avatar'] !== 'default.jpg') {
-            $avatar = $user['avatar'];
-            if (strpos($avatar, '/') === false) {
-                $avatarUrl = BASE_URL . '/uploads/avatars/' . $avatar;
-            } elseif (strpos($avatar, 'http') === 0) {
-                $avatarUrl = $avatar;
-            } elseif (strpos($avatar, '/') === 0) {
-                $avatarUrl = BASE_URL . $avatar;
-            } else {
-                $avatarUrl = BASE_URL . '/' . $avatar;
-            }
-        } else {
-            $avatarUrl = BASE_URL . '/uploads/avatars/default.jpg';
-        }
-        
-        return '<img src="' . $avatarUrl . '" alt="Avatar" class="tg-avatar">';
-    } catch (Exception $e) {
-        return '';
-    }
-}
-?>
