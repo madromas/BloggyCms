@@ -70,8 +70,6 @@ if ($maintenanceMode && !$isAdmin) {
     <?php echo render_front_js(); ?>
     <?php echo render_front_bottom_js(); ?>
 
-    <?php echo render_front_css(); ?>
-
     <?php if(isset($_SESSION['toast'])) { ?>
         <div id="notification-data" 
              data-message="<?php echo html($_SESSION['toast']['message']); ?>" 

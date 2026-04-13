@@ -60,7 +60,7 @@ class DefaultHeaderBlock extends BaseHtmlBlock {
                             'light' => '☀️ Светлая тема'
                         ],
                         'default' => $settings['theme'],
-                        'column' => '6',
+                        'column' => '12',
                         'hint' => 'Выберите цветовую схему шапки'
                     ])
                 ]
@@ -83,12 +83,6 @@ class DefaultHeaderBlock extends BaseHtmlBlock {
                         'column' => '6',
                         'placeholder' => 'Описание логотипа'
                     ]),
-                    \FieldFactory::string('site_name', [
-                        'title' => 'Название сайта',
-                        'default' => $settings['site_name'],
-                        'placeholder' => 'Введите название сайта',
-                        'column' => '6'
-                    ]),
                     \FieldFactory::string('logo_link', [
                         'title' => 'Ссылка логотипа',
                         'default' => $settings['logo_link'],
@@ -100,8 +94,15 @@ class DefaultHeaderBlock extends BaseHtmlBlock {
                         'title' => 'Показывать название сайта',
                         'default' => $settings['show_site_name'],
                         'switch' => true,
-                        'column' => '6',
+                        'column' => '12',
                         'hint' => 'Отображать текстовое название рядом с логотипом'
+                    ]),
+                    \FieldFactory::string('site_name', [
+                        'title' => 'Название сайта',
+                        'default' => $settings['site_name'],
+                        'placeholder' => 'Введите название сайта',
+                        'column' => '12',
+                        'show' => 'field:show_site_name'
                     ])
                 ]
             ]),

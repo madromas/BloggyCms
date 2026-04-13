@@ -15,6 +15,14 @@ class PostController extends Controller {
     private $settingsModel;
     private $fieldModel;
     private $postBlockManager;
+
+    protected $controllerInfo = [
+        'name' => 'Посты',
+        'author' => 'BloggyCMS', 
+        'version' => '1.0.0',
+        'has_settings' => true,
+        'description' => 'Управление постами блога'
+    ];
     
     /**
     * Конструктор контроллера
