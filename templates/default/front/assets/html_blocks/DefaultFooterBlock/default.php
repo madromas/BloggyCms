@@ -1,8 +1,8 @@
 <?php
 /**
- * Footer Block Template
- * Современный тёмный футер с гибкой настройкой
- */
+* Footer Block Template
+* Современный тёмный футер с гибкой настройкой
+*/
 
 $logoUrl = $this->getLogoUrl($settings);
 $logoAlt = html($settings['logo_alt'] ?? 'Логотип сайта');
@@ -69,7 +69,16 @@ if ($showRecentPosts) $activeColumns++;
 if ($showRecentTags) $activeColumns++;
 ?>
 
-<footer class="site-footer" style="<?php echo implode('; ', $customStyles); ?>">
+<footer class="site-footer" style="
+    background-color: <?php echo $bgColor; ?>;
+    color: <?php echo $textColor; ?>;
+    --footer-bg: <?php echo $bgColor; ?>;
+    --footer-text: <?php echo $textColor; ?>;
+    --footer-accent: <?php echo $accentColor; ?>;
+    --footer-heading: <?php echo $headingColor; ?>;
+    --footer-padding-top: <?php echo $paddingTop; ?>px;
+    --footer-padding-bottom: <?php echo $paddingBottom; ?>px;
+">
     
     <div class="footer-main">
         <div class="container">

@@ -112,7 +112,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить CSS файл
+    * Добавляет CSS файл
     * @param string $path Путь к CSS файлу
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -127,7 +127,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить JS файл
+    * Добавляет JS файл
     * @param string $path Путь к JS файлу
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -142,7 +142,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить инлайн CSS
+    * Добавляет инлайн CSS
     * @param string $css CSS код
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -152,7 +152,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить инлайн JS
+    * Добавляет инлайн JS
     * @param string $js JavaScript код
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -162,7 +162,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить базовый CSS (высокий приоритет)
+    * Добавляет базовый CSS (высокий приоритет)
     * @param string $path Путь к CSS файлу
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -177,7 +177,7 @@ class AssetManager {
     }
     
     /**
-    * Добавить базовый JS (высокий приоритет)
+    * Добавляет базовый JS (высокий приоритет)
     * @param string $path Путь к JS файлу
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -192,7 +192,7 @@ class AssetManager {
     }
 
     /**
-    * Добавить инлайн JS в конец страницы (перед </body>)
+    * Добавляет инлайн JS в конец страницы (перед </body>)
     * @param string $js JavaScript код
     * @param string|null $context Контекст ('frontend'/'admin'), null для автоматического определения
     */
@@ -317,19 +317,26 @@ class AssetManager {
     }
     
     /**
-    * Очистить ресурсы для контекста
+    * Очищает ресурсы для контекста
     * @param string|null $context Контекст ('frontend'/'admin'), null для очистки всех
     */
     public function clear(?string $context = null): void {
         if ($context) {
             $this->resources[$context] = [
                 'css' => [], 'js' => [], 
-                'inline_css' => [], 'inline_js' => []
+                'inline_css' => [], 'inline_js' => [], 'bottom_js' => []
+            ];
+            $this->baseResources[$context] = [
+                'css' => [], 'js' => []
             ];
         } else {
             $this->resources = [
-                'frontend' => ['css' => [], 'js' => [], 'inline_css' => [], 'inline_js' => []],
-                'admin' => ['css' => [], 'js' => [], 'inline_css' => [], 'inline_js' => []]
+                'frontend' => ['css' => [], 'js' => [], 'inline_css' => [], 'inline_js' => [], 'bottom_js' => []],
+                'admin' => ['css' => [], 'js' => [], 'inline_css' => [], 'inline_js' => [], 'bottom_js' => []]
+            ];
+            $this->baseResources = [
+                'frontend' => ['css' => [], 'js' => []],
+                'admin' => ['css' => [], 'js' => []]
             ];
             $this->registry = [
                 'frontend_css' => [], 'frontend_js' => [],
@@ -339,7 +346,7 @@ class AssetManager {
     }
     
     /**
-    * Получить статистику по ресурсам
+    * Получает статистику по ресурсам
     * @return array Массив со статистикой по ресурсам
     */
     public function getStats(): array {

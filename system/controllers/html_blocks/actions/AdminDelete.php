@@ -21,6 +21,8 @@ class AdminDelete extends HtmlBlockAction {
         
         try {
             $this->htmlBlockModel->delete($this->id);
+
+            \Event::trigger('html_block.deleted', $this->id);
             
             \Notification::success('HTML-блок успешно удален');
             

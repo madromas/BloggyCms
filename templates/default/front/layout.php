@@ -32,6 +32,7 @@ if ($maintenanceMode && !$isAdmin) {
 }
 ?>
 
+<?php init_blocks_cache(); ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -48,6 +49,7 @@ if ($maintenanceMode && !$isAdmin) {
         <script type="application/ld+json"><?php echo json_encode($schemaData, JSON_UNESCAPED_UNICODE); ?></script>
     <?php } ?>
     <?php echo base_front_css(['bootstrap.min','main']); ?>
+    <link rel="stylesheet" href="<?php echo get_blocks_css_url(); ?>">
     <?php echo render_front_css(); ?>
 </head>
 <body>

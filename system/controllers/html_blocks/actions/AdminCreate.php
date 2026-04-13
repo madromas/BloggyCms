@@ -91,10 +91,12 @@ class AdminCreate extends HtmlBlockAction {
                     'template' => $_POST['template'] ?? 'default'
                 ];
 
-                $this->htmlBlockModel->create($data);
-                
+                $id = $this->htmlBlockModel->create($data);
+
+                \Event::trigger('html_block.saved', ['id' => $id, 'action' => 'create']);
+
                 \Notification::success('HTML-блок успешно создан');
-                
+
                 $this->redirect(ADMIN_URL . '/html-blocks');
                 
             } catch (\Exception $e) {

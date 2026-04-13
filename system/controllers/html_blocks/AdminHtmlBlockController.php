@@ -123,5 +123,15 @@ class AdminHtmlBlockController extends Controller {
         $action->setController($this);
         return $action->execute();
     }
+
+    /**
+    * Действие: Очистка кеша CSS блоков
+    * @return mixed
+    */
+    public function clearCacheAction() {
+        $action = new \html_blocks\actions\AdminClearCache($this->db);
+        $action->setController($this);
+        return $action->execute();
+    }
     
 }

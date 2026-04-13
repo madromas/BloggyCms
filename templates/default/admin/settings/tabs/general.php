@@ -144,20 +144,6 @@
             <input type="text" name="settings[site_author]" value="<?php echo $settings['site_author'] ?? ''; ?>" class="form-control" placeholder="Имя автора или компании">
         </div>
         
-        <div class="mb-3">
-            <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" id="enable_sitemap" name="settings[enable_sitemap]" value="1" <?php echo isset($settings['enable_sitemap']) && $settings['enable_sitemap'] ? 'checked' : ''; ?>>
-                <label class="form-check-label" for="enable_sitemap">Автоматически генерировать sitemap.xml</label>
-            </div>
-            <div class="form-text">Sitemap будет доступен по адресу: <?php echo BASE_URL; ?>/sitemap.xml</div>
-        </div>
-        
-        <div class="mb-3">
-            <div class="form-check form-switch">
-                <input type="checkbox" class="form-check-input" id="enable_robots_txt" name="settings[enable_robots_txt]" value="1" <?php echo isset($settings['enable_robots_txt']) && $settings['enable_robots_txt'] ? 'checked' : ''; ?>>
-                <label class="form-check-label" for="enable_robots_txt">Автоматически генерировать robots.txt</label>
-            </div>
-        </div>
     </div>
 </div>
 

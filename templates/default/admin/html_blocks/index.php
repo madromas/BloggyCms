@@ -5,6 +5,12 @@
             Контент-блоки
         </h4>
         <div>
+            <a href="<?php echo ADMIN_URL; ?>/html-blocks/clear-cache" 
+            class="btn btn-warning me-2"
+            onclick="return confirm('Очистить кеш CSS блоков? CSS будет перегенерирован автоматически.')">
+                <?php echo bloggy_icon('bs', 'arrow-repeat', '16', '#000', 'me-2'); ?>
+                Очистить кеш CSS
+            </a>
             <a href="<?php echo ADMIN_URL; ?>/html-blocks/types" class="btn btn-outline-secondary me-2">
                 <?php echo bloggy_icon('bs', 'boxes', '16', '#000', 'me-2'); ?>
                 Типы блоков

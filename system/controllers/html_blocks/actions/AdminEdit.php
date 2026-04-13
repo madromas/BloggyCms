@@ -104,6 +104,8 @@ class AdminEdit extends HtmlBlockAction {
                     ];
                     
                     $result = $this->htmlBlockModel->update($this->id, $data);
+
+                    \Event::trigger('html_block.saved', ['id' => $this->id, 'action' => 'update']);
                     
                     \Notification::success('HTML-блок успешно обновлен');
                     

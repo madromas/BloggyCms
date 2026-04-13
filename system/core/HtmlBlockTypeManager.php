@@ -194,7 +194,6 @@ class HtmlBlockTypeManager {
     * @return string Обработанный HTML
     */
     public function processBlockContent($systemName, $settings = [], $template = null) {
-
         if ($systemName === 'DefaultBlock') {
             $html = $settings['html'] ?? '';
             
@@ -222,6 +221,7 @@ class HtmlBlockTypeManager {
 
     /**
     * Загружает CSS и JS файлы для фронтенда типа блока
+    * CSS загружается через общий кеш-файл, JS - напрямую
     * @param string $systemName Системное имя блока
     */
     public function loadBlockFrontendAssets($systemName) {
@@ -229,20 +229,22 @@ class HtmlBlockTypeManager {
         if ($blockType && $blockType['class']) {
             $blockInstance = $blockType['class'];
             
-            foreach ($blockInstance->getSystemCss() as $cssFile) {
-                add_html_block_css($cssFile);
+            foreach ($blockInstance->getSystemJs() as $jsFile) {
+                if (!empty(trim($jsFile))) {
+                    add_frontend_js($jsFile);
+                }
             }
             
-            foreach ($blockInstance->getFrontendCss() as $cssFile) {
-                add_frontend_css($cssFile);
+            foreach ($blockInstance->getFrontendJs() as $jsFile) {
+                if (!empty(trim($jsFile))) {
+                    add_frontend_js($jsFile);
+                }
             }
             
-            if ($blockInstance->getFrontendInlineCss()) {
-                add_inline_css($blockInstance->getFrontendInlineCss());
-            }
             if ($blockInstance->getFrontendInlineJs()) {
                 add_inline_js($blockInstance->getFrontendInlineJs());
             }
+            
         }
     }
 
@@ -326,5 +328,4 @@ class HtmlBlockTypeManager {
             [(int)$status, $systemName]
         );
     }
-
 }
