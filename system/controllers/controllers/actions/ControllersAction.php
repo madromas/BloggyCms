@@ -12,6 +12,8 @@ abstract class ControllersAction {
     protected $db;
     protected $params;
     protected $controller;
+    protected $breadcrumbs;
+    protected $pageTitle;
     
     /**
     * Конструктор базового класса действий управления контроллерами

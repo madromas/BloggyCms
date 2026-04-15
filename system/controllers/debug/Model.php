@@ -50,7 +50,98 @@ class DebugModel implements ModelAPI {
             date('Y-m-d H:i:s')
         ]);
         
-        return $this->db->lastInsertId();
+        $logId = $this->db->lastInsertId();
+        
+        $this->createNotificationForError($logId, $data);
+        
+        return $logId;
+    }
+
+    /**
+    * Создает уведомление об ошибке для администраторов
+    * @param int $logId ID записи в логе
+    * @param array $errorData Данные ошибки
+    */
+    private function createNotificationForError($logId, $errorData) {
+        try {
+            $notifyOnNewError = SettingsHelper::get('controller_notifications', 'notify_on_new_error', true);
+            
+            if (!$notifyOnNewError) {
+                return;
+            }
+            
+            $notifyOnErrorTypes = SettingsHelper::get('controller_notifications', 'notify_on_error_types', 'error,exception');
+            
+            if (is_array($notifyOnErrorTypes)) {
+                $allowedTypes = $notifyOnErrorTypes;
+            } elseif (is_string($notifyOnErrorTypes)) {
+                $allowedTypes = explode(',', $notifyOnErrorTypes);
+                $allowedTypes = array_map('trim', $allowedTypes);
+            } else {
+                $allowedTypes = ['error', 'exception'];
+            }
+            
+            if (!in_array($errorData['type'], $allowedTypes)) {
+                return;
+            }
+            
+            $admins = $this->db->fetchAll("SELECT id FROM users WHERE is_admin = 1 OR role = 'admin'");
+            
+            if (empty($admins)) {
+                return;
+            }
+            
+            $message = "<strong>Тип:</strong> " . $this->getErrorTypeLabel($errorData['type']) . "<br>";
+            $message .= "<strong>Сообщение:</strong> " . htmlspecialchars(mb_substr($errorData['message'], 0, 200)) . "<br>";
+            
+            if (!empty($errorData['file'])) {
+                $fileName = basename($errorData['file']);
+                $message .= "<strong>Файл:</strong> {$fileName} (строка {$errorData['line']})<br>";
+            }
+            
+            if (!empty($errorData['url'])) {
+                $message .= "<strong>URL:</strong> " . htmlspecialchars($errorData['url']) . "<br>";
+            }
+            
+            foreach ($admins as $admin) {
+                $sql = "INSERT INTO notifications (type, title, message, data, user_id, created_at) 
+                        VALUES ('system_error', ?, ?, ?, ?, NOW())";
+                
+                $title = $this->getErrorTitle($errorData['type']);
+                
+                $this->db->query($sql, [
+                    $title,
+                    $message,
+                    json_encode(['error_id' => $logId]),
+                    $admin['id']
+                ]);
+            }
+            
+            error_log("[DEBUG] Created notifications for error ID: {$logId}, Type: {$errorData['type']}");
+            
+        } catch (Exception $e) {
+            error_log("[DEBUG] Failed to create notification: " . $e->getMessage());
+        }
+    }
+
+    private function getErrorTitle($type) {
+        $titles = [
+            'error' => '🔴 Новая ошибка PHP',
+            'warning' => '🟡 Новое предупреждение',
+            'notice' => '🔵 Новое уведомление',
+            'exception' => '💥 Новое исключение'
+        ];
+        return $titles[$type] ?? '⚠️ Новая ошибка в системе';
+    }
+
+    private function getErrorTypeLabel($type) {
+        $labels = [
+            'error' => 'Ошибка PHP',
+            'warning' => 'Предупреждение',
+            'notice' => 'Уведомление',
+            'exception' => 'Исключение'
+        ];
+        return $labels[$type] ?? $type;
     }
     
     /**

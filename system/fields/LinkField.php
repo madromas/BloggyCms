@@ -30,13 +30,18 @@ class LinkField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
-        $placeholder = $this->config['placeholder'] ?? 'https://example.com';
+        $placeholder = html($this->config['placeholder'] ?? 'https://example.com', ENT_QUOTES, 'UTF-8');
+        
+        $fieldName = 'field_' . ($this->systemName ?? '');
         
         return "
             <input type='url' 
-                   name='field_{$this->systemName}' 
-                   value='" . htmlspecialchars($value) . "'
+                   name='{$fieldName}' 
+                   value='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'
                    class='form-control form-control-sm'
                    placeholder='{$placeholder}'
                    {$required}>
@@ -51,12 +56,17 @@ class LinkField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">Не указана</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Не указана</span>';
+        }
         
-        $text = (!empty($this->config['link_text'])) ? $this->config['link_text'] : $value;
-        $target = !empty($this->config['new_tab']) ? 'target="_blank"' : '';
+        $safeValue = html($value, ENT_QUOTES, 'UTF-8');
+        $text = (!empty($this->config['link_text'])) 
+            ? html($this->config['link_text'], ENT_QUOTES, 'UTF-8') 
+            : $safeValue;
+        $target = !empty($this->config['new_tab']) ? 'target="_blank" rel="noopener noreferrer"' : '';
         
-        return "<a href='{$value}' {$target} class='field-link'>{$text}</a>";
+        return "<a href='{$safeValue}' {$target} class='field-link'>{$text}</a>";
     }
     
     /**
@@ -67,9 +77,13 @@ class LinkField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">-</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">-</span>';
+        }
         
-        return "<a href='{$value}' target='_blank' class='text-decoration-none'>🔗</a>";
+        $safeValue = html($value, ENT_QUOTES, 'UTF-8');
+        
+        return "<a href='{$safeValue}' target='_blank' rel='noopener noreferrer' class='text-decoration-none' title='{$safeValue}'>🔗</a>";
     }
 
     /**
@@ -96,10 +110,10 @@ class LinkField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $placeholder = htmlspecialchars($this->config['placeholder'] ?? 'https://example.com');
-        $linkText = htmlspecialchars($this->config['link_text'] ?? '');
+        $placeholder = html($this->config['placeholder'] ?? 'https://example.com', ENT_QUOTES, 'UTF-8');
+        $linkText = html($this->config['link_text'] ?? '', ENT_QUOTES, 'UTF-8');
         $newTab = isset($this->config['new_tab']) && $this->config['new_tab'] ? 'checked' : '';
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

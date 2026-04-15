@@ -30,18 +30,22 @@ class NumberField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
-        $min = $this->config['min'] ?? '';
-        $max = $this->config['max'] ?? '';
-        $step = $this->config['step'] ?? '1';
-        $placeholder = $this->config['placeholder'] ?? '';
+        $safeValue = ($value === null) ? '' : $value;
+        
+        $min = html($this->config['min'] ?? '', ENT_QUOTES, 'UTF-8');
+        $max = html($this->config['max'] ?? '', ENT_QUOTES, 'UTF-8');
+        $step = html($this->config['step'] ?? '1', ENT_QUOTES, 'UTF-8');
+        $placeholder = html($this->config['placeholder'] ?? '', ENT_QUOTES, 'UTF-8');
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
+        
+        $fieldName = 'field_' . ($this->systemName ?? '');
         
         return "
             <input type='number' 
-                   name='field_{$this->systemName}' 
-                   value='" . htmlspecialchars($value) . "'
+                   name='{$fieldName}' 
+                   value='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'
                    class='form-control'
-                   placeholder='" . htmlspecialchars($placeholder) . "'
+                   placeholder='{$placeholder}'
                    min='{$min}'
                    max='{$max}'
                    step='{$step}'
@@ -57,7 +61,9 @@ class NumberField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        return "<span class='field-number'>" . htmlspecialchars($value) . "</span>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        return "<span class='field-number'>" . html($safeValue, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -68,7 +74,64 @@ class NumberField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        return "<span class='field-number'>" . htmlspecialchars($value) . "</span>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        return "<span class='field-number'>" . html($safeValue, ENT_QUOTES, 'UTF-8') . "</span>";
+    }
+    
+    /**
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
+    public function validate($value): bool {
+        if (isset($this->config['required']) && $this->config['required']) {
+            if ($value === null || $value === '') {
+                return false;
+            }
+        }
+        
+        if ($value !== null && $value !== '') {
+            if (!is_numeric($value)) {
+                return false;
+            }
+            
+            $numericValue = (float)$value;
+            
+            if (isset($this->config['min']) && $this->config['min'] !== '') {
+                if ($numericValue < (float)$this->config['min']) {
+                    return false;
+                }
+            }
+            
+            if (isset($this->config['max']) && $this->config['max'] !== '') {
+                if ($numericValue > (float)$this->config['max']) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+    * Обрабатывает значение перед сохранением
+    * @param mixed $value Исходное значение
+    * @return string|int|null Обработанное значение
+    */
+    public function processValue($value) {
+        if ($value === null || $value === '') {
+            return '';
+        }
+        
+        if (is_numeric($value)) {
+            if (is_float($value)) {
+                return (float)$value;
+            }
+            return (int)$value;
+        }
+        
+        return $value;
     }
     
     /**
@@ -76,11 +139,11 @@ class NumberField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $min = htmlspecialchars($this->config['min'] ?? '');
-        $max = htmlspecialchars($this->config['max'] ?? '');
-        $step = htmlspecialchars($this->config['step'] ?? '1');
-        $placeholder = htmlspecialchars($this->config['placeholder'] ?? '');
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $min = html($this->config['min'] ?? '', ENT_QUOTES, 'UTF-8');
+        $max = html($this->config['max'] ?? '', ENT_QUOTES, 'UTF-8');
+        $step = html($this->config['step'] ?? '1', ENT_QUOTES, 'UTF-8');
+        $placeholder = html($this->config['placeholder'] ?? '', ENT_QUOTES, 'UTF-8');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

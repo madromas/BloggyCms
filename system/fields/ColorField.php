@@ -30,17 +30,18 @@ class ColorField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $value = $value ?? '';
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         
         return "
             <div class='input-group input-group-sm'>
                 <input type='color' 
                        name='field_{$this->systemName}' 
-                       value='" . htmlspecialchars($value) . "'
+                       value='" . html($value) . "'
                        class='form-control form-control-color'
                        {$required}>
                 <input type='text' 
-                       value='" . htmlspecialchars($value) . "'
+                       value='" . html($value) . "'
                        class='form-control'
                        placeholder='#000000'
                        onchange='this.previousElementSibling.value=this.value'>
@@ -56,12 +57,16 @@ class ColorField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">Не указано</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Не указано</span>';
+        }
+        
+        $escapedValue = html($value, ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='d-flex align-items-center gap-2'>
-                <div style='width: 20px; height: 20px; background-color: {$value}; border: 1px solid #ddd; border-radius: 3px;'></div>
-                <code>{$value}</code>
+                <div style='width: 20px; height: 20px; background-color: {$escapedValue}; border: 1px solid #ddd; border-radius: 3px;'></div>
+                <code>{$escapedValue}</code>
             </div>
         ";
     }
@@ -74,9 +79,13 @@ class ColorField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">-</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">-</span>';
+        }
         
-        return "<div style='width: 16px; height: 16px; background-color: {$value}; border: 1px solid #ddd; border-radius: 2px;' title='{$value}'></div>";
+        $escapedValue = html($value, ENT_QUOTES, 'UTF-8');
+        
+        return "<div style='width: 16px; height: 16px; background-color: {$escapedValue}; border: 1px solid #ddd; border-radius: 2px;' title='{$escapedValue}'></div>";
     }
     
     /**
@@ -84,12 +93,13 @@ class ColorField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '#000000');
+        $defaultValue = html($this->config['default_value'] ?? '#000000', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='mb-3'>
                 <label class='form-label'>Значение по умолчанию</label>
-                <input type='color' class='form-control' name='config[default_value]' value='{$defaultValue}'>
+                <input type='color' class='form-control form-control-color' name='config[default_value]' value='{$defaultValue}'>
+                <div class='form-text'>Цвет, который будет установлен по умолчанию</div>
             </div>
         ";
     }

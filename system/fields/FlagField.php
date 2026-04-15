@@ -30,21 +30,25 @@ class FlagField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? false : (bool)$value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $label = $this->config['label'] ?? 'Включено';
         
-        $checked = $value ? 'checked' : '';
+        $checked = $safeValue ? 'checked' : '';
+        
+        $fieldName = 'field_' . ($this->systemName ?? '');
         
         return "
             <div class='form-check form-switch'>
-                <input type='hidden' name='field_{$this->systemName}' value='0'>
+                <input type='hidden' name='{$fieldName}' value='0'>
                 <input type='checkbox' 
-                       name='field_{$this->systemName}' 
+                       name='{$fieldName}' 
                        value='1'
                        class='form-check-input'
                        {$checked}
                        {$required}>
-                <label class='form-check-label'>{$label}</label>
+                <label class='form-check-label'>" . html($label, ENT_QUOTES, 'UTF-8') . "</label>
             </div>
         ";
     }
@@ -57,13 +61,15 @@ class FlagField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? false : (bool)$value;
+        
         $trueText = $this->config['true_text'] ?? 'Да';
         $falseText = $this->config['false_text'] ?? 'Нет';
         
-        if ($value) {
-            return "<span class='badge bg-success'><i class='bi bi-check-lg'></i> {$trueText}</span>";
+        if ($safeValue) {
+            return "<span class='badge bg-success'><i class='bi bi-check-lg'></i> " . html($trueText, ENT_QUOTES, 'UTF-8') . "</span>";
         } else {
-            return "<span class='badge bg-secondary'><i class='bi bi-x'></i> {$falseText}</span>";
+            return "<span class='badge bg-secondary'><i class='bi bi-x'></i> " . html($falseText, ENT_QUOTES, 'UTF-8') . "</span>";
         }
     }
     
@@ -75,7 +81,9 @@ class FlagField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        if ($value) {
+        $safeValue = ($value === null) ? false : (bool)$value;
+        
+        if ($safeValue) {
             return "<i class='bi bi-check-circle-fill text-success' title='Да'></i>";
         } else {
             return "<i class='bi bi-x-circle-fill text-secondary' title='Нет'></i>";
@@ -100,9 +108,9 @@ class FlagField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $label = htmlspecialchars($this->config['label'] ?? 'Включено');
-        $trueText = htmlspecialchars($this->config['true_text'] ?? 'Да');
-        $falseText = htmlspecialchars($this->config['false_text'] ?? 'Нет');
+        $label = html($this->config['label'] ?? 'Включено', ENT_QUOTES, 'UTF-8');
+        $trueText = html($this->config['true_text'] ?? 'Да', ENT_QUOTES, 'UTF-8');
+        $falseText = html($this->config['false_text'] ?? 'Нет', ENT_QUOTES, 'UTF-8');
         $defaultValue = isset($this->config['default_value']) && $this->config['default_value'] ? 'checked' : '';
         
         return "

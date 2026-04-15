@@ -16,11 +16,11 @@ if ($maintenanceMode && !$isAdmin) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>На обслуживании - <?= SettingsHelper::get('general', 'site_name', 'BloggyCMS') ?></title>
-        <?php echo base_front_css(['maintenance']); ?>
+        <link rel="stylesheet" href="templates/default/front/assets/css/maintenance.css">
     </head>
     <body>
         <div class="maintenance-page">
-            <div class="maintenance-icon">🛠️</div>
+            <div class="maintenance-icon"><?php echo bloggy_icon('bs', 'gear-fill'); ?></div>
             <h1 class="maintenance-title">Технические работы</h1>
             <div class="maintenance-message">
                 <?= nl2br(html(SettingsHelper::get('general', 'maintenance_message', 'Сайт временно недоступен. Ведутся технические работы.'))) ?>

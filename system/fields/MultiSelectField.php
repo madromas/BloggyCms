@@ -30,23 +30,28 @@ class MultiSelectField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $options = $this->config['options'] ?? [];
         
         $selectedValues = [];
-        if (!empty($value)) {
-            if (is_string($value)) {
-                $selectedValues = json_decode($value, true) ?: [];
+        if (!empty($safeValue)) {
+            if (is_string($safeValue)) {
+                $selectedValues = json_decode($safeValue, true) ?: [];
             } else {
-                $selectedValues = (array)$value;
+                $selectedValues = (array)$safeValue;
             }
         }
         
-        $html = "<select name='field_{$this->systemName}[]' class='form-select form-select-sm' multiple {$required} style='height: 120px;'>";
+        $fieldName = 'field_' . ($this->systemName ?? '');
+        
+        $html = "<select name='{$fieldName}[]' class='form-select form-select-sm' multiple {$required} style='height: 120px;'>";
         
         foreach ($options as $optionValue => $optionLabel) {
             $selected = in_array($optionValue, $selectedValues) ? 'selected' : '';
-            $html .= "<option value='" . htmlspecialchars($optionValue) . "' {$selected}>" . htmlspecialchars($optionLabel) . "</option>";
+            $html .= "<option value='" . html($optionValue, ENT_QUOTES, 'UTF-8') . "' {$selected}>" . 
+                     html($optionLabel, ENT_QUOTES, 'UTF-8') . "</option>";
         }
         
         $html .= "</select>";
@@ -72,7 +77,7 @@ class MultiSelectField extends BaseField {
         $html = '<div class="field-multiselect d-flex flex-wrap gap-1">';
         foreach ($items as $item) {
             $html .= '<span class="badge bg-secondary">' . 
-                    htmlspecialchars($item['label']) . 
+                    html($item['label'], ENT_QUOTES, 'UTF-8') . 
                     '</span>';
         }
         $html .= '</div>';
@@ -96,14 +101,14 @@ class MultiSelectField extends BaseField {
         }
         
         $firstItem = $items[0];
-        $display = htmlspecialchars($firstItem['label']);
+        $display = html($firstItem['label'], ENT_QUOTES, 'UTF-8');
         if ($count > 1) {
             $display .= " +" . ($count - 1);
         }
         
         $allValues = array_column($items, 'value');
         return "<span class='badge bg-secondary' title='" . 
-               htmlspecialchars(implode(', ', $allValues)) . 
+               html(implode(', ', $allValues), ENT_QUOTES, 'UTF-8') . 
                "'>{$display}</span>";
     }
     
@@ -113,6 +118,9 @@ class MultiSelectField extends BaseField {
     * @return string JSON строка
     */
     public function processValue($value) {
+        if ($value === null) {
+            return json_encode([]);
+        }
 
         if (is_array($value)) {
             return json_encode(array_values($value));
@@ -120,7 +128,7 @@ class MultiSelectField extends BaseField {
         
         if (is_string($value)) {
             $decoded = json_decode($value, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                 return $value;
             }
         }
@@ -137,7 +145,8 @@ class MultiSelectField extends BaseField {
         $optionsText = '';
         
         foreach ($options as $value => $label) {
-            $optionsText .= htmlspecialchars($value) . "|" . htmlspecialchars($label) . "\n";
+            $optionsText .= html($value, ENT_QUOTES, 'UTF-8') . "|" . 
+                           html($label, ENT_QUOTES, 'UTF-8') . "\n";
         }
         
         return "
@@ -261,8 +270,8 @@ class MultiSelectField extends BaseField {
                 $labels = [];
                 foreach ($selectedValues as $val) {
                     $label = $options[$val] ?? $val;
-                    $labels[] = '<span class="' . htmlspecialchars($badgeClass) . ' me-1">' . 
-                               htmlspecialchars($label) . '</span>';
+                    $labels[] = '<span class="' . html($badgeClass, ENT_QUOTES, 'UTF-8') . ' me-1">' . 
+                               html($label, ENT_QUOTES, 'UTF-8') . '</span>';
                 }
                 return implode('', $labels);
                 
@@ -271,14 +280,16 @@ class MultiSelectField extends BaseField {
                 foreach ($selectedValues as $val) {
                     $labels[] = $options[$val] ?? $val;
                 }
-                return implode($separator, $labels);
+                return implode($separator, array_map(function($label) {
+                    return html($label, ENT_QUOTES, 'UTF-8');
+                }, $labels));
                 
             case 'count':
                 $count = count($selectedValues);
                 if (isset($attrs['show_labels']) && $attrs['show_labels'] === 'true' && $count > 0) {
                     $firstValue = $selectedValues[0];
                     $firstLabel = $options[$firstValue] ?? $firstValue;
-                    $result = htmlspecialchars($firstLabel);
+                    $result = html($firstLabel, ENT_QUOTES, 'UTF-8');
                     if ($count > 1) {
                         $result .= " +" . ($count - 1);
                     }
@@ -293,7 +304,9 @@ class MultiSelectField extends BaseField {
                     $labels[] = $options[$val] ?? $val;
                 }
                 return '<ul class="list-unstyled mb-0"><li>' . 
-                       implode('</li><li>', array_map('htmlspecialchars', $labels)) . 
+                       implode('</li><li>', array_map(function($label) {
+                           return html($label, ENT_QUOTES, 'UTF-8');
+                       }, $labels)) . 
                        '</li></ul>';
         }
     }
@@ -323,8 +336,8 @@ class MultiSelectField extends BaseField {
             $itemContent = $content;
             
             $itemContent = str_replace('{index}', $counter, $itemContent);
-            $itemContent = str_replace('{value}', htmlspecialchars($val), $itemContent);
-            $itemContent = str_replace('{label}', htmlspecialchars($options[$val] ?? $val), $itemContent);
+            $itemContent = str_replace('{value}', html($val, ENT_QUOTES, 'UTF-8'), $itemContent);
+            $itemContent = str_replace('{label}', html($options[$val] ?? $val, ENT_QUOTES, 'UTF-8'), $itemContent);
             
             $itemContent = $this->processConditionalBlocks($itemContent, $counter, count($selectedValues));
             
@@ -375,7 +388,8 @@ class MultiSelectField extends BaseField {
         if (isset($config['options']) && is_array($config['options'])) {
             $optionsText = '';
             foreach ($config['options'] as $value => $label) {
-                $optionsText .= htmlspecialchars($value) . "|" . htmlspecialchars($label) . "\n";
+                $optionsText .= html($value, ENT_QUOTES, 'UTF-8') . "|" . 
+                               html($label, ENT_QUOTES, 'UTF-8') . "\n";
             }
             $config['options_text'] = trim($optionsText);
         }

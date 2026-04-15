@@ -30,22 +30,27 @@ class ImageField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $maxSize = $this->config['max_size'] ?? 2048;
-        $allowedTypes = $this->config['allowed_types'] ?? 'jpg,jpeg,png,gif,webp';
+        $allowedTypes = html($this->config['allowed_types'] ?? 'jpg,jpeg,png,gif,webp', ENT_QUOTES, 'UTF-8');
+        
+        $fieldName = 'field_' . ($this->systemName ?? '');
         
         $html = "<div class='image-field' data-max-size='{$maxSize}' data-allowed-types='{$allowedTypes}'>";
         
-        if (!empty($value)) {
+        if (!empty($safeValue)) {
+            $safeValueEscaped = html($safeValue, ENT_QUOTES, 'UTF-8');
             $html .= "
                 <div class='mb-2'>
-                    <img src='" . BASE_URL . "/uploads/images/{$value}' 
+                    <img src='" . BASE_URL . "/uploads/images/{$safeValueEscaped}' 
                          class='img-thumbnail' 
                          style='max-height: 100px;'
                          alt='Превью'>
                     <div class='mt-1'>
                         <label class='form-check-label small'>
-                            <input type='checkbox' name='field_{$this->systemName}_delete' value='1' class='form-check-input'>
+                            <input type='checkbox' name='{$fieldName}_delete' value='1' class='form-check-input'>
                             Удалить изображение
                         </label>
                     </div>
@@ -55,7 +60,7 @@ class ImageField extends BaseField {
         
         $html .= "
             <input type='file' 
-                   name='field_{$this->systemName}' 
+                   name='{$fieldName}' 
                    class='form-control form-control-sm image-upload-input'
                    accept='image/*'
                    {$required}>
@@ -64,7 +69,7 @@ class ImageField extends BaseField {
             </div>
         ";
         
-        $html .= "<input type='hidden' name='field_{$this->systemName}_current' value='" . htmlspecialchars($value) . "'>";
+        $html .= "<input type='hidden' name='{$fieldName}_current' value='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'>";
         
         $html .= "</div>";
         
@@ -79,11 +84,15 @@ class ImageField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">Изображение не загружено</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Изображение не загружено</span>';
+        }
+        
+        $safeValue = html($value, ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='text-center'>
-                <img src='" . BASE_URL . "/uploads/images/{$value}' 
+                <img src='" . BASE_URL . "/uploads/images/{$safeValue}' 
                      class='img-fluid rounded'
                      style='max-height: 200px;'
                      alt='Изображение'>
@@ -99,10 +108,14 @@ class ImageField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">Нет</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Нет</span>';
+        }
+        
+        $safeValue = html($value, ENT_QUOTES, 'UTF-8');
         
         return "
-            <img src='" . BASE_URL . "/uploads/images/{$value}' 
+            <img src='" . BASE_URL . "/uploads/images/{$safeValue}' 
                  class='rounded'
                  style='width: 30px; height: 30px; object-fit: cover;'
                  alt='✓'>
@@ -115,7 +128,7 @@ class ImageField extends BaseField {
     * @return bool true если значение корректно
     */
     public function validate($value): bool {
-        if (isset($this->config['required']) && $this->config['required'] && empty($value)) {
+        if (isset($this->config['required']) && $this->config['required'] && empty($value) && $value !== '0') {
             return false;
         }
         return true;
@@ -127,7 +140,7 @@ class ImageField extends BaseField {
     * @return string Имя файла
     */
     public function processValue($value) {
-        return $value;
+        return ($value === null) ? '' : $value;
     }
     
     /**
@@ -186,8 +199,8 @@ class ImageField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $maxSize = htmlspecialchars($this->config['max_size'] ?? '2048');
-        $allowedTypes = htmlspecialchars($this->config['allowed_types'] ?? 'jpg,jpeg,png,gif,webp');
+        $maxSize = html($this->config['max_size'] ?? '2048', ENT_QUOTES, 'UTF-8');
+        $allowedTypes = html($this->config['allowed_types'] ?? 'jpg,jpeg,png,gif,webp', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

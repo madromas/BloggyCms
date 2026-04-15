@@ -31,16 +31,20 @@ class StringField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $placeholder = $this->config['placeholder'] ?? '';
         $maxlength = $this->config['maxlength'] ?? '';
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         
+        $fieldName = 'field_' . ($this->systemName ?? '');
+        
         return "
             <input type='text' 
-                   name='field_{$this->systemName}' 
-                   value='" . htmlspecialchars($value) . "'
+                   name='{$fieldName}' 
+                   value='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'
                    class='form-control form-control-sm'
-                   placeholder='" . htmlspecialchars($placeholder) . "'
+                   placeholder='" . html($placeholder, ENT_QUOTES, 'UTF-8') . "'
                    " . ($maxlength ? "maxlength='{$maxlength}'" : "") . "
                    {$required}>
         ";
@@ -54,7 +58,9 @@ class StringField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        return "<span class='field-string'>" . htmlspecialchars($value) . "</span>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        return "<span class='field-string'>" . html($safeValue, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -65,8 +71,10 @@ class StringField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        $truncated = mb_strlen($value) > 50 ? mb_substr($value, 0, 50) . '...' : $value;
-        return "<span title='" . htmlspecialchars($value) . "'>" . htmlspecialchars($truncated) . "</span>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        $truncated = mb_strlen($safeValue) > 50 ? mb_substr($safeValue, 0, 50) . '...' : $safeValue;
+        return "<span title='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'>" . html($truncated, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -75,7 +83,7 @@ class StringField extends BaseField {
     * @return bool true если значение корректно
     */
     public function validate($value): bool {
-        if (isset($this->config['required']) && $this->config['required'] && empty($value)) {
+        if (isset($this->config['required']) && $this->config['required'] && empty($value) && $value !== '0') {
             return false;
         }
         
@@ -141,7 +149,7 @@ class StringField extends BaseField {
             }
         }
         
-        return htmlspecialchars($formattedValue);
+        return html($formattedValue, ENT_QUOTES, 'UTF-8');
     }
     
     /**
@@ -149,10 +157,10 @@ class StringField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $placeholder = htmlspecialchars($this->config['placeholder'] ?? '');
-        $maxlength = htmlspecialchars($this->config['maxlength'] ?? '');
-        $pattern = htmlspecialchars($this->config['pattern'] ?? '');
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $placeholder = html($this->config['placeholder'] ?? '', ENT_QUOTES, 'UTF-8');
+        $maxlength = html($this->config['maxlength'] ?? '', ENT_QUOTES, 'UTF-8');
+        $pattern = html($this->config['pattern'] ?? '', ENT_QUOTES, 'UTF-8');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

@@ -13,6 +13,8 @@ abstract class AddonAction {
     protected $params;
     protected $controller;
     protected $addonModel;
+    protected $breadcrumbs;
+    protected $pageTitle;
     
     /**
     * Конструктор

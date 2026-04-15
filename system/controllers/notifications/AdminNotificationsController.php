@@ -187,26 +187,41 @@ class AdminNotificationsController extends Controller {
             'time' => $this->formatTime($notification['created_at']),
             'time_full' => date('d.m.Y H:i', strtotime($notification['created_at'])),
             'created_by' => $notification['created_by_display_name'] ?? 
-                           $notification['created_by_username'] ?? null,
+                        $notification['created_by_username'] ?? null,
             'created_at' => $notification['created_at']
         ];
         
         switch ($notification['type']) {
             case 'new_comment':
                 return $this->formatCommentNotification($notification, $data, $result);
-                
             case 'new_user':
                 return $this->formatNewUserNotification($notification, $data, $result);
-                
             case 'system':
                 return $this->formatSystemNotification($notification, $data, $result);
-                
+            case 'system_error':
+                return $this->formatErrorNotification($notification, $data, $result);
             default:
                 return array_merge($result, [
                     'title' => $notification['title'],
                     'message' => $notification['message']
                 ]);
         }
+    }
+
+    private function formatErrorNotification($notification, $data, $result) {
+        $errorLink = ADMIN_URL . '/debug';
+        
+        $message = $notification['message'];
+        $message .= '<div class="mt-2">';
+        $message .= '<a href="' . $errorLink . '" class="btn btn-sm btn-outline-danger">';
+        $message .= '<i class="bi bi-bug me-1"></i>Перейти к ошибке';
+        $message .= '</a>';
+        $message .= '</div>';
+        
+        return array_merge($result, [
+            'title' => $notification['title'],
+            'message' => $message
+        ]);
     }
     
     /**
@@ -273,10 +288,10 @@ class AdminNotificationsController extends Controller {
             'new_comment' => 'chat-dots',
             'new_user' => 'person-plus',
             'system' => 'gear',
+            'system_error' => 'bug',
             'warning' => 'exclamation-triangle',
             'info' => 'info-circle'
         ];
-        
         return $icons[$type] ?? 'bell';
     }
     
@@ -290,10 +305,10 @@ class AdminNotificationsController extends Controller {
             'new_comment' => 'primary',
             'new_user' => 'success',
             'system' => 'secondary',
+            'system_error' => 'danger',
             'warning' => 'warning',
             'info' => 'info'
         ];
-        
         return $colors[$type] ?? 'secondary';
     }
     

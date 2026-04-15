@@ -33,6 +33,14 @@ class AdminIndex extends SettingsAction {
             
             if (in_array($activeTab, ['general', 'site'])) {
                 $settings = $this->settingsModel->get($activeTab);
+
+                foreach ($settings as $key => $value) {
+                    if (is_string($value) && strpos($value, ',') !== false) {
+                        if (in_array($key, ['notify_on_error_types', 'show_to_groups', 'hide_from_groups'])) {
+                            $settings[$key] = explode(',', $value);
+                        }
+                    }
+                }
                 
                 $defaultSettings = $this->getDefaultSettings($activeTab);
                 $settings = array_merge($defaultSettings, $settings);

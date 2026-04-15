@@ -16,14 +16,91 @@ class FieldSelect extends Field {
         
         $attributes = $this->getAttributes();
         
+        $isMultiple = strpos($attributes, 'multiple') !== false;
+        
         $optionsHtml = '';
+        
+        $selectedValues = [];
+        if ($isMultiple) {
+            if (is_string($value)) {
+                $selectedValues = explode(',', $value);
+                $selectedValues = array_map('trim', $selectedValues);
+            } elseif (is_array($value)) {
+                $selectedValues = $value;
+            } elseif (!empty($value)) {
+                $selectedValues = [$value];
+            }
+        }
+        
         foreach ($this->options['options'] as $optionValue => $optionLabel) {
-            $selected = $value == $optionValue ? ' selected' : '';
+            if ($isMultiple) {
+                $selected = in_array($optionValue, $selectedValues) ? ' selected' : '';
+            } else {
+                $selected = $value == $optionValue ? ' selected' : '';
+            }
             $optionsHtml .= "<option value=\"" . html($optionValue) . "\"{$selected}>" . html($optionLabel) . "</option>";
         }
         
-        $fieldHtml = "<select{$attributes}>{$optionsHtml}</select>";
+        $hiddenField = '';
+        if ($isMultiple) {
+            $baseName = $this->name;
+            if (strpos($baseName, 'settings[') === 0) {
+                $hiddenName = str_replace('settings[', 'settings[', $baseName);
+                $hiddenField = "<input type=\"hidden\" name=\"{$hiddenName}\" value=\"\">";
+            } else {
+                $hiddenField = "<input type=\"hidden\" name=\"{$baseName}\" value=\"\">";
+            }
+        }
+        
+        $fieldHtml = $hiddenField . "<select{$attributes}>{$optionsHtml}</select>";
+        
+        if ($isMultiple && empty($this->options['hint'])) {
+            $this->options['hint'] = 'Зажмите Ctrl (Cmd на Mac) для выбора нескольких опций';
+        }
         
         return $this->renderFieldGroup($fieldHtml);
+    }
+    
+    /**
+    * Получает атрибуты для select
+    * @return string Строка с HTML-атрибутами
+    */
+    protected function getAttributes() {
+        $attrs = [];
+        
+        if ($this->options['admin_mode'] ?? false) {
+            $attrs['name'] = $this->name;
+        } else {
+            $attrs['name'] = "settings[{$this->name}]";
+        }
+        
+        if (!empty($this->options['attributes']['multiple'])) {
+            $attrs['name'] .= '[]';
+        }
+        
+        $attrs['class'] = "form-select {$this->options['class']}";
+        
+        if ($this->options['required']) {
+            $attrs['required'] = 'required';
+        }
+        
+        foreach ($this->options['attributes'] as $key => $value) {
+            if ($key === 'multiple' && $value === true) {
+                $attrs['multiple'] = 'multiple';
+            } elseif ($key === 'size') {
+                $attrs['size'] = (int)$value;
+            } else {
+                $attrs[$key] = $value;
+            }
+        }
+        
+        $attributesString = '';
+        foreach ($attrs as $key => $value) {
+            if (!empty($value) || $value === '0') {
+                $attributesString .= " {$key}=\"" . htmlspecialchars($value) . "\"";
+            }
+        }
+        
+        return $attributesString;
     }
 }

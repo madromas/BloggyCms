@@ -30,15 +30,19 @@ class HtmlField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $rows = $this->config['rows'] ?? 6;
         
+        $fieldName = 'field_' . ($this->systemName ?? '');
+        
         return "
-            <textarea name='field_{$this->systemName}' 
+            <textarea name='{$fieldName}' 
                       class='form-control form-control-sm'
                       rows='{$rows}'
                       placeholder='Введите HTML код...'
-                      {$required}>" . htmlspecialchars($value) . "</textarea>
+                      {$required}>" . html($safeValue, ENT_QUOTES, 'UTF-8') . "</textarea>
             <div class='form-text'>Поддерживается HTML разметка</div>
         ";
     }
@@ -51,6 +55,9 @@ class HtmlField extends BaseField {
     * @return string Исходный HTML-код
     */
     public function renderDisplay($value, $entityType, $entityId): string {
+        if ($value === null) {
+            return '';
+        }
         return $value;
     }
     
@@ -62,9 +69,11 @@ class HtmlField extends BaseField {
     * @return string Обрезанный текст без HTML-тегов
     */
     public function renderList($value, $entityType, $entityId): string {
-        $stripped = strip_tags($value);
+        $safeValue = ($value === null) ? '' : $value;
+        
+        $stripped = strip_tags($safeValue);
         $truncated = mb_strlen($stripped) > 50 ? mb_substr($stripped, 0, 50) . '...' : $stripped;
-        return "<span title='" . htmlspecialchars($stripped) . "'>" . htmlspecialchars($truncated) . "</span>";
+        return "<span title='" . html($stripped, ENT_QUOTES, 'UTF-8') . "'>" . html($truncated, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -72,8 +81,8 @@ class HtmlField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
-        $rows = htmlspecialchars($this->config['rows'] ?? '6');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
+        $rows = html($this->config['rows'] ?? '6', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

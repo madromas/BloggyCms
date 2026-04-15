@@ -15,18 +15,7 @@ abstract class Field {
     /**
     * Конструктор поля
     * @param string $name Имя поля
-    * @param array $options Опции поля:
-    * - title: заголовок поля
-    * - hint: подсказка под полем
-    * - default: значение по умолчанию
-    * - required: обязательность
-    * - placeholder: placeholder
-    * - class: дополнительные CSS классы
-    * - attributes: дополнительные HTML атрибуты
-    * - show: условие показа
-    * - show_class: класс для условного отображения
-    * - column: ширина колонки (для кастомной сетки)
-    * - full_width: признак поля на всю ширину
+    * @param array $options Опции поля
     */
     public function __construct($name, $options = []) {
         $this->name = $name;
@@ -108,6 +97,12 @@ abstract class Field {
         } else {
             $attrs['name'] = "settings[{$this->name}]";
         }
+        
+        $isMultiple = !empty($this->options['attributes']['multiple']) && $this->options['attributes']['multiple'] === true;
+        
+        if ($isMultiple) {
+            $attrs['name'] .= '[]';
+        }
 
         if ($this instanceof FieldSelect) {
             $attrs['class'] = "form-select {$this->options['class']}";
@@ -122,12 +117,23 @@ abstract class Field {
         }
         
         foreach ($this->options['attributes'] as $key => $value) {
-            $attrs[$key] = $value;
+            if ($key === 'multiple' && $value === true) {
+                $attrs['multiple'] = 'multiple';
+            } elseif ($key === 'size') {
+                $attrs['size'] = (int)$value;
+            } else {
+                $attrs[$key] = $value;
+            }
         }
         
         $attributesString = '';
         foreach ($attrs as $key => $value) {
-            if (!empty($value)) {
+            if ($value === '' || $value === null) {
+                continue;
+            }
+            if ($value === true) {
+                $attributesString .= " {$key}";
+            } else {
                 $attributesString .= " {$key}=\"" . htmlspecialchars($value) . "\"";
             }
         }

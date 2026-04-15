@@ -30,15 +30,20 @@ class SelectField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $options = $this->config['options'] ?? [];
         
-        $html = "<select name='field_{$this->systemName}' class='form-select form-select-sm' {$required}>";
+        $fieldName = 'field_' . ($this->systemName ?? '');
+        
+        $html = "<select name='{$fieldName}' class='form-select form-select-sm' {$required}>";
         $html .= "<option value=''>-- Выберите --</option>";
         
         foreach ($options as $optionValue => $optionLabel) {
-            $selected = $value == $optionValue ? 'selected' : '';
-            $html .= "<option value='" . htmlspecialchars($optionValue) . "' {$selected}>" . htmlspecialchars($optionLabel) . "</option>";
+            $selected = ($safeValue == $optionValue) ? 'selected' : '';
+            $html .= "<option value='" . html($optionValue, ENT_QUOTES, 'UTF-8') . "' {$selected}>" . 
+                     html($optionLabel, ENT_QUOTES, 'UTF-8') . "</option>";
         }
         
         $html .= "</select>";
@@ -53,12 +58,14 @@ class SelectField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Не выбрано</span>';
+        }
+        
         $options = $this->config['options'] ?? [];
         $label = $options[$value] ?? $value;
         
-        if (empty($value)) return '<span class="text-muted">Не выбрано</span>';
-        
-        return "<span class='field-select'>{$label}</span>";
+        return "<span class='field-select'>" . html($label, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -69,12 +76,36 @@ class SelectField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">-</span>';
+        }
+        
         $options = $this->config['options'] ?? [];
         $label = $options[$value] ?? $value;
         
-        if (empty($value)) return '<span class="text-muted">-</span>';
+        return "<span class='badge bg-secondary'>" . html($label, ENT_QUOTES, 'UTF-8') . "</span>";
+    }
+
+    /**
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
+    public function validate($value): bool {
+        if (isset($this->config['required']) && $this->config['required']) {
+            if (empty($value) && $value !== '0') {
+                return false;
+            }
+        }
         
-        return "<span class='badge bg-secondary'>{$label}</span>";
+        if (!empty($value) && $value !== '0') {
+            $options = $this->config['options'] ?? [];
+            if (!isset($options[$value])) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /**
@@ -114,10 +145,10 @@ class SelectField extends BaseField {
         $displayValue = $options[$value] ?? $value;
         
         if (isset($attrs['return']) && $attrs['return'] === 'value') {
-            return htmlspecialchars($value);
+            return html($value, ENT_QUOTES, 'UTF-8');
         }
         
-        return htmlspecialchars($displayValue);
+        return html($displayValue, ENT_QUOTES, 'UTF-8');
     }
 
     /**
@@ -138,8 +169,8 @@ class SelectField extends BaseField {
         $displayValue = $options[$value] ?? $value;
         
         $result = $content;
-        $result = str_replace('{value}', htmlspecialchars($value), $result);
-        $result = str_replace('{label}', htmlspecialchars($displayValue), $result);
+        $result = str_replace('{value}', html($value, ENT_QUOTES, 'UTF-8'), $result);
+        $result = str_replace('{label}', html($displayValue, ENT_QUOTES, 'UTF-8'), $result);
         
         return $result;
     }
@@ -153,10 +184,11 @@ class SelectField extends BaseField {
         $optionsText = '';
         
         foreach ($options as $value => $label) {
-            $optionsText .= "{$value}|{$label}\n";
+            $optionsText .= html($value, ENT_QUOTES, 'UTF-8') . "|" . 
+                           html($label, ENT_QUOTES, 'UTF-8') . "\n";
         }
         
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='mb-3'>
@@ -196,6 +228,23 @@ class SelectField extends BaseField {
             }
             $config['options'] = $options;
             unset($config['options_text']);
+        }
+        return $config;
+    }
+    
+    /**
+    * Подготавливает конфигурацию для отображения в форме 
+    * @param array $config Конфигурация поля
+    * @return array Подготовленная конфигурация
+    */
+    public function prepareConfigForForm(array $config): array {
+        if (isset($config['options']) && is_array($config['options'])) {
+            $optionsText = '';
+            foreach ($config['options'] as $value => $label) {
+                $optionsText .= html($value, ENT_QUOTES, 'UTF-8') . "|" . 
+                               html($label, ENT_QUOTES, 'UTF-8') . "\n";
+            }
+            $config['options_text'] = trim($optionsText);
         }
         return $config;
     }

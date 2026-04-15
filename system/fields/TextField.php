@@ -31,16 +31,20 @@ class TextField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
-        $placeholder = $this->config['placeholder'] ?? '';
-        $rows = $this->config['rows'] ?? 4;
+        $safeValue = ($value === null) ? '' : $value;
+        
+        $placeholder = html($this->config['placeholder'] ?? '', ENT_QUOTES, 'UTF-8');
+        $rows = html($this->config['rows'] ?? '4', ENT_QUOTES, 'UTF-8');
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         
+        $fieldName = 'field_' . ($this->systemName ?? '');
+        
         return "
-            <textarea name='field_{$this->systemName}' 
+            <textarea name='{$fieldName}' 
                       class='form-control'
                       rows='{$rows}'
-                      placeholder='" . htmlspecialchars($placeholder) . "'
-                      {$required}>" . htmlspecialchars($value) . "</textarea>
+                      placeholder='{$placeholder}'
+                      {$required}>" . html($safeValue, ENT_QUOTES, 'UTF-8') . "</textarea>
         ";
     }
     
@@ -52,7 +56,9 @@ class TextField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        return "<div class='field-text'>" . nl2br(htmlspecialchars($value)) . "</div>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        return "<div class='field-text'>" . nl2br(html($safeValue, ENT_QUOTES, 'UTF-8')) . "</div>";
     }
     
     /**
@@ -63,8 +69,43 @@ class TextField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        $truncated = mb_strlen($value) > 100 ? mb_substr($value, 0, 100) . '...' : $value;
-        return "<span title='" . htmlspecialchars($value) . "'>" . htmlspecialchars($truncated) . "</span>";
+        $safeValue = ($value === null) ? '' : $value;
+        
+        $truncated = mb_strlen($safeValue) > 100 ? mb_substr($safeValue, 0, 100) . '...' : $safeValue;
+        return "<span title='" . html($safeValue, ENT_QUOTES, 'UTF-8') . "'>" . 
+               html($truncated, ENT_QUOTES, 'UTF-8') . "</span>";
+    }
+    
+    /**
+    * Валидирует значение поля
+    * @param mixed $value Значение для проверки
+    * @return bool true если значение корректно
+    */
+    public function validate($value): bool {
+        if (isset($this->config['required']) && $this->config['required']) {
+            if (($value === null || $value === '') && $value !== '0') {
+                return false;
+            }
+        }
+        
+        if (!empty($this->config['maxlength']) && mb_strlen($value) > $this->config['maxlength']) {
+            return false;
+        }
+        
+        if (!empty($this->config['minlength']) && mb_strlen($value) < $this->config['minlength']) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+    * Обрабатывает значение перед сохранением
+    * @param mixed $value Исходное значение
+    * @return string Обработанное значение
+    */
+    public function processValue($value) {
+        return ($value === null) ? '' : $value;
     }
     
     /**
@@ -72,9 +113,9 @@ class TextField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $placeholder = htmlspecialchars($this->config['placeholder'] ?? '');
-        $rows = htmlspecialchars($this->config['rows'] ?? '4');
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $placeholder = html($this->config['placeholder'] ?? '', ENT_QUOTES, 'UTF-8');
+        $rows = html($this->config['rows'] ?? '4', ENT_QUOTES, 'UTF-8');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>

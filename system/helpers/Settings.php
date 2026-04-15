@@ -110,6 +110,12 @@ class SettingsHelper {
     * @return bool Результат сохранения
     */
     public static function save($group, $settings) {
+        foreach ($settings as $key => $value) {
+            if (is_array($value)) {
+                $settings[$key] = implode(',', $value);
+            }
+        }
+        
         $model = self::getModel();
         $result = $model->save($group, $settings);
         

@@ -30,18 +30,25 @@ class DateField extends BaseField {
     * @return string HTML-код для редактирования
     */
     public function renderInput($value, $entityType, $entityId): string {
+        $safeValue = ($value === null) ? '' : $value;
+        
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
         $format = $this->config['format'] ?? 'Y-m-d';
 
         $dateValue = '';
-        if (!empty($value)) {
-            $dateValue = date('Y-m-d', strtotime($value));
+        if (!empty($safeValue)) {
+            $timestamp = strtotime($safeValue);
+            if ($timestamp !== false) {
+                $dateValue = date('Y-m-d', $timestamp);
+            }
         }
+        
+        $fieldName = 'field_' . ($this->systemName ?? '');
         
         return "
             <input type='date' 
-                   name='field_{$this->systemName}' 
-                   value='{$dateValue}'
+                   name='{$fieldName}' 
+                   value='" . html($dateValue, ENT_QUOTES, 'UTF-8') . "'
                    class='form-control form-control-sm'
                    {$required}>
         ";
@@ -55,12 +62,20 @@ class DateField extends BaseField {
     * @return string HTML-код для отображения
     */
     public function renderDisplay($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">Не указана</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">Не указана</span>';
+        }
         
         $format = $this->config['format'] ?? 'd.m.Y';
-        $formattedDate = date($format, strtotime($value));
+        $timestamp = strtotime($value);
         
-        return "<span class='field-date'>{$formattedDate}</span>";
+        if ($timestamp === false) {
+            return '<span class="text-muted">Неверный формат даты</span>';
+        }
+        
+        $formattedDate = date($format, $timestamp);
+        
+        return "<span class='field-date'>" . html($formattedDate, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -71,12 +86,20 @@ class DateField extends BaseField {
     * @return string HTML-код для отображения в списке
     */
     public function renderList($value, $entityType, $entityId): string {
-        if (empty($value)) return '<span class="text-muted">-</span>';
+        if (empty($value) && $value !== '0') {
+            return '<span class="text-muted">-</span>';
+        }
         
         $format = $this->config['format'] ?? 'd.m.Y';
-        $formattedDate = date($format, strtotime($value));
+        $timestamp = strtotime($value);
         
-        return "<span class='field-date'>{$formattedDate}</span>";
+        if ($timestamp === false) {
+            return '<span class="text-muted">-</span>';
+        }
+        
+        $formattedDate = date($format, $timestamp);
+        
+        return "<span class='field-date'>" . html($formattedDate, ENT_QUOTES, 'UTF-8') . "</span>";
     }
     
     /**
@@ -84,8 +107,8 @@ class DateField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $format = htmlspecialchars($this->config['format'] ?? 'd.m.Y');
-        $defaultValue = htmlspecialchars($this->config['default_value'] ?? '');
+        $format = html($this->config['format'] ?? 'd.m.Y', ENT_QUOTES, 'UTF-8');
+        $defaultValue = html($this->config['default_value'] ?? '', ENT_QUOTES, 'UTF-8');
         
         return "
             <div class='row'>
@@ -100,6 +123,7 @@ class DateField extends BaseField {
                     <div class='mb-3'>
                         <label class='form-label'>Значение по умолчанию</label>
                         <input type='date' class='form-control' name='config[default_value]' value='{$defaultValue}'>
+                        <div class='form-text'>Дата, которая будет установлена по умолчанию</div>
                     </div>
                 </div>
             </div>
