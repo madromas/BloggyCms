@@ -45,22 +45,11 @@ if(!empty($settings['custom_css_class'])) {
 
 $posts = $this->posts ?? [];
 
-$calendarIcon = '';
-$clockIcon = '';
-$userIcon = '';
-$eyeIcon = '';
+$calendarIcon = bloggy_icon('bs', 'calendar3', '16 16', 'currentColor', 'me-1');
+$clockIcon = bloggy_icon('bs', 'clock', '16 16', 'currentColor', 'me-1');
+$userIcon = bloggy_icon('bs', 'person', '16 16', 'currentColor', 'me-1');
+$eyeIcon = bloggy_icon('bs', 'eye', '16 16', 'currentColor', 'me-1');
 
-if(function_exists('bloggy_icon')) {
-    $calendarIcon = bloggy_icon('bs', 'calendar3', '16 16', 'currentColor', 'me-1');
-    $clockIcon = bloggy_icon('bs', 'clock', '16 16', 'currentColor', 'me-1');
-    $userIcon = bloggy_icon('bs', 'person', '16 16', 'currentColor', 'me-1');
-    $eyeIcon = bloggy_icon('bs', 'eye', '16 16', 'currentColor', 'me-1');
-} else {
-    $calendarIcon = '<i class="bi bi-calendar3 me-1"></i>';
-    $clockIcon = '<i class="bi bi-clock me-1"></i>';
-    $userIcon = '<i class="bi bi-person me-1"></i>';
-    $eyeIcon = '<i class="bi bi-eye me-1"></i>';
-}
 ?>
 
 <section id="<?php echo html($settings['custom_id'] ?? ''); ?>" class="<?php echo $sectionClass; ?>" style="<?php echo implode('; ', $customStyles); ?>">
