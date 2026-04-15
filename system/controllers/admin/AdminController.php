@@ -751,4 +751,31 @@ class AdminController extends Controller {
         return @rmdir($dir);
     }
 
+    /**
+    * Действие проверки обновлений
+    */
+    public function checkUpdatesAction() {
+        if (!$this->checkAdminAccess()) {
+            Notification::error('У вас нет прав доступа к этому разделу');
+            $this->redirect(ADMIN_URL . '/login');
+            return;
+        }
+        
+        $this->addBreadcrumb('Панель управления', ADMIN_URL);
+        $this->addBreadcrumb('Проверка обновлений');
+        
+        $this->pageTitle = 'Проверка обновлений';
+        
+        $updateResult = VersionHelper::checkUpdates();
+        
+        $this->render('admin/updates/index', [
+            'update_result' => $updateResult,
+            'current_version' => VersionHelper::getVersion(),
+            'current_version_name' => VersionHelper::getVersionName(),
+            'current_version_date' => VersionHelper::getVersionDate(),
+            'current_build' => VersionHelper::getBuild(),
+            'pageTitle' => 'Проверка обновлений'
+        ]);
+    }
+
 }

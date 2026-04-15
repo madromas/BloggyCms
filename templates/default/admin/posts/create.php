@@ -6,11 +6,6 @@ add_admin_js('templates/default/admin/assets/js/controllers/image-upload.js');
 add_admin_css('templates/default/admin/assets/css/controllers/post-blocks.css');
 ?>
 
-<script>
-const ADMIN_URL = '<?php echo ADMIN_URL; ?>';
-const BASE_URL = '<?php echo BASE_URL; ?>';
-</script>
-
 <div class="container-fluid p-0">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0">
@@ -139,27 +134,7 @@ const BASE_URL = '<?php echo BASE_URL; ?>';
                         </div>
                     </div>
                 </div>
-                
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0">
-                        <h5 class="card-title mb-0">SEO настройки</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">SEO Title</label>
-                            <input type="text" class="form-control" name="seo_title" 
-                                placeholder="SEO заголовок (если отличается от основного)">
-                            <div class="form-text">Если оставить пустым, будет использоваться заголовок поста.</div>
-                        </div>
-                        <div class="mb-0">
-                            <label class="form-label">Meta Description</label>
-                            <textarea class="form-control" name="meta_description" rows="2"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3">
+
                 <?php
                     $fieldModel = new FieldModel($this->db);
                     $customFields = $fieldModel->getActiveByEntityType('post');
@@ -195,6 +170,10 @@ const BASE_URL = '<?php echo BASE_URL; ?>';
                         </div>
                     </div>
                 <?php } ?>
+                
+            </div>
+            
+            <div class="col-lg-3">
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-0">
@@ -367,6 +346,24 @@ const BASE_URL = '<?php echo BASE_URL; ?>';
                         <label class="form-check-label" for="allow_comments">
                             Разрешить комментарии
                         </label>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="card-title mb-0">SEO настройки</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">SEO Title</label>
+                            <input type="text" class="form-control" name="seo_title" 
+                                placeholder="SEO заголовок (если отличается от основного)">
+                            <div class="form-text">Если оставить пустым, будет использоваться заголовок поста.</div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label">Meta Description</label>
+                            <textarea class="form-control" name="meta_description" rows="2"></textarea>
+                        </div>
                     </div>
                 </div>
                 

@@ -1,13 +1,16 @@
+
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-content">
             <div class="header-title-wrapper">
                 <div>
-                    <h1 class="dashboard-title">
-                        <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
-                        Панель управления
-                    </h1>
-                    <p class="dashboard-subtitle">Добро пожаловать в панель управления блога!</p>
+                    <div class="d-flex align-items-center gap-3 mb-1">
+                        <h1 class="dashboard-title mb-0">
+                            <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
+                            Панель управления
+                        </h1>
+                    </div>
+                    <p class="dashboard-subtitle mb-0">Добро пожаловать в панель управления блога!</p>
                 </div>
                 <div class="header-actions">
                     <div class="debug-icon-wrapper" id="debugToggleBtn" title="Режим отладки">
@@ -96,7 +99,7 @@
                     <span class="stat-number"><?= $stats['posts'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/posts" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/posts" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -111,7 +114,7 @@
                     <span class="stat-number"><?= $stats['categories'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/categories" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/categories" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -126,7 +129,7 @@
                     <span class="stat-number"><?= $stats['tags'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/tags" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/tags" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -141,7 +144,7 @@
                     <span class="stat-number"><?= $stats['pages'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/pages" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/pages" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -156,7 +159,7 @@
                     <span class="stat-number"><?= $stats['comments'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/comments" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/comments" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -171,7 +174,7 @@
                     <span class="stat-number"><?= $stats['users'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/users" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/users" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -186,7 +189,7 @@
                     <span class="stat-number"><?= $stats['content_blocks'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
-                    <a href="<?= ADMIN_URL ?>/html-blocks" class="stat-link">Управление →</a>
+                    <a href="<?= ADMIN_URL ?>/html-blocks" class="stat-link btn btn-sm btn-primary"><?php echo bloggy_icon('bs', 'arrow-right', '12', '#fff'); ?></a>
                 <?php } ?>
             </div>
         <?php } ?>
@@ -435,13 +438,18 @@
         function showNotification(message, isError = false) {
             const toast = document.createElement('div');
             toast.className = 'custom-toast-debug';
+            
+            const iconSvg = isError 
+                ? '<?php echo bloggy_icon("bs", "exclamation-triangle-fill", "16", "#ffc107"); ?>'
+                : '<?php echo bloggy_icon("bs", "bug-fill", "16", "#ff7818"); ?>';
+            
+            const closeIconSvg = '<?php echo bloggy_icon("bs", "x-lg", "12", "#6c757d"); ?>';
+            
             toast.innerHTML = `
                 <div class="toast-content">
-                    <i class="bi ${isError ? 'bi-exclamation-triangle-fill' : 'bi-bug-fill'}" style="color: ${isError ? '#ffc107' : '#dc3545'}"></i>
-                    <span>${message}</span>
-                    <div class="toast-close">
-                        <i class="bi bi-x-lg"></i>
-                    </div>
+                    <div class="toast-icon">${iconSvg}</div>
+                    <span class="toast-message">${message}</span>
+                    <div class="toast-close">${closeIconSvg}</div>
                 </div>
             `;
             

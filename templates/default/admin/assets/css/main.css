@@ -36,51 +36,82 @@ body {
 }
 
 .sidebar {
-    width: 240px;
-    background: var(--tg-bg-sidebar);
+    width: 260px;
+    background: var(--tg-bg-sidebar, #1a1a2e);
     position: fixed;
     left: 0;
     top: 0;
     height: 100vh;
-    padding: 20px 0;
     z-index: 1000;
     overflow-y: auto;
 }
 
-.brand-logo {
-    color: #ffffff;
-    font-size: 20px;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 0 20px 20px;
-    margin-bottom: 20px;
+.sidebar-brand {
+    padding: 20px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    transition: var(--tg-transition);
+    margin-bottom: 20px;
 }
 
-.brand-logo:hover {
-    opacity: 0.9;
+.brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.brand-logo img {
+    width: 28px;
+    height: 28px;
+}
+
+.brand-logo span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.brand-logo .cms-highlight {
+    color: rgb(163, 230, 237);
+}
+
+.version-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.version-badge {
+    background: rgb(255, 198, 90);
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.version-update {
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.version-update:hover {
+    opacity: 1;
 }
 
 .sidebar .nav {
-    padding: 0 15px;
-    gap: 2px;
-}
-
-.sidebar .nav-link {
-    color: rgba(255, 255, 255, 0.8);
-    padding: 12px 15px;
-    border-radius: var(--tg-radius);
-    margin-bottom: 2px;
-    transition: var(--tg-transition);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.sidebar .nav-link:hover {
-    color: #ffffff;
-    background: var(--tg-bg-sidebar-hover);
-    transform: translateX(2px);
+    padding: 0 12px;
+    gap: 4px;
 }
 
 .content-wrapper {
@@ -93,7 +124,7 @@ body {
 
 .top-bar {
     background: var(--tg-bg-primary);
-    padding: 15px 30px;
+    padding: 15px 40px;
     border-bottom: 1px solid var(--tg-border);
     box-shadow: var(--tg-shadow);
 }

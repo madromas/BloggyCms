@@ -98,45 +98,46 @@
                             </div>
                         </div>
 
+                        <?php
+                            $fieldModel = new FieldModel($this->db);
+                            $customFields = $fieldModel->getActiveByEntityType('page');
+                        ?>
+
+                        <?php if (!empty($customFields)) { ?>
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-white border-0">
+                                    <h5 class="card-title mb-0">Дополнительные поля</h5>
+                                </div>
+                                <div class="card-body">
+                                    <?php foreach ($customFields as $field) { ?>
+                                        <div class="mb-3">
+                                            <label class="form-label small">
+                                                <?php echo html($field['name']); ?>
+                                                <?php if ($field['is_required']) { ?>
+                                                    <span class="text-danger">*</span>
+                                                <?php } ?>
+                                            </label>
+                                            
+                                            <?php 
+                                            $value = $fieldModel->getFieldValue('page', $page['id'], $field['system_name']);
+                                            ?>
+                                            
+                                            <?php echo $fieldModel->renderFieldInput($field, $value, 'page', $page['id']); ?>
+                                            
+                                            <?php if (!empty($field['description'])) { ?>
+                                                <div class="form-text small"><?php echo html($field['description']); ?></div>
+                                            <?php } ?>
+                                        </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                        <?php } ?>
+
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-3">
-                <?php
-                $fieldModel = new FieldModel($this->db);
-                $customFields = $fieldModel->getActiveByEntityType('page');
-                ?>
-
-                <?php if (!empty($customFields)) { ?>
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0">
-                        <h5 class="card-title mb-0">Дополнительные поля</h5>
-                    </div>
-                    <div class="card-body">
-                        <?php foreach ($customFields as $field) { ?>
-                            <div class="mb-3">
-                                <label class="form-label small">
-                                    <?php echo html($field['name']); ?>
-                                    <?php if ($field['is_required']) { ?>
-                                        <span class="text-danger">*</span>
-                                    <?php } ?>
-                                </label>
-                                
-                                <?php 
-                                $value = $fieldModel->getFieldValue('page', $page['id'], $field['system_name']);
-                                ?>
-                                
-                                <?php echo $fieldModel->renderFieldInput($field, $value, 'page', $page['id']); ?>
-                                
-                                <?php if (!empty($field['description'])) { ?>
-                                    <div class="form-text small"><?php echo html($field['description']); ?></div>
-                                <?php } ?>
-                            </div>
-                        <?php } ?>
-                    </div>
-                </div>
-                <?php } ?>
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-0">
@@ -170,8 +171,6 @@
 
 <?php ob_start(); ?>
 <script>
-const ADMIN_URL = '<?php echo ADMIN_URL; ?>';
-const BASE_URL = '<?php echo BASE_URL; ?>';
 window.availablePostBlocks = <?php echo json_encode($postBlockManager->getPostBlocksForJS('page')); ?>;
 window.initialPostBlocks = <?php echo json_encode($preparedBlocks ?? (isset($page) ? [] : array())); ?>;
 <?php if (isset($page)) { ?>window.isEditMode = true;<?php } ?>

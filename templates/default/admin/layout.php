@@ -32,11 +32,21 @@
         }
     ?>
         <div class="admin-wrapper">
-            <aside class="sidebar" <?php if(!empty(SettingsHelper::get('controller_admin', 'bg_panel'))) { ?>style="background-size: cover; background-image: url('<?php echo BASE_URL ?>/uploads/settings/admin/<?php echo SettingsHelper::get('controller_admin', 'bg_panel') ?>"<?php } ?>>
-                <a href="<?= ADMIN_URL ?>" class="brand-logo d-flex align-items-center">
-                    <img src = "/templates/default/admin/assets/img/logo-outline-light.png" style = "width: 32px; margin-right: 6px;">
-                    BLOGGY<span style = "color:rgb(163, 230, 237)">CMS</span>
-                </a>
+            <aside class="sidebar" <?php if(!empty(SettingsHelper::get('controller_admin', 'bg_panel'))) { ?>style="background-size: cover; background-image: url('<?php echo BASE_URL ?>/uploads/settings/admin/<?php echo SettingsHelper::get('controller_admin', 'bg_panel') ?>')"<?php } ?>>
+                <div class="sidebar-brand">
+                    <div class="brand-row">
+                        <a href="<?php echo ADMIN_URL ?>" class="brand-logo">
+                            <img src="/templates/default/admin/assets/img/logo-outline-light.png" alt="Logo">
+                            <span>BLOGGY<span class="cms-highlight">CMS</span></span>
+                        </a>
+                        <div class="version-wrapper">
+                            <span class="version-badge">v <?php echo VersionHelper::getVersion(); ?></span>
+                            <a href="/admin/check-updates" class="version-update" title="Проверить обновления">
+                                <?php echo bloggy_icon('bs', 'arrow-repeat', '14', '#ffffff'); ?>
+                            </a>
+                        </div>
+                    </div>
+                </div>
                 <nav class="nav flex-column">
                     <?php
                     $menuItems = [
@@ -81,26 +91,26 @@
 
             <main class="content-wrapper">
                 <div class="top-bar d-flex justify-content-between align-items-center">
-                        <div class="breadcrumb-wrapper">
-                            <?php 
-                            if (isset($breadcrumbs) && $breadcrumbs instanceof BreadcrumbsManager && !$breadcrumbs->isEmpty()) {
-                                echo $breadcrumbs->render([
-                                    'container_tag' => 'div',
-                                    'container_class' => 'admin-breadcrumb',
-                                    'list_tag' => 'ol',
-                                    'list_class' => 'breadcrumb mb-0',
-                                    'item_tag' => 'li',
-                                    'item_class' => 'breadcrumb-item',
-                                    'active_class' => 'active',
-                                    'home_icon' => 'house'
-                                ]);
-                            } else {
-                                echo '<h6 class="mb-0"><a href="' . ADMIN_URL . '" style="text-decoration:none">';
-                                echo bloggy_icon('bs', 'house', '16', '#000', 'me-1');
-                                echo ' Панель управления</a></h6>';
-                            }
-                            ?>
-                        </div>
+                    <div class="breadcrumb-wrapper">
+                        <?php 
+                        if (isset($breadcrumbs) && $breadcrumbs instanceof BreadcrumbsManager && !$breadcrumbs->isEmpty()) {
+                            echo $breadcrumbs->render([
+                                'container_tag' => 'div',
+                                'container_class' => 'admin-breadcrumb',
+                                'list_tag' => 'ol',
+                                'list_class' => 'breadcrumb mb-0',
+                                'item_tag' => 'li',
+                                'item_class' => 'breadcrumb-item',
+                                'active_class' => 'active',
+                                'home_icon' => 'house'
+                            ]);
+                        } else {
+                            echo '<h6 class="mb-0"><a href="' . ADMIN_URL . '" style="text-decoration:none">';
+                            echo bloggy_icon('bs', 'house', '16', '#000', 'me-1');
+                            echo ' Панель управления</a></h6>';
+                        }
+                        ?>
+                    </div>
                     <div class="d-flex align-items-center">
                         <div class="d-flex align-items-center me-3" style="gap: 10px;">
                             <div class="dropdown">
@@ -117,7 +127,7 @@
                                 <div class="dropdown-menu dropdown-menu-end shadow-lg p-0" style="min-width: 320px;">
                                     <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center">
                                         <h6 class="mb-0">Уведомления</h6>
-                                        <a href="<?= ADMIN_URL ?>/notifications" class="text-white text-decoration-none">
+                                        <a href="<?php echo ADMIN_URL ?>/notifications" class="text-white text-decoration-none">
                                             <small>Все</small>
                                         </a>
                                     </div>
@@ -136,7 +146,7 @@
                                             <a href="#" class="btn btn-sm btn-outline-success" id="mark-all-read-dropdown">
                                                 <i class="bi bi-check2-all me-1"></i> Прочитать все
                                             </a>
-                                            <a href="<?= ADMIN_URL ?>/notifications" class="btn btn-sm btn-outline-primary">
+                                            <a href="<?php echo ADMIN_URL ?>/notifications" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-arrow-right me-1"></i> Перейти
                                             </a>
                                         </div>
@@ -144,28 +154,27 @@
                                 </div>
                             </div>
 
-                            <a href="<?= ADMIN_URL ?>/addons" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление пакетами">
+                            <a href="<?php echo ADMIN_URL ?>/addons" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление пакетами">
                                 <div class="btn-icon-wrapper">
                                     <?php echo bloggy_icon('bs', 'box', '16 16', '#28a745') ?>
                                 </div>
                                 <span class="btn-text">Пакеты</span>
                             </a>
 
-                            <a href="<?= ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление контроллерами">
+                            <a href="<?php echo ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление контроллерами">
                                 <div class="btn-icon-wrapper">
                                     <?php echo bloggy_icon('bs', 'cpu', '16 16', '#7b1fa2') ?>
                                 </div>
                                 <span class="btn-text">Контроллеры</span>
                             </a>
-
                         </div>
                         <div class="dropdown">
                             <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php if(!empty($currentUser['avatar']) && $currentUser['avatar'] !== 'default.jpg'): ?>
-                                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= $currentUser['avatar'] ?>" 
+                                    <img src="<?php echo BASE_URL ?>/uploads/avatars/<?php echo $currentUser['avatar'] ?>" 
                                          class="rounded-circle me-2" 
                                          style="width: 32px; height: 32px; object-fit: cover;"
-                                         alt="<?= htmlspecialchars($currentUser['username']) ?>">
+                                         alt="<?php echo html($currentUser['username']) ?>">
                                 <?php else: ?>
                                     <div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-secondary text-white" 
                                          style="width: 32px; height: 32px;">
@@ -173,29 +182,29 @@
                                     </div>
                                 <?php endif; ?>
                                 <span class="text-muted">
-                                    <?= htmlspecialchars($currentUser['display_name'] ?: $currentUser['username']) ?>
+                                    <?php echo html($currentUser['display_name'] ?: $currentUser['username']) ?>
                                 </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="<?= ADMIN_URL ?>/users/edit/<?= $currentUser['id'] ?>">
+                                    <a class="dropdown-item d-flex align-items-center" href="<?php echo ADMIN_URL ?>/users/edit/<?php echo $currentUser['id'] ?>">
                                         <i class="bi bi-pencil me-2"></i> Редактировать профиль
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="<?= BASE_URL ?>/profile" target="_blank">
+                                    <a class="dropdown-item d-flex align-items-center" href="<?php echo BASE_URL ?>/profile/<?php echo html($currentUser['username']) ?>" target="_blank">
                                         <i class="bi bi-person-circle me-2"></i> Мой публичный профиль
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="<?= BASE_URL ?>" target="_blank">
+                                    <a class="dropdown-item d-flex align-items-center" href="<?php echo BASE_URL ?>" target="_blank">
                                         <i class="bi bi-eye me-2"></i> Перейти на сайт
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center text-danger" href="<?= ADMIN_URL ?>/logout">
+                                    <a class="dropdown-item d-flex align-items-center text-danger" href="<?php echo ADMIN_URL ?>/logout">
                                         <i class="bi bi-box-arrow-right me-2"></i> Выйти
                                     </a>
                                 </li>
@@ -204,7 +213,7 @@
                     </div>
                 </div>
 
-                <div class="container-fluid px-4">
+                <div class="container-fluid px-5">
                     <?php echo $content ?>
                 </div>
             </main>
@@ -216,15 +225,14 @@
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="toast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body">
-                </div>
+                <div class="toast-body"></div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
     </div>
 
     <?php if(isset($_SESSION['user_id'])) { ?>
-        <?= QuickActionsHelper::renderQuickActions() ?>
+        <?php echo QuickActionsHelper::renderQuickActions() ?>
     <?php } ?>
 
     <?php echo base_admin_js(['jquery-3.6.0.min', 'bootstrap', 'Sortable.min', 'main', 'jquery-ui.min', 'notifications']); ?>
@@ -236,8 +244,8 @@
         <?php unset($_SESSION['toast']); ?>
     <?php } ?>
     <script>
-    window.BASE_URL = '<?= BASE_URL ?>';
-    window.ADMIN_URL = '<?= ADMIN_URL ?>';
+    window.BASE_URL = '<?php echo BASE_URL ?>';
+    window.ADMIN_URL = '<?php echo ADMIN_URL ?>';
     </script>
 </body>
 </html>

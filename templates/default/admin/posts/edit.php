@@ -177,28 +177,7 @@ add_admin_css('templates/default/admin/assets/css/controllers/post-blocks.css');
                         </div>
                     </div>
                 </div>
-                
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0">
-                        <h5 class="card-title mb-0">SEO настройки</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label">SEO Title</label>
-                            <input type="text" class="form-control" name="seo_title" 
-                                value="<?php echo html($post['seo_title'] ?? ''); ?>"
-                                placeholder="SEO заголовок (если отличается от основного)">
-                            <div class="form-text">Если оставить пустым, будет использоваться заголовок поста.</div>
-                        </div>
-                        <div class="mb-0">
-                            <label class="form-label">Meta Description</label>
-                            <textarea class="form-control" name="meta_description" rows="2"><?php echo html($post['meta_description'] ?? ''); ?></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3">
+
                 <?php
                     $fieldModel = new FieldModel($this->db);
                     $customFields = $fieldModel->getActiveByEntityType('post');
@@ -234,6 +213,10 @@ add_admin_css('templates/default/admin/assets/css/controllers/post-blocks.css');
                         </div>
                     </div>
                 <?php } ?>
+                
+            </div>
+            
+            <div class="col-lg-3">
 
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-header bg-white border-0">
@@ -427,6 +410,25 @@ add_admin_css('templates/default/admin/assets/css/controllers/post-blocks.css');
                         </label>
                     </div>
                 </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0">
+                        <h5 class="card-title mb-0">SEO настройки</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">SEO Title</label>
+                            <input type="text" class="form-control" name="seo_title" 
+                                value="<?php echo html($post['seo_title'] ?? ''); ?>"
+                                placeholder="SEO заголовок (если отличается от основного)">
+                            <div class="form-text">Если оставить пустым, будет использоваться заголовок поста.</div>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label">Meta Description</label>
+                            <textarea class="form-control" name="meta_description" rows="2"><?php echo html($post['meta_description'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="d-grid">
                     <button type="submit" class="btn btn-primary">
@@ -441,8 +443,6 @@ add_admin_css('templates/default/admin/assets/css/controllers/post-blocks.css');
 
 <?php ob_start(); ?>
 <script>
-    const ADMIN_URL = '<?php echo ADMIN_URL; ?>';
-    const BASE_URL = '<?php echo BASE_URL; ?>';
     window.availablePostBlocks = <?php echo json_encode($postBlockManager->getPostBlocksForJS()); ?>;
     window.initialPostBlocks = <?php echo json_encode($preparedBlocks ?? array()); ?>;
     window.isEditMode = true;
