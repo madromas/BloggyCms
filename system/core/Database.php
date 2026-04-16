@@ -26,18 +26,18 @@ class Database {
     */
     public function __construct() {
         try {
+            $initCommandAttr = PHP_VERSION_ID >= 80500 
+                ? \Pdo\Mysql::ATTR_INIT_COMMAND 
+                : PDO::MYSQL_ATTR_INIT_COMMAND;
+            
             $this->connection = new PDO(
                 "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME,
                 DB_USER,
                 DB_PASS,
-                [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"]
+                [$initCommandAttr => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"]
             );
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             
-            $this->connection->exec("SET CHARACTER SET utf8mb4");
-            $this->connection->exec("SET character_set_connection = utf8mb4");
-            $this->connection->exec("SET character_set_results = utf8mb4");
-            $this->connection->exec("SET character_set_client = utf8mb4");
             $this->prefix = defined('DB_PREFIX') ? DB_PREFIX : '';
             
         } catch(PDOException $e) {
