@@ -27,7 +27,7 @@ class AuthorBlock extends BaseHtmlBlock {
     }
 
     public function getTemplate(): string {
-        return 'all';
+        return 'default';
     }
 
     public function getSettingsForm($currentSettings = []): string {

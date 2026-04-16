@@ -64,9 +64,13 @@
                                         name="slug" 
                                         class="form-control" 
                                         value="<?php echo html($block['slug'] ?? ''); ?>" 
-                                        placeholder="например: header_menu"
+                                        placeholder="например: header-menu"
+                                        <?php echo isset($block) ? 'disabled' : ''; ?>
                                         required>
-                                    <div class="form-text">Уникальный идентификатор для использования в коде</div>
+                                    <div class="form-text">Уникальный идентификатор для использования в коде.</div>
+                                    <?php if (isset($block)) { ?>
+                                        <input type="hidden" name="slug" value="<?php echo html($block['slug']); ?>">
+                                    <?php } ?>
                                 </div>
                             </div>
 

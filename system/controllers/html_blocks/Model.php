@@ -75,8 +75,8 @@ class HtmlBlockModel implements ModelAPI {
     * @throws Exception При ошибках валидации или дублировании slug
     */
     public function create($data) {
-        if (!preg_match('/^[a-z0-9-]+$/', $data['slug'])) {
-            throw new Exception('Имя может содержать только латинские буквы, цифры и дефисы.');
+        if (!preg_match('/^[a-z0-9_-]+$/', $data['slug'])) {
+            throw new Exception('Имя может содержать только латинские буквы, цифры, дефисы и нижнее подчеркивание.');
         }
 
         if ($this->isSlugExists($data['slug'])) {
