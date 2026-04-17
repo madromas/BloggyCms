@@ -1,3 +1,15 @@
+<?php
+    add_admin_js('templates/default/admin/assets/js/controllers/fields-form.js');
+    
+    $config = array();
+    if (isset($field) && !empty($field['config'])) {
+        if (is_array($field['config'])) {
+            $config = $field['config'];
+        } elseif (is_string($field['config'])) {
+            $config = json_decode($field['config'], true) ?: array();
+        }
+    }
+?>
 <div class="container-fluid p-0">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0">
@@ -44,7 +56,7 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Тип поля <span class="text-danger">*</span></label>
-                            <select name="type" class="form-select" id="field-type-select">
+                            <select name="type" class="form-select" id="field-type">
                                 <?php foreach ($fieldTypes as $type => $typeName) { ?>
                                     <option value="<?php echo html($type); ?>" 
                                             <?php echo (($field['type'] ?? 'string') == $type) ? 'selected' : ''; ?>>
@@ -112,14 +124,10 @@
                     </div>
                 </div>
                 
-                <div class="mb-3" id="field-config-container">
+                <div class="mb-3" id="field-settings">
                     <label class="form-label">Настройки поля</label>
-                    <div id="field-config-content">
-                        <?php 
-                        $fieldManager = new \FieldManager($this->db);
-                        $currentConfig = isset($field['config']) ? $field['config'] : [];
-                        echo $fieldManager->getFieldSettingsForm($field['type'] ?? 'string', $currentConfig);
-                        ?>
+                    <div id="field-settings-content">
+                        <div class="alert alert-info">Выберите тип поля чтобы увидеть его настройки</div>
                     </div>
                 </div>
                 
@@ -136,5 +144,3 @@
         </div>
     </div>
 </div>
-
-<?php add_admin_js('templates/default/admin/assets/js/controllers/fields-form.js'); ?>

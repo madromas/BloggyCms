@@ -110,6 +110,39 @@ $totalComments = $totalComments ?? ($post['comments_count'] ?? 0);
             <?php } ?>
         </div>
         
+        <?php
+            $fieldModel = new FieldModel($this->db);
+            $customFields = $fieldModel->getActiveByEntityType('post');
+        ?>
+                        
+        <?php if (!empty($customFields)) { 
+            $hasValues = false;
+            foreach ($customFields as $field) { 
+                $value = $fieldModel->getFieldValue('post', $post['id'], $field['system_name']);
+                if (!empty($value)) {
+                    $hasValues = true;
+                    break;
+                }
+            }
+        ?>
+                        
+        <?php if ($hasValues) { ?>
+            <div class="tg-custom-fields">
+                <?php foreach ($customFields as $field) { 
+                    $value = $fieldModel->getFieldValue('post', $post['id'], $field['system_name']);
+                    if (!empty($value)) { 
+                ?>
+                <div class="tg-custom-field-block">
+                    <span class="tg-custom-field-label"><?php echo html($field['name']); ?>:</span>
+                    <span class="tg-custom-field-value">
+                        <?php echo $fieldModel->renderFieldDisplay($field, $value, 'post', $post['id']); ?>
+                    </span>
+                </div>
+                <?php } } ?>
+            </div>
+        <?php } ?>
+        <?php } ?>
+        
         <?php if (!empty($post['tags'])) { ?>
         <div class="tg-post-tags tg-mb-4">
             <?php foreach ($post['tags'] as $tag) { ?>

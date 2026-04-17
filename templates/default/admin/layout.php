@@ -11,6 +11,7 @@
     <?php echo favicon(); ?>
     <?php echo base_admin_css(['bootstrap', 'icons', 'main']); ?>
     <?php echo render_admin_css(); ?>
+    <script>window.BASE_URL = '<?php echo BASE_URL ?>'; window.ADMIN_URL = '<?php echo ADMIN_URL ?>';</script>
 </head>
 <body>
     <?php if(isset($_SESSION['user_id'])) { 
@@ -243,9 +244,5 @@
         <div id="notification-data" data-message="<?php echo html($_SESSION['toast']['message']) ?>" data-type="<?php echo html($_SESSION['toast']['type']) ?>" data-position="<?php echo SettingsHelper::get('controller_admin', 'notification_position', 'top-left') ?>" style="display: none;"></div>
         <?php unset($_SESSION['toast']); ?>
     <?php } ?>
-    <script>
-    window.BASE_URL = '<?php echo BASE_URL ?>';
-    window.ADMIN_URL = '<?php echo ADMIN_URL ?>';
-    </script>
 </body>
 </html>

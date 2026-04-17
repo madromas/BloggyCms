@@ -12,23 +12,15 @@
                 <div class="tg-page-card">
                     <div class="tg-page-header tg-mb-4">
                         <h1 class="tg-page-title"><?php echo html($page['title']); ?></h1>
-                        
-                        <?php if (!empty($page['short_description'])) { ?>
-                        <p class="tg-page-description">
-                            <?php echo html($page['short_description']); ?>
-                        </p>
-                        <?php } ?>
-                        
                         <?php if (!empty($page['updated_at'])) { ?>
-                        <div class="tg-page-meta">
-                            <span class="tg-meta-item">
-                                <?php echo bloggy_icon('bs', 'calendar', '14', 'currentColor', 'tg-mr-1'); ?>
-                                Обновлено <?php echo date('d.m.Y', strtotime($page['updated_at'])); ?>
-                            </span>
-                        </div>
+                            <div class="tg-page-meta">
+                                <span class="tg-meta-item">
+                                    <?php echo bloggy_icon('bs', 'calendar', '14', 'currentColor', 'tg-mr-1'); ?>
+                                    Обновлено <?php echo date('d.m.Y', strtotime($page['updated_at'])); ?>
+                                </span>
+                            </div>
                         <?php } ?>
                     </div>
-                    
                     <div class="tg-page-content">
                         <?php if (!empty($blocks)) { ?>
                             <?php foreach ($blocks as $block) { ?>
@@ -45,8 +37,8 @@
                         <?php } ?>
                         
                         <?php
-                        $fieldModel = new FieldModel($this->db);
-                        $customFields = $fieldModel->getActiveByEntityType('page');
+                            $fieldModel = new FieldModel($this->db);
+                            $customFields = $fieldModel->getActiveByEntityType('page');
                         ?>
                         
                         <?php if (!empty($customFields)) { 
