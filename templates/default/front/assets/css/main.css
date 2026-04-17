@@ -6415,3 +6415,7 @@ a:hover {
   .header__search-input-wrapper { width: 100%; min-width: auto; }
   .header__search-submit { width: 100%; }
 }
+.icon-display {
+  position: relative;
+  bottom: 7px;
+}

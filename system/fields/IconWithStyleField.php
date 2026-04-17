@@ -308,7 +308,7 @@ class IconWithStyleField extends BaseField {
         
         if (function_exists('bloggy_icon')) {
             $svg = bloggy_icon($set, $name, $size . ' ' . $size, $color, 'icon-display');
-            return '<div class="text-center">' . $svg . '</div>';
+            return $svg;
         }
         
         return '<div class="text-center text-muted small">' . htmlspecialchars($name) . '</div>';
