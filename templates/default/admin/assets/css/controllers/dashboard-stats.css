@@ -1,0 +1,251 @@
+.dashboard-stats-container {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stats-header {
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 1rem !important;
+}
+
+.period-selector .btn {
+    transition: all 0.2s ease;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 0;
+}
+
+.card-header {
+    padding: 0.5rem 0.75rem !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.card-header .card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.card-body {
+    padding: 0.75rem !important;
+}
+
+canvas {
+    max-height: 200px !important;
+    min-height: 150px !important;
+    width: 100% !important;
+}
+
+#publicationsChart {
+    max-height: 180px !important;
+    min-height: 150px !important;
+}
+
+#popularPostsChart,
+#likedPostsChart {
+    max-height: 180px !important;
+    min-height: 150px !important;
+}
+
+#commentsChart {
+    max-height: 160px !important;
+    min-height: 140px !important;
+}
+
+.publications-stats {
+    margin-top: 0.5rem !important;
+    gap: 8px;
+}
+
+.publications-stats > div {
+    padding: 4px 6px;
+}
+
+.publications-stats .h5 {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.publications-stats .small {
+    font-size: 0.65rem;
+}
+
+#summary-stats-content .mb-4 {
+    margin-bottom: 0.75rem !important;
+}
+
+#summary-stats-content .h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+}
+
+#summary-stats-content .small {
+    font-size: 0.65rem;
+}
+
+#summary-stats-content h6 {
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem !important;
+}
+
+.categories-stats {
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.categories-stats .small {
+    font-size: 0.65rem;
+}
+
+.categories-stats .progress {
+    height: 2px !important;
+    margin-bottom: 0.5rem !important;
+}
+
+#mini-monthly-chart {
+    min-height: 100px;
+}
+
+#mini-monthly-chart canvas {
+    max-height: 100px !important;
+    min-height: 80px !important;
+}
+
+#comments-status-stats .mb-4 {
+    margin-bottom: 0.5rem !important;
+}
+
+#comments-status-stats h6 {
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem !important;
+}
+
+#comments-status-stats .progress {
+    height: 3px !important;
+    margin-bottom: 0.25rem !important;
+}
+
+#comments-status-stats .fw-bold {
+    font-size: 0.7rem;
+}
+
+#top-commented-posts h6 {
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem !important;
+}
+
+#top-commented-posts .list-group-item {
+    padding: 0.25rem 0 !important;
+    font-size: 0.7rem;
+}
+
+#top-commented-posts .badge {
+    font-size: 0.6rem;
+    padding: 0.2rem 0.4rem;
+}
+
+@media (max-width: 768px) {
+    .stats-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .period-selector {
+        justify-content: center;
+    }
+    
+    canvas {
+        max-height: 150px !important;
+    }
+    
+    .publications-stats {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading-stats {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.row > [class*="col-"] {
+    padding-bottom: 0;
+}
+
+.mb-4 {
+    margin-bottom: 0.75rem !important;
+}
+
+.empty-stats {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.empty-stats i {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.list-group-item-action {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.list-group-item-action:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    transform: translateX(4px);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media print {
+    .sidebar,
+    .top-bar,
+    .stats-header .btn-group,
+    .period-selector,
+    #refreshStatsBtn,
+    .quick-actions {
+        display: none !important;
+    }
+    
+    .dashboard-stats-container {
+        margin-top: 0 !important;
+    }
+    
+    .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ddd !important;
+    }
+    
+    canvas {
+        max-height: 250px !important;
+    }
+}

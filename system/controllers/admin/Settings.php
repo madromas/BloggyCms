@@ -84,6 +84,80 @@ class AdminSettings {
                 ]
             ]),
 
+            new \Fieldset('Детальная статистика', [
+                'icon' => 'bi bi-graph-up',
+                'columns' => '12',
+                'fields' => [
+                    \FieldFactory::checkbox('show_detailed_stats', [
+                        'title' => 'Показывать детальную статистику на дашборде',
+                        'hint' => 'Отображать интерактивные графики с аналитикой постов, комментариев и активности',
+                        'default' => true,
+                        'switch' => true
+                    ]),
+                    
+                    \FieldFactory::select('stats_period', [
+                        'title' => 'Период статистики по умолчанию',
+                        'default' => 'month',
+                        'options' => [
+                            'week' => 'Последние 7 дней',
+                            'month' => 'Последние 30 дней',
+                            'quarter' => 'Последние 90 дней',
+                            'year' => 'Последние 12 месяцев',
+                            'all' => 'За все время'
+                        ],
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::checkbox('show_publications_chart', [
+                        'title' => 'График публикаций',
+                        'default' => true,
+                        'switch' => true,
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::checkbox('show_popular_posts_chart', [
+                        'title' => 'Топ популярных постов',
+                        'default' => true,
+                        'switch' => true,
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::checkbox('show_liked_posts_chart', [
+                        'title' => 'Топ залайканных постов',
+                        'default' => true,
+                        'switch' => true,
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::checkbox('show_comments_chart', [
+                        'title' => 'Статистика комментариев',
+                        'default' => true,
+                        'switch' => true,
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::number('top_posts_limit', [
+                        'title' => 'Количество постов в топах',
+                        'default' => 5,
+                        'min' => 3,
+                        'max' => 20,
+                        'show' => 'field:show_detailed_stats'
+                    ]),
+                    
+                    \FieldFactory::select('chart_theme', [
+                        'title' => 'Цветовая схема графиков',
+                        'default' => 'modern',
+                        'options' => [
+                            'modern' => 'Современная',
+                            'pastel' => 'Пастельная',
+                            'dark' => 'Темная',
+                            'corporate' => 'Корпоративная'
+                        ],
+                        'show' => 'field:show_detailed_stats'
+                    ])
+                ]
+            ]),
+
             new \Fieldset('Быстрые действия', [
                 'icon' => 'bi bi-lightning-charge-fill',
                 'columns' => '3',

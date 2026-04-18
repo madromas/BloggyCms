@@ -36,6 +36,10 @@ class HtmlField extends BaseField {
             admin_js('templates/default/admin/assets/js/controllers/ace.js');
             admin_js('templates/default/admin/assets/js/controllers/mode-html.js');
             admin_js('templates/default/admin/assets/js/controllers/theme-monokai.js');
+            
+            front_js('templates/default/admin/assets/js/controllers/ace.js');
+            front_js('templates/default/admin/assets/js/controllers/mode-html.js');
+            front_js('templates/default/admin/assets/js/controllers/theme-monokai.js');
         }
         
         self::$assetsLoaded = true;

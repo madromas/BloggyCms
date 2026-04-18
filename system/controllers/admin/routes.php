@@ -13,4 +13,6 @@ return [
     'admin/controllers' => ['controller' => 'Controllers', 'action' => 'adminIndex', 'admin' => true],
     'admin/templates/create-front-folder' => ['controller' => 'Admin', 'action' => 'createFrontFolder', 'admin' => true],
     'admin/delete-install-folder' => ['controller' => 'Admin', 'action' => 'deleteInstallFolder', 'admin' => true],
+    'admin/stats/data' => ['controller' => 'AdminStats', 'action' => 'getStatsData', 'admin' => true],
+    'admin/stats/export-html' => ['controller' => 'AdminStats', 'action' => 'exportHtml', 'admin' => true]
 ];

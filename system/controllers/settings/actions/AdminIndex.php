@@ -53,7 +53,7 @@ class AdminIndex extends SettingsAction {
                         
                         $postSettings = $_POST['settings'] ?? [];
                         
-                        if ($activeTab === 'site') {
+                        if ($activeTab === 'site' || $activeTab === 'general') {
                             $postSettings = $this->handleBackupSettings($postSettings);
                             $postSettings = $this->handleFaviconUpload($postSettings);
                         }
@@ -255,15 +255,18 @@ class AdminIndex extends SettingsAction {
     * Обрабатывает загрузку favicon
     */
     private function handleFaviconUpload($postSettings) {
+
+        $currentSettings = $this->settingsModel->get('site');
+        
         if (isset($_FILES['favicon_file']) && $_FILES['favicon_file']['error'] === UPLOAD_ERR_OK) {
             try {
                 $file = $_FILES['favicon_file'];
                 
-                $allowedTypes = ['ico', 'png', 'svg'];
+                $allowedTypes = ['ico', 'png', 'svg', 'jpg', 'jpeg', 'gif', 'webp'];
                 $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                 
                 if (!in_array($extension, $allowedTypes)) {
-                    throw new \Exception('Недопустимый формат файла. Разрешены: ICO, PNG, SVG');
+                    throw new \Exception('Недопустимый формат файла. Разрешены: ICO, PNG, SVG, JPG, JPEG, GIF, WebP');
                 }
                 
                 $uploadDir = UPLOADS_PATH . '/favicon/';
@@ -273,8 +276,9 @@ class AdminIndex extends SettingsAction {
                     }
                 }
                 
-                if (!empty($postSettings['favicon'])) {
-                    $oldFile = UPLOADS_PATH . '/' . ltrim($postSettings['favicon'], '/');
+                $oldFavicon = $currentSettings['favicon'] ?? $postSettings['favicon'] ?? null;
+                if (!empty($oldFavicon)) {
+                    $oldFile = BASE_PATH . '/' . ltrim($oldFavicon, '/');
                     if (file_exists($oldFile)) {
                         unlink($oldFile);
                     }
@@ -289,19 +293,23 @@ class AdminIndex extends SettingsAction {
                 
                 $postSettings['favicon'] = 'uploads/favicon/' . $fileName;
                 
+                \Notification::success('Favicon успешно загружен');
+                
             } catch (\Exception $e) {
                 \Notification::error('Ошибка загрузки favicon: ' . $e->getMessage());
             }
         }
         
         if (isset($_POST['remove_favicon']) && $_POST['remove_favicon'] == '1') {
-            if (!empty($postSettings['favicon'])) {
-                $oldFile = UPLOADS_PATH . '/' . ltrim($postSettings['favicon'], '/');
+            $oldFavicon = $currentSettings['favicon'] ?? $postSettings['favicon'] ?? null;
+            if (!empty($oldFavicon)) {
+                $oldFile = BASE_PATH . '/' . ltrim($oldFavicon, '/');
                 if (file_exists($oldFile)) {
                     unlink($oldFile);
                 }
-                $postSettings['favicon'] = '';
             }
+            $postSettings['favicon'] = '';
+            \Notification::success('Favicon удален');
         }
         
         return $postSettings;

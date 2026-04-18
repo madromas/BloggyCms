@@ -29,8 +29,8 @@
                            name="favicon_file" 
                            class="form-control" 
                            id="faviconInput"
-                           accept=".ico,.png,.svg,image/x-icon,image/png,image/svg+xml">
-                    <div class="form-text">Допустимые форматы: ICO, PNG, SVG. Рекомендуемый размер: 32x32 пикселя</div>
+                           accept=".ico,.png,.svg,.jpg,.jpeg,.gif,.webp,image/x-icon,image/png,image/svg+xml,image/jpeg,image/gif,image/webp">
+                    <div class="form-text">Допустимые форматы: ICO, PNG, SVG, JPG, JPEG, GIF, WebP. Рекомендуемый размер: 32x32 пикселя</div>
                 </div>
                 
                 <?php if (!empty($settings['favicon'])) { ?>
@@ -48,9 +48,12 @@
                             <a href="<?php echo BASE_URL . '/' . $settings['favicon']; ?>" target="_blank" class="btn btn-sm btn-outline-primary me-2">
                                 <?php echo bloggy_icon('bs', 'eye', '14', '#0d6efd', 'me-1'); ?>Просмотр
                             </a>
-                            <label class="btn btn-sm btn-outline-danger">
-                                <input type="checkbox" name="remove_favicon" value="1" style="display: none;"> <?php echo bloggy_icon('bs', 'trash', '14', '#dc3545', 'me-1'); ?>Удалить
-                            </label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="remove_favicon" id="remove_favicon" value="1">
+                                <label class="form-check-label text-danger" for="remove_favicon">
+                                    <?php echo bloggy_icon('bs', 'trash', '14', '#dc3545', 'me-1'); ?>Удалить
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

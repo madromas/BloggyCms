@@ -70,6 +70,7 @@ class IconWithStyleField extends BaseField {
         }
         
         admin_js('templates/default/admin/assets/js/controllers/icon-with-style-field.js');
+        front_js('templates/default/admin/assets/js/controllers/icon-with-style-field.js');
         
         self::$assetsLoaded = true;
     }
@@ -219,7 +220,7 @@ class IconWithStyleField extends BaseField {
         $iconSize = $decodedValue['size'] ?? $this->config['default_size'] ?? 24;
         
         if (empty($iconName) || empty($iconSet)) {
-            return '<span class="text-muted">Иконка не выбрана</span>';
+            return '';
         }
         
         return $this->getIconPreviewHtml($iconSet, $iconName, $iconColor, $iconSize);

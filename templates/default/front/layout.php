@@ -1,7 +1,7 @@
 <?php
 /**
- * Template Name: Основной макет
- */
+* Template Name: Основной макет
+*/
 
 $maintenanceMode = SettingsHelper::get('general', 'maintenance_mode', false);
 $isAdmin = isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
@@ -33,12 +33,22 @@ if ($maintenanceMode && !$isAdmin) {
 ?>
 
 <?php init_blocks_cache(); ?>
+
+<?php
+$favicon = SettingsHelper::get('general', 'favicon', '');
+$faviconUrl = !empty($favicon) ? BASE_URL . '/' . $favicon : BASE_URL . '/templates/default/admin/assets/img/favicon.png';
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= SettingsHelper::get('general', 'site_name', 'BloggyCMS') ?> - <?= $title ?? 'Главная' ?></title>
+    <link rel="icon" type="image/x-icon" href="<?= $faviconUrl ?>">
+    <link rel="shortcut icon" type="image/x-icon" href="<?= $faviconUrl ?>">
+    <link rel="apple-touch-icon" href="<?= $faviconUrl ?>">
+    
     <?php if(!empty(SettingsHelper::get('general', 'site_description'))) { ?>
     <meta name="description" content="<?php echo SettingsHelper::get('general', 'site_description'); ?>">
     <?php } ?>
@@ -56,16 +66,15 @@ if ($maintenanceMode && !$isAdmin) {
 
     <div id="front-notifications-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
     
-    <div class="page-wrapper">
-        <?php echo render_html_block('header'); ?>
-        <?php echo render_html_block('breadcrumbs'); ?>
-        <main class="main-content">
-            <?php echo $content ?>
-        </main>
-        <?php echo render_html_block('footer'); ?>
-        <?php echo render_html_block('top'); ?>
-        <?php echo render_html_block('cookies'); ?>
-    </div>
+    <?php echo render_html_block('header'); ?>
+    <?php echo render_html_block('breadcrumbs'); ?>
+
+    <?php echo $content ?>
+
+    <?php echo render_html_block('footer'); ?>
+    <?php echo render_html_block('top'); ?>
+    <?php echo render_html_block('cookies'); ?>
+
     
     <?php echo base_front_js(['bootstrap.bundle.min','notifications','main']); ?>
     

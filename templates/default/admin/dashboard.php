@@ -576,3 +576,8 @@
     });
 </script>
 <?php admin_bottom_js(ob_get_clean()); ?>
+
+<?php if(SettingsHelper::get('controller_admin', 'show_detailed_stats', true)) { ?>
+    <?php add_admin_js('templates/default/admin/assets/js/controllers/chart.umd.min.js'); ?>
+    <?php add_admin_js('templates/default/admin/assets/js/controllers/dashboard-stats.js'); ?>
+<?php } ?>

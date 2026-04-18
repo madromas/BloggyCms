@@ -1,6 +1,7 @@
 <?php
     add_admin_js('templates/default/admin/assets/js/controllers/settings.js');
     add_admin_js('templates/default/admin/assets/js/controllers/conditional-fields.js');
+    add_admin_js('templates/default/admin/assets/js/controllers/icon-field.js');
     add_admin_css('templates/default/admin/assets/css/controllers/settings.css');
 ?>
 
@@ -145,5 +146,3 @@
         </div>
     </div>
 </div>
-
-<?php add_admin_js('templates/default/admin/assets/js/controllers/icon-field.js'); ?>
