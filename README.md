@@ -8,7 +8,8 @@
 
 BloggyCMS — это гибкая и расширяемая платформа, где каждый компонент можно адаптировать под свои нужды без изменения ядра. Всё построено на модульной архитектуре, системе событий и функциональном API.
 
-<img width="1920" height="976" alt="BloggyCms" src="https://github.com/user-attachments/assets/9426e11a-f68b-4fbd-b5c3-afff2f05865b" />
+<img width="1920" height="802" alt="2026-04-18_215333" src="https://github.com/user-attachments/assets/a89893ce-fd0b-4150-8035-ca41a5220c59" />
+
 
 > [!NOTE]
 > Система стабильна и готова к использованию. API может незначительно меняться до выхода стабильной версии 1.0.
@@ -89,7 +90,7 @@ BloggyCMS — это гибкая и расширяемая платформа, 
 - [🌐 Официальный сайт проекта](https://bloggy.su)
 - [📘 Документация](https://github.com/pechoradev/BloggyCms/wiki)
 - [🐛 Сообщить об ошибке](https://github.com/pechoradev/BloggyCms/discussions/categories/bug-reports)
-- [📦 Скачать последнюю версию](https://github.com/pechoradev/BloggyCms/releases/tag/v1.0.0-rc.2)
+- [📦 Скачать последнюю версию](https://github.com/pechoradev/BloggyCms/releases/tag/v1.0.0-rc.3)
 
 ---
 
