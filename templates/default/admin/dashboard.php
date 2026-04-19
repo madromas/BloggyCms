@@ -1,4 +1,3 @@
-
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-content">
@@ -7,13 +6,13 @@
                     <div class="d-flex align-items-center gap-3 mb-1">
                         <h1 class="dashboard-title mb-0">
                             <?php echo bloggy_icon('bs', 'speedometer2', '28', '#0088cc', 'me-2'); ?>
-                            Панель управления
+                            <?php echo LANG_DASHBOARD_TITLE; ?>
                         </h1>
                     </div>
-                    <p class="dashboard-subtitle mb-0">Добро пожаловать в панель управления блога!</p>
+                    <p class="dashboard-subtitle mb-0"><?php echo LANG_DASHBOARD_WELCOME; ?></p>
                 </div>
                 <div class="header-actions">
-                    <div class="debug-icon-wrapper" id="debugToggleBtn" title="Режим отладки">
+                    <div class="debug-icon-wrapper" id="debugToggleBtn" title="<?php echo LANG_DASHBOARD_DEBUG_MODE; ?>">
                         <?php 
                         $debugEnabled = SettingsHelper::get('general', 'debug_mode', false);
                         $bugColor = $debugEnabled ? '#dc3545' : '#6c757d';
@@ -23,8 +22,19 @@
                         </div>
                         <span class="debug-status <?php echo $debugEnabled ? 'active' : ''; ?>"></span>
                     </div>
-
-                    <a href="/admin/settings?tab=components&controller=admin" class="settings-icon-link" title="Настройки компонентов админ-панели">
+                    <a href="<?php echo ADMIN_URL; ?>/language" class="language-icon-wrapper" title="<?php echo LANG_DASHBOARD_LANGUAGE_SETTINGS; ?>">
+                        <div class="language-icon">
+                            <?php 
+                            $currentLang = $_SESSION['admin_language'] ?? SettingsHelper::get('general', 'admin_language', 'ru_RU');
+                            $langFlag = $currentLang === 'ru_RU' ? '🇷🇺' : ($currentLang === 'en_EN' ? '🇬🇧' : '🌐');
+                            ?>
+                            <div class="language-icon-inner">
+                                <?php echo bloggy_icon('bs', 'translate', '24', '#6c757d'); ?>
+                                <span class="language-badge"><?php echo $langFlag; ?></span>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="/admin/settings?tab=components&controller=admin" class="settings-icon-link" title="<?php echo LANG_DASHBOARD_COMPONENTS_SETTINGS; ?>">
                         <?php echo bloggy_icon('bs', 'gear', '28', '#0004ff'); ?>
                     </a>
                 </div>
@@ -44,22 +54,22 @@
         }
         
         $messages = [
-            '⚠️ Папка /install всё ещё здесь. Это как оставить ключи в машине с работающим двигателем.',
-            '🔴 Кто-то может переустановить твой сайт. Серьёзно, удали папку install.',
-            '🫣 Я стесняюсь об этом говорить, но /install всё ещё здесь.',
-            '💀 День ' . $days . ' без удаления install. Твоя безопасность на тонком льду.',
-            '🎯 Цель: удалить install. Прогресс: 0%. Нажми кнопку ниже.',
-            '🤡 Админ, который не удаляет install — это мем.',
-            '🚨 ВНИМАНИЕ! /install существует! Это не тест. УДАЛИ ЕЁ!',
-            '🔥 /install всё ещё здесь. Я не скажу, сколько раз напоминал. Но счётчик уже сбился.',
-            'Знаешь, где хранится папка install? Там же. Удали её, будь человеком.',
-            'Я бы мог молчать про install. Но я не буду. УДАЛИ ЕЁ!',
-            'Твоя папка install чувствует себя одиноко. Подари ей удаление.',
-            'Security Alert! Папка install существует! Это как оставить дверь в квартиру открытой.',
-            'Я не твоя мама, но удали папку install. Пожалуйста.',
-            '😈 Pssst... папка install всё там же. Хочешь, я никому не скажу? Ладно, скажу. УДАЛИ!',
-            '🎉 Поздравляю! Твой сайт в опасности уже ' . $days . ' дней. Удали install.',
-            '💀 Твоя безопасность покинула чат... потому что install всё там же.',
+            LANG_DASHBOARD_INSTALL_WARNING_1,
+            LANG_DASHBOARD_INSTALL_WARNING_2,
+            LANG_DASHBOARD_INSTALL_WARNING_3,
+            sprintf(LANG_DASHBOARD_INSTALL_WARNING_4, $days),
+            LANG_DASHBOARD_INSTALL_WARNING_5,
+            LANG_DASHBOARD_INSTALL_WARNING_6,
+            LANG_DASHBOARD_INSTALL_WARNING_7,
+            LANG_DASHBOARD_INSTALL_WARNING_8,
+            LANG_DASHBOARD_INSTALL_WARNING_9,
+            LANG_DASHBOARD_INSTALL_WARNING_10,
+            LANG_DASHBOARD_INSTALL_WARNING_11,
+            LANG_DASHBOARD_INSTALL_WARNING_12,
+            LANG_DASHBOARD_INSTALL_WARNING_13,
+            LANG_DASHBOARD_INSTALL_WARNING_14,
+            sprintf(LANG_DASHBOARD_INSTALL_WARNING_15, $days),
+            LANG_DASHBOARD_INSTALL_WARNING_16,
         ];
         
         $randomMessage = $messages[array_rand($messages)];
@@ -72,16 +82,16 @@
                         <?php echo bloggy_icon('bs', 'exclamation-triangle-fill', '28', '#fff'); ?>
                     </div>
                     <div>
-                        <strong class="fs-6">🚨 КРИТИЧЕСКАЯ УЯЗВИМОСТЬ!</strong><br>
+                        <strong class="fs-6"><?php echo LANG_DASHBOARD_INSTALL_CRITICAL; ?></strong><br>
                         <span id="install-warning-message"><?php echo $randomMessage; ?></span>
                     </div>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-danger btn-sm" id="delete-install-folder-btn" style = "margin-right: 20px">
                         <?php echo bloggy_icon('bs', 'trash', '16', '#fff', 'me-1'); ?>
-                        Удалить папку install
+                        <?php echo LANG_DASHBOARD_INSTALL_DELETE_BTN; ?>
                     </button>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="<?php echo LANG_DASHBOARD_CLOSE; ?>"></button>
                 </div>
             </div>
         </div>
@@ -95,7 +105,7 @@
                     <?php echo bloggy_icon('bs', 'pencil', '28', '#0088cc'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Посты</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_POSTS; ?></span>
                     <span class="stat-number"><?= $stats['posts'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -110,7 +120,7 @@
                     <?php echo bloggy_icon('bs', 'folder2-open', '28', '#10b981'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Категории</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_CATEGORIES; ?></span>
                     <span class="stat-number"><?= $stats['categories'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -125,7 +135,7 @@
                     <?php echo bloggy_icon('bs', 'hash', '28', '#f59e0b'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Теги</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_TAGS; ?></span>
                     <span class="stat-number"><?= $stats['tags'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -140,7 +150,7 @@
                     <?php echo bloggy_icon('bs', 'file-earmark-richtext', '28', '#8b5cf6'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Страницы</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_PAGES; ?></span>
                     <span class="stat-number"><?= $stats['pages'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -155,7 +165,7 @@
                     <?php echo bloggy_icon('bs', 'chat-left-dots', '28', '#ef4444'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Комментарии</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_COMMENTS; ?></span>
                     <span class="stat-number"><?= $stats['comments'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -170,7 +180,7 @@
                     <?php echo bloggy_icon('bs', 'person', '28', '#06b6d4'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Пользователи</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_USERS; ?></span>
                     <span class="stat-number"><?= $stats['users'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -185,7 +195,7 @@
                     <?php echo bloggy_icon('bs', 'layout-wtf', '28', '#ec489a'); ?>
                 </div>
                 <div class="stat-info">
-                    <span class="stat-label">Контент-блоки</span>
+                    <span class="stat-label"><?php echo LANG_DASHBOARD_STATS_CONTENT_BLOCKS; ?></span>
                     <span class="stat-number"><?= $stats['content_blocks'] ?? 0 ?></span>
                 </div>
                 <?php if(SettingsHelper::get('controller_admin', 'show_button') == true) { ?>
@@ -207,7 +217,7 @@
             <div class="content-card">
                 <div class="card-header-modern">
                     <?php echo bloggy_icon('bs', 'clock', '20', '#0088cc', 'me-2'); ?>
-                    <h3>Новые посты</h3>
+                    <h3><?php echo LANG_DASHBOARD_NEW_POSTS; ?></h3>
                 </div>
                 <div class="card-body-modern">
                     <?php if(!empty($recentPosts)) { ?>
@@ -228,7 +238,7 @@
                     <?php } else { ?>
                         <div class="empty-state-modern">
                             <?php echo bloggy_icon('bs', 'file-text', '48', '#cbd5e1', 'mb-3'); ?>
-                            <p>Постов пока нет</p>
+                            <p><?php echo LANG_DASHBOARD_NO_POSTS; ?></p>
                         </div>
                     <?php } ?>
                 </div>
@@ -239,7 +249,7 @@
             <div class="content-card">
                 <div class="card-header-modern">
                     <?php echo bloggy_icon('bs', 'fire', '20', '#10b981', 'me-2'); ?>
-                    <h3>Популярные</h3>
+                    <h3><?php echo LANG_DASHBOARD_POPULAR_POSTS; ?></h3>
                 </div>
                 <div class="card-body-modern">
                     <?php if(!empty($popularPosts)) { ?>
@@ -250,7 +260,7 @@
                                         <h4><?php echo html($post['title']) ?></h4>
                                         <div class="post-meta">
                                             <?php echo bloggy_icon('bs', 'eye', '12', '#10b981', 'me-1'); ?>
-                                            <span><?php echo html($post['views']) ?> просмотров</span>
+                                            <span><?php echo html($post['views']) ?> <?php echo LANG_DASHBOARD_VIEWS; ?></span>
                                         </div>
                                     </div>
                                     <?php echo bloggy_icon('bs', 'chevron-right', '16', '#cbd5e1'); ?>
@@ -260,7 +270,7 @@
                     <?php } else { ?>
                         <div class="empty-state-modern">
                             <?php echo bloggy_icon('bs', 'bar-chart', '48', '#cbd5e1', 'mb-3'); ?>
-                            <p>Популярных постов нет</p>
+                            <p><?php echo LANG_DASHBOARD_NO_POPULAR_POSTS; ?></p>
                         </div>
                     <?php } ?>
                 </div>
@@ -271,7 +281,7 @@
             <div class="content-card">
                 <div class="card-header-modern">
                     <?php echo bloggy_icon('bs', 'chat-dots', '20', '#ef4444', 'me-2'); ?>
-                    <h3>Обсуждаемые</h3>
+                    <h3><?php echo LANG_DASHBOARD_MOST_COMMENTED; ?></h3>
                 </div>
                 <div class="card-body-modern">
                     <?php if(!empty($commentedPosts)) { ?>
@@ -282,7 +292,7 @@
                                         <h4><?php echo html($post['title']) ?></h4>
                                         <div class="post-meta">
                                             <?php echo bloggy_icon('bs', 'chat', '12', '#ef4444', 'me-1'); ?>
-                                            <span><?php echo html($post['comments_count']) ?> комментариев</span>
+                                            <span><?php echo html($post['comments_count']) ?> <?php echo LANG_DASHBOARD_COMMENTS; ?></span>
                                         </div>
                                     </div>
                                     <?php echo bloggy_icon('bs', 'chevron-right', '16', '#cbd5e1'); ?>
@@ -292,7 +302,7 @@
                     <?php } else { ?>
                         <div class="empty-state-modern">
                             <?php echo bloggy_icon('bs', 'chat', '48', '#cbd5e1', 'mb-3'); ?>
-                            <p>Обсуждаемых постов нет</p>
+                            <p><?php echo LANG_DASHBOARD_NO_COMMENTED_POSTS; ?></p>
                         </div>
                     <?php } ?>
                 </div>
@@ -303,7 +313,7 @@
             <div class="content-card">
                 <div class="card-header-modern">
                     <?php echo bloggy_icon('bs', 'file-earmark', '20', '#f59e0b', 'me-2'); ?>
-                    <h3>Черновики</h3>
+                    <h3><?php echo LANG_DASHBOARD_DRAFTS; ?></h3>
                 </div>
                 <div class="card-body-modern">
                     <?php if(!empty($draftPosts)) { ?>
@@ -318,13 +328,13 @@
                                         </div>
                                     </div>
                                     <div class="draft-actions">
-                                        <a href="<?= ADMIN_URL ?>/posts/edit/<?= $post['id'] ?>" class="action-btn" title="Редактировать">
+                                        <a href="<?= ADMIN_URL ?>/posts/edit/<?= $post['id'] ?>" class="action-btn" title="<?php echo LANG_DASHBOARD_EDIT; ?>">
                                             <?php echo bloggy_icon('bs', 'pencil', '14', '#0088cc'); ?>
                                         </a>
                                         <a href="<?= ADMIN_URL ?>/posts/toggle-status/<?= $post['id'] ?>" 
                                            class="action-btn" 
-                                           title="Опубликовать"
-                                           onclick="return confirm('Опубликовать пост?')">
+                                           title="<?php echo LANG_DASHBOARD_PUBLISH; ?>"
+                                           onclick="return confirm('<?php echo LANG_DASHBOARD_PUBLISH_CONFIRM; ?>')">
                                             <?php echo bloggy_icon('bs', 'check-lg', '14', '#10b981'); ?>
                                         </a>
                                     </div>
@@ -334,7 +344,7 @@
                     <?php } else { ?>
                         <div class="empty-state-modern">
                             <?php echo bloggy_icon('bs', 'file-earmark', '48', '#cbd5e1', 'mb-3'); ?>
-                            <p>Черновиков нет</p>
+                            <p><?php echo LANG_DASHBOARD_NO_DRAFTS; ?></p>
                         </div>
                     <?php } ?>
                 </div>
@@ -348,7 +358,7 @@
                 <div class="content-card search-card">
                     <div class="card-header-modern">
                         <?php echo bloggy_icon('bs', 'search', '20', '#0088cc', 'me-2'); ?>
-                        <h3>Последние поисковые запросы</h3>
+                        <h3><?php echo LANG_DASHBOARD_RECENT_SEARCHES; ?></h3>
                     </div>
                     <div class="card-body-modern">
                         <?php if(!empty($recentSearches)) { ?>
@@ -362,7 +372,7 @@
                                         <div class="search-stats">
                                             <span class="search-count">
                                                 <?php echo bloggy_icon('bs', 'arrow-repeat', '12', '#6c757d', 'me-1'); ?>
-                                                <?= $search['count'] ?> <?= plural_form($search['count'], ['раз', 'раза', 'раз']) ?>
+                                                <?= $search['count'] ?> <?= plural_form($search['count'], explode('|', LANG_DASHBOARD_TIMES)); ?>
                                             </span>
                                             <span class="search-time">
                                                 <?php echo bloggy_icon('bs', 'clock', '12', '#6c757d', 'me-1'); ?>
@@ -373,12 +383,12 @@
                                 <?php } ?>
                             </div>
                             <div class="card-footer-modern">
-                                <a href="<?= ADMIN_URL ?>/search-history" class="link-btn">Все запросы →</a>
+                                <a href="<?= ADMIN_URL ?>/search-history" class="link-btn"><?php echo LANG_DASHBOARD_ALL_REQUESTS; ?> →</a>
                             </div>
                         <?php } else { ?>
                             <div class="empty-state-modern">
                                 <?php echo bloggy_icon('bs', 'search', '48', '#cbd5e1', 'mb-3'); ?>
-                                <p>Поисковых запросов пока нет</p>
+                                <p><?php echo LANG_DASHBOARD_NO_SEARCHES; ?></p>
                             </div>
                         <?php } ?>
                     </div>
@@ -389,7 +399,7 @@
                 <div class="content-card search-card">
                     <div class="card-header-modern">
                         <?php echo bloggy_icon('bs', 'star', '20', '#f59e0b', 'me-2'); ?>
-                        <h3>Популярные запросы</h3>
+                        <h3><?php echo LANG_DASHBOARD_POPULAR_SEARCHES; ?></h3>
                     </div>
                     <div class="card-body-modern">
                         <?php if(!empty($popularSearches)) { ?>
@@ -403,19 +413,19 @@
                                         <div class="search-stats">
                                             <span class="search-count">
                                                 <?php echo bloggy_icon('bs', 'arrow-repeat', '12', '#6c757d', 'me-1'); ?>
-                                                <?= $search['count'] ?> <?= plural_form($search['count'], ['раз', 'раза', 'раз']) ?>
+                                                <?= $search['count'] ?> <?= plural_form($search['count'], explode('|', LANG_DASHBOARD_TIMES)); ?>
                                             </span>
                                         </div>
                                     </div>
                                 <?php } ?>
                             </div>
                             <div class="card-footer-modern">
-                                <a href="<?= ADMIN_URL ?>/search-history" class="link-btn">Все запросы →</a>
+                                <a href="<?= ADMIN_URL ?>/search-history" class="link-btn"><?php echo LANG_DASHBOARD_ALL_REQUESTS; ?> →</a>
                             </div>
                         <?php } else { ?>
                             <div class="empty-state-modern">
                                 <?php echo bloggy_icon('bs', 'star', '48', '#cbd5e1', 'mb-3'); ?>
-                                <p>Популярных запросов пока нет</p>
+                                <p><?php echo LANG_DASHBOARD_NO_POPULAR_SEARCHES; ?></p>
                             </div>
                         <?php } ?>
                     </div>
@@ -502,9 +512,9 @@
                     updateIconState(isEnabled);
                     
                     if (isEnabled) {
-                        showNotification('🐛 Режим отладки ВКЛЮЧЕН. Все ошибки будут сохраняться в лог.');
+                        showNotification('<?php echo LANG_DASHBOARD_DEBUG_ENABLED_NOTIFY; ?>');
                     } else {
-                        showNotification('Режим отладки ВЫКЛЮЧЕН. Логирование ошибок остановлено.');
+                        showNotification('<?php echo LANG_DASHBOARD_DEBUG_DISABLED_NOTIFY; ?>');
                     }
                     
                     const headerToggle = document.getElementById('headerDebugToggle');
@@ -512,12 +522,12 @@
                     if (headerToggle) headerToggle.checked = isEnabled;
                     if (pageToggle) pageToggle.checked = isEnabled;
                 } else {
-                    showNotification('Ошибка при переключении режима отладки: ' + (data.message || 'Неизвестная ошибка'), true);
+                    showNotification('<?php echo LANG_DASHBOARD_DEBUG_ERROR; ?>' + (data.message || '<?php echo LANG_DASHBOARD_UNKNOWN_ERROR; ?>'), true);
                 }
             })
             .catch(error => {
                 console.error('Error toggling debug mode:', error);
-                showNotification('Ошибка сети при переключении режима отладки', true);
+                showNotification('<?php echo LANG_DASHBOARD_NETWORK_ERROR; ?>', true);
             });
         }
         
@@ -528,7 +538,7 @@
         
         debugBtn.addEventListener('mouseenter', function() {
             const isEnabled = statusDot && statusDot.classList.contains('active');
-            debugBtn.title = isEnabled ? 'Режим отладки включен. Нажмите для выключения.' : 'Режим отладки выключен. Нажмите для включения.';
+            debugBtn.title = isEnabled ? '<?php echo LANG_DASHBOARD_DEBUG_ON_TITLE; ?>' : '<?php echo LANG_DASHBOARD_DEBUG_OFF_TITLE; ?>';
         });
     })();
 
@@ -536,11 +546,11 @@
         const deleteBtn = document.getElementById('delete-install-folder-btn');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', function() {
-                if (confirm('Точно удалить папку install? После этого переустановить систему можно будет только вручную.')) {
+                if (confirm('<?php echo LANG_DASHBOARD_DELETE_INSTALL_CONFIRM; ?>')) {
                     const btn = this;
                     const originalHtml = btn.innerHTML;
                     btn.disabled = true;
-                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Удаление...';
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> <?php echo LANG_DASHBOARD_DELETING; ?>...';
                     
                     fetch(ADMIN_URL + '/delete-install-folder', {
                         method: 'POST',

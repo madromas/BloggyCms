@@ -36,7 +36,7 @@ body {
 }
 
 .sidebar {
-    width: 260px;
+    width: 285px;
     background: var(--tg-bg-sidebar, #1a1a2e);
     position: fixed;
     left: 0;
@@ -116,7 +116,7 @@ body {
 
 .content-wrapper {
     flex: 1;
-    margin-left: 240px;
+    margin-left: 260px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -4304,4 +4304,53 @@ h6.card-title {
 .install-alert .btn-danger:hover {
     background-color: rgba(0,0,0,0.4);
     border-color: rgba(255,255,255,0.5);
+}
+
+.language-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-left: 8px;
+    border-radius: 12px;
+    background: rgba(108, 117, 125, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+}
+
+.language-icon-wrapper:hover {
+    background: rgba(108, 117, 125, 0.2);
+    transform: translateY(-2px);
+}
+
+.language-icon-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.language-badge {
+    position: absolute;
+    bottom: -8px;
+    right: -12px;
+    font-size: 12px;
+    background: white;
+    border-radius: 20px;
+    padding: 0 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    line-height: 1.4;
+}
+
+@keyframes languagePulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.language-pulse {
+    animation: languagePulse 0.3s ease;
 }

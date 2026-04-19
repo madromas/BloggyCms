@@ -136,6 +136,9 @@ class Controller {
             }
         }
         
+        $currentTemplate = $isAdmin ? 'default' : DEFAULT_TEMPLATE;
+        Language::load('templates/' . $currentTemplate . '/' . $template);
+        
         ob_start();
         include $templateFile;
         $content = ob_get_clean();
@@ -148,8 +151,13 @@ class Controller {
         
         if ($isAdmin) {
             $layoutFile = TEMPLATES_PATH . '/default/admin/layout.php';
+            
+            Language::load('templates/default/admin/layout');
+
         } else {
             $layoutFile = TEMPLATES_PATH . '/' . DEFAULT_TEMPLATE . '/front/layout.php';
+            Language::load('templates/' . DEFAULT_TEMPLATE . '/front/layout');
+            
             $categories = $this->db->fetchAll("SELECT * FROM categories ORDER BY name");
             $pages = $this->db->fetchAll("SELECT * FROM pages WHERE status = 'published' ORDER BY title");
             $tags = $this->db->fetchAll("SELECT * FROM tags ORDER BY name");

@@ -19,10 +19,10 @@ class ColorField extends BaseField {
     
     /**
     * Возвращает отображаемое название типа поля 
-    * @return string 'Выбор цвета'
+    * @return string
     */
     public function getName(): string {
-        return 'Выбор цвета';
+        return LANG_FIELD_COLOR_TITLE;
     }
     
     /**
@@ -152,7 +152,7 @@ class ColorField extends BaseField {
     */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Не указано</span>';
+            return '<span class="text-muted">' . LANG_FIELD_COLOR_NOT_SPECIFIED . '</span>';
         }
         
         $escapedValue = html($value, ENT_QUOTES, 'UTF-8');
@@ -191,11 +191,11 @@ class ColorField extends BaseField {
         $preset = $this->config['preset'] ?? 'default';
         
         $presetOptions = [
-            'default' => 'Стандартный',
-            'basic' => 'Базовый (без палитры)',
-            'advanced' => 'Расширенный (с альфа-каналом)',
-            'minimal' => 'Минимальный',
-            'full' => 'Полный'
+            'default' => LANG_FIELD_COLOR_PRESET_DEFAULT,
+            'basic' => LANG_FIELD_COLOR_PRESET_BASIC,
+            'advanced' => LANG_FIELD_COLOR_PRESET_ADVANCED,
+            'minimal' => LANG_FIELD_COLOR_PRESET_MINIMAL,
+            'full' => LANG_FIELD_COLOR_PRESET_FULL
         ];
         
         $presetHtml = '';
@@ -208,18 +208,18 @@ class ColorField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Пресет оформления</label>
+                        <label class='form-label'>" . LANG_FIELD_COLOR_PRESET_LABEL . "</label>
                         <select class='form-select' name='config[preset]'>
                             {$presetHtml}
                         </select>
-                        <div class='form-text'>Предустановленный стиль палитры цветов</div>
+                        <div class='form-text'>" . LANG_FIELD_COLOR_PRESET_HINT . "</div>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_COLOR_DEFAULT_LABEL . "</label>
                         <input type='color' class='form-control form-control-color' name='config[default_value]' value='{$defaultValue}'>
-                        <div class='form-text'>Цвет, который будет установлен по умолчанию</div>
+                        <div class='form-text'>" . LANG_FIELD_COLOR_DEFAULT_HINT . "</div>
                     </div>
                 </div>
             </div>

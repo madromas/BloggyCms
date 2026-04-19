@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<?php echo Language::getCurrentLocale() == 'ru_RU' ? 'ru' : 'en'; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo html($pageTitle) ?> - Панель управления</title>
+    <title><?php echo html($pageTitle) ?> - <?php echo LANG_ADMIN_PANEL_TITLE; ?></title>
     <meta name="generator" content="BloggyCMS">
     <meta name="author" content="Albo Soft">
-    <meta name="copyright" content="© <?php echo date('Y') ?> Albo Soft. Все права защищены.">
+    <meta name="copyright" content="© <?php echo date('Y'); ?> Albo Soft. <?php echo LANG_ADMIN_ALL_RIGHTS_RESERVED; ?>">
     <meta name="application-name" content="BloggyCms">
     <?php echo favicon(); ?>
     <?php echo base_admin_css(['bootstrap', 'icons', 'main']); ?>
@@ -37,12 +37,12 @@
                 <div class="sidebar-brand">
                     <div class="brand-row">
                         <a href="<?php echo ADMIN_URL ?>" class="brand-logo">
-                            <img src="/templates/default/admin/assets/img/logo-outline-light.png" alt="Logo">
+                            <img src="/templates/default/admin/assets/img/logo-outline-light.png" alt="<?php echo LANG_ADMIN_FAVICON_ALT; ?>">
                             <span>BLOGGY<span class="cms-highlight">CMS</span></span>
                         </a>
                         <div class="version-wrapper">
-                            <span class="version-badge">v <?php echo VersionHelper::getVersion(); ?></span>
-                            <a href="/admin/check-updates" class="version-update" title="Проверить обновления">
+                            <span class="version-badge"><?php echo LANG_ADMIN_VERSION; ?> <?php echo VersionHelper::getVersion(); ?></span>
+                            <a href="/admin/check-updates" class="version-update" title="<?php echo LANG_ADMIN_CHECK_UPDATES; ?>">
                                 <?php echo bloggy_icon('bs', 'arrow-repeat', '14', '#ffffff'); ?>
                             </a>
                         </div>
@@ -51,23 +51,23 @@
                 <nav class="nav flex-column">
                     <?php
                     $menuItems = [
-                        ['section' => 'posts', 'url' => ADMIN_URL . '/posts', 'icon' => 'file-text', 'title' => 'Посты', 'priority' => 10],
-                        ['section' => 'categories', 'url' => ADMIN_URL . '/categories', 'icon' => 'folder', 'title' => 'Категории', 'priority' => 20],
-                        ['section' => 'tags', 'url' => ADMIN_URL . '/tags', 'icon' => 'tags', 'title' => 'Теги', 'priority' => 30],
-                        ['section' => 'comments', 'url' => ADMIN_URL . '/comments', 'icon' => 'chat-dots', 'title' => 'Комментарии', 'priority' => 40],
-                        ['section' => 'users', 'url' => ADMIN_URL . '/users', 'icon' => 'people', 'title' => 'Пользователи', 'priority' => 50],
-                        ['section' => 'pages', 'url' => ADMIN_URL . '/pages', 'icon' => 'file-earmark', 'title' => 'Страницы', 'priority' => 60],
-                        ['section' => 'html-blocks', 'url' => ADMIN_URL . '/html-blocks', 'icon' => 'grid-1x2', 'title' => 'Контент-блоки', 'priority' => 70],
-                        ['section' => 'post-blocks', 'url' => ADMIN_URL . '/post-blocks', 'icon' => 'bricks', 'title' => 'Постблоки', 'priority' => 80],
-                        ['section' => 'fragments', 'url' => ADMIN_URL . '/fragments', 'icon' => 'puzzle', 'title' => 'Фрагменты', 'priority' => 90],
-                        ['section' => 'fields', 'url' => ADMIN_URL . '/fields', 'icon' => 'input-cursor-text', 'title' => 'Поля', 'priority' => 100],
-                        ['section' => 'menu', 'url' => ADMIN_URL . '/menu', 'icon' => 'view-list', 'title' => 'Конструктор меню', 'priority' => 110],
-                        ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => 'Конструктор форм', 'priority' => 120],
-                        ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => 'Иконки', 'priority' => 130],
-                        ['section' => 'seo', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => 'SEO', 'priority' => 140],
-                        ['section' => 'debug', 'url' => ADMIN_URL . '/debug', 'icon' => 'bug', 'title' => 'Отладка', 'priority' => 145],
-                        ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => 'Настройки', 'priority' => 150],
-                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => 'Шаблон', 'priority' => 160],
+                        ['section' => 'posts', 'url' => ADMIN_URL . '/posts', 'icon' => 'file-text', 'title' => LANG_ADMIN_POSTS, 'priority' => 10],
+                        ['section' => 'categories', 'url' => ADMIN_URL . '/categories', 'icon' => 'folder', 'title' => LANG_ADMIN_CATEGORIES, 'priority' => 20],
+                        ['section' => 'tags', 'url' => ADMIN_URL . '/tags', 'icon' => 'tags', 'title' => LANG_ADMIN_TAGS, 'priority' => 30],
+                        ['section' => 'comments', 'url' => ADMIN_URL . '/comments', 'icon' => 'chat-dots', 'title' => LANG_ADMIN_COMMENTS, 'priority' => 40],
+                        ['section' => 'users', 'url' => ADMIN_URL . '/users', 'icon' => 'people', 'title' => LANG_ADMIN_USERS, 'priority' => 50],
+                        ['section' => 'pages', 'url' => ADMIN_URL . '/pages', 'icon' => 'file-earmark', 'title' => LANG_ADMIN_PAGES, 'priority' => 60],
+                        ['section' => 'html-blocks', 'url' => ADMIN_URL . '/html-blocks', 'icon' => 'grid-1x2', 'title' => LANG_ADMIN_CONTENT_BLOCKS, 'priority' => 70],
+                        ['section' => 'post-blocks', 'url' => ADMIN_URL . '/post-blocks', 'icon' => 'bricks', 'title' => LANG_ADMIN_POST_BLOCKS, 'priority' => 80],
+                        ['section' => 'fragments', 'url' => ADMIN_URL . '/fragments', 'icon' => 'puzzle', 'title' => LANG_ADMIN_FRAGMENTS, 'priority' => 90],
+                        ['section' => 'fields', 'url' => ADMIN_URL . '/fields', 'icon' => 'input-cursor-text', 'title' => LANG_ADMIN_FIELDS, 'priority' => 100],
+                        ['section' => 'menu', 'url' => ADMIN_URL . '/menu', 'icon' => 'view-list', 'title' => LANG_ADMIN_MENU_BUILDER, 'priority' => 110],
+                        ['section' => 'forms', 'url' => ADMIN_URL . '/forms', 'icon' => 'mailbox', 'title' => LANG_ADMIN_FORM_BUILDER, 'priority' => 120],
+                        ['section' => 'icons', 'url' => ADMIN_URL . '/icons', 'icon' => 'emoji-heart-eyes', 'title' => LANG_ADMIN_ICONS, 'priority' => 130],
+                        ['section' => 'seo', 'url' => ADMIN_URL . '/seo', 'icon' => 'rss', 'title' => LANG_ADMIN_SEO, 'priority' => 140],
+                        ['section' => 'debug', 'url' => ADMIN_URL . '/debug', 'icon' => 'bug', 'title' => LANG_ADMIN_DEBUG, 'priority' => 145],
+                        ['section' => 'settings', 'url' => ADMIN_URL . '/settings', 'icon' => 'gear', 'title' => LANG_ADMIN_SETTINGS, 'priority' => 150],
+                        ['section' => 'templates', 'url' => ADMIN_URL . '/templates', 'icon' => 'palette', 'title' => LANG_ADMIN_TEMPLATE, 'priority' => 160],
                     ];
                     
                     $menuItems = Event::filter('admin.menu.items', $menuItems);
@@ -108,7 +108,7 @@
                         } else {
                             echo '<h6 class="mb-0"><a href="' . ADMIN_URL . '" style="text-decoration:none">';
                             echo bloggy_icon('bs', 'house', '16', '#000', 'me-1');
-                            echo ' Панель управления</a></h6>';
+                            echo ' ' . LANG_ADMIN_BREADCRUMBS_HOME . '</a></h6>';
                         }
                         ?>
                     </div>
@@ -118,55 +118,55 @@
                                 <a href="#" class="admin-header-btn admin-btn-notifications d-flex align-items-center dropdown-toggle" 
                                 data-bs-toggle="dropdown" 
                                 data-notifications-count="0"
-                                title="Уведомления">
+                                title="<?php echo LANG_ADMIN_NOTIFICATIONS; ?>">
                                     <div class="btn-icon-wrapper">
                                         <i class="bi bi-bell"></i>
                                         <span class="notification-badge" style="display: none;"></span>
                                     </div>
-                                    <span class="btn-text">Уведомления</span>
+                                    <span class="btn-text"><?php echo LANG_ADMIN_NOTIFICATIONS; ?></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end shadow-lg p-0" style="min-width: 320px;">
                                     <div class="dropdown-header bg-primary text-white d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0">Уведомления</h6>
+                                        <h6 class="mb-0"><?php echo LANG_ADMIN_NOTIFICATIONS; ?></h6>
                                         <a href="<?php echo ADMIN_URL ?>/notifications" class="text-white text-decoration-none">
-                                            <small>Все</small>
+                                            <small><?php echo LANG_ADMIN_ALL_NOTIFICATIONS; ?></small>
                                         </a>
                                     </div>
                                     <div class="dropdown-body" style="max-height: 400px; overflow-y: auto;">
                                         <div id="notifications-dropdown-content" class="p-3">
                                             <div class="text-center py-3">
                                                 <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                                    <span class="visually-hidden">Загрузка...</span>
+                                                    <span class="visually-hidden"><?php echo LANG_ADMIN_LOADING_NOTIFICATIONS; ?></span>
                                                 </div>
-                                                <p class="text-muted mt-2 mb-0">Загрузка уведомлений...</p>
+                                                <p class="text-muted mt-2 mb-0"><?php echo LANG_ADMIN_LOADING_NOTIFICATIONS; ?></p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="dropdown-footer p-2 border-top">
                                         <div class="d-flex justify-content-between">
                                             <a href="#" class="btn btn-sm btn-outline-success" id="mark-all-read-dropdown">
-                                                <i class="bi bi-check2-all me-1"></i> Прочитать все
+                                                <i class="bi bi-check2-all me-1"></i> <?php echo LANG_ADMIN_MARK_ALL_READ; ?>
                                             </a>
                                             <a href="<?php echo ADMIN_URL ?>/notifications" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-arrow-right me-1"></i> Перейти
+                                                <i class="bi bi-arrow-right me-1"></i> <?php echo LANG_ADMIN_GO_TO_NOTIFICATIONS; ?>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <a href="<?php echo ADMIN_URL ?>/addons" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление пакетами">
+                            <a href="<?php echo ADMIN_URL ?>/addons" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="<?php echo LANG_ADMIN_PACKAGES; ?>">
                                 <div class="btn-icon-wrapper">
                                     <?php echo bloggy_icon('bs', 'box', '16 16', '#28a745') ?>
                                 </div>
-                                <span class="btn-text">Пакеты</span>
+                                <span class="btn-text"><?php echo LANG_ADMIN_PACKAGES; ?></span>
                             </a>
 
-                            <a href="<?php echo ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="Управление контроллерами">
+                            <a href="<?php echo ADMIN_URL ?>/controllers" class="admin-header-btn admin-btn-addons d-flex align-items-center" title="<?php echo LANG_ADMIN_CONTROLLERS; ?>">
                                 <div class="btn-icon-wrapper">
                                     <?php echo bloggy_icon('bs', 'cpu', '16 16', '#7b1fa2') ?>
                                 </div>
-                                <span class="btn-text">Контроллеры</span>
+                                <span class="btn-text"><?php echo LANG_ADMIN_CONTROLLERS; ?></span>
                             </a>
                         </div>
                         <div class="dropdown">
@@ -189,24 +189,24 @@
                             <ul class="dropdown-menu dropdown-menu-end shadow">
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center" href="<?php echo ADMIN_URL ?>/users/edit/<?php echo $currentUser['id'] ?>">
-                                        <i class="bi bi-pencil me-2"></i> Редактировать профиль
+                                        <i class="bi bi-pencil me-2"></i> <?php echo LANG_ADMIN_EDIT_PROFILE; ?>
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center" href="<?php echo BASE_URL ?>/profile/<?php echo html($currentUser['username']) ?>" target="_blank">
-                                        <i class="bi bi-person-circle me-2"></i> Мой публичный профиль
+                                        <i class="bi bi-person-circle me-2"></i> <?php echo LANG_ADMIN_MY_PUBLIC_PROFILE; ?>
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center" href="<?php echo BASE_URL ?>" target="_blank">
-                                        <i class="bi bi-eye me-2"></i> Перейти на сайт
+                                        <i class="bi bi-eye me-2"></i> <?php echo LANG_ADMIN_GO_TO_SITE; ?>
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center text-danger" href="<?php echo ADMIN_URL ?>/logout">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Выйти
+                                        <i class="bi bi-box-arrow-right me-2"></i> <?php echo LANG_ADMIN_LOGOUT; ?>
                                     </a>
                                 </li>
                             </ul>
@@ -227,7 +227,7 @@
         <div id="toast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body"></div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="<?php echo LANG_ADMIN_TOAST_CLOSE; ?>"></button>
             </div>
         </div>
     </div>

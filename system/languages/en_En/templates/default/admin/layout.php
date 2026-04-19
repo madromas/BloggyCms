@@ -1,0 +1,38 @@
+<?php
+
+define('LANG_ADMIN_PANEL_TITLE', 'Control Panel');
+define('LANG_ADMIN_DASHBOARD', 'Dashboard');
+define('LANG_ADMIN_POSTS', 'Posts');
+define('LANG_ADMIN_CATEGORIES', 'Categories');
+define('LANG_ADMIN_TAGS', 'Tags');
+define('LANG_ADMIN_COMMENTS', 'Comments');
+define('LANG_ADMIN_USERS', 'Users');
+define('LANG_ADMIN_PAGES', 'Pages');
+define('LANG_ADMIN_CONTENT_BLOCKS', 'Content Blocks');
+define('LANG_ADMIN_POST_BLOCKS', 'Post Blocks');
+define('LANG_ADMIN_FRAGMENTS', 'Fragments');
+define('LANG_ADMIN_FIELDS', 'Fields');
+define('LANG_ADMIN_MENU_BUILDER', 'Menu Builder');
+define('LANG_ADMIN_FORM_BUILDER', 'Form Builder');
+define('LANG_ADMIN_ICONS', 'Icons');
+define('LANG_ADMIN_SEO', 'SEO');
+define('LANG_ADMIN_DEBUG', 'Debug');
+define('LANG_ADMIN_SETTINGS', 'Settings');
+define('LANG_ADMIN_TEMPLATE', 'Template');
+define('LANG_ADMIN_NOTIFICATIONS', 'Notifications');
+define('LANG_ADMIN_ALL_NOTIFICATIONS', 'All');
+define('LANG_ADMIN_MARK_ALL_READ', 'Mark all as read');
+define('LANG_ADMIN_GO_TO_NOTIFICATIONS', 'Go to');
+define('LANG_ADMIN_LOADING_NOTIFICATIONS', 'Loading notifications...');
+define('LANG_ADMIN_PACKAGES', 'Packages');
+define('LANG_ADMIN_CONTROLLERS', 'Controllers');
+define('LANG_ADMIN_EDIT_PROFILE', 'Edit profile');
+define('LANG_ADMIN_MY_PUBLIC_PROFILE', 'My public profile');
+define('LANG_ADMIN_GO_TO_SITE', 'Go to site');
+define('LANG_ADMIN_LOGOUT', 'Logout');
+define('LANG_ADMIN_BREADCRUMBS_HOME', 'Dashboard');
+define('LANG_ADMIN_TOAST_CLOSE', 'Close');
+define('LANG_ADMIN_VERSION', 'Version');
+define('LANG_ADMIN_CHECK_UPDATES', 'Check for updates');
+define('LANG_ADMIN_FAVICON_ALT', 'Logo');
+define('LANG_ADMIN_ALL_RIGHTS_RESERVED', 'All rights reserved.');

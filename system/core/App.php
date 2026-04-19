@@ -36,6 +36,7 @@ class App {
         }
         
         $this->db = new Database();
+        Language::init();
         $this->router = new Router();
         
         AdminAuthMiddleware::handle();
@@ -45,6 +46,7 @@ class App {
 
         $debugEnabled = SettingsHelper::get('general', 'debug_mode', false);
         DebugHandler::init($debugEnabled, $this->db);
+
     }
 
     /**

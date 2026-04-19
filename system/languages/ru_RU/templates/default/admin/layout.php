@@ -1,0 +1,38 @@
+<?php
+
+define('LANG_ADMIN_PANEL_TITLE', 'Панель управления');
+define('LANG_ADMIN_DASHBOARD', 'Панель управления');
+define('LANG_ADMIN_POSTS', 'Посты');
+define('LANG_ADMIN_CATEGORIES', 'Категории');
+define('LANG_ADMIN_TAGS', 'Теги');
+define('LANG_ADMIN_COMMENTS', 'Комментарии');
+define('LANG_ADMIN_USERS', 'Пользователи');
+define('LANG_ADMIN_PAGES', 'Страницы');
+define('LANG_ADMIN_CONTENT_BLOCKS', 'Контент-блоки');
+define('LANG_ADMIN_POST_BLOCKS', 'Постблоки');
+define('LANG_ADMIN_FRAGMENTS', 'Фрагменты');
+define('LANG_ADMIN_FIELDS', 'Поля');
+define('LANG_ADMIN_MENU_BUILDER', 'Конструктор меню');
+define('LANG_ADMIN_FORM_BUILDER', 'Конструктор форм');
+define('LANG_ADMIN_ICONS', 'Иконки');
+define('LANG_ADMIN_SEO', 'SEO');
+define('LANG_ADMIN_DEBUG', 'Отладка');
+define('LANG_ADMIN_SETTINGS', 'Настройки');
+define('LANG_ADMIN_TEMPLATE', 'Шаблон');
+define('LANG_ADMIN_NOTIFICATIONS', 'Уведомления');
+define('LANG_ADMIN_ALL_NOTIFICATIONS', 'Все');
+define('LANG_ADMIN_MARK_ALL_READ', 'Прочитать все');
+define('LANG_ADMIN_GO_TO_NOTIFICATIONS', 'Перейти');
+define('LANG_ADMIN_LOADING_NOTIFICATIONS', 'Загрузка уведомлений...');
+define('LANG_ADMIN_PACKAGES', 'Пакеты');
+define('LANG_ADMIN_CONTROLLERS', 'Контроллеры');
+define('LANG_ADMIN_EDIT_PROFILE', 'Редактировать профиль');
+define('LANG_ADMIN_MY_PUBLIC_PROFILE', 'Мой публичный профиль');
+define('LANG_ADMIN_GO_TO_SITE', 'Перейти на сайт');
+define('LANG_ADMIN_LOGOUT', 'Выйти');
+define('LANG_ADMIN_BREADCRUMBS_HOME', 'Панель управления');
+define('LANG_ADMIN_TOAST_CLOSE', 'Закрыть');
+define('LANG_ADMIN_VERSION', 'Версия');
+define('LANG_ADMIN_CHECK_UPDATES', 'Проверить обновления');
+define('LANG_ADMIN_FAVICON_ALT', 'Логотип');
+define('LANG_ADMIN_ALL_RIGHTS_RESERVED', 'Все права защищены.');

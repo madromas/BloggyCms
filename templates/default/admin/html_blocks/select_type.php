@@ -93,24 +93,24 @@
 
 <?php ob_start(); ?>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const templateFilter = document.getElementById('template-filter');
-    const blocksContainer = document.getElementById('blocks-container');
-    const blockItems = document.querySelectorAll('.block-item');
+    document.addEventListener('DOMContentLoaded', function() {
+        const templateFilter = document.getElementById('template-filter');
+        const blocksContainer = document.getElementById('blocks-container');
+        const blockItems = document.querySelectorAll('.block-item');
 
-    templateFilter.addEventListener('change', function() {
-        const selectedTemplate = this.value;
-        
-        blockItems.forEach(function(item) {
-            const blockTemplate = item.getAttribute('data-template');
+        templateFilter.addEventListener('change', function() {
+            const selectedTemplate = this.value;
             
-            if (selectedTemplate === 'all' || blockTemplate === selectedTemplate) {
-                item.style.display = 'block';
-            } else {
-                item.style.display = 'none';
-            }
+            blockItems.forEach(function(item) {
+                const blockTemplate = item.getAttribute('data-template');
+                
+                if (selectedTemplate === 'all' || blockTemplate === selectedTemplate) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         });
     });
-});
 </script>
 <?php admin_bottom_js(ob_get_clean()); ?>
