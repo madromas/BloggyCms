@@ -66,7 +66,7 @@ class PostBlockPostBlock extends BasePostBlock {
         <div class="mb-4">
             <label class="form-label">Выберите пост</label>
             
-            <?php if (empty($posts)): ?>
+            <?php if (empty($posts)) { ?>
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     Нет доступных постов. 
@@ -74,24 +74,24 @@ class PostBlockPostBlock extends BasePostBlock {
                         Создайте пост сначала
                     </a>
                 </div>
-            <?php else: ?>
+            <?php } else { ?>
                 <select name="content[post_id]" class="form-select" id="post-select" required>
                     <option value="">-- Выберите пост --</option>
-                    <?php foreach ($posts as $post): ?>
+                    <?php foreach ($posts as $post) { ?>
                         <option value="<?= $post['id'] ?>" 
                                 data-title="<?= html($post['title']) ?>"
                                 <?= $selectedPostId == $post['id'] ? 'selected' : '' ?>>
                             <?= html($post['title']) ?> 
                             (ID: <?= $post['id'] ?>, Просмотры: <?= $post['views'] ?? 0 ?>)
                         </option>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </select>
                 <div class="form-text">
                     Выберите пост для вставки его данных
                 </div>
                 <input type="hidden" name="content[post_title]" id="post-title" value="<?= html($selectedPostTitle) ?>">
                 <div id="post-preview" class="mt-3 p-3 border rounded bg-light" style="<?= empty($selectedPostId) ? 'display:none;' : '' ?>">
-                    <?php if (!empty($selectedPostId)): ?>
+                    <?php if (!empty($selectedPostId)) { ?>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>Выбранный пост:</strong>
                             <span class="badge bg-primary" id="preview-post-title"><?= html($selectedPostTitle) ?></span>
@@ -100,9 +100,9 @@ class PostBlockPostBlock extends BasePostBlock {
                             ID: <span id="preview-post-id"><?= $selectedPostId ?></span> | 
                             Просмотры: <span id="preview-post-views"><?= $currentContent['views'] ?? 0 ?></span>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();
@@ -407,17 +407,17 @@ class PostBlockPostBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Запись блога</strong>
-                                <?php if ($postData && !empty($postData['category_name'])): ?>
+                                <?php if ($postData && !empty($postData['category_name'])) { ?>
                                     <span class="badge bg-secondary badge-sm"><?= html($postData['category_name']) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
-                                <?php if ($postData): ?>
+                                <?php if ($postData) { ?>
                                     ID: <?= $postId ?>
                                     · <?= $views ?> просмотров
-                                <?php else: ?>
+                                <?php } else { ?>
                                     Пост не выбран
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -430,29 +430,29 @@ class PostBlockPostBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($postData): ?>
+                    <?php if ($postData) { ?>
                         <div class="post-preview-container">
                             <div class="post-card-preview border rounded overflow-hidden">
                                 <div class="row g-0">
                                     <div class="col-md-4 bg-light d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                                        <?php if (!empty($postData['featured_image'])): ?>
+                                        <?php if (!empty($postData['featured_image'])) { ?>
                                             <div class="position-relative w-100 h-100">
                                                 <div class="w-100 h-100 bg-info bg-opacity-10 d-flex align-items-center justify-content-center">
                                                     <i class="bi bi-image text-info display-4"></i>
                                                 </div>
                                             </div>
-                                        <?php else: ?>
+                                        <?php } else { ?>
                                             <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
                                                 <i class="bi bi-card-image text-muted display-4"></i>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
                                     
                                     <div class="col-md-8">
                                         <div class="p-3">
                                             <div class="h6 mb-2" style="color: #374151;">
                                                 <?= html(mb_substr($postData['title'] ?? '', 0, 50)) ?>
-                                                <?php if (mb_strlen($postData['title'] ?? '') > 50): ?>...<?php endif; ?>
+                                                <?php if (mb_strlen($postData['title'] ?? '') > 50) { ?>...<?php } ?>
                                             </div>
                                             
                                             <div class="small text-muted mb-2">
@@ -465,11 +465,11 @@ class PostBlockPostBlock extends BasePostBlock {
                                             </div>
                                             
                                             <div class="small">
-                                                <?php if (!empty($postData['category_name'])): ?>
+                                                <?php if (!empty($postData['category_name'])) { ?>
                                                     <span class="badge bg-light text-dark border"><?= html($postData['category_name']) ?></span>
-                                                <?php else: ?>
+                                                <?php } else { ?>
                                                     <span class="text-muted">Без категории</span>
-                                                <?php endif; ?>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </div>
@@ -483,15 +483,15 @@ class PostBlockPostBlock extends BasePostBlock {
                                         <div><i class="bi bi-eye me-1"></i>Просмотры: <strong><?= $views ?></strong></div>
                                     </div>
                                     <div class="col-6">
-                                        <?php if ($customClass): ?>
+                                        <?php if ($customClass) { ?>
                                             <div><i class="bi bi-tag me-1"></i>CSS класс: <strong><?= html($customClass) ?></strong></div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                         <div><i class="bi bi-file-earmark-text me-1"></i>Вид: <strong>Карточка</strong></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-file-post"></i>
                             <div class="empty-text">Пост не выбран</div>
@@ -504,7 +504,7 @@ class PostBlockPostBlock extends BasePostBlock {
                                 Этот блок вставляет данные выбранного поста в формате карточки
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

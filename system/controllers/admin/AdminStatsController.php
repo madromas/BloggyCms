@@ -14,6 +14,14 @@ class AdminStatsController extends Controller {
         $this->postModel = new PostModel($db);
         $this->commentModel = new CommentModel($db);
     }
+
+    protected $controllerInfo = [
+        'name' => 'Панель управления',
+        'author' => 'BloggyCMS', 
+        'version' => '1.0.0',
+        'has_settings' => true,
+        'description' => 'Управление админ-панелью, блоками статистики и многим другим'
+    ];
     
     /**
     * Проверка прав администратора
@@ -527,8 +535,8 @@ class AdminStatsController extends Controller {
             'all' => 'За все время'
         ];
         
-        $typeLabel = $typeLabels[$type] ?? 'Полный отчет';
-        $periodLabel = $periodLabels[$period] ?? 'Последние 30 дней';
+        $periodLabel = $this->getPeriodLabel($period);
+        $typeLabel = $this->getReportTypeLabel($type);
         
         ob_start();
         ?>
@@ -836,4 +844,19 @@ class AdminStatsController extends Controller {
             'top_posts' => $topPosts
         ];
     }
+
+    /**
+    * Получает название периода
+    */
+    private function getPeriodLabel($period) {
+        $labels = [
+            'week' => 'Последние 7 дней',
+            'month' => 'Последние 30 дней',
+            'quarter' => 'Последние 90 дней',
+            'year' => 'Последние 12 месяцев',
+            'all' => 'За все время'
+        ];
+        return $labels[$period] ?? 'Последние 30 дней';
+    }
+    
 }

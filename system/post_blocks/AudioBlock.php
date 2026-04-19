@@ -131,12 +131,12 @@ class AudioBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Аудио</strong>
-                                <?php if ($hasAudio): ?>
+                                <?php if ($hasAudio) { ?>
                                     <span class="badge bg-success badge-sm">Загружено</span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
-                                <?php if ($hasAudio): ?>
+                                <?php if ($hasAudio) { ?>
                                     <?php
                                     $fileName = basename($srcMp3);
                                     if (filter_var($srcMp3, FILTER_VALIDATE_URL)) {
@@ -144,9 +144,9 @@ class AudioBlock extends BasePostBlock {
                                     }
                                     ?>
                                     <?= html($fileName) ?>
-                                <?php else: ?>
+                                <?php } else { ?>
                                     Не загружено
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -159,7 +159,7 @@ class AudioBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($hasAudio): ?>
+                    <?php if ($hasAudio) { ?>
                         <div class="audio-preview-container">
                             <div class="audio-player-preview border rounded p-3 bg-light">
                                 <div class="d-flex align-items-center justify-content-center">
@@ -184,17 +184,17 @@ class AudioBlock extends BasePostBlock {
                                 </div>
                             </div>
                             
-                            <?php if (!empty($caption)): ?>
+                            <?php if (!empty($caption)) { ?>
                                 <div class="audio-caption mt-2 text-center">
                                     <small class="text-muted">
                                         <i class="bi bi-music-note me-1"></i>
                                         <?= html(mb_substr($caption, 0, 60)) ?>
-                                        <?php if (mb_strlen($caption) > 60): ?>...<?php endif; ?>
+                                        <?php if (mb_strlen($caption) > 60) { ?>...<?php } ?>
                                     </small>
                                 </div>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-file-music"></i>
                             <div class="empty-text">Аудио не загружено</div>
@@ -203,7 +203,7 @@ class AudioBlock extends BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить аудио
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -233,22 +233,22 @@ class AudioBlock extends BasePostBlock {
         ob_start();
         ?>
         <div class="post-block-audio-preview <?= $customClass ?>">
-            <?php if (!empty($caption)): ?>
+            <?php if (!empty($caption)) { ?>
                 <figure>
-            <?php endif; ?>
+            <?php } ?>
             
             <audio class="audio-player" controls style="max-width: 100%;">
                 <source src="<?= html($mp3Url) ?>" type="audio/mpeg">
                 <p class="text-muted">Ваш браузер не поддерживает HTML5 аудио.</p>
             </audio>
             
-            <?php if (!empty($caption)): ?>
+            <?php if (!empty($caption)) { ?>
                     <figcaption class="audio-caption mt-2 small text-muted">
                         <i class="bi bi-music-note me-1"></i>
                         <?= html($caption) ?>
                     </figcaption>
                 </figure>
-            <?php endif; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();
@@ -273,7 +273,7 @@ class AudioBlock extends BasePostBlock {
             <div class="mb-3">
                 <label class="form-label">Аудиофайл (MP3) *</label>
                 
-                <?php if ($hasFile && !$isExternal): ?>
+                <?php if ($hasFile && !$isExternal) { ?>
                     <div class="current-file mb-2 p-2 bg-light border rounded">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-file-music me-2 text-primary"></i>
@@ -286,7 +286,7 @@ class AudioBlock extends BasePostBlock {
                             </div>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
                 
                 <input type="file" 
                        name="audio_file" 
@@ -306,7 +306,7 @@ class AudioBlock extends BasePostBlock {
                        name="external_url" 
                        class="form-control" 
                        value="<?= $isExternal ? html($srcMp3) : '' ?>" 
-                       placeholder="https://example.com/audio.mp3"
+                       placeholder="https://example.ru/audio.mp3"
                        <?= ($hasFile && !$isExternal) ? 'disabled' : '' ?>>
                 <div class="form-text">
                     Можно указать прямую ссылку на MP3 файл вместо загрузки

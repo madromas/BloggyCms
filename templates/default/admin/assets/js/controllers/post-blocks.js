@@ -521,7 +521,7 @@
                 <div class="post-block-item-inner">
                     <div class="block-header d-flex align-items-center justify-content-between p-2 border-bottom bg-light">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="block-order fw-bold text-muted small">${index + 1}</span>
+                            <span class="block-order fw-bold text-white small">${index + 1}</span>
                             <div class="block-type-info">
                                 <i class="${blockInfo.icon} me-1"></i>
                                 <span class="block-type-name small fw-bold">${blockInfo.name}</span>

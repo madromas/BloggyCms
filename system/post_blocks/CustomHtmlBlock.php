@@ -51,7 +51,7 @@ class CustomHtmlBlock extends BasePostBlock {
                      style="display: none;"
                      required><?= html($htmlContent) ?></textarea>
             <div class="form-text">
-                Вставьте любой HTML код с подсветкой синтаксиса
+                Вставьте любой HTML код
             </div>
         </div>
         <?php
@@ -276,15 +276,15 @@ class CustomHtmlBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Произвольный HTML</strong>
-                                <?php if ($customClass): ?>
+                                <?php if ($customClass) { ?>
                                     <span class="badge bg-secondary badge-sm"><?= html($customClass) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= $htmlLength ?> симв.
-                                <?php if ($tagCount > 0): ?>
+                                <?php if ($tagCount > 0) { ?>
                                     · <?= $tagCount ?> тег<?= $tagCount != 1 ? 'ов' : '' ?>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -297,7 +297,7 @@ class CustomHtmlBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($htmlContent)) && trim($htmlContent) !== '<!-- Вставьте ваш HTML код здесь -->'): ?>
+                    <?php if (!empty(trim($htmlContent)) && trim($htmlContent) !== '<!-- Вставьте ваш HTML код здесь -->') { ?>
                         <div class="custom-html-preview-container">
                             <div class="html-code-preview border rounded bg-dark text-light mb-3">
                                 <div class="html-preview-header d-flex justify-content-between align-items-center p-2 border-bottom">
@@ -306,7 +306,7 @@ class CustomHtmlBlock extends BasePostBlock {
                                 </div>
                                 <div class="html-preview-content p-3">
                                     <pre class="m-0" style="font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.4; white-space: pre-wrap; word-break: break-all; color: #e9ecef;">
-    <code><?= $previewHtml ?></code>
+                                    <code><?= $previewHtml ?></code>
                                     </pre>
                                 </div>
                             </div>
@@ -316,7 +316,7 @@ class CustomHtmlBlock extends BasePostBlock {
                                 <strong>Безопасность:</strong> Этот блок содержит произвольный HTML. Убедитесь, что код безопасен.
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-code-square"></i>
                             <div class="empty-text">HTML код не добавлен</div>
@@ -329,7 +329,7 @@ class CustomHtmlBlock extends BasePostBlock {
                                 Используйте этот блок для вставки произвольного HTML кода
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

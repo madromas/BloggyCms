@@ -23,11 +23,12 @@ class ImageBlock extends BasePostBlock {
 
     public function getPreviewHtml($content = [], $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
-        $url = $content['url'] ?? $content['image_url'] ?? '';
-        $alt = $content['alt'] ?? $content['alt_text'] ?? '';
+        $settings = $this->validateAndNormalizeSettings($settings);
+        
+        $url = $content['image_url'] ?? '';
+        $alt = $content['alt_text'] ?? '';
         $caption = $content['caption'] ?? '';
         $alignment = $settings['alignment'] ?? 'center';
-        $size = $settings['size'] ?? 'medium';
         
         ob_start();
         ?>
@@ -41,19 +42,16 @@ class ImageBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Изображение</strong>
-                                <?php if ($size !== 'medium'): ?>
-                                    <span class="badge bg-info badge-sm"><?= html($size) ?></span>
-                                <?php endif; ?>
                             </div>
                             <div class="preview-stats">
-                                <?php if (!empty($url)): ?>
+                                <?php if (!empty($url)) { ?>
                                     Изображение загружено
-                                    <?php if (!empty($alt)): ?>
+                                    <?php if (!empty($alt)) { ?>
                                         · есть описание
-                                    <?php endif; ?>
-                                <?php else: ?>
+                                    <?php } ?>
+                                <?php } else { ?>
                                     Не загружено
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -66,31 +64,30 @@ class ImageBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty($url)): ?>
+                    <?php if (!empty($url)) { ?>
                         <div class="image-content-container text-<?= html($alignment) ?>">
                             <div class="image-wrapper position-relative d-inline-block">
                                 <img src="<?= html($url) ?>" 
                                      alt="<?= html($alt) ?>"
                                      class="img-fluid rounded shadow-sm"
-                                     style="max-width: 100%; max-height: 300px;"
-                                     onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZm1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYjBiMWIyIj5JbWFnZSBub3QgZm91bmQ8L3RleHQ+PC9zdmc+'">
+                                     style="max-width: 100%; max-height: 300px;">
                             </div>
                             
-                            <?php if (!empty($alt)): ?>
+                            <?php if (!empty($alt)) { ?>
                                 <div class="image-alt mt-2">
                                     <div class="small fw-semibold">Описание:</div>
                                     <div class="small text-muted"><?= html($alt) ?></div>
                                 </div>
-                            <?php endif; ?>
+                            <?php } ?>
                             
-                            <?php if (!empty($caption)): ?>
+                            <?php if (!empty($caption)) { ?>
                                 <div class="image-caption mt-2">
                                     <div class="small fw-semibold">Подпись:</div>
                                     <div class="small text-muted"><?= html($caption) ?></div>
                                 </div>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-image"></i>
                             <div class="empty-text">Изображение не загружено</div>
@@ -99,7 +96,7 @@ class ImageBlock extends BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить изображение
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -116,8 +113,8 @@ class ImageBlock extends BasePostBlock {
                      class="img-fluid {image_class}"
                      {width_attr}
                      {height_attr}
-                     loading="lazy">
-                {caption}
+                     {loading_attr}>
+                {caption_html}
             </figure>
         </div>';
     }
@@ -165,28 +162,28 @@ class ImageBlock extends BasePostBlock {
                name="content[image_url]" 
                class="image-url-input" 
                value="<?= html($imageUrl) ?>">
-        <?php if ($imageUrl): ?>
-        <div class="mb-4">
-            <label class="form-label">Текущее изображение</label>
-            <div class="current-image-preview border rounded p-3 text-center bg-light">
-                <img src="<?= html($imageUrl) ?>" 
-                     alt="Текущее изображение" 
-                     class="img-thumbnail"
-                     style="max-height: 200px; max-width: 100%;">
-                <div class="mt-2">
-                    <small class="text-muted"><?= html($imageUrl) ?></small>
-                </div>
-                <div class="mt-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="removeImage">
-                        <label class="form-check-label" for="removeImage">
-                            Удалить текущее изображение
-                        </label>
+        <?php if ($imageUrl) { ?>
+            <div class="mb-4">
+                <label class="form-label">Текущее изображение</label>
+                <div class="current-image-preview border rounded p-3 text-center bg-light">
+                    <img src="<?= html($imageUrl) ?>" 
+                        alt="Текущее изображение" 
+                        class="img-thumbnail"
+                        style="max-height: 200px; max-width: 100%;">
+                    <div class="mt-2">
+                        <small class="text-muted"><?= html($imageUrl) ?></small>
+                    </div>
+                    <div class="mt-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="removeImage">
+                            <label class="form-check-label" for="removeImage">
+                                Удалить текущее изображение
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <?php endif; ?>
+        <?php } ?>
 
         <div class="mb-4">
             <label class="form-label">Alt текст *</label>
@@ -260,7 +257,7 @@ class ImageBlock extends BasePostBlock {
                            name="settings[width]" 
                            class="form-control" 
                            value="<?= html($width) ?>" 
-                           placeholder="800px или 100%">
+                           placeholder="800px или 50%">
                 </div>
             </div>
             <div class="col-md-4">
@@ -309,7 +306,81 @@ class ImageBlock extends BasePostBlock {
     }
 
     protected function renderWithTemplate($content, $settings, $template): string {
-        return parent::renderWithTemplate($content, $settings, $template);
+        $content = $this->validateAndNormalizeContent($content);
+        $settings = $this->validateAndNormalizeSettings($settings);
+        
+        $imageUrl = $content['image_url'] ?? '';
+        $altText = $content['alt_text'] ?? '';
+        $caption = $content['caption'] ?? '';
+        $alignment = $settings['alignment'] ?? 'center';
+        $width = $settings['width'] ?? '';
+        $height = $settings['height'] ?? '';
+        $imageClass = $settings['image_class'] ?? '';
+        $customClass = $settings['custom_class'] ?? '';
+        $lazyLoading = $settings['lazy_loading'] ?? true;
+        $presetId = $settings['preset_id'] ?? null;
+        $presetName = $settings['preset_name'] ?? '';
+
+        if (empty($imageUrl)) {
+            return '<!-- ImageBlock: нет изображения -->';
+        }
+
+        if ($imageUrl[0] !== '/') {
+            $imageUrl = '/' . $imageUrl;
+        }
+
+        $widthAttr = '';
+        $heightAttr = '';
+        if (!empty($width)) {
+            $widthAttr = 'width="' . htmlspecialchars($width) . '"';
+        }
+        if (!empty($height)) {
+            $heightAttr = 'height="' . htmlspecialchars($height) . '"';
+        }
+        
+        $loadingAttr = $lazyLoading ? 'loading="lazy"' : '';
+        
+        $captionHtml = '';
+        if (!empty($caption)) {
+            $captionHtml = '<figcaption class="image-caption">' . nl2br(htmlspecialchars($caption)) . '</figcaption>';
+        }
+        
+        $presetClass = '';
+        if ($presetId) {
+            $presetClass = 'preset-' . (int)$presetId;
+            if ($presetName) {
+                $presetClass .= ' preset-' . preg_replace('/[^a-z0-9_-]/i', '-', strtolower($presetName));
+            }
+        }
+        
+        $finalCustomClass = trim($customClass . ' ' . $presetClass);
+        
+        $result = $template;
+        
+        $replacements = [
+            '{image_url}' => htmlspecialchars($imageUrl),
+            '{alt_text}' => htmlspecialchars($altText),
+            '{caption}' => htmlspecialchars($caption),
+            '{caption_html}' => $captionHtml,
+            '{alignment}' => $alignment,
+            '{image_class}' => $imageClass,
+            '{custom_class}' => $finalCustomClass,
+            '{width_attr}' => $widthAttr,
+            '{height_attr}' => $heightAttr,
+            '{loading_attr}' => $loadingAttr,
+            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
+            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{block_type}' => $this->getSystemName(),
+            '{block_name}' => $this->getName()
+        ];
+        
+        foreach ($replacements as $placeholder => $value) {
+            $result = str_replace($placeholder, $value, $result);
+        }
+        
+        $result = preg_replace('/\s+(width|height|loading)=""/', '', $result);
+        
+        return $result;
     }
 
     public function getShortcodes(): array {
@@ -317,11 +388,13 @@ class ImageBlock extends BasePostBlock {
             '{image_url}' => 'URL изображения',
             '{alt_text}' => 'Alt текст',
             '{caption}' => 'Подпись изображения',
+            '{caption_html}' => 'HTML подписи с тегом figcaption',
             '{alignment}' => 'Выравнивание',
             '{image_class}' => 'CSS класс изображения',
             '{custom_class}' => 'Дополнительный CSS класс',
             '{width_attr}' => 'Атрибут ширины',
-            '{height_attr}' => 'Атрибут высоты'
+            '{height_attr}' => 'Атрибут высоты',
+            '{loading_attr}' => 'Атрибут loading (lazy/eager)'
         ]);
     }
 
@@ -330,8 +403,65 @@ class ImageBlock extends BasePostBlock {
             $settings = [];
         }
         
-        if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            $settings = array_merge($settings, $_POST['settings']);
+        $settings['lazy_loading'] = isset($_POST['settings']['lazy_loading']) && ($_POST['settings']['lazy_loading'] == '1' || $_POST['settings']['lazy_loading'] == 'on');
+        
+        if (isset($_POST['settings']['alignment'])) {
+            $settings['alignment'] = trim($_POST['settings']['alignment']);
+        }
+        
+        if (isset($_POST['settings']['width'])) {
+            $settings['width'] = trim($_POST['settings']['width']);
+        }
+        
+        if (isset($_POST['settings']['height'])) {
+            $settings['height'] = trim($_POST['settings']['height']);
+        }
+        
+        if (isset($_POST['settings']['image_class'])) {
+            $settings['image_class'] = trim($_POST['settings']['image_class']);
+        }
+        
+        if (isset($_POST['settings']['custom_class'])) {
+            $settings['custom_class'] = trim($_POST['settings']['custom_class']);
+        }
+        
+        return $settings;
+    }
+
+    public function validateAndNormalizeSettings($settings): array {
+        if (is_string($settings)) {
+            $decoded = json_decode($settings, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        
+        if (!is_array($settings)) {
+            return [];
+        }
+        
+        $defaults = $this->getDefaultSettings();
+        
+        $settings['lazy_loading'] = isset($settings['lazy_loading']) 
+            ? filter_var($settings['lazy_loading'], FILTER_VALIDATE_BOOLEAN) 
+            : ($defaults['lazy_loading'] ?? true);
+        
+        if (!isset($settings['alignment']) || !in_array($settings['alignment'], ['left', 'center', 'right'])) {
+            $settings['alignment'] = $defaults['alignment'] ?? 'center';
+        }
+        
+        if (!isset($settings['width'])) {
+            $settings['width'] = $defaults['width'] ?? '';
+        }
+        
+        if (!isset($settings['height'])) {
+            $settings['height'] = $defaults['height'] ?? '';
+        }
+        
+        if (!isset($settings['image_class'])) {
+            $settings['image_class'] = $defaults['image_class'] ?? '';
+        }
+        
+        if (!isset($settings['custom_class'])) {
+            $settings['custom_class'] = $defaults['custom_class'] ?? '';
         }
         
         return $settings;
@@ -366,8 +496,7 @@ class ImageBlock extends BasePostBlock {
             if (!empty($content['image_url'])) {
                 $filePath = ltrim($content['image_url'], '/');
                 if (file_exists($filePath)) {
-                    if (unlink($filePath)) {
-                    } else {}
+                    unlink($filePath);
                 }
             }
             $content['image_url'] = '';
@@ -385,6 +514,29 @@ class ImageBlock extends BasePostBlock {
             $content['alt_text'] = 'Изображение';
         }
 
+        return $content;
+    }
+
+    public function validateAndNormalizeContent($content): array {
+        if (is_string($content)) {
+            $decoded = json_decode($content, true);
+            return is_array($decoded) ? $decoded : ['image_url' => '', 'alt_text' => '', 'caption' => ''];
+        }
+        
+        if (!is_array($content)) {
+            return ['image_url' => '', 'alt_text' => '', 'caption' => ''];
+        }
+        
+        if (!isset($content['image_url'])) {
+            $content['image_url'] = '';
+        }
+        if (!isset($content['alt_text'])) {
+            $content['alt_text'] = '';
+        }
+        if (!isset($content['caption'])) {
+            $content['caption'] = '';
+        }
+        
         return $content;
     }
 

@@ -53,31 +53,31 @@ class ListBlock extends BasePostBlock {
         <div class="mb-3">
             <label class="form-label">Элементы списка</label>
             <div id="list-items-container">
-                <?php foreach($items as $index => $item): ?>
-                <div class="list-item card mb-2">
-                    <div class="card-body py-2">
-                        <div class="row align-items-center">
-                            <div class="col-1 text-center">
-                                <span class="list-item-handle text-muted">
-                                    <i class="bi bi-grip-vertical"></i>
-                                </span>
-                            </div>
-                            <div class="col-9">
-                                <input type="text" 
-                                    name="content[items][]" 
-                                    class="form-control" 
-                                    value="<?= html(is_array($item) ? ($item['text'] ?? '') : (string)$item) ?>" 
-                                    placeholder="Введите текст элемента списка">
-                            </div>
-                            <div class="col-2 text-end">
-                                <button type="button" class="btn btn-danger btn-sm remove-list-item" <?= count($items) === 1 ? 'disabled' : '' ?>>
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                <?php foreach($items as $index => $item) { ?>
+                    <div class="list-item card mb-2">
+                        <div class="card-body py-2">
+                            <div class="row align-items-center">
+                                <div class="col-1 text-center">
+                                    <span class="list-item-handle text-muted">
+                                        <i class="bi bi-grip-vertical"></i>
+                                    </span>
+                                </div>
+                                <div class="col-9">
+                                    <input type="text" 
+                                        name="content[items][]" 
+                                        class="form-control" 
+                                        value="<?= html(is_array($item) ? ($item['text'] ?? '') : (string)$item) ?>" 
+                                        placeholder="Введите текст элемента списка">
+                                </div>
+                                <div class="col-2 text-end">
+                                    <button type="button" class="btn btn-danger btn-sm remove-list-item" <?= count($items) === 1 ? 'disabled' : '' ?>>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
             
             <button type="button" class="btn btn-secondary mt-2" id="add-list-item">
@@ -367,11 +367,11 @@ class ListBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Список</strong>
-                                <?php if ($listType === 'ol'): ?>
+                                <?php if ($listType === 'ol') { ?>
                                     <span class="badge bg-primary badge-sm">Нумерованный</span>
-                                <?php else: ?>
+                                <?php } else { ?>
                                     <span class="badge bg-secondary badge-sm">Маркированный</span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= $itemCount ?> элемент<?= $itemCount == 1 ? '' : ($itemCount > 1 && $itemCount < 5 ? 'а' : 'ов') ?>
@@ -387,13 +387,13 @@ class ListBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($itemCount > 0): ?>
+                    <?php if ($itemCount > 0) { ?>
                         <div class="list-preview-container">
                             <div class="list-preview">
                                 <<?= $listType ?> class="list-preview-items mb-0 ps-0" style="list-style: <?= $listType === 'ol' ? 'decimal' : 'disc' ?> inside;">
                                     <?php 
                                     $previewItems = array_slice($validItems, 0, 5);
-                                    foreach ($previewItems as $index => $item): 
+                                    foreach ($previewItems as $index => $item) { 
                                         $text = '';
                                         if (is_array($item)) {
                                             $text = $item['text'] ?? '';
@@ -403,15 +403,15 @@ class ListBlock extends BasePostBlock {
                                     ?>
                                         <li class="mb-1" style="font-size: 14px; line-height: 1.4;">
                                             <?= html(mb_substr($text, 0, 60)) ?>
-                                            <?php if (mb_strlen($text) > 60): ?>...<?php endif; ?>
+                                            <?php if (mb_strlen($text) > 60) { ?>...<?php } ?>
                                         </li>
-                                    <?php endforeach; ?>
+                                    <?php } ?>
                                     
-                                    <?php if ($itemCount > 5): ?>
+                                    <?php if ($itemCount > 5) { ?>
                                         <li class="text-muted small">
                                             ... и еще <?= $itemCount - 5 ?> элемент<?= ($itemCount - 5) == 1 ? '' : (($itemCount - 5) > 1 && ($itemCount - 5) < 5 ? 'а' : 'ов') ?>
                                         </li>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                 </<?= $listType ?>>
                             </div>
                             
@@ -424,27 +424,27 @@ class ListBlock extends BasePostBlock {
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <?php if ($customClass): ?>
+                                        <?php if ($customClass) { ?>
                                             <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-list-ul"></i>
                             <div class="empty-text">Список пуст</div>
                             <button type="button" class="btn btn-sm btn-outline-primary mt-2" 
                                     onclick="postBlocksManager.editBlock('{block_id}')">
-                                <i class="bi bi-plus-circle"></i> Добавить элементы
+                                <?php echo bloggy_icon('bs', 'plus-circle', '16', '#000', 'me-1'); ?> Добавить элементы
                             </button>
                             <div class="mt-3 small text-muted">
                                 <i class="bi bi-info-circle"></i>
                                 Добавьте элементы в маркированный или нумерованный список
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

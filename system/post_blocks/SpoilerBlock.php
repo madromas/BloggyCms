@@ -23,13 +23,12 @@ class SpoilerBlock extends BasePostBlock {
 
     public function getTemplateWithShortcodes(): string {
         return '
-        <div class="post-block-spoiler {custom_class} {show_default} {no_animation_class}">
+        <div class="post-block-spoiler {custom_class} {show_default} {no_animation_class}" data-spoiler>
             <div class="spoiler-header">
                 <button type="button" class="spoiler-toggle {icon_position}" aria-expanded="{aria_expanded}">
                     {icon_before}
                     <span class="spoiler-title">{title}</span>
                     {icon_after}
-                    <span class="sr-only">Нажмите чтобы {action_text}</span>
                 </button>
             </div>
             <div class="spoiler-content" aria-hidden="{aria_hidden}">
@@ -50,7 +49,7 @@ class SpoilerBlock extends BasePostBlock {
     public function getDefaultSettings(): array {
         return [
             'show_default' => '',
-            'icon_before' => 'bi bi-chevron-down',
+            'icon_before' => 'chevron-down',
             'icon_after' => '',
             'icon_position' => 'icon-after',
             'custom_class' => '',
@@ -92,7 +91,7 @@ class SpoilerBlock extends BasePostBlock {
     public function getSettingsForm($currentSettings = []): string {
         $currentSettings = $this->validateAndNormalizeSettings($currentSettings);
         $showDefault = $currentSettings['show_default'] ?? '';
-        $iconBefore = $currentSettings['icon_before'] ?? 'bi bi-chevron-down';
+        $iconBefore = $currentSettings['icon_before'] ?? 'chevron-down';
         $iconAfter = $currentSettings['icon_after'] ?? '';
         $iconPosition = $currentSettings['icon_position'] ?? 'icon-after';
         $customClass = $currentSettings['custom_class'] ?? '';
@@ -100,23 +99,23 @@ class SpoilerBlock extends BasePostBlock {
 
         $spoilerIcons = [
             '' => 'Без иконки',
-            'bi bi-chevron-down' => 'Стрелка вниз',
-            'bi bi-chevron-right' => 'Стрелка вправо',
-            'bi bi-plus' => 'Плюс',
-            'bi bi-dash' => 'Минус',
-            'bi bi-caret-down' => 'Уголок вниз',
-            'bi bi-caret-right' => 'Уголок вправо',
-            'bi bi-arrow-down' => 'Стрелка вниз (жирная)',
-            'bi bi-arrow-right' => 'Стрелка вправо (жирная)',
-            'bi bi-eye' => 'Глаз',
-            'bi bi-info-circle' => 'Информация',
-            'bi bi-question-circle' => 'Вопрос',
-            'bi bi-chevron-double-down' => 'Двойная стрелка вниз',
-            'bi bi-chevron-double-right' => 'Двойная стрелка вправо',
-            'bi bi-arrow-down-circle' => 'Стрелка вниз в круге',
-            'bi bi-arrow-right-circle' => 'Стрелка вправо в круге',
-            'bi bi-caret-down-fill' => 'Закрашенный уголок вниз',
-            'bi bi-caret-right-fill' => 'Закрашенный уголок вправо'
+            'chevron-down' => 'Стрелка вниз',
+            'chevron-right' => 'Стрелка вправо',
+            'plus' => 'Плюс',
+            'dash' => 'Минус',
+            'caret-down' => 'Уголок вниз',
+            'caret-right' => 'Уголок вправо',
+            'arrow-down' => 'Стрелка вниз (жирная)',
+            'arrow-right' => 'Стрелка вправо (жирная)',
+            'eye' => 'Глаз',
+            'info-circle' => 'Информация',
+            'question-circle' => 'Вопрос',
+            'chevron-double-down' => 'Двойная стрелка вниз',
+            'chevron-double-right' => 'Двойная стрелка вправо',
+            'arrow-down-circle' => 'Стрелка вниз в круге',
+            'arrow-right-circle' => 'Стрелка вправо в круге',
+            'caret-down-fill' => 'Закрашенный уголок вниз',
+            'caret-right-fill' => 'Закрашенный уголок вправо'
         ];
 
         ob_start();
@@ -126,11 +125,11 @@ class SpoilerBlock extends BasePostBlock {
                 <div class="mb-4">
                     <label class="form-label">Иконка перед заголовком</label>
                     <select name="settings[icon_before]" class="form-select">
-                        <?php foreach($spoilerIcons as $value => $name): ?>
+                        <?php foreach($spoilerIcons as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $iconBefore === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -138,11 +137,11 @@ class SpoilerBlock extends BasePostBlock {
                 <div class="mb-4">
                     <label class="form-label">Иконка после заголовка</label>
                     <select name="settings[icon_after]" class="form-select">
-                        <?php foreach($spoilerIcons as $value => $name): ?>
+                        <?php foreach($spoilerIcons as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $iconAfter === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -201,7 +200,7 @@ class SpoilerBlock extends BasePostBlock {
         </div>
 
         <div class="alert alert-info">
-            <i class="bi bi-info-circle me-2"></i>
+            <?= bloggy_icon('bs', 'info-circle', '16 16', null, 'me-2') ?>
             Для работы спойлера необходим Bootstrap 5. Убедитесь, что он подключен в вашем шаблоне.
         </div>
         <?php
@@ -228,7 +227,7 @@ class SpoilerBlock extends BasePostBlock {
         }
 
         $showDefault = $settings['show_default'] ?? '';
-        $iconBefore = $settings['icon_before'] ?? 'bi bi-chevron-down';
+        $iconBefore = $settings['icon_before'] ?? 'chevron-down';
         $iconAfter = $settings['icon_after'] ?? '';
         $iconPosition = $settings['icon_position'] ?? 'icon-after';
         $customClass = $settings['custom_class'] ?? '';
@@ -238,8 +237,8 @@ class SpoilerBlock extends BasePostBlock {
         $isOpen = $showDefault === 'show';
         $ariaExpanded = $isOpen ? 'true' : 'false';
         $ariaHidden = $isOpen ? 'false' : 'true';
-        $actionText = $isOpen ? 'скрыть' : 'раскрыть';
         $noAnimationClass = !$animation ? 'no-animation' : '';
+        
         $presetClass = '';
         if ($presetId) {
             $presetClass = 'preset-' . (int)$presetId;
@@ -247,7 +246,6 @@ class SpoilerBlock extends BasePostBlock {
                 $cleanPresetName = preg_replace('/[^a-z0-9_-]+/i', '-', strtolower($presetName));
                 $cleanPresetName = preg_replace('/-+/', '-', $cleanPresetName);
                 $cleanPresetName = trim($cleanPresetName, '-');
-                
                 if (!empty($cleanPresetName)) {
                     $presetClass .= ' preset-' . $cleanPresetName;
                 }
@@ -259,19 +257,13 @@ class SpoilerBlock extends BasePostBlock {
 
         if ($iconPosition === 'icon-before' || $iconPosition === 'icon-both') {
             if (!empty($iconBefore)) {
-                $iconName = $this->extractIconName($iconBefore);
-                if ($iconName) {
-                    $iconBeforeHtml = bloggy_icon('bs', $iconName, '16 16', null, 'me-2');
-                }
+                $iconBeforeHtml = bloggy_icon('bs', $iconBefore, '16 16', null, 'spoiler-icon me-2');
             }
         }
         
         if ($iconPosition === 'icon-after' || $iconPosition === 'icon-both') {
             if (!empty($iconAfter)) {
-                $iconName = $this->extractIconName($iconAfter);
-                if ($iconName) {
-                    $iconAfterHtml = bloggy_icon('bs', $iconName, '16 16', null, 'ms-2');
-                }
+                $iconAfterHtml = bloggy_icon('bs', $iconAfter, '16 16', null, 'spoiler-icon ms-2');
             }
         }
 
@@ -290,31 +282,9 @@ class SpoilerBlock extends BasePostBlock {
         $result = str_replace('{block_name}', $this->getName(), $result);
         $result = str_replace('{aria_expanded}', $ariaExpanded, $result);
         $result = str_replace('{aria_hidden}', $ariaHidden, $result);
-        $result = str_replace('{action_text}', $actionText, $result);
         $result = str_replace('{no_animation_class}', $noAnimationClass, $result);
 
         return $result;
-    }
-
-    private function extractIconName($iconClass): string {
-        if (empty($iconClass)) {
-            return '';
-        }
-
-        $parts = explode(' ', $iconClass);
-        
-        foreach ($parts as $part) {
-            if (strpos($part, 'bi-') === 0) {
-                return substr($part, 3);
-            }
-        }
-        
-        $lastPart = end($parts);
-        if (strpos($lastPart, '-') !== false) {
-            return $lastPart;
-        }
-        
-        return $iconClass;
     }
 
     public function getShortcodes(): array {
@@ -333,12 +303,6 @@ class SpoilerBlock extends BasePostBlock {
     public function getAdminCss(): array {
         return [
             'templates/default/admin/assets/css/blocks/spoiler.css'
-        ];
-    }
-
-    public function getSystemCss(): array {
-        return [
-            'templates/default/admin/assets/css/blocks/spoiler.css',
         ];
     }
 
@@ -441,20 +405,28 @@ class SpoilerBlock extends BasePostBlock {
             $settings = [];
         }
         
-        if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            $settings = array_merge($settings, $_POST['settings']);
+        if (isset($_POST['settings']['show_default']) && $_POST['settings']['show_default'] === 'show') {
+            $settings['show_default'] = 'show';
+        } else {
+            $settings['show_default'] = '';
         }
         
-        if (isset($settings['animation'])) {
-            $settings['animation'] = (bool)$settings['animation'];
+        $settings['animation'] = isset($_POST['settings']['animation']) && ($_POST['settings']['animation'] == '1' || $_POST['settings']['animation'] == 'on');
+        
+        if (isset($_POST['settings']['icon_before'])) {
+            $settings['icon_before'] = trim($_POST['settings']['icon_before']);
         }
-
-        if (isset($settings['show_default'])) {
-            $settings['show_default'] = $settings['show_default'] === 'show' ? 'show' : '';
+        
+        if (isset($_POST['settings']['icon_after'])) {
+            $settings['icon_after'] = trim($_POST['settings']['icon_after']);
         }
-
-        if (isset($settings['custom_class'])) {
-            $settings['custom_class'] = trim($settings['custom_class']);
+        
+        if (isset($_POST['settings']['icon_position'])) {
+            $settings['icon_position'] = trim($_POST['settings']['icon_position']);
+        }
+        
+        if (isset($_POST['settings']['custom_class'])) {
+            $settings['custom_class'] = trim($_POST['settings']['custom_class']);
         }
 
         return $settings;
@@ -462,13 +434,13 @@ class SpoilerBlock extends BasePostBlock {
 
     public function getFrontendJs(): array {
         return [
-            '/templates/default/front/assets/postblocks/spoiler/spoiler.js',
+            '/templates/default/front/assets/postblocks/spoilerblock/spoiler.js',
         ];
     }
 
     public function getFrontendCss(): array {
         return [
-            '/templates/default/front/assets/postblocks/spoiler/spoiler.css',
+            '/templates/default/front/assets/postblocks/spoilerblock/spoiler.css',
         ];
     }
 
@@ -479,7 +451,7 @@ class SpoilerBlock extends BasePostBlock {
         $title = $content['title'] ?? 'Нажмите чтобы раскрыть';
         $contentText = $content['content'] ?? 'Скрытый контент...';
         $showDefault = $settings['show_default'] ?? '';
-        $iconBefore = $settings['icon_before'] ?? 'bi bi-chevron-down';
+        $iconBefore = $settings['icon_before'] ?? 'chevron-down';
         $iconAfter = $settings['icon_after'] ?? '';
         $iconPosition = $settings['icon_position'] ?? 'icon-after';
         $customClass = $settings['custom_class'] ?? '';
@@ -487,7 +459,8 @@ class SpoilerBlock extends BasePostBlock {
         
         $isOpen = $showDefault === 'show';
         $contentLength = strlen($contentText);
-        $previewIcon = 'bi bi-chevron-down';
+        
+        $previewIcon = 'chevron-down';
         if (!empty($iconBefore) && $iconBefore !== '' && $iconBefore !== 'null') {
             $previewIcon = $iconBefore;
         } elseif (!empty($iconAfter) && $iconAfter !== '' && $iconAfter !== 'null') {
@@ -508,16 +481,16 @@ class SpoilerBlock extends BasePostBlock {
                 <div class="preview-header">
                     <div class="preview-header-content">
                         <div class="preview-icon">
-                            <i class="bi bi-eye"></i>
+                            <?= bloggy_icon('bs', 'eye', '20 20') ?>
                         </div>
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Спойлер</strong>
-                                <?php if ($isOpen): ?>
+                                <?php if ($isOpen) { ?>
                                     <span class="badge bg-success badge-sm">Открыт</span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary badge-sm">Закрыт</span>
-                                <?php endif; ?>
+                                <?php } else { ?>
+                                    <span class="badge bg-warning badge-sm">Закрыт</span>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($title) ?> симв. в заголовке
@@ -528,34 +501,34 @@ class SpoilerBlock extends BasePostBlock {
                     <div class="preview-actions">
                         <button type="button" class="btn btn-xs btn-outline-secondary preview-edit-btn" 
                                 onclick="postBlocksManager.editBlock('{block_id}')">
-                            <i class="bi bi-pencil"></i>
+                            <?= bloggy_icon('bs', 'pencil', '14 14') ?>
                         </button>
                     </div>
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($title)) || !empty(trim($contentText))): ?>
+                    <?php if (!empty(trim($title)) || !empty(trim($contentText))) { ?>
                         <div class="spoiler-preview-container">
                             <div class="spoiler-header-preview border rounded p-3 mb-2 bg-light">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center">
-                                            <?php if (($iconPosition === 'icon-before' || $iconPosition === 'icon-both') && !empty($previewIcon)): ?>
-                                                <i class="<?= html($previewIcon) ?> me-2 text-primary"></i>
-                                            <?php endif; ?>
+                                            <?php if (($iconPosition === 'icon-before' || $iconPosition === 'icon-both') && !empty($previewIcon)) { ?>
+                                                <?= bloggy_icon('bs', $previewIcon, '16 16', null, 'me-2 text-primary') ?>
+                                            <?php } ?>
                                             
                                             <span class="fw-semibold" style="color: #374151;">
                                                 <?= html(mb_substr($title, 0, 40)) ?>
-                                                <?php if (mb_strlen($title) > 40): ?>...<?php endif; ?>
+                                                <?php if (mb_strlen($title) > 40) { ?>...<?php } ?>
                                             </span>
                                             
-                                            <?php if (($iconPosition === 'icon-after' || $iconPosition === 'icon-both') && !empty($previewIcon)): ?>
-                                                <i class="<?= html($previewIcon) ?> ms-2 text-primary"></i>
-                                            <?php endif; ?>
+                                            <?php if (($iconPosition === 'icon-after' || $iconPosition === 'icon-both') && !empty($previewIcon)) { ?>
+                                                <?= bloggy_icon('bs', $previewIcon, '16 16', null, 'ms-2 text-primary') ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                     <div class="ms-3">
-                                        <span class="badge <?= $isOpen ? 'bg-success' : 'bg-secondary' ?>">
+                                        <span class="badge <?= $isOpen ? 'bg-success' : 'bg-warning' ?>">
                                             <?= $isOpen ? 'Открыт' : 'Закрыт' ?>
                                         </span>
                                     </div>
@@ -564,58 +537,58 @@ class SpoilerBlock extends BasePostBlock {
                             
                             <div class="spoiler-content-preview border rounded p-3 bg-white <?= $isOpen ? '' : 'bg-light' ?>">
                                 <div class="small text-muted mb-2 d-flex justify-content-between">
-                                    <span><i class="bi bi-eye-slash"></i> Скрытый контент</span>
+                                    <span><?= bloggy_icon('bs', 'eye-slash', '12 12', null, 'me-1') ?> Скрытый контент</span>
                                     <span><?= $contentLength ?> симв.</span>
                                 </div>
                                 
-                                <?php if (!empty(trim($contentText))): ?>
+                                <?php if (!empty(trim($contentText))) { ?>
                                     <div class="spoiler-text-preview small" style="color: #6b7280; line-height: 1.5;">
                                         <?= html(mb_substr(strip_tags($contentText), 0, 80)) ?>
-                                        <?php if (mb_strlen(strip_tags($contentText)) > 80): ?>...<?php endif; ?>
+                                        <?php if (mb_strlen(strip_tags($contentText)) > 80) { ?>...<?php } ?>
                                     </div>
-                                <?php else: ?>
+                                <?php } else { ?>
                                     <div class="text-center py-2 text-muted">
-                                        <i class="bi bi-eye-slash"></i>
+                                        <?= bloggy_icon('bs', 'eye-slash', '24 24', null, 'mb-1') ?>
                                         <div class="small mt-1">Контент не добавлен</div>
                                     </div>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             
                             <div class="spoiler-preview-info mt-3 small text-muted">
                                 <div class="row">
                                     <div class="col-6">
-                                        <div><i class="bi bi-<?= $isOpen ? 'unlock' : 'lock' ?> me-1"></i>По умолчанию: <strong><?= $isOpen ? 'Открыт' : 'Закрыт' ?></strong></div>
-                                        <div><i class="bi bi-gear me-1"></i>Иконки: <strong><?= html($iconPositionText) ?></strong></div>
+                                        <div><?= bloggy_icon('bs', $isOpen ? 'unlock' : 'lock', '12 12', null, 'me-1') ?>По умолчанию: <strong><?= $isOpen ? 'Открыт' : 'Закрыт' ?></strong></div>
+                                        <div><?= bloggy_icon('bs', 'gear', '12 12', null, 'me-1') ?>Иконки: <strong><?= html($iconPositionText) ?></strong></div>
                                     </div>
                                     <div class="col-6">
-                                        <?php if ($customClass): ?>
-                                            <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
-                                        <?php endif; ?>
-                                        <div><i class="bi bi-play-circle me-1"></i>Анимация: <strong><?= $animation ? 'Да' : 'Нет' ?></strong></div>
+                                        <?php if ($customClass) { ?>
+                                            <div><?= bloggy_icon('bs', 'tag', '12 12', null, 'me-1') ?>Класс: <strong><?= html($customClass) ?></strong></div>
+                                        <?php } ?>
+                                        <div><?= bloggy_icon('bs', 'play-circle', '12 12', null, 'me-1') ?>Анимация: <strong><?= $animation ? 'Да' : 'Нет' ?></strong></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
-                            <i class="bi bi-eye"></i>
+                            <?= bloggy_icon('bs', 'eye', '48 48', '#6C6C6C', 'mb-3') ?>
                             <div class="empty-text">Содержимое не добавлено</div>
                             <button type="button" class="btn btn-sm btn-outline-primary mt-2" 
                                     onclick="postBlocksManager.editBlock('{block_id}')">
-                                <i class="bi bi-plus-circle"></i> Добавить спойлер
+                                <?= bloggy_icon('bs', 'plus-circle', '14 14', null, 'me-1') ?>
+                                Добавить спойлер
                             </button>
                             <div class="mt-3 small text-muted">
-                                <i class="bi bi-info-circle"></i>
+                                <?= bloggy_icon('bs', 'info-circle', '14 14', null, 'me-1') ?>
                                 Используйте для скрытия контента под заголовком
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
         <?php
         return ob_get_clean();
     }
-
 
 }

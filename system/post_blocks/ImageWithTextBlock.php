@@ -23,19 +23,22 @@ class ImageWithTextBlock extends BasePostBlock {
 
     public function getTemplateWithShortcodes(): string {
         return '
-        <section class="section bg-white">
-            <div class="container">
-                <div class="row justify-content-start justify-content-lg-between align-items-center">
-                    <div class="col-xl-5 col-lg-6 has-anim visible">
-                        <img loading="lazy" class="img-fluid {image_class}" src="{image_url}" alt="{alt_text}">
-                    </div>
-                    <div class="col-lg-6 mt-5 mt-lg-0">
-                        <h2 class="h3 text-dark mb-3 has-anim fade visible">{title}</h2>
-                        <p class="lead text-dark mb-3 has-anim fade visible">{text_content}</p>
-                    </div>
+        <div class="image-text-block {layout} {custom_class} align-{vertical_align}" style="gap: {gap};">
+            <div class="image-text-container">
+                <div class="image-wrapper {image_size}">
+                    <img class="img-fluid {image_class}" 
+                         src="{image_url}" 
+                         alt="{alt_text}"
+                         {width_attr}
+                         {height_attr}
+                         loading="lazy">
+                </div>
+                <div class="text-wrapper text-{text_align}">
+                    {title_html}
+                    <div class="text-content">{text_content}</div>
                 </div>
             </div>
-        </section>';
+        </div>';
     }
 
     public function getDefaultContent(): array {
@@ -109,28 +112,28 @@ class ImageWithTextBlock extends BasePostBlock {
                     </div>
                 </div>
 
-                <?php if ($imageUrl): ?>
-                <div class="mb-4">
-                    <label class="form-label">Текущее изображение</label>
-                    <div class="current-image-preview border rounded p-3 text-center bg-light">
-                        <img src="<?= html($imageUrl) ?>" 
-                             alt="Текущее изображение" 
-                             class="img-thumbnail"
-                             style="max-height: 200px;">
-                        <div class="mt-2">
-                            <small class="text-muted"><?= html($imageUrl) ?></small>
-                        </div>
-                        <div class="mt-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="removeImage">
-                                <label class="form-check-label" for="removeImage">
-                                    Удалить текущее изображение
-                                </label>
+                <?php if ($imageUrl) { ?>
+                    <div class="mb-4">
+                        <label class="form-label">Текущее изображение</label>
+                        <div class="current-image-preview border rounded p-3 text-center bg-light">
+                            <img src="<?= html($imageUrl) ?>" 
+                                alt="Текущее изображение" 
+                                class="img-thumbnail"
+                                style="max-height: 200px;">
+                            <div class="mt-2">
+                                <small class="text-muted"><?= html($imageUrl) ?></small>
+                            </div>
+                            <div class="mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="remove_image" value="1" id="removeImage">
+                                    <label class="form-check-label" for="removeImage">
+                                        Удалить текущее изображение
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <?php endif; ?>
+                <?php } ?>
             </div>
 
             <div class="col-md-6">
@@ -358,75 +361,84 @@ class ImageWithTextBlock extends BasePostBlock {
             $imageUrl = '/' . $imageUrl;
         }
 
-        $sizeClass = '';
-        
-        switch ($imageSize) {
-            case 'small':
-                $sizeClass = 'image-small';
-                break;
-            case 'medium':
-                $sizeClass = 'image-medium';
-                break;
-            case 'large':
-                $sizeClass = 'image-large';
-                break;
-            case 'custom':
-                break;
-        }
-
         $widthAttr = '';
         $heightAttr = '';
+        if (!empty($width)) {
+            $widthAttr = 'width="' . htmlspecialchars($width) . '"';
+        }
+        if (!empty($height)) {
+            $heightAttr = 'height="' . htmlspecialchars($height) . '"';
+        }
+
+        $sizeClass = '';
+        switch ($imageSize) {
+            case 'small':
+                $sizeClass = 'image-size-small';
+                break;
+            case 'medium':
+                $sizeClass = 'image-size-medium';
+                break;
+            case 'large':
+                $sizeClass = 'image-size-large';
+                break;
+            case 'custom':
+                $sizeClass = 'image-size-custom';
+                break;
+        }
         
         $presetClass = '';
         if ($presetId) {
             $presetClass = 'preset-' . (int)$presetId;
-            
             if (!empty($presetName)) {
                 $cleanPresetName = preg_replace('/[^a-z0-9_-]+/i', '-', strtolower($presetName));
                 $cleanPresetName = preg_replace('/-+/', '-', $cleanPresetName);
                 $cleanPresetName = trim($cleanPresetName, '-');
-                
                 if (!empty($cleanPresetName)) {
                     $presetClass .= ' preset-' . $cleanPresetName;
                 }
             }
         }
 
-        $result = $template;
         $titleHtml = '';
         if (!empty($title)) {
-            $titleClass = 'title-' . $titleAlign;
+            $titleClass = 'title-align-' . $titleAlign;
             $titleHtml = sprintf(
-                '<%1$s class="%2$s text-dark mb-3 has-anim fade visible">%3$s</%1$s>',
-                html($titleTag),
+                '<%1$s class="%2$s">%3$s</%1$s>',
+                htmlspecialchars($titleTag),
                 $titleClass,
-                html($title)
+                htmlspecialchars($title)
             );
         }
         
-        $result = str_replace('{layout}', $layout, $result);
-        $result = str_replace('{custom_class}', trim($customClass . ' ' . $presetClass), $result);
-        $result = str_replace('{image_url}', html($imageUrl), $result);
-        $result = str_replace('{alt_text}', html($altText), $result);
-        $result = str_replace('{image_class}', trim($imageClass . ' ' . $sizeClass), $result);
-        $result = str_replace('{width_attr}', $widthAttr, $result);
-        $result = str_replace('{height_attr}', $heightAttr, $result); 
-        $result = str_replace('{title}', $titleHtml, $result);
-        $result = str_replace('{text_content}', $textContent, $result);
-        $textAlignClass = 'text-' . $textAlign;
-        $result = str_replace('text-content', 'text-content ' . $textAlignClass, $result);
-        $verticalAlignClass = 'align-' . $verticalAlign;
-        $result = str_replace('post-block-image-with-text', 'post-block-image-with-text ' . $verticalAlignClass, $result);
-        $result = str_replace('{preset_id}', $presetId ? html($presetId) : '', $result);
-        $result = str_replace('{preset_name}', $presetName ? html($presetName) : '', $result);
-        $result = str_replace('{block_type}', $this->getSystemName(), $result);
-        $result = str_replace('{block_name}', $this->getName(), $result);
-        $result = str_replace('{text_align}', $textAlign, $result);
-        $result = str_replace('{title_align}', $titleAlign, $result);
-        $result = str_replace('{title_tag}', $titleTag, $result);
-        $result = str_replace('{vertical_align}', $verticalAlign, $result);
-        $result = str_replace('{gap}', $gap, $result);
-
+        $result = $template;
+        
+        $replacements = [
+            '{layout}' => htmlspecialchars($layout),
+            '{custom_class}' => trim($customClass . ' ' . $presetClass),
+            '{image_url}' => htmlspecialchars($imageUrl),
+            '{alt_text}' => htmlspecialchars($altText),
+            '{image_class}' => trim($imageClass . ' ' . $sizeClass),
+            '{width_attr}' => $widthAttr,
+            '{height_attr}' => $heightAttr,
+            '{title_html}' => $titleHtml,
+            '{text_content}' => $textContent,
+            '{text_align}' => htmlspecialchars($textAlign),
+            '{title_align}' => htmlspecialchars($titleAlign),
+            '{title_tag}' => htmlspecialchars($titleTag),
+            '{vertical_align}' => htmlspecialchars($verticalAlign),
+            '{gap}' => htmlspecialchars($gap),
+            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
+            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
+            '{block_type}' => $this->getSystemName(),
+            '{block_name}' => $this->getName()
+        ];
+        
+        foreach ($replacements as $placeholder => $value) {
+            $result = str_replace($placeholder, $value, $result);
+        }
+        
+        $result = preg_replace('/\s+(width|height)=""/', '', $result);
+        
         return $result;
     }
 
@@ -435,6 +447,7 @@ class ImageWithTextBlock extends BasePostBlock {
             '{image_url}' => 'URL изображения',
             '{alt_text}' => 'Alt текст изображения',
             '{title}' => 'Заголовок',
+            '{title_html}' => 'HTML заголовка с тегом',
             '{text_content}' => 'Текстовое содержание',
             '{layout}' => 'Расположение (image-left, image-right, image-top, image-bottom)',
             '{image_class}' => 'CSS класс изображения',
@@ -522,39 +535,138 @@ class ImageWithTextBlock extends BasePostBlock {
             $settings = [];
         }
         
-        if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            $settings = array_merge($settings, $_POST['settings']);
+        if (isset($_POST['settings']['layout'])) {
+            $settings['layout'] = trim($_POST['settings']['layout']);
         }
         
-        if (isset($settings['custom_class'])) {
-            $settings['custom_class'] = trim($settings['custom_class']);
+        if (isset($_POST['settings']['image_size'])) {
+            $settings['image_size'] = trim($_POST['settings']['image_size']);
         }
         
-        if (isset($settings['image_class'])) {
-            $settings['image_class'] = trim($settings['image_class']);
+        if (isset($_POST['settings']['text_align'])) {
+            $settings['text_align'] = trim($_POST['settings']['text_align']);
         }
         
-        if (isset($settings['width'])) {
-            $settings['width'] = trim($settings['width']);
+        if (isset($_POST['settings']['title_align'])) {
+            $settings['title_align'] = trim($_POST['settings']['title_align']);
         }
         
-        if (isset($settings['height'])) {
-            $settings['height'] = trim($settings['height']);
+        if (isset($_POST['settings']['title_tag'])) {
+            $settings['title_tag'] = trim($_POST['settings']['title_tag']);
         }
         
-        if (isset($settings['gap'])) {
-            $settings['gap'] = trim($settings['gap']);
-        }
-
-        if (!isset($settings['title_align']) || empty($settings['title_align'])) {
-            $settings['title_align'] = 'left';
+        if (isset($_POST['settings']['vertical_align'])) {
+            $settings['vertical_align'] = trim($_POST['settings']['vertical_align']);
         }
         
-        if (!isset($settings['title_tag']) || empty($settings['title_tag'])) {
-            $settings['title_tag'] = 'h2';
+        if (isset($_POST['settings']['width'])) {
+            $settings['width'] = trim($_POST['settings']['width']);
+        }
+        
+        if (isset($_POST['settings']['height'])) {
+            $settings['height'] = trim($_POST['settings']['height']);
+        }
+        
+        if (isset($_POST['settings']['gap'])) {
+            $settings['gap'] = trim($_POST['settings']['gap']);
+        }
+        
+        if (isset($_POST['settings']['image_class'])) {
+            $settings['image_class'] = trim($_POST['settings']['image_class']);
+        }
+        
+        if (isset($_POST['settings']['custom_class'])) {
+            $settings['custom_class'] = trim($_POST['settings']['custom_class']);
         }
 
         return $settings;
+    }
+
+    public function validateAndNormalizeSettings($settings): array {
+        if (is_string($settings)) {
+            $decoded = json_decode($settings, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        
+        if (!is_array($settings)) {
+            return [];
+        }
+        
+        $defaults = $this->getDefaultSettings();
+        
+        $allowedLayouts = ['image-left', 'image-right', 'image-top', 'image-bottom'];
+        if (!isset($settings['layout']) || !in_array($settings['layout'], $allowedLayouts)) {
+            $settings['layout'] = $defaults['layout'] ?? 'image-left';
+        }
+        
+        $allowedSizes = ['small', 'medium', 'large', 'custom'];
+        if (!isset($settings['image_size']) || !in_array($settings['image_size'], $allowedSizes)) {
+            $settings['image_size'] = $defaults['image_size'] ?? 'medium';
+        }
+        
+        $allowedAlign = ['left', 'center', 'right', 'justify'];
+        if (!isset($settings['text_align']) || !in_array($settings['text_align'], $allowedAlign)) {
+            $settings['text_align'] = $defaults['text_align'] ?? 'left';
+        }
+        
+        $allowedTitleAlign = ['left', 'center', 'right'];
+        if (!isset($settings['title_align']) || !in_array($settings['title_align'], $allowedTitleAlign)) {
+            $settings['title_align'] = $defaults['title_align'] ?? 'left';
+        }
+        
+        $allowedTitleTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div'];
+        if (!isset($settings['title_tag']) || !in_array($settings['title_tag'], $allowedTitleTags)) {
+            $settings['title_tag'] = $defaults['title_tag'] ?? 'h2';
+        }
+        
+        $allowedVerticalAlign = ['top', 'middle', 'bottom'];
+        if (!isset($settings['vertical_align']) || !in_array($settings['vertical_align'], $allowedVerticalAlign)) {
+            $settings['vertical_align'] = $defaults['vertical_align'] ?? 'top';
+        }
+        
+        if (!isset($settings['width'])) {
+            $settings['width'] = $defaults['width'] ?? '';
+        }
+        if (!isset($settings['height'])) {
+            $settings['height'] = $defaults['height'] ?? '';
+        }
+        if (!isset($settings['gap'])) {
+            $settings['gap'] = $defaults['gap'] ?? '30px';
+        }
+        if (!isset($settings['image_class'])) {
+            $settings['image_class'] = $defaults['image_class'] ?? '';
+        }
+        if (!isset($settings['custom_class'])) {
+            $settings['custom_class'] = $defaults['custom_class'] ?? '';
+        }
+        
+        return $settings;
+    }
+
+    public function validateAndNormalizeContent($content): array {
+        if (is_string($content)) {
+            $decoded = json_decode($content, true);
+            return is_array($decoded) ? $decoded : ['image_url' => '', 'alt_text' => '', 'title' => '', 'text_content' => ''];
+        }
+        
+        if (!is_array($content)) {
+            return ['image_url' => '', 'alt_text' => '', 'title' => '', 'text_content' => ''];
+        }
+        
+        if (!isset($content['image_url'])) {
+            $content['image_url'] = '';
+        }
+        if (!isset($content['alt_text'])) {
+            $content['alt_text'] = '';
+        }
+        if (!isset($content['title'])) {
+            $content['title'] = '';
+        }
+        if (!isset($content['text_content'])) {
+            $content['text_content'] = '';
+        }
+        
+        return $content;
     }
 
     public function handleImageUpload($file) {
@@ -698,55 +810,6 @@ class ImageWithTextBlock extends BasePostBlock {
         return null;
     }
 
-    public function validateAndNormalizeContent($content): array {
-        if (is_string($content)) {
-            $decoded = json_decode($content, true);
-            return is_array($decoded) ? $decoded : ['image_url' => '', 'alt_text' => '', 'title' => '', 'text_content' => ''];
-        }
-        
-        if (!is_array($content)) {
-            return ['image_url' => '', 'alt_text' => '', 'title' => '', 'text_content' => ''];
-        }
-        
-        if (!isset($content['image_url'])) {
-            $content['image_url'] = '';
-        }
-        
-        if (!isset($content['alt_text'])) {
-            $content['alt_text'] = '';
-        }
-        
-        if (!isset($content['title'])) {
-            $content['title'] = '';
-        }
-        
-        if (!isset($content['text_content'])) {
-            $content['text_content'] = '';
-        }
-        
-        return $content;
-    }
-
-    public function validateAndNormalizeSettings($settings): array {
-        if (is_string($settings)) {
-            $decoded = json_decode($settings, true);
-            return is_array($decoded) ? $decoded : [];
-        }
-        
-        if (!is_array($settings)) {
-            return [];
-        }
-        
-        $defaults = $this->getDefaultSettings();
-        foreach ($defaults as $key => $value) {
-            if (!isset($settings[$key])) {
-                $settings[$key] = $value;
-            }
-        }
-        
-        return $settings;
-    }
-
     public function getPreviewHtml($content = [], $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -762,6 +825,7 @@ class ImageWithTextBlock extends BasePostBlock {
         $titleAlign = $settings['title_align'] ?? 'left';
         $titleTag = $settings['title_tag'] ?? 'h2';
         $verticalAlign = $settings['vertical_align'] ?? 'top';
+        
         $layoutIcon = match($layout) {
             'image-left' => 'bi bi-image-fill',
             'image-right' => 'bi bi-image-fill',
@@ -801,14 +865,14 @@ class ImageWithTextBlock extends BasePostBlock {
                                 <span class="badge bg-info badge-sm"><?= html($layoutText) ?></span>
                             </div>
                             <div class="preview-stats">
-                                <?php if ($imageUrl): ?>
+                                <?php if ($imageUrl) { ?>
                                     Изображение загружено
-                                <?php else: ?>
+                                <?php } else { ?>
                                     Без изображения
-                                <?php endif; ?>
-                                <?php if (!empty(trim($textContent))): ?>
+                                <?php } ?>
+                                <?php if (!empty(trim($textContent))) { ?>
                                     · <?= strlen($textContent) ?> симв.
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -821,19 +885,18 @@ class ImageWithTextBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($imageUrl || !empty(trim($title)) || !empty(trim($textContent))): ?>
+                    <?php if ($imageUrl || !empty(trim($title)) || !empty(trim($textContent))) { ?>
                         <div class="image-with-text-preview-container">
                             <div class="image-text-preview-mockup border rounded p-3 bg-light">
                                 <div class="row g-3 <?= $layout === 'image-left' || $layout === 'image-right' ? 'flex-nowrap' : '' ?>">
                                     <div class="col-<?= $layout === 'image-top' || $layout === 'image-bottom' ? '12' : '5' ?>">
                                         <div class="image-preview h-100 d-flex align-items-center justify-content-center bg-white border rounded p-2">
-                                            <?php if ($imageUrl): ?>
+                                            <?php if ($imageUrl) { ?>
                                                 <img src="<?= html($imageUrl) ?>" 
                                                     alt="<?= html($altText) ?>"
                                                     class="img-fluid"
-                                                    style="max-height: 80px; object-fit: contain;"
-                                                    onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                            <?php endif; ?>
+                                                    style="max-height: 80px; object-fit: contain;">
+                                            <?php } ?>
                                             <div class="text-center <?= $imageUrl ? 'd-none' : '' ?>">
                                                 <i class="bi bi-image text-muted display-6"></i>
                                                 <div class="small text-muted mt-1">Изображение</div>
@@ -842,26 +905,26 @@ class ImageWithTextBlock extends BasePostBlock {
                                     </div>
                                     <div class="col-<?= $layout === 'image-top' || $layout === 'image-bottom' ? '12' : '7' ?>">
                                         <div class="text-preview h-100">
-                                            <?php if (!empty(trim($title))): ?>
+                                            <?php if (!empty(trim($title))) { ?>
                                                 <div class="title-preview mb-2">
                                                     <div class="h6 mb-1" style="color: #3b82f6;"><?= html(mb_substr($title, 0, 50)) ?></div>
                                                     <div class="small text-muted">Заголовок (<?= html($titleTag) ?>)</div>
                                                 </div>
-                                            <?php endif; ?>
+                                            <?php } ?>
                                             
-                                            <?php if (!empty(trim($textContent))): ?>
+                                            <?php if (!empty(trim($textContent))) { ?>
                                                 <div class="content-preview">
                                                     <div class="small" style="color: #374151; line-height: 1.4;">
                                                         <?= html(mb_substr(strip_tags($textContent), 0, 100)) ?>
-                                                        <?php if (mb_strlen(strip_tags($textContent)) > 100): ?>...<?php endif; ?>
+                                                        <?php if (mb_strlen(strip_tags($textContent)) > 100) { ?>...<?php } ?>
                                                     </div>
                                                 </div>
-                                            <?php else: ?>
+                                            <?php } else { ?>
                                                 <div class="content-placeholder text-center py-3">
                                                     <i class="bi bi-text-left text-muted"></i>
                                                     <div class="small text-muted mt-1">Текст не добавлен</div>
                                                 </div>
-                                            <?php endif; ?>
+                                            <?php } ?>
                                         </div>
                                     </div>
                                 </div>
@@ -880,7 +943,7 @@ class ImageWithTextBlock extends BasePostBlock {
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-file-earmark-richtext"></i>
                             <div class="empty-text">Контент не добавлен</div>
@@ -893,7 +956,7 @@ class ImageWithTextBlock extends BasePostBlock {
                                 Этот блок объединяет изображение с текстовым описанием
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

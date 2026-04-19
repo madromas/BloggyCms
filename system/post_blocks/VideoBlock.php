@@ -97,20 +97,20 @@ class VideoBlock extends BasePostBlock {
                             <div class="preview-title">
                                 <strong>Видео</strong>
                                 <span class="badge bg-info badge-sm"><?= $typeLabel ?></span>
-                                <?php if ($hasVideo): ?>
+                                <?php if ($hasVideo) { ?>
                                     <span class="badge bg-success badge-sm">Загружено</span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
-                                <?php if ($hasVideo): ?>
-                                    <?php if ($videoType === 'upload'): ?>
+                                <?php if ($hasVideo) { ?>
+                                    <?php if ($videoType === 'upload') { ?>
                                         Локальный файл
-                                    <?php else: ?>
+                                    <?php } else { ?>
                                         Внешняя ссылка
-                                    <?php endif; ?>
-                                <?php else: ?>
+                                    <?php } ?>
+                                <?php } else { ?>
                                     Не загружено
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@ class VideoBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($hasVideo): ?>
+                    <?php if ($hasVideo) { ?>
                         <div class="video-preview-container">
                             <div class="video-placeholder bg-dark d-flex align-items-center justify-content-center" 
                                  style="aspect-ratio: 16/9; border-radius: 8px;">
@@ -136,17 +136,17 @@ class VideoBlock extends BasePostBlock {
                                 </div>
                             </div>
                             
-                            <?php if (!empty($caption)): ?>
+                            <?php if (!empty($caption)) { ?>
                                 <div class="video-caption mt-2 text-center">
                                     <small class="text-muted">
                                         <i class="bi bi-camera-video me-1"></i>
                                         <?= html(mb_substr($caption, 0, 60)) ?>
-                                        <?php if (mb_strlen($caption) > 60): ?>...<?php endif; ?>
+                                        <?php if (mb_strlen($caption) > 60) { ?>...<?php } ?>
                                     </small>
                                 </div>
-                            <?php endif; ?>
+                            <?php } ?>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-camera-video"></i>
                             <div class="empty-text">Видео не загружено</div>
@@ -155,7 +155,7 @@ class VideoBlock extends BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить видео
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -245,7 +245,7 @@ class VideoBlock extends BasePostBlock {
                     </div>
                 </div>
                 
-                <?php if ($hasUploadedVideo): ?>
+                <?php if ($hasUploadedVideo) { ?>
                     <div class="current-file mb-2 p-2 bg-light border rounded">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-file-play me-2 text-primary"></i>
@@ -258,9 +258,9 @@ class VideoBlock extends BasePostBlock {
                             </div>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
 
-                <?php if (!empty($poster)): ?>
+                <?php if (!empty($poster)) { ?>
                     <div class="current-file mb-2 p-2 bg-light border rounded">
                         <div class="d-flex align-items-center">
                             <i class="bi bi-image me-2 text-primary"></i>
@@ -273,32 +273,32 @@ class VideoBlock extends BasePostBlock {
                             </div>
                         </div>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
             </div>
 
             <div class="external-section" data-external-section style="<?= $videoType === 'upload' ? 'display: none;' : '' ?>">
                 <div class="mb-3">
                     <label class="form-label" data-url-label>
-                        <?php if ($videoType === 'rutube'): ?>
+                        <?php if ($videoType === 'rutube') { ?>
                             Ссылка на видео Rutube
-                        <?php elseif ($videoType === 'vk'): ?>
+                        <?php } elseif ($videoType === 'vk') { ?>
                             Ссылка на видео VK
-                        <?php else: ?>
+                        <?php } else { ?>
                             Ссылка на видео
-                        <?php endif; ?>
+                        <?php } ?>
                     </label>
                     <input type="url" 
                         name="content[video_url]" 
                         class="form-control" 
                         data-video-url-input
-                        value="<?= $videoType !== 'upload' ? $videoUrl : '' ?>" 
-                        placeholder="<?= $videoType === 'rutube' ? 'https://rutube.ru/video/...' : 'https://vk.com/video...' ?>">
+                        value="<?= $videoType !== 'upload' ? html($videoUrl) : '' ?>" 
+                        placeholder="<?= $videoType === 'rutube' ? 'https://rutube.ru/video/...' : ($videoType === 'vk' ? 'https://vk.com/video...' : 'https://...') ?>">
                     <div class="form-text" data-url-hint>
-                        <?php if ($videoType === 'rutube'): ?>
+                        <?php if ($videoType === 'rutube') { ?>
                             Пример: https://rutube.ru/video/private/xxx/ или https://rutube.ru/video/xxx/
-                        <?php elseif ($videoType === 'vk'): ?>
+                        <?php } elseif ($videoType === 'vk') { ?>
                             Пример: https://vk.com/video-xxx_xxx или https://vk.com/video?z=video-xxx_xxx
-                        <?php endif; ?>
+                        <?php } ?>
                     </div>
                 </div>
                 <input type="hidden" name="content[video_id]" value="<?= $videoId ?>">

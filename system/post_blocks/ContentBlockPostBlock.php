@@ -38,7 +38,7 @@ class ContentBlockPostBlock extends BasePostBlock {
         <div class="mb-4">
             <label class="form-label">Выберите контент-блок</label>
             
-            <?php if (empty($contentBlocks)): ?>
+            <?php if (empty($contentBlocks)) { ?>
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle me-2"></i>
                     Нет доступных контент-блоков. 
@@ -46,10 +46,10 @@ class ContentBlockPostBlock extends BasePostBlock {
                         Создайте HTML-блок сначала
                     </a>
                 </div>
-            <?php else: ?>
+            <?php } else { ?>
                 <select name="content[content_block_id]" class="form-select" id="content-block-select" required>
                     <option value="">-- Выберите контент-блок --</option>
-                    <?php foreach ($contentBlocks as $block): ?>
+                    <?php foreach ($contentBlocks as $block) { ?>
                         <option value="<?= $block['id'] ?>" 
                                 data-name="<?= html($block['name']) ?>"
                                 data-type="<?= html($block['block_type'] ?? 'DefaultBlock') ?>"
@@ -57,7 +57,7 @@ class ContentBlockPostBlock extends BasePostBlock {
                             <?= html($block['name']) ?> 
                             (ID: <?= $block['id'] ?>, Slug: <?= $block['slug'] ?>, Type: <?= $block['block_type'] ?? 'DefaultBlock' ?>)
                         </option>
-                    <?php endforeach; ?>
+                    <?php } ?>
                 </select>
                 <div class="form-text">
                     Выберите готовый контент-блок для вставки
@@ -67,7 +67,7 @@ class ContentBlockPostBlock extends BasePostBlock {
                 <input type="hidden" name="content[content_block_type]" id="content-block-type" value="<?= html($currentContent['content_block_type'] ?? '') ?>">
                 
                 <div id="content-block-preview" class="mt-3 p-3 border rounded bg-light" style="<?= empty($selectedBlockId) ? 'display:none;' : '' ?>">
-                    <?php if (!empty($selectedBlockId)): ?>
+                    <?php if (!empty($selectedBlockId)) { ?>
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <strong>Выбранный блок:</strong>
                             <span class="badge bg-primary" id="preview-block-name"><?= html($selectedBlockName) ?></span>
@@ -76,42 +76,42 @@ class ContentBlockPostBlock extends BasePostBlock {
                             ID: <span id="preview-block-id"><?= $selectedBlockId ?></span><br>
                             Type: <span id="preview-block-type"><?= html($currentContent['content_block_type'] ?? 'DefaultBlock') ?></span>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
 
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const blockSelect = document.getElementById('content-block-select');
-            const nameInput = document.getElementById('content-block-name');
-            const typeInput = document.getElementById('content-block-type');
-            const previewDiv = document.getElementById('content-block-preview');
-            const previewName = document.getElementById('preview-block-name');
-            const previewId = document.getElementById('preview-block-id');
-            const previewType = document.getElementById('preview-block-type');
-            
-            if (blockSelect) {
-                blockSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const blockId = this.value;
-                    const blockName = selectedOption ? selectedOption.getAttribute('data-name') : '';
-                    const blockType = selectedOption ? selectedOption.getAttribute('data-type') : '';
-                    
-                    nameInput.value = blockName;
-                    typeInput.value = blockType;
-                    
-                    if (blockId) {
-                        previewName.textContent = blockName;
-                        previewId.textContent = blockId;
-                        previewType.textContent = blockType;
-                        previewDiv.style.display = 'block';
-                    } else {
-                        previewDiv.style.display = 'none';
-                    }
-                });
-            }
-        });
+            document.addEventListener('DOMContentLoaded', function() {
+                const blockSelect = document.getElementById('content-block-select');
+                const nameInput = document.getElementById('content-block-name');
+                const typeInput = document.getElementById('content-block-type');
+                const previewDiv = document.getElementById('content-block-preview');
+                const previewName = document.getElementById('preview-block-name');
+                const previewId = document.getElementById('preview-block-id');
+                const previewType = document.getElementById('preview-block-type');
+                
+                if (blockSelect) {
+                    blockSelect.addEventListener('change', function() {
+                        const selectedOption = this.options[this.selectedIndex];
+                        const blockId = this.value;
+                        const blockName = selectedOption ? selectedOption.getAttribute('data-name') : '';
+                        const blockType = selectedOption ? selectedOption.getAttribute('data-type') : '';
+                        
+                        nameInput.value = blockName;
+                        typeInput.value = blockType;
+                        
+                        if (blockId) {
+                            previewName.textContent = blockName;
+                            previewId.textContent = blockId;
+                            previewType.textContent = blockType;
+                            previewDiv.style.display = 'block';
+                        } else {
+                            previewDiv.style.display = 'none';
+                        }
+                    });
+                }
+            });
         </script>
         <?php
         return ob_get_clean();
@@ -339,20 +339,20 @@ class ContentBlockPostBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Контент-блок</strong>
-                                <?php if ($blockType): ?>
+                                <?php if ($blockType) { ?>
                                     <span class="badge bg-info badge-sm"><?= html($blockType) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
-                                <?php if ($blockId): ?>
+                                <?php if ($blockId) { ?>
                                     ID: <?= html($blockId) ?>
-                                    <?php if ($blockName): ?>
+                                    <?php if ($blockName) { ?>
                                         · <?= html(mb_substr($blockName, 0, 20)) ?>
-                                        <?php if (mb_strlen($blockName) > 20): ?>...<?php endif; ?>
-                                    <?php endif; ?>
-                                <?php else: ?>
+                                        <?php if (mb_strlen($blockName) > 20) { ?>...<?php } ?>
+                                    <?php } ?>
+                                <?php } else { ?>
                                     Не выбран
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -365,7 +365,7 @@ class ContentBlockPostBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if ($blockId): ?>
+                    <?php if ($blockId) { ?>
                         <div class="content-block-preview-container">
                             <div class="content-block-info p-3 border rounded bg-light">
                                 <div class="d-flex align-items-center mb-2">
@@ -376,19 +376,19 @@ class ContentBlockPostBlock extends BasePostBlock {
                                     <span class="badge bg-primary">ID: <?= html($blockId) ?></span>
                                 </div>
                                 
-                                <?php if ($blockName): ?>
+                                <?php if ($blockName) { ?>
                                     <div class="mb-2">
                                         <span class="fw-semibold">Название:</span>
                                         <?= html($blockName) ?>
                                     </div>
-                                <?php endif; ?>
+                                <?php } ?>
                                 
-                                <?php if ($blockType): ?>
+                                <?php if ($blockType) { ?>
                                     <div class="mb-2">
                                         <span class="fw-semibold">Тип блока:</span>
                                         <span class="badge bg-secondary"><?= html($blockType) ?></span>
                                     </div>
-                                <?php endif; ?>
+                                <?php } ?>
                                 
                                 <div class="alert alert-info mt-2 p-2 small mb-0">
                                     <i class="bi bi-info-circle me-1"></i>
@@ -404,7 +404,7 @@ class ContentBlockPostBlock extends BasePostBlock {
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-grid-3x3-gap"></i>
                             <div class="empty-text">Контент-блок не выбран</div>
@@ -417,7 +417,7 @@ class ContentBlockPostBlock extends BasePostBlock {
                                 Выберите готовый HTML-блок для вставки в этот пост
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

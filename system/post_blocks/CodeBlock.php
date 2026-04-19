@@ -30,124 +30,57 @@ class CodeBlock extends BasePostBlock {
         $filename = $content['filename'] ?? '';
         $showLineNumbers = $settings['show_line_numbers'] ?? true;
         $copyButton = $settings['copy_button'] ?? true;
-        $theme = $settings['theme'] ?? 'default';
         $showLanguageBadge = $settings['show_language_badge'] ?? true;
+        
         $languageNames = [
             'javascript' => 'JavaScript',
-            'typescript' => 'TypeScript',
             'php' => 'PHP',
             'html' => 'HTML',
             'css' => 'CSS',
-            'scss' => 'SCSS',
             'python' => 'Python',
             'java' => 'Java',
-            'cpp' => 'C++',
-            'csharp' => 'C#',
             'sql' => 'SQL',
             'json' => 'JSON',
             'xml' => 'XML',
             'bash' => 'Bash',
-            'markdown' => 'Markdown',
-            'yaml' => 'YAML',
-            'dockerfile' => 'Docker',
-            'nginx' => 'Nginx',
             'plaintext' => 'Текст'
         ];
         
         $languageName = $languageNames[$language] ?? ucfirst($language);
-
-        $previewCode = html($code);
-        if (strlen($previewCode) > 100) {
-            $previewCode = substr($previewCode, 0, 100) . '...';
+        $previewCode = strlen($code) > 200 ? mb_substr($code, 0, 200) . '...' : $code;
+        
+        $html = '<div class="post-block-preview" style="border:1px solid #dee2e6;border-radius:8px;padding:12px;margin:10px 0;background:#fff;">';
+        $html .= '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #dee2e6;">';
+        $html .= '<div>';
+        $html .= '<strong style="margin-right:8px;">' . bloggy_icon('bs', 'code-slash', '16 16', null, 'me-1') . 'Пример кода</strong>';
+        if ($showLanguageBadge) {
+            $html .= '<span style="background:#6c757d;color:#fff;padding:2px 6px;border-radius:4px;font-size:12px;margin-right:6px;">' . htmlspecialchars($languageName) . '</span>';
+        }
+        if (!empty($filename)) {
+            $html .= '<span style="background:#e9ecef;color:#212529;padding:2px 6px;border-radius:4px;font-size:12px;">' . htmlspecialchars($filename) . '</span>';
+        }
+        $html .= '</div>';
+        $html .= '<div>';
+        
+        if ($copyButton) {
+            $html .= '<span style="background:#6c757d;color:#fff;border-radius:4px;padding:4px 8px;font-size:12px;margin-right:6px;display:inline-block;">' . bloggy_icon('bs', 'clipboard', '14 14', null, 'me-1') . 'Копировать</span>';
         }
         
-        ob_start();
-        ?>
-        <div class="post-block-preview post-block-preview-CodeBlock full-content-preview">
-            <div class="preview-wrapper">
-                <div class="preview-header">
-                    <div class="preview-header-content">
-                        <div class="preview-icon">
-                            <i class="bi bi-code-slash"></i>
-                        </div>
-                        <div class="preview-info">
-                            <div class="preview-title">
-                                <strong>Пример кода</strong>
-                                <span class="badge bg-primary badge-sm"><?= html($languageName) ?></span>
-                            </div>
-                            <div class="preview-stats">
-                                <?= strlen($code) ?> симв.
-                                <?php if ($showLineNumbers): ?>
-                                    · номера строк
-                                <?php endif; ?>
-                                <?php if ($copyButton): ?>
-                                    · копирование
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preview-actions">
-                        <button type="button" class="btn btn-xs btn-outline-secondary preview-edit-btn" 
-                                onclick="postBlocksManager.editBlock('{block_id}')">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="preview-body">
-                    <?php if (!empty(trim($code))): ?>
-                        <div class="code-preview-container">
-                            <div class="code-preview-header d-flex justify-content-between align-items-center bg-dark text-white p-2 rounded-top">
-                                <div class="code-preview-info">
-                                    <?php if ($filename): ?>
-                                        <span class="badge bg-secondary me-2">
-                                            <i class="bi bi-file-earmark-code"></i> <?= html($filename) ?>
-                                        </span>
-                                    <?php endif; ?>
-                                    <?php if ($showLanguageBadge): ?>
-                                        <span class="badge bg-primary">
-                                            <?= html($languageName) ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                                <?php if ($copyButton): ?>
-                                    <div class="code-preview-actions">
-                                        <button class="btn btn-sm btn-outline-light btn-copy-preview" 
-                                                title="Скопировать код" disabled>
-                                            <i class="bi bi-clipboard"></i>
-                                        </button>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <div class="code-preview-content bg-light p-3 rounded-bottom">
-                                <pre class="mb-0" style="font-family: 'Courier New', monospace; font-size: 13px; margin: 0; white-space: pre-wrap;">
-                                    <code style="color: #333;"><?= $previewCode ?></code>
-                                </pre>
-                            </div>
-                            
-                            <div class="code-preview-meta mt-2 small text-muted">
-                                <span><i class="bi bi-gear"></i> Тема: <?= html($theme) ?></span>
-                                <?php if ($showLineNumbers): ?>
-                                    <span class="ms-3"><i class="bi bi-list-ol"></i> С номерами строк</span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="preview-empty-state">
-                            <i class="bi bi-code-slash"></i>
-                            <div class="empty-text">Код не добавлен</div>
-                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" 
-                                    onclick="postBlocksManager.editBlock('{block_id}')">
-                                <i class="bi bi-plus-circle"></i> Добавить код
-                            </button>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-        <?php
-        return ob_get_clean();
+        $html .= '<button type="button" class="btn-edit-preview" style="background:#0d6efd;color:#fff;border:none;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer;" onclick="postBlocksManager.editBlock(\'{block_id}\')">' . bloggy_icon('bs', 'pencil', '14 14', '#fff', 'me-1') . 'Редактировать</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '<div style="border-radius:6px;padding:12px;overflow-x:auto;">';
+        $html .= '<pre style="margin:0;font-family:Consolas,Monaco,\'Courier New\',monospace;font-size:13px;color:#000;"><code>' . htmlspecialchars($previewCode) . '</code></pre>';
+        $html .= '</div>';
+        $html .= '<div style="margin-top:8px;font-size:12px;color:#6c757d;">';
+        $html .= bloggy_icon('bs', 'info-circle', '12 12', null, 'me-1') . strlen($code) . ' символов';
+        if ($showLineNumbers) {
+            $html .= ' · ' . bloggy_icon('bs', 'list-ol', '12 12', null, 'me-1') . 'с номерами строк';
+        }
+        $html .= '</div>';
+        $html .= '</div>';
+        
+        return $html;
     }
 
     public function getTemplateWithShortcodes(): string {
@@ -221,11 +154,11 @@ class CodeBlock extends BasePostBlock {
                 <div class="mb-4">
                     <label class="form-label">Язык программирования</label>
                     <select name="content[language]" class="form-select" id="code-language-select">
-                        <?php foreach($languages as $value => $name): ?>
+                        <?php foreach($languages as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $language === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -257,22 +190,22 @@ class CodeBlock extends BasePostBlock {
         </div>
 
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', function() {
-                    const editorContainer = document.getElementById('code-editor-container');
-                    const textarea = document.getElementById('code-editor-textarea');
-                    
-                    if (window.ace && editorContainer && textarea) {
-                        const editor = ace.edit(editorContainer);
-                        if (editor) {
-                            textarea.value = editor.getValue();
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function() {
+                        const editorContainer = document.getElementById('code-editor-container');
+                        const textarea = document.getElementById('code-editor-textarea');
+                        
+                        if (window.ace && editorContainer && textarea) {
+                            const editor = ace.edit(editorContainer);
+                            if (editor) {
+                                textarea.value = editor.getValue();
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
         </script>
         <?php
         return ob_get_clean();
@@ -304,11 +237,11 @@ class CodeBlock extends BasePostBlock {
                 <div class="mb-4">
                     <label class="form-label">Тема подсветки</label>
                     <select name="settings[theme]" class="form-select">
-                        <?php foreach($themes as $value => $name): ?>
+                        <?php foreach($themes as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $theme === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
                 </div>
             </div>
@@ -367,7 +300,7 @@ class CodeBlock extends BasePostBlock {
         </div>
 
         <div class="alert alert-info">
-            <i class="bi bi-info-circle me-2"></i>
+            <?= bloggy_icon('bs', 'info-circle', '16 16', null, 'me-2') ?>
             Для работы подсветки синтаксиса необходимо подключить библиотеку Prism.js в шаблоне
         </div>
         <?php
@@ -381,11 +314,10 @@ class CodeBlock extends BasePostBlock {
         $language = $content['language'] ?? 'javascript';
         $filename = $content['filename'] ?? '';
         
-        $escapedCode = html($code, ENT_QUOTES, 'UTF-8');
+        $escapedCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
         
-        $previewCode = $escapedCode;
-        if (strlen($previewCode) > 150) {
-            $previewCode = substr($previewCode, 0, 150) . '...';
+        if (strlen($escapedCode) > 150) {
+            $escapedCode = substr($escapedCode, 0, 150) . '...';
         }
 
         $languageNames = [
@@ -416,7 +348,7 @@ class CodeBlock extends BasePostBlock {
                 </div>
             </div>
             <div class="card-body">
-                <pre class="m-0"><code>' . $previewCode . '</code></pre>
+                <pre class="m-0"><code>' . $escapedCode . '</code></pre>
             </div>
         </div>';
     }
@@ -463,66 +395,112 @@ class CodeBlock extends BasePostBlock {
     }
 
     public function prepareSettings($settings): array {
-        $settings = parent::prepareSettings($settings);
+        if (!is_array($settings)) {
+            $settings = [];
+        }
+        
+        $currentSettings = $this->getBlockSettings();
+        
+        if (isset($_POST['settings']['show_line_numbers'])) {
+            $settings['show_line_numbers'] = true;
+        } else {
+            $settings['show_line_numbers'] = isset($_POST['settings']) ? false : ($settings['show_line_numbers'] ?? $currentSettings['show_line_numbers'] ?? true);
+        }
+        
+        if (isset($_POST['settings']['copy_button'])) {
+            $settings['copy_button'] = true;
+        } else {
+            $settings['copy_button'] = isset($_POST['settings']) ? false : ($settings['copy_button'] ?? $currentSettings['copy_button'] ?? true);
+        }
+        
+        if (isset($_POST['settings']['show_language_badge'])) {
+            $settings['show_language_badge'] = true;
+        } else {
+            $settings['show_language_badge'] = isset($_POST['settings']) ? false : ($settings['show_language_badge'] ?? $currentSettings['show_language_badge'] ?? true);
+        }
+        
+        if (isset($_POST['settings']['theme'])) {
+            $settings['theme'] = trim($_POST['settings']['theme']);
+        }
+        
+        if (isset($_POST['settings']['custom_class'])) {
+            $settings['custom_class'] = trim($_POST['settings']['custom_class']);
+        }
+        
+        return $settings;
+    }
 
-        if (isset($settings['show_line_numbers'])) {
-            $settings['show_line_numbers'] = (bool)$settings['show_line_numbers'];
+    public function validateAndNormalizeSettings($settings): array {
+        if (is_string($settings)) {
+            $decoded = json_decode($settings, true);
+            return is_array($decoded) ? $decoded : [];
         }
         
-        if (isset($settings['copy_button'])) {
-            $settings['copy_button'] = (bool)$settings['copy_button'];
+        if (!is_array($settings)) {
+            return [];
         }
         
-        if (isset($settings['show_language_badge'])) {
-            $settings['show_language_badge'] = (bool)$settings['show_language_badge'];
+        $defaults = $this->getDefaultSettings();
+        
+        $settings['show_line_numbers'] = isset($settings['show_line_numbers']) 
+            ? filter_var($settings['show_line_numbers'], FILTER_VALIDATE_BOOLEAN) 
+            : ($defaults['show_line_numbers'] ?? true);
+        
+        $settings['copy_button'] = isset($settings['copy_button']) 
+            ? filter_var($settings['copy_button'], FILTER_VALIDATE_BOOLEAN) 
+            : ($defaults['copy_button'] ?? true);
+        
+        $settings['show_language_badge'] = isset($settings['show_language_badge']) 
+            ? filter_var($settings['show_language_badge'], FILTER_VALIDATE_BOOLEAN) 
+            : ($defaults['show_language_badge'] ?? true);
+        
+        if (!isset($settings['theme']) || !in_array($settings['theme'], ['default', 'dark', 'material', 'github', 'coy', 'okaidia', 'tomorrow', 'twilight'])) {
+            $settings['theme'] = $defaults['theme'] ?? 'default';
         }
         
-        if (isset($settings['theme'])) {
-            $allowedThemes = ['default', 'dark', 'material', 'github', 'coy', 'okaidia', 'tomorrow', 'twilight'];
-            if (!in_array($settings['theme'], $allowedThemes)) {
-                $settings['theme'] = 'default';
-            }
+        if (!isset($settings['custom_class'])) {
+            $settings['custom_class'] = $defaults['custom_class'] ?? '';
         }
         
-        if (isset($settings['custom_class'])) {
-            $settings['custom_class'] = trim($settings['custom_class']);
-            if (empty($settings['custom_class'])) {
-                unset($settings['custom_class']);
-            }
-        }
-
         return $settings;
     }
 
     public function prepareContent($content): array {
-        $content = parent::prepareContent($content);
-        
-        if (isset($content['code'])) {
-            $content['code'] = trim($content['code']);
-            if (mb_strlen($content['code']) > 10000) {
-                $content['code'] = mb_substr($content['code'], 0, 10000) . '...';
-            }
+        if (!is_array($content)) {
+            $content = [];
         }
         
-        if (isset($content['language'])) {
+        if (isset($_POST['content']['code'])) {
+            $content['code'] = $_POST['content']['code'];
+        }
+        
+        if (isset($content['code']) && function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+            $content['code'] = stripslashes($content['code']);
+        }
+        
+        if (isset($_POST['content']['language'])) {
             $allowedLanguages = [
                 'javascript', 'typescript', 'php', 'html', 'css', 'scss', 
                 'python', 'java', 'cpp', 'csharp', 'sql', 'json', 'xml', 
                 'bash', 'markdown', 'yaml', 'dockerfile', 'nginx', 'plaintext'
             ];
-            
-            $content['language'] = strtolower(trim($content['language']));
-            if (!in_array($content['language'], $allowedLanguages)) {
-                $content['language'] = 'plaintext';
-            }
+            $content['language'] = in_array($_POST['content']['language'], $allowedLanguages) 
+                ? $_POST['content']['language'] 
+                : 'plaintext';
         }
         
-        if (isset($content['filename'])) {
-            $content['filename'] = trim($content['filename']);
-            $content['filename'] = preg_replace('/[^\w\s.-]/', '', $content['filename']);
-            if (mb_strlen($content['filename']) > 100) {
-                $content['filename'] = mb_substr($content['filename'], 0, 100);
-            }
+        if (isset($_POST['content']['filename'])) {
+            $content['filename'] = trim($_POST['content']['filename']);
+        }
+        
+        if (!isset($content['code'])) {
+            $content['code'] = '// Ваш код здесь...';
+        }
+        if (!isset($content['language'])) {
+            $content['language'] = 'javascript';
+        }
+        if (!isset($content['filename'])) {
+            $content['filename'] = '';
         }
 
         return $content;
@@ -573,6 +551,10 @@ class CodeBlock extends BasePostBlock {
         $showLanguageBadge = $settings['show_language_badge'] ?? true;
         $presetId = $settings['preset_id'] ?? null;
         $presetName = $settings['preset_name'] ?? '';
+
+        $decodedCode = html_entity_decode($code, ENT_QUOTES, 'UTF-8');
+        $decodedCode = stripslashes($decodedCode);
+        
         $languageNames = [
             'javascript' => 'JavaScript',
             'typescript' => 'TypeScript', 
@@ -601,14 +583,14 @@ class CodeBlock extends BasePostBlock {
         if ($copyButton) {
             $copyButtonHtml = '
             <div class="code-actions">
-                <button class="btn-copy-code" type="button" title="Скопировать код">
+                <button class="btn-copy-code" type="button" title="Скопировать код" data-code="' . htmlspecialchars($decodedCode, ENT_QUOTES, 'UTF-8') . '">
                     <div class="btn-copy-content">
                         <span class="btn-copy-text">
-                            <i class="bi bi-clipboard btn-copy-icon"></i>
+                            ' . bloggy_icon('bs', 'clipboard', '12 12', '#fff', 'me-1') . '
                             Копировать
                         </span>
                         <span class="btn-copy-success">
-                            <i class="bi bi-check-circle-fill"></i>
+                            ' . bloggy_icon('bs', 'check-circle-fill', '12 12', '#b4ffc6', 'me-1') . '
                             Скопировано
                         </span>
                     </div>
@@ -618,23 +600,34 @@ class CodeBlock extends BasePostBlock {
         
         $languageBadgeHtml = '';
         if ($showLanguageBadge) {
-            $languageBadgeHtml = '<span class="code-language">' . html($languageName) . '</span>';
+            $languageBadgeHtml = '<span class="code-language">' . htmlspecialchars($languageName) . '</span>';
         }
 
         $lineNumbersClass = $showLineNumbers ? 'line-numbers' : '';
-        $filenameHtml = $filename ? '<span class="code-filename">' . html($filename) . '</span>' : '';
+        $filenameHtml = $filename ? '<span class="code-filename">' . htmlspecialchars($filename) . '</span>' : '';
+        
+        $presetClass = '';
+        if ($presetId) {
+            $presetClass = 'preset-' . (int)$presetId;
+            if ($presetName) {
+                $presetClass .= ' preset-' . preg_replace('/[^a-z0-9_-]/i', '-', strtolower($presetName));
+            }
+        }
+        
+        $finalCustomClass = trim($customClass . ' ' . $presetClass);
+        
         $result = $template;
         $replacements = [
-            '{code}' => $code,
+            '{code}' => htmlspecialchars($decodedCode, ENT_QUOTES, 'UTF-8'),
             '{language}' => $language,
             '{language_badge}' => $languageBadgeHtml,
             '{filename}' => $filenameHtml,
             '{copy_button}' => $copyButtonHtml,
-            '{custom_class}' => $customClass,
+            '{custom_class}' => $finalCustomClass,
             '{line_numbers}' => $lineNumbersClass,
             '{theme}' => $theme,
-            '{preset_id}' => $presetId ? html($presetId) : '',
-            '{preset_name}' => $presetName ? html($presetName) : '',
+            '{preset_id}' => $presetId ? htmlspecialchars($presetId) : '',
+            '{preset_name}' => $presetName ? htmlspecialchars($presetName) : '',
             '{block_type}' => $this->getSystemName(),
             '{block_name}' => $this->getName()
         ];
@@ -672,4 +665,44 @@ class CodeBlock extends BasePostBlock {
             'xml' => ['name' => 'XML', 'extension' => 'xml']
         ];
     }
+
+    public function validateAndNormalizeContent($content): array {
+        if (is_string($content)) {
+            $decoded = json_decode($content, true);
+            
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $result = $decoded;
+                if (isset($result['code'])) {
+                    $result['code'] = html_entity_decode($result['code'], ENT_QUOTES, 'UTF-8');
+                    $result['code'] = stripslashes($result['code']);
+                }
+                return $result;
+            } else {
+                return [
+                    'code' => html_entity_decode($content, ENT_QUOTES, 'UTF-8'),
+                    'language' => 'plaintext',
+                    'filename' => ''
+                ];
+            }
+        }
+        
+        if (!is_array($content)) {
+            return ['code' => '// Ваш код здесь...', 'language' => 'javascript', 'filename' => ''];
+        }
+        
+        if (isset($content['code'])) {
+            $content['code'] = html_entity_decode($content['code'], ENT_QUOTES, 'UTF-8');
+            $content['code'] = stripslashes($content['code']);
+        }
+        
+        if (!isset($content['language'])) {
+            $content['language'] = 'javascript';
+        }
+        if (!isset($content['filename'])) {
+            $content['filename'] = '';
+        }
+        
+        return $content;
+    }
+
 }

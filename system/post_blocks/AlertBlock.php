@@ -98,9 +98,9 @@ class AlertBlock extends BasePostBlock {
                             <div class="preview-stats">
                                 <?= strlen($title) ?> симв. в заголовке
                                 · <?= strlen($contentText) ?> симв. в тексте
-                                <?php if ($dismissible): ?>
+                                <?php if ($dismissible) { ?>
                                     · закрываемый
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -113,35 +113,35 @@ class AlertBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($title)) || !empty(trim($contentText))): ?>
+                    <?php if (!empty(trim($title)) || !empty(trim($contentText))) { ?>
                         <div class="alert-preview-container">
                             <div class="alert alert-<?= html($type) ?> mb-0 border shadow-sm <?= $dismissible ? 'alert-dismissible' : '' ?>">
                                 <div class="d-flex align-items-start">
-                                    <?php if ($showIcon): ?>
+                                    <?php if ($showIcon) { ?>
                                         <div class="me-3 flex-shrink-0">
                                             <i class="<?= $iconClass ?>" style="font-size: 1.2rem;"></i>
                                         </div>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                     
                                     <div class="flex-grow-1">
-                                        <?php if (!empty(trim($title))): ?>
+                                        <?php if (!empty(trim($title))) { ?>
                                             <div class="alert-title fw-bold mb-1">
                                                 <?= html(mb_substr($title, 0, 30)) ?>
-                                                <?php if (mb_strlen($title) > 30): ?>...<?php endif; ?>
+                                                <?php if (mb_strlen($title) > 30) { ?>...<?php } ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                         
-                                        <?php if (!empty(trim($contentText))): ?>
+                                        <?php if (!empty(trim($contentText))) { ?>
                                             <div class="alert-body small">
                                                 <?= html(mb_substr($contentText, 0, 80)) ?>
-                                                <?php if (mb_strlen($contentText) > 80): ?>...<?php endif; ?>
+                                                <?php if (mb_strlen($contentText) > 80) { ?>...<?php } ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
                                     
-                                    <?php if ($dismissible): ?>
+                                    <?php if ($dismissible) { ?>
                                         <button type="button" class="btn-close ms-2 flex-shrink-0" disabled></button>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                 </div>
                             </div>
                             
@@ -158,9 +158,9 @@ class AlertBlock extends BasePostBlock {
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <?php if ($customClass): ?>
+                                        <?php if ($customClass) { ?>
                                             <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                         <div>
                                             <i class="bi bi-<?= $dismissible ? 'x-circle' : 'circle' ?> me-1"></i>
                                             Закрываемый: <strong><?= $dismissible ? 'Да' : 'Нет' ?></strong>
@@ -169,7 +169,7 @@ class AlertBlock extends BasePostBlock {
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-exclamation-triangle"></i>
                             <div class="empty-text">Содержимое не добавлено</div>
@@ -182,7 +182,7 @@ class AlertBlock extends BasePostBlock {
                                 Используйте для отображения различных типов уведомлений и сообщений
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -305,7 +305,7 @@ class AlertBlock extends BasePostBlock {
         <div class="alert-preview mb-4" id="alert-type-preview">
             <div class="alert alert-<?= $type ?> <?= $dismissible ? 'alert-dismissible' : '' ?>">
                 <div class="d-flex align-items-start">
-                    <?php if ($showIcon): ?>
+                    <?php if ($showIcon) { ?>
                         <?php 
                         $icon = match($type) {
                             'success' => 'check-circle',
@@ -318,7 +318,7 @@ class AlertBlock extends BasePostBlock {
                         };
                         ?>
                         <i class="bi bi-<?= $icon ?> me-3 flex-shrink-0" style="font-size: 1.2rem;"></i>
-                    <?php endif; ?>
+                    <?php } ?>
                     
                     <div class="flex-grow-1">
                         <div class="alert-title fw-bold mb-1">Пример заголовка</div>
@@ -327,66 +327,66 @@ class AlertBlock extends BasePostBlock {
                         </div>
                     </div>
                     
-                    <?php if ($dismissible): ?>
+                    <?php if ($dismissible) { ?>
                         <button type="button" class="btn-close ms-2 flex-shrink-0"></button>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
         
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const typeSelect = document.getElementById('alert-type-select');
-            const preview = document.getElementById('alert-type-preview');
-            const dismissibleCheck = document.getElementById('dismissible');
-            const showIconCheck = document.getElementById('show_icon');
-            
-            function updatePreview() {
-                const type = typeSelect.value;
-                const dismissible = dismissibleCheck.checked;
-                const showIcon = showIconCheck.checked;
+            document.addEventListener('DOMContentLoaded', function() {
+                const typeSelect = document.getElementById('alert-type-select');
+                const preview = document.getElementById('alert-type-preview');
+                const dismissibleCheck = document.getElementById('dismissible');
+                const showIconCheck = document.getElementById('show_icon');
                 
-                preview.querySelector('.alert').className = 'alert alert-' + type + (dismissible ? ' alert-dismissible' : '');
-                
-                const iconElement = preview.querySelector('.bi');
-                if (iconElement) {
-                    if (showIcon) {
-                        const iconName = typeSelect.options[typeSelect.selectedIndex].getAttribute('data-icon');
-                        iconElement.className = iconName + ' me-3 flex-shrink-0';
-                        iconElement.style.fontSize = '1.2rem';
-                        iconElement.style.display = 'block';
-                    } else {
-                        iconElement.style.display = 'none';
+                function updatePreview() {
+                    const type = typeSelect.value;
+                    const dismissible = dismissibleCheck.checked;
+                    const showIcon = showIconCheck.checked;
+                    
+                    preview.querySelector('.alert').className = 'alert alert-' + type + (dismissible ? ' alert-dismissible' : '');
+                    
+                    const iconElement = preview.querySelector('.bi');
+                    if (iconElement) {
+                        if (showIcon) {
+                            const iconName = typeSelect.options[typeSelect.selectedIndex].getAttribute('data-icon');
+                            iconElement.className = iconName + ' me-3 flex-shrink-0';
+                            iconElement.style.fontSize = '1.2rem';
+                            iconElement.style.display = 'block';
+                        } else {
+                            iconElement.style.display = 'none';
+                        }
+                    }
+                    
+                    const closeBtn = preview.querySelector('.btn-close');
+                    if (closeBtn) {
+                        closeBtn.style.display = dismissible ? 'block' : 'none';
+                    }
+                    
+                    const exampleText = preview.querySelector('.alert-body');
+                    if (exampleText) {
+                        const typeNames = {
+                            'primary': 'Основное',
+                            'secondary': 'Дополнительное', 
+                            'success': 'Успех',
+                            'danger': 'Ошибка',
+                            'warning': 'Предупреждение',
+                            'info': 'Информация',
+                            'light': 'Светлое',
+                            'dark': 'Темное'
+                        };
+                        exampleText.textContent = 'Это пример сообщения типа "' + (typeNames[type] || 'Предупреждение') + '". Здесь можно разместить важную информацию.';
                     }
                 }
                 
-                const closeBtn = preview.querySelector('.btn-close');
-                if (closeBtn) {
-                    closeBtn.style.display = dismissible ? 'block' : 'none';
-                }
+                if (typeSelect) typeSelect.addEventListener('change', updatePreview);
+                if (dismissibleCheck) dismissibleCheck.addEventListener('change', updatePreview);
+                if (showIconCheck) showIconCheck.addEventListener('change', updatePreview);
                 
-                const exampleText = preview.querySelector('.alert-body');
-                if (exampleText) {
-                    const typeNames = {
-                        'primary': 'Основное',
-                        'secondary': 'Дополнительное', 
-                        'success': 'Успех',
-                        'danger': 'Ошибка',
-                        'warning': 'Предупреждение',
-                        'info': 'Информация',
-                        'light': 'Светлое',
-                        'dark': 'Темное'
-                    };
-                    exampleText.textContent = 'Это пример сообщения типа "' + (typeNames[type] || 'Предупреждение') + '". Здесь можно разместить важную информацию.';
-                }
-            }
-            
-            if (typeSelect) typeSelect.addEventListener('change', updatePreview);
-            if (dismissibleCheck) dismissibleCheck.addEventListener('change', updatePreview);
-            if (showIconCheck) showIconCheck.addEventListener('change', updatePreview);
-            
-            updatePreview();
-        });
+                updatePreview();
+            });
         </script>
         <?php
         return ob_get_clean();
@@ -480,12 +480,6 @@ class AlertBlock extends BasePostBlock {
             '{custom_class}' => 'Дополнительный CSS класс',
             '{aria_live}' => 'ARIA атрибут для скринридеров'
         ]);
-    }
-
-    public function getAdminCss(): array {
-        return [
-            'templates/default/admin/assets/css/blocks/alert.css'
-        ];
     }
 
     public function validateSettings($settings): array {
@@ -614,16 +608,36 @@ class AlertBlock extends BasePostBlock {
             $settings = [];
         }
         
-        if (isset($_POST['settings']) && is_array($_POST['settings'])) {
-            $settings = array_merge($settings, $_POST['settings']);
+        $currentSettings = $this->getBlockSettings();
+        
+        if (isset($_POST['settings']['dismissible']) && ($_POST['settings']['dismissible'] == '1' || $_POST['settings']['dismissible'] == 'on')) {
+            $settings['dismissible'] = true;
+        } 
+
+        elseif (!isset($_POST['settings']['dismissible'])) {
+            $settings['dismissible'] = false;
+        }
+
+        else {
+            $settings['dismissible'] = $settings['dismissible'] ?? ($currentSettings['dismissible'] ?? false);
         }
         
-        if (isset($settings['dismissible'])) {
-            $settings['dismissible'] = (bool)$settings['dismissible'];
+        if (isset($_POST['settings']['show_icon']) && ($_POST['settings']['show_icon'] == '1' || $_POST['settings']['show_icon'] == 'on')) {
+            $settings['show_icon'] = true;
+        } 
+        elseif (!isset($_POST['settings']['show_icon'])) {
+            $settings['show_icon'] = false;
+        }
+        else {
+            $settings['show_icon'] = $settings['show_icon'] ?? ($currentSettings['show_icon'] ?? true);
         }
         
-        if (isset($settings['show_icon'])) {
-            $settings['show_icon'] = (bool)$settings['show_icon'];
+        if (isset($_POST['settings']['type'])) {
+            $settings['type'] = trim($_POST['settings']['type']);
+        }
+        
+        if (isset($_POST['settings']['aria_live'])) {
+            $settings['aria_live'] = trim($_POST['settings']['aria_live']);
         }
         
         if (isset($settings['custom_class'])) {
@@ -635,13 +649,13 @@ class AlertBlock extends BasePostBlock {
 
     public function getFrontendJs(): array {
         return [
-            '/templates/default/front/assets/postblocks/alert/alert.js',
+            '/templates/default/front/assets/postblocks/alertblock/alert.js',
         ];
     }
 
     public function getFrontendCss(): array {
         return [
-            '/templates/default/front/assets/postblocks/alert/alert.css',
+            '/templates/default/front/assets/postblocks/alertblock/alert.css',
         ];
     }
 }

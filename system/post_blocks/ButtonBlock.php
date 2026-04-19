@@ -10,7 +10,7 @@ class ButtonBlock extends BasePostBlock {
     }
 
     public function getDescription(): string {
-        return 'Блок для создания стильной кнопки с ссылкой и настройками внешнего вида';
+        return 'Блок для создания стильной кнопки с ссылкой';
     }
 
     public function getIcon(): string {
@@ -21,6 +21,12 @@ class ButtonBlock extends BasePostBlock {
         return 'interactive';
     }
 
+    public function getFrontendCss(): array {
+        return [
+            '/templates/default/front/assets/postblocks/buttonblock/button.css'
+        ];
+    }
+
     public function getPreviewHtml($content = [], $settings = []): string {
         $content = $this->validateAndNormalizeContent($content);
         $settings = $this->validateAndNormalizeSettings($settings);
@@ -28,16 +34,23 @@ class ButtonBlock extends BasePostBlock {
         $text = $content['text'] ?? 'Нажми меня';
         $url = $content['url'] ?? '#';
         $target = $content['target'] ?? '_self';
-        $style = $settings['style'] ?? 'primary';
         $size = $settings['size'] ?? 'medium';
         $alignment = $settings['alignment'] ?? 'left';
-        $fullWidth = $settings['full_width'] ?? '';
+        $fullWidth = $settings['full_width'] ?? false;
         $iconBefore = $settings['icon_before'] ?? '';
         $iconAfter = $settings['icon_after'] ?? '';
         $download = $settings['download'] ?? false;
+        $bgColor = $settings['bg_color'] ?? '';
+        $textColor = $settings['text_color'] ?? '';
+        $borderColor = $settings['border_color'] ?? '';
+        $iconColor = $settings['icon_color'] ?? '';
+        
         $sizeClass = $this->getSizeClass($size);
         $alignmentClass = $this->getAlignmentClass($alignment);
-        $isFullWidth = $fullWidth === 'btn-block' ? 'btn-block' : '';
+        $fullWidthClass = $fullWidth ? 'btn-block w-100' : '';
+        
+        $iconBeforeName = $this->cleanIconName($iconBefore);
+        $iconAfterName = $this->cleanIconName($iconAfter);
         
         ob_start();
         ?>
@@ -46,68 +59,68 @@ class ButtonBlock extends BasePostBlock {
                 <div class="preview-header">
                     <div class="preview-header-content">
                         <div class="preview-icon">
-                            <i class="bi bi-link-45deg"></i>
+                            <?= bloggy_icon('bs', 'link-45deg', '20 20') ?>
                         </div>
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Кнопка</strong>
-                                <?php if ($style !== 'primary'): ?>
-                                    <span class="badge bg-info badge-sm"><?= html($style) ?></span>
-                                <?php endif; ?>
-                                <?php if ($size !== 'medium'): ?>
+                                <?php if ($size !== 'medium') { ?>
                                     <span class="badge bg-secondary badge-sm"><?= html($size) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($text) ?> симв.
-                                <?php if ($target === '_blank'): ?>
+                                <?php if ($target === '_blank') { ?>
                                     · новое окно
-                                <?php endif; ?>
-                                <?php if ($download): ?>
+                                <?php } ?>
+                                <?php if ($download) { ?>
                                     · скачать
-                                <?php endif; ?>
+                                <?php } ?>
+                                <?php if ($fullWidth) { ?>
+                                    · во всю ширину
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
                     <div class="preview-actions">
                         <button type="button" class="btn btn-xs btn-outline-secondary preview-edit-btn" 
                                 onclick="postBlocksManager.editBlock('{block_id}')">
-                            <i class="bi bi-pencil"></i>
+                            <?= bloggy_icon('bs', 'pencil', '14 14') ?>
                         </button>
                     </div>
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($text))): ?>
+                    <?php if (!empty(trim($text))) { ?>
                         <div class="button-preview-container <?= html($alignmentClass) ?>">
                             <a href="#" 
-                            class="btn btn-<?= html($style) ?> <?= html($sizeClass) ?> <?= html($isFullWidth) ?>"
-                            style="pointer-events: none; cursor: default; opacity: 0.8;">
-                                <?php if ($iconBefore): ?>
-                                    <i class="<?= html($iconBefore) ?> me-1"></i>
-                                <?php endif; ?>
+                               class="btn <?= $sizeClass ?> <?= $fullWidthClass ?>"
+                               style="pointer-events: none; cursor: default; opacity: 0.8;<?= $bgColor ? ' background-color: ' . $bgColor . ';' : '' ?><?= $textColor ? ' color: ' . $textColor . ';' : '' ?><?= $borderColor ? ' border-color: ' . $borderColor . ';' : '' ?>">
+                                <?php if ($iconBeforeName) { ?>
+                                    <?= $this->renderIcon($iconBeforeName, $iconColor, 'me-1') ?>
+                                <?php } ?>
                                 <?= html($text) ?>
-                                <?php if ($iconAfter): ?>
-                                    <i class="<?= html($iconAfter) ?> ms-1"></i>
-                                <?php endif; ?>
+                                <?php if ($iconAfterName) { ?>
+                                    <?= $this->renderIcon($iconAfterName, $iconColor, 'ms-1') ?>
+                                <?php } ?>
                             </a>
                             <div class="mt-2 small text-muted">
                                 <span>URL: <?= html($url) ?></span>
-                                <?php if ($target === '_blank'): ?>
-                                    <span class="ms-2"><i class="bi bi-box-arrow-up-right"></i> Новое окно</span>
-                                <?php endif; ?>
+                                <?php if ($target === '_blank') { ?>
+                                    <span class="ms-2"><?= bloggy_icon('bs', 'box-arrow-up-right', '12 12', null, 'me-1') ?>Новое окно</span>
+                                <?php } ?>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
-                            <i class="bi bi-link-45deg"></i>
+                            <?= bloggy_icon('bs', 'link-45deg', '32 32', '#6c757d', 'mb-2') ?>
                             <div class="empty-text">Текст кнопки не указан</div>
                             <button type="button" class="btn btn-sm btn-outline-primary mt-2" 
                                     onclick="postBlocksManager.editBlock('{block_id}')">
-                                <i class="bi bi-plus-circle"></i> Настроить кнопку
+                                <?= bloggy_icon('bs', 'plus-circle', '14 14', null, 'me-1') ?> Настроить кнопку
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -119,7 +132,7 @@ class ButtonBlock extends BasePostBlock {
         return '
         <div class="post-block-button {alignment} {custom_class}">
             <a href="{url}" 
-               class="btn {style} {size} {full_width}" 
+               class="btn {size} {full_width}" 
                target="{target}" 
                {rel_attribute}
                {download_attribute}
@@ -141,15 +154,15 @@ class ButtonBlock extends BasePostBlock {
 
     public function getDefaultSettings(): array {
         return [
-            'style' => 'primary',
             'size' => 'medium',
             'alignment' => 'left',
-            'full_width' => '',
+            'full_width' => false,
             'bg_color' => '',
             'text_color' => '',
             'border_color' => '',
             'icon_before' => '',
             'icon_after' => '',
+            'icon_color' => '',
             'custom_class' => '',
             'download' => false,
             'rel' => ''
@@ -167,7 +180,7 @@ class ButtonBlock extends BasePostBlock {
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-4">
-                    <label class="form-label">Текст кнопки *</label>
+                    <label class="form-label">Текст кнопки <span class="text-danger">*</span></label>
                     <input type="text" 
                            name="content[text]" 
                            class="form-control" 
@@ -178,12 +191,12 @@ class ButtonBlock extends BasePostBlock {
             </div>
             <div class="col-md-6">
                 <div class="mb-4">
-                    <label class="form-label">URL ссылки *</label>
+                    <label class="form-label">URL ссылки <span class="text-danger">*</span></label>
                     <input type="url" 
                            name="content[url]" 
                            class="form-control" 
                            value="<?= html($url) ?>" 
-                           placeholder="https://example.com"
+                           placeholder="https://example.ru"
                            required>
                 </div>
             </div>
@@ -208,55 +221,68 @@ class ButtonBlock extends BasePostBlock {
 
     public function getSettingsForm($currentSettings = []): string {
         $currentSettings = $this->validateAndNormalizeSettings($currentSettings);
-        $style = $currentSettings['style'] ?? 'primary';
         $size = $currentSettings['size'] ?? 'medium';
         $alignment = $currentSettings['alignment'] ?? 'left';
-        $fullWidth = $currentSettings['full_width'] ?? '';
+        $fullWidth = $currentSettings['full_width'] ?? false;
         $bgColor = $currentSettings['bg_color'] ?? '';
         $textColor = $currentSettings['text_color'] ?? '';
         $borderColor = $currentSettings['border_color'] ?? '';
         $iconBefore = $currentSettings['icon_before'] ?? '';
         $iconAfter = $currentSettings['icon_after'] ?? '';
+        $iconColor = $currentSettings['icon_color'] ?? '';
         $customClass = $currentSettings['custom_class'] ?? '';
         $download = $currentSettings['download'] ?? false;
         $rel = $currentSettings['rel'] ?? '';
 
-        $bootstrapIcons = [
+        $icons = [
             '' => 'Без иконки',
-            'bi bi-arrow-right' => 'Стрелка вправо',
-            'bi bi-download' => 'Скачать',
-            'bi bi-external-link' => 'Внешняя ссылка',
-            'bi bi-heart' => 'Сердце',
-            'bi bi-star' => 'Звезда',
-            'bi bi-play-fill' => 'Воспроизвести',
-            'bi bi-info-circle' => 'Информация',
-            'bi bi-check' => 'Галочка',
-            'bi bi-plus' => 'Плюс',
-            'bi bi-search' => 'Поиск',
-            'bi bi-share' => 'Поделиться'
+            'arrow-right' => 'Стрелка вправо',
+            'arrow-left' => 'Стрелка влево',
+            'arrow-up' => 'Стрелка вверх',
+            'arrow-down' => 'Стрелка вниз',
+            'download' => 'Скачать',
+            'box-arrow-up-right' => 'Внешняя ссылка',
+            'heart' => 'Сердце',
+            'heart-fill' => 'Сердце (заполненное)',
+            'star' => 'Звезда',
+            'star-fill' => 'Звезда (заполненная)',
+            'play-fill' => 'Воспроизвести',
+            'pause-fill' => 'Пауза',
+            'info-circle' => 'Информация',
+            'check' => 'Галочка',
+            'check-lg' => 'Галочка (большая)',
+            'plus' => 'Плюс',
+            'plus-lg' => 'Плюс (большой)',
+            'search' => 'Поиск',
+            'share' => 'Поделиться',
+            'envelope' => 'Письмо',
+            'telephone' => 'Телефон',
+            'calendar' => 'Календарь',
+            'cart' => 'Корзина',
+            'chat' => 'Чат',
+            'chat-dots' => 'Чат (точки)',
+            'eye' => 'Глаз',
+            'eye-slash' => 'Глаз (зачеркнутый)',
+            'file-earmark' => 'Файл',
+            'file-earmark-pdf' => 'PDF файл',
+            'image' => 'Изображение',
+            'camera' => 'Камера',
+            'gear' => 'Настройки',
+            'person' => 'Пользователь',
+            'person-plus' => 'Добавить пользователя',
+            'trash' => 'Корзина',
+            'pencil' => 'Карандаш',
+            'bookmark' => 'Закладка',
+            'bookmark-check' => 'Закладка (галочка)',
+            'link' => 'Ссылка',
+            'link-45deg' => 'Ссылка (45°)',
+            'newspaper' => 'Новости',
+            'tag' => 'Тег'
         ];
 
         ob_start();
         ?>
         <div class="row">
-            <div class="col-md-6">
-                <div class="mb-4">
-                    <label class="form-label">Стиль кнопки</label>
-                    <select name="settings[style]" class="form-select">
-                        <option value="primary" <?= $style === 'primary' ? 'selected' : '' ?>>Основной</option>
-                        <option value="secondary" <?= $style === 'secondary' ? 'selected' : '' ?>>Вторичный</option>
-                        <option value="success" <?= $style === 'success' ? 'selected' : '' ?>>Успех</option>
-                        <option value="danger" <?= $style === 'danger' ? 'selected' : '' ?>>Опасность</option>
-                        <option value="warning" <?= $style === 'warning' ? 'selected' : '' ?>>Предупреждение</option>
-                        <option value="info" <?= $style === 'info' ? 'selected' : '' ?>>Информация</option>
-                        <option value="light" <?= $style === 'light' ? 'selected' : '' ?>>Светлый</option>
-                        <option value="dark" <?= $style === 'dark' ? 'selected' : '' ?>>Темный</option>
-                        <option value="outline-primary" <?= $style === 'outline-primary' ? 'selected' : '' ?>>Контурный основной</option>
-                        <option value="outline-secondary" <?= $style === 'outline-secondary' ? 'selected' : '' ?>>Контурный вторичный</option>
-                        <option value="link" <?= $style === 'link' ? 'selected' : '' ?>>Ссылка</option>
-                    </select>
-                </div>
-            </div>
             <div class="col-md-6">
                 <div class="mb-4">
                     <label class="form-label">Размер кнопки</label>
@@ -267,10 +293,7 @@ class ButtonBlock extends BasePostBlock {
                     </select>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="mb-4">
                     <label class="form-label">Выравнивание</label>
                     <select name="settings[alignment]" class="form-select">
@@ -280,28 +303,53 @@ class ButtonBlock extends BasePostBlock {
                     </select>
                 </div>
             </div>
+        </div>
+
+        <div class="row">
             <div class="col-md-4">
                 <div class="mb-4">
                     <label class="form-label">Иконка перед текстом</label>
                     <select name="settings[icon_before]" class="form-select">
-                        <?php foreach($bootstrapIcons as $value => $name): ?>
+                        <?php foreach($icons as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $iconBefore === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
+                    <div class="form-text mt-1">
+                        <?php if ($iconBefore) { ?>
+                            <?= $this->renderIcon($iconBefore, $iconColor, 'me-1') ?>
+                            <span class="ms-2 text-muted">Предпросмотр</span>
+                        <?php } ?>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="mb-4">
                     <label class="form-label">Иконка после текста</label>
                     <select name="settings[icon_after]" class="form-select">
-                        <?php foreach($bootstrapIcons as $value => $name): ?>
+                        <?php foreach($icons as $value => $name) { ?>
                             <option value="<?= $value ?>" <?= $iconAfter === $value ? 'selected' : '' ?>>
                                 <?= $name ?>
                             </option>
-                        <?php endforeach; ?>
+                        <?php } ?>
                     </select>
+                    <div class="form-text mt-1">
+                        <?php if ($iconAfter) { ?>
+                            <?= $this->renderIcon($iconAfter, $iconColor, 'me-1') ?>
+                            <span class="ms-2 text-muted">Предпросмотр</span>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-4">
+                    <label class="form-label">Цвет иконки</label>
+                    <input type="color" 
+                           name="settings[icon_color]" 
+                           class="form-control form-control-color" 
+                           value="<?= html($iconColor) ?>">
+                    <div class="form-text">Оставьте пустым для цвета по умолчанию</div>
                 </div>
             </div>
         </div>
@@ -368,8 +416,8 @@ class ButtonBlock extends BasePostBlock {
                            type="checkbox" 
                            name="settings[full_width]" 
                            id="full_width"
-                           value="btn-block" 
-                           <?= $fullWidth === 'btn-block' ? 'checked' : '' ?>>
+                           value="1" 
+                           <?= $fullWidth ? 'checked' : '' ?>>
                     <label class="form-check-label" for="full_width">
                         Во всю ширину
                     </label>
@@ -389,6 +437,23 @@ class ButtonBlock extends BasePostBlock {
                 </div>
             </div>
         </div>
+
+        <div class="mt-3 p-3 bg-light rounded">
+            <div class="small text-muted mb-2">Пример кнопки с текущими настройками:</div>
+            <div class="text-<?= $alignment ?>">
+                <a href="#" 
+                   class="btn <?= $this->getSizeClass($size) ?> <?= $fullWidth ? 'btn-block w-100' : '' ?>"
+                   style="<?= $bgColor ? 'background-color: ' . $bgColor . '; ' : '' ?><?= $textColor ? 'color: ' . $textColor . '; ' : '' ?><?= $borderColor ? 'border-color: ' . $borderColor . '; ' : '' ?>">
+                    <?php if ($iconBefore) { ?>
+                        <?= $this->renderIcon($iconBefore, $iconColor, 'me-1') ?>
+                    <?php } ?>
+                    Пример кнопки
+                    <?php if ($iconAfter) { ?>
+                        <?= $this->renderIcon($iconAfter, $iconColor, 'ms-1') ?>
+                    <?php } ?>
+                </a>
+            </div>
+        </div>
         <?php
         return ob_get_clean();
     }
@@ -399,7 +464,6 @@ class ButtonBlock extends BasePostBlock {
         
         $text = $content['text'] ?? 'Нажми меня';
         $url = $content['url'] ?? '#';
-        $style = $settings['style'] ?? 'primary';
         $size = $settings['size'] ?? 'medium';
         $alignment = $settings['alignment'] ?? 'left';
 
@@ -409,11 +473,106 @@ class ButtonBlock extends BasePostBlock {
         return '
         <div class="post-block-button-preview ' . $alignmentClass . '">
             <a href="' . html($url) . '" 
-               class="btn btn-' . $style . ' ' . $sizeClass . '" 
+               class="btn ' . $sizeClass . '" 
                style="pointer-events: none; text-decoration: none;">
                 ' . html($text) . '
             </a>
         </div>';
+    }
+
+    public function processFrontend($content, $settings = []): string {
+        return parent::processFrontend($content, $settings);
+    }
+
+    protected function renderWithTemplate($content, $settings, $template): string {
+        $content = $this->validateAndNormalizeContent($content);
+        $settings = $this->validateAndNormalizeSettings($settings);
+        
+        $text = $content['text'] ?? 'Нажми меня';
+        $url = $content['url'] ?? '#';
+        $target = $content['target'] ?? '_self';
+        $size = $settings['size'] ?? 'medium';
+        $alignment = $settings['alignment'] ?? 'left';
+        $fullWidth = $settings['full_width'] ?? false;
+        $bgColor = $settings['bg_color'] ?? '';
+        $textColor = $settings['text_color'] ?? '';
+        $borderColor = $settings['border_color'] ?? '';
+        $iconBefore = $settings['icon_before'] ?? '';
+        $iconAfter = $settings['icon_after'] ?? '';
+        $iconColor = $settings['icon_color'] ?? '';
+        $customClass = $settings['custom_class'] ?? '';
+        $download = $settings['download'] ?? false;
+        $rel = $settings['rel'] ?? '';
+        $presetId = $settings['preset_id'] ?? null;
+        $presetName = $settings['preset_name'] ?? '';
+
+        if (empty(trim($text))) {
+            return '<!-- ButtonBlock: пустой текст кнопки -->';
+        }
+
+        $presetClass = '';
+        if ($presetId) {
+            $presetClass = 'preset-' . (int)$presetId;
+            if ($presetName) {
+                $presetClass .= ' preset-' . preg_replace('/[^a-z0-9_-]/i', '-', strtolower($presetName));
+            }
+        }
+
+        $iconBeforeHtml = '';
+        $iconAfterHtml = '';
+        
+        if ($iconBefore) {
+            $iconBeforeHtml = $this->renderIcon($iconBefore, $iconColor, 'me-1');
+        }
+        
+        if ($iconAfter) {
+            $iconAfterHtml = $this->renderIcon($iconAfter, $iconColor, 'ms-1');
+        }
+
+        $relAttribute = !empty($rel) ? 'rel="' . html($rel) . '"' : '';
+        $downloadAttribute = $download ? 'download' : '';
+        
+        $sizeClass = $this->getSizeClass($size);
+        $alignmentClass = $this->getAlignmentClass($alignment);
+        $fullWidthClass = $fullWidth ? 'btn-block w-100' : '';
+        
+        $customStyles = '';
+        if ($bgColor || $textColor || $borderColor) {
+            $styles = [];
+            if ($bgColor) $styles[] = "background-color: {$bgColor}";
+            if ($textColor) $styles[] = "color: {$textColor}";
+            if ($borderColor) $styles[] = "border-color: {$borderColor}";
+            $customStyles = implode('; ', $styles);
+        }
+
+        $result = $template;
+        
+        $replacements = [
+            '{text}' => html($text),
+            '{url}' => html($url),
+            '{target}' => html($target),
+            '{size}' => $sizeClass,
+            '{alignment}' => $alignmentClass,
+            '{full_width}' => $fullWidthClass,
+            '{bg_color}' => $bgColor,
+            '{text_color}' => $textColor,
+            '{border_color}' => $borderColor,
+            '{icon_before}' => $iconBeforeHtml,
+            '{icon_after}' => $iconAfterHtml,
+            '{custom_class}' => trim($customClass . ' ' . $presetClass),
+            '{rel_attribute}' => $relAttribute,
+            '{download_attribute}' => $downloadAttribute,
+            '{preset_id}' => $presetId ? html($presetId) : '',
+            '{preset_name}' => $presetName ? html($presetName) : '',
+            '{block_type}' => $this->getSystemName(),
+            '{block_name}' => $this->getName()
+        ];
+        
+        foreach ($replacements as $shortcode => $replacement) {
+            $result = str_replace($shortcode, $replacement, $result);
+        }
+
+        return $result;
     }
 
     public function getShortcodes(): array {
@@ -421,7 +580,6 @@ class ButtonBlock extends BasePostBlock {
             '{text}' => 'Текст кнопки',
             '{url}' => 'URL ссылки',
             '{target}' => 'Цель открытия ссылки',
-            '{style}' => 'CSS классы стиля кнопки',
             '{size}' => 'CSS классы размера кнопки',
             '{alignment}' => 'CSS класс выравнивания',
             '{full_width}' => 'CSS класс для кнопки во всю ширину',
@@ -443,13 +601,6 @@ class ButtonBlock extends BasePostBlock {
             $errors[] = 'CSS класс может содержать только буквы, цифры, дефисы и подчеркивания';
         }
 
-        $allowedStyles = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 
-                         'outline-primary', 'outline-secondary', 'outline-success', 'outline-danger', 
-                         'outline-warning', 'outline-info', 'outline-light', 'outline-dark', 'link'];
-        if (!empty($settings['style']) && !in_array($settings['style'], $allowedStyles)) {
-            $errors[] = 'Недопустимый стиль кнопки';
-        }
-
         $allowedSizes = ['small', 'medium', 'large'];
         if (!empty($settings['size']) && !in_array($settings['size'], $allowedSizes)) {
             $errors[] = 'Недопустимый размер кнопки';
@@ -461,6 +612,102 @@ class ButtonBlock extends BasePostBlock {
         }
 
         return [empty($errors), $errors];
+    }
+
+    public function prepareSettings($settings): array {
+        if (!is_array($settings)) {
+            $settings = [];
+        }
+        
+        $currentSettings = $this->getBlockSettings();
+        
+        if (isset($_POST['settings']['full_width']) && ($_POST['settings']['full_width'] == '1' || $_POST['settings']['full_width'] == 'on')) {
+            $settings['full_width'] = true;
+        } elseif (!isset($_POST['settings']['full_width'])) {
+            $settings['full_width'] = false;
+        } else {
+            $settings['full_width'] = $settings['full_width'] ?? ($currentSettings['full_width'] ?? false);
+        }
+        
+        if (isset($_POST['settings']['download']) && ($_POST['settings']['download'] == '1' || $_POST['settings']['download'] == 'on')) {
+            $settings['download'] = true;
+        } elseif (!isset($_POST['settings']['download'])) {
+            $settings['download'] = false;
+        } else {
+            $settings['download'] = $settings['download'] ?? ($currentSettings['download'] ?? false);
+        }
+        
+        if (isset($_POST['settings']['size'])) {
+            $settings['size'] = trim($_POST['settings']['size']);
+        }
+        
+        if (isset($_POST['settings']['alignment'])) {
+            $settings['alignment'] = trim($_POST['settings']['alignment']);
+        }
+        
+        if (isset($_POST['settings']['bg_color'])) {
+            $settings['bg_color'] = trim($_POST['settings']['bg_color']);
+        }
+        
+        if (isset($_POST['settings']['text_color'])) {
+            $settings['text_color'] = trim($_POST['settings']['text_color']);
+        }
+        
+        if (isset($_POST['settings']['border_color'])) {
+            $settings['border_color'] = trim($_POST['settings']['border_color']);
+        }
+        
+        if (isset($_POST['settings']['icon_before'])) {
+            $settings['icon_before'] = trim($_POST['settings']['icon_before']);
+        }
+        
+        if (isset($_POST['settings']['icon_after'])) {
+            $settings['icon_after'] = trim($_POST['settings']['icon_after']);
+        }
+        
+        if (isset($_POST['settings']['icon_color'])) {
+            $settings['icon_color'] = trim($_POST['settings']['icon_color']);
+        }
+        
+        if (isset($_POST['settings']['custom_class'])) {
+            $settings['custom_class'] = trim($_POST['settings']['custom_class']);
+        }
+        
+        if (isset($_POST['settings']['rel'])) {
+            $settings['rel'] = trim($_POST['settings']['rel']);
+        }
+
+        return $settings;
+    }
+
+    public function prepareContent($content): array {
+        if (!is_array($content)) {
+            $content = [];
+        }
+        
+        if (isset($_POST['content']) && is_array($_POST['content'])) {
+            if (isset($_POST['content']['text'])) {
+                $content['text'] = trim($_POST['content']['text']);
+            }
+            if (isset($_POST['content']['url'])) {
+                $content['url'] = trim($_POST['content']['url']);
+            }
+            if (isset($_POST['content']['target'])) {
+                $content['target'] = trim($_POST['content']['target']);
+            }
+        }
+        
+        if (!isset($content['text'])) {
+            $content['text'] = 'Нажми меня';
+        }
+        if (!isset($content['url'])) {
+            $content['url'] = '#';
+        }
+        if (!isset($content['target'])) {
+            $content['target'] = '_self';
+        }
+
+        return $content;
     }
 
     private function getSizeClass($size): string {
@@ -477,6 +724,21 @@ class ButtonBlock extends BasePostBlock {
             case 'right': return 'text-end';
             default: return 'text-start';
         }
+    }
+
+    private function cleanIconName($icon): string {
+        if (empty($icon)) return '';
+        if (strpos($icon, 'bi bi-') === 0) {
+            return substr($icon, 6);
+        }
+        return $icon;
+    }
+
+    private function renderIcon($iconName, $iconColor = '', $class = ''): string {
+        $iconName = $this->cleanIconName($iconName);
+        if (empty($iconName)) return '';
+        
+        return bloggy_icon('bs', $iconName, '16 16', $iconColor, $class);
     }
 
     public function extractFromHtml(string $html): ?array {
@@ -499,5 +761,41 @@ class ButtonBlock extends BasePostBlock {
         }
         
         return null;
+    }
+
+    public function validateAndNormalizeContent($content): array {
+        if (is_string($content)) {
+            $decoded = json_decode($content, true);
+            return is_array($decoded) ? $decoded : ['text' => $content, 'url' => '#', 'target' => '_self'];
+        }
+        
+        if (!is_array($content)) {
+            return ['text' => 'Нажми меня', 'url' => '#', 'target' => '_self'];
+        }
+        
+        if (!isset($content['text'])) {
+            $content['text'] = 'Нажми меня';
+        }
+        if (!isset($content['url'])) {
+            $content['url'] = '#';
+        }
+        if (!isset($content['target'])) {
+            $content['target'] = '_self';
+        }
+        
+        return $content;
+    }
+
+    public function validateAndNormalizeSettings($settings): array {
+        if (is_string($settings)) {
+            $decoded = json_decode($settings, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        
+        if (!is_array($settings)) {
+            return [];
+        }
+        
+        return $settings;
     }
 }

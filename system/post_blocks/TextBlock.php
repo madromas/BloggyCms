@@ -74,9 +74,9 @@ class TextBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Текст (Rich)</strong>
-                                <?php if ($alignment !== 'left'): ?>
+                                <?php if ($alignment !== 'left') { ?>
                                     <span class="badge bg-secondary badge-sm"><?= html($alignment) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= $charCount ?> симв.
@@ -92,11 +92,11 @@ class TextBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body full-text-content">
-                    <?php if (!empty(trim(strip_tags($html)))): ?>
+                    <?php if (!empty(trim(strip_tags($html)))) { ?>
                         <div class="text-content" style="text-align: <?= html($alignment) ?>;">
                             <?= $html ?>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-fonts"></i>
                             <div class="empty-text">Текст не добавлен</div>
@@ -105,7 +105,7 @@ class TextBlock extends BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить текст
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

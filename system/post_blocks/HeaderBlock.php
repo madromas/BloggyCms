@@ -76,11 +76,11 @@ class HeaderBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($text))): ?>
+                    <?php if (!empty(trim($text))) { ?>
                         <<?= $level ?> class="header-content" style="text-align: <?= html($alignment) ?>; margin: 0;">
                             <?= html($text) ?>
                         </<?= $level ?>>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-type-h1"></i>
                             <div class="empty-text">Заголовок не добавлен</div>
@@ -89,7 +89,7 @@ class HeaderBlock extends BasePostBlock {
                                 <i class="bi bi-plus-circle"></i> Добавить заголовок
                             </button>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -117,19 +117,19 @@ class HeaderBlock extends BasePostBlock {
                      alt="<?= html($alt) ?>"
                      class="preview-image"
                      onerror="this.onerror=null; this.classList.add('image-error')">
-                <?php if (!empty($size) && $size !== 'medium'): ?>
+                <?php if (!empty($size) && $size !== 'medium') { ?>
                     <span class="badge bg-dark position-absolute top-0 end-0 m-1">
                         <?= html($size) ?>
                     </span>
-                <?php endif; ?>
+                <?php } ?>
             </div>
-            <?php if (!empty($alt)): ?>
+            <?php if (!empty($alt)) { ?>
                 <div class="mt-2 small text-muted">
                     <i class="bi bi-card-text me-1"></i>
                     <?= html(mb_substr($alt, 0, 60)) ?>
-                    <?php if (mb_strlen($alt) > 60): ?>...<?php endif; ?>
+                    <?php if (mb_strlen($alt) > 60) { ?>...<?php } ?>
                 </div>
-            <?php endif; ?>
+            <?php } ?>
         </div>
         <?php
         return ob_get_clean();

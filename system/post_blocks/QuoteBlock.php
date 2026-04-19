@@ -23,7 +23,7 @@ class QuoteBlock extends BasePostBlock {
 
     public function getTemplateWithShortcodes(): string {
         return '
-        <blockquote class="post-block-quote">
+        <blockquote class="post-block-quote {custom_class}">
             <div class="quote-text">{text}</div>
             <footer class="quote-footer">
                 <cite class="quote-author">{author}</cite>
@@ -330,16 +330,16 @@ class QuoteBlock extends BasePostBlock {
                         <div class="preview-info">
                             <div class="preview-title">
                                 <strong>Цитата</strong>
-                                <?php if ($alignment !== 'left'): ?>
+                                <?php if ($alignment !== 'left') { ?>
                                     <span class="badge bg-info badge-sm"><?= html($alignment) ?></span>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="preview-stats">
                                 <?= strlen($text) ?> симв.
-                                <?php if ($author): ?>
+                                <?php if ($author) { ?>
                                     · <?= html(mb_substr($author, 0, 15)) ?>
-                                    <?php if (mb_strlen($author) > 15): ?>...<?php endif; ?>
-                                <?php endif; ?>
+                                    <?php if (mb_strlen($author) > 15) { ?>...<?php } ?>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>
@@ -352,26 +352,26 @@ class QuoteBlock extends BasePostBlock {
                 </div>
                 
                 <div class="preview-body">
-                    <?php if (!empty(trim($text))): ?>
+                    <?php if (!empty(trim($text))) { ?>
                         <div class="quote-preview-container text-<?= html($alignment) ?>">
                             <div class="quote-preview border-start border-3 border-primary ps-3 py-2 my-2" 
                                 style="background: #f8f9fa; border-radius: 0 4px 4px 0;">
                                 <div class="quote-text-preview" style="font-style: italic; color: #374151;">
                                     <i class="bi bi-quote me-1" style="font-size: 1.2em; color: #3b82f6;"></i>
                                     <?= html(mb_substr($previewText, 0, 100)) ?>
-                                    <?php if (mb_strlen($previewText) > 100): ?>...<?php endif; ?>
+                                    <?php if (mb_strlen($previewText) > 100) { ?>...<?php } ?>
                                 </div>
                                 
-                                <?php if ($author || $source): ?>
+                                <?php if ($author || $source) { ?>
                                     <div class="quote-meta mt-2 small text-muted">
-                                        <?php if ($author): ?>
+                                        <?php if ($author) { ?>
                                             <div><i class="bi bi-person me-1"></i><?= html($author) ?></div>
-                                        <?php endif; ?>
-                                        <?php if ($source): ?>
+                                        <?php } ?>
+                                        <?php if ($source) { ?>
                                             <div><i class="bi bi-book me-1"></i><?= html($source) ?></div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
-                                <?php endif; ?>
+                                <?php } ?>
                             </div>
                             <div class="quote-preview-info mt-3 small text-muted">
                                 <div class="row">
@@ -382,14 +382,14 @@ class QuoteBlock extends BasePostBlock {
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <?php if ($customClass): ?>
+                                        <?php if ($customClass) { ?>
                                             <div><i class="bi bi-tag me-1"></i>Класс: <strong><?= html($customClass) ?></strong></div>
-                                        <?php endif; ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
+                    <?php } else { ?>
                         <div class="preview-empty-state">
                             <i class="bi bi-chat-quote"></i>
                             <div class="empty-text">Текст цитаты не добавлен</div>
@@ -402,7 +402,7 @@ class QuoteBlock extends BasePostBlock {
                                 Используйте для оформления цитат с авторством
                             </div>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>

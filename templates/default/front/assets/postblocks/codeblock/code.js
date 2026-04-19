@@ -9,7 +9,6 @@ function initCodeBlocks() {
         addWindowControls(block);
         initCopyButton(block);
         addLineNumbers(block);
-        highlightSyntax(block);
         toggleFilename(block);
     });
 }
@@ -43,7 +42,10 @@ function initCopyButton(block) {
     
     if (!copyText || !copySuccess) return;
     
-    copyBtn.addEventListener('click', async function() {
+    copyBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         if (this.classList.contains('copied')) {
             return;
         }
@@ -64,17 +66,13 @@ function initCopyButton(block) {
 function showCopySuccess(button, copyText, copySuccess) {
     button.classList.add('copied');
     
+    copyText.style.display = 'none';
+    copySuccess.style.display = 'inline-flex';
+    
     setTimeout(() => {
         button.classList.remove('copied');
-        
-        setTimeout(() => {
-            copyText.style.animation = 'none';
-            copySuccess.style.animation = 'none';
-            
-            void copyText.offsetWidth;
-            void copySuccess.offsetWidth;
-        }, 300);
-        
+        copyText.style.display = 'inline-flex';
+        copySuccess.style.display = 'none';
     }, 2000);
 }
 
@@ -83,7 +81,8 @@ function fallbackCopy(text) {
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '-9999px';
         
         document.body.appendChild(textArea);
         textArea.focus();
@@ -123,45 +122,6 @@ function highlightBlockAnimation(block) {
     setTimeout(() => {
         codeContainer.classList.remove('highlight-copied');
     }, 1500);
-}
-
-function highlightSyntax(block) {
-    const codeElement = block.querySelector('code');
-    if (!codeElement) return;
-    
-    const code = codeElement.innerHTML;
-    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
-    let highlightedCode = escapedCode;
-    
-    highlightedCode = highlightedCode.replace(
-        /\b(const|let|var|function|return|if|else|for|while|switch|case|break|continue|class|extends|import|export|default|typeof|new|this|async|await|try|catch|finally|throw)\b/g,
-        '<span class="keyword">$&</span>'
-    );
-    
-    highlightedCode = highlightedCode.replace(
-        /(["'`])(?:\\.|(?!\1).)*\1/g,
-        '<span class="string">$&</span>'
-    );
-    
-    highlightedCode = highlightedCode.replace(
-        /(\/\/.*$|\/\*[\s\S]*?\*\/)/gm,
-        '<span class="comment">$&</span>'
-    );
-    
-    highlightedCode = highlightedCode.replace(
-        /\b(\d+(\.\d+)?)\b/g,
-        '<span class="number">$&</span>'
-    );
-    
-    highlightedCode = highlightedCode.replace(
-        /\b([a-zA-Z_$][\w$]*)\s*\(/g,
-        function(match) {
-            return '<span class="function">' + match.slice(0, -1) + '</span>(';
-        }
-    );
-    
-    codeElement.innerHTML = highlightedCode;
 }
 
 function toggleFilename(block) {
