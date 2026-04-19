@@ -80,6 +80,34 @@ class Login extends AuthAction {
                 $_SESSION['avatar'] = $user['avatar'];
                 $_SESSION['is_admin'] = $user['role'] === 'admin';
 
+                if (!empty($_POST['remember_me'])) {
+                    $cookieLifetime = 86400 * 30;
+                    
+                    session_set_cookie_params([
+                        'lifetime' => $cookieLifetime,
+                        'path' => '/',
+                        'domain' => '',
+                        'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+                        'httponly' => true,
+                        'samesite' => 'Lax'
+                    ]);
+                    
+                    session_regenerate_id(true);
+                    
+                    setcookie(
+                        session_name(),
+                        session_id(),
+                        [
+                            'expires' => time() + $cookieLifetime,
+                            'path' => '/',
+                            'domain' => '',
+                            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+                            'httponly' => true,
+                            'samesite' => 'Lax'
+                        ]
+                    );
+                }
+
                 try {
                     $achievementTriggers = new \AchievementTriggers($this->db);
                     $achievementTriggers->onUserLogin($user['id']);

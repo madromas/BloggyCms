@@ -25,20 +25,6 @@ class AdminFieldsController extends Controller {
         parent::__construct($db);
         
         $this->fieldModel = new FieldModel($db);
-        
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('Доступ запрещен');
-            $this->redirect(ADMIN_URL . '/login');
-            exit;
-        }
-    }
-    
-    /**
-    * Проверка прав администратора
-    * @return bool true если пользователь имеет административные права
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
 
     /**

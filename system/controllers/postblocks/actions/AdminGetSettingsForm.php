@@ -14,10 +14,6 @@ class AdminGetSettingsForm extends PostBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            echo '<div class="alert alert-danger">У вас нет прав доступа</div>';
-            return;
-        }
         
         $systemName = $_GET['system_name'] ?? '';
         

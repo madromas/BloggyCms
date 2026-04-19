@@ -6,11 +6,6 @@ namespace seo\actions;
 */
 class AdminSitemap extends SeoAction {
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа');
-            $this->redirect(ADMIN_URL . '/seo');
-            return;
-        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {

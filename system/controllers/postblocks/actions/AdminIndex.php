@@ -13,12 +13,6 @@ class AdminIndex extends PostBlockAction {
     * @return void
     */
     public function execute() {
-
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Постблоки');

@@ -31,33 +31,6 @@ class CommentController extends Controller {
         $this->categoryModel = new CategoryModel($db);
         
         AuthHelper::init();
-        
-        $currentAction = $_GET['action'] ?? '';
-        if (strpos($currentAction, 'admin') === 0) {
-            if (!$this->checkAdminAccess()) {
-                if ($this->isAjaxRequest()) {
-                    http_response_code(403);
-                    header('Content-Type: application/json');
-                    die(json_encode([
-                        'success' => false,
-                        'message' => 'Доступ запрещен'
-                    ]));
-                } else {
-                    Notification::error('У вас нет прав доступа к этому разделу');
-                    $this->redirect(ADMIN_URL . '/login');
-                    exit;
-                }
-            }
-        }
-        
-    }
-
-    /**
-    * Проверка прав администратора
-    * @return bool true если пользователь является администратором
-    */
-    private function checkAdminAccess() {
-        return Auth::isAdmin();
     }
 
     /**

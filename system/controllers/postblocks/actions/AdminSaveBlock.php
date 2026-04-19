@@ -14,13 +14,6 @@ class AdminSaveBlock extends PostBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'У вас нет прав доступа'
-            ]);
-            return;
-        }
         
         try {
 

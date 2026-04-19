@@ -17,9 +17,6 @@ class AdminPresetCreate extends PostBlockAction {
         header('Content-Type: application/json');
         
         try {
-            if (!$this->checkAdminAccess()) {
-                throw new \Exception('Доступ запрещен');
-            }
 
             $systemName = $_POST['system_name'] ?? '';
             $presetName = $_POST['preset_name'] ?? '';

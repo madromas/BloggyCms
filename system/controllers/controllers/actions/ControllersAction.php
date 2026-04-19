@@ -95,14 +95,6 @@ abstract class ControllersAction {
     }
     
     /**
-    * Проверка доступа администратора
-    * @return bool true если пользователь имеет административные права
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Проверка типа запроса
     * @return bool true если запрос является AJAX-запросом
     */

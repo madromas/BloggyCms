@@ -116,14 +116,6 @@ abstract class HtmlBlockAction {
     }
     
     /**
-    * Проверка доступа администратора
-    * @return bool true если пользователь авторизован и имеет административные права
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['user_id']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Получение доступных шаблонов из типов блоков
     * @param array $blockTypes Массив типов блоков
     * @return array Ассоциативный массив шаблонов с ключами и значениями

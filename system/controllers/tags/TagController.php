@@ -35,31 +35,6 @@ class TagController extends Controller {
         $this->tagModel = new TagModel($db);
         $this->postModel = new PostModel($db);
         
-        $currentAction = $_GET['action'] ?? '';
-        if (strpos($currentAction, 'admin') === 0 || $currentAction === 'search') {
-            if (!$this->checkAdminAccess()) {
-                if ($this->isAjaxRequest()) {
-                    http_response_code(403);
-                    header('Content-Type: application/json');
-                    die(json_encode([
-                        'success' => false,
-                        'message' => 'Доступ запрещен'
-                    ]));
-                } else {
-                    Notification::error('У вас нет прав доступа к этому разделу');
-                    $this->redirect(ADMIN_URL . '/login');
-                    exit;
-                }
-            }
-        }
-    }
-
-    /**
-    * Проверяет, имеет ли текущий пользователь права администратора
-    * @return bool true если пользователь администратор
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
 
     /**

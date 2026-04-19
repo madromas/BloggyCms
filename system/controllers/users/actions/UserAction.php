@@ -128,14 +128,6 @@ abstract class UserAction {
     }
     
     /**
-    * Проверяет, имеет ли текущий пользователь права администратора
-    * @return bool true если пользователь администратор, false в противном случае
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Получает ID текущего авторизованного пользователя 
     * @return int|null ID пользователя или null, если пользователь не авторизован
     */

@@ -17,9 +17,6 @@ class AdminGetPresets extends PostBlockAction {
         header('Content-Type: application/json');
         
         try {
-            if (!$this->checkAdminAccess()) {
-                throw new \Exception('Доступ запрещен');
-            }
 
             $systemName = $_GET['system_name'] ?? '';
 

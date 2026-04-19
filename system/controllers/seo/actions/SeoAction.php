@@ -110,13 +110,6 @@ abstract class SeoAction {
     }
 
     /**
-    * Проверка прав администратора
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-
-    /**
     * Проверка AJAX запроса
     */
     protected function isAjaxRequest() {

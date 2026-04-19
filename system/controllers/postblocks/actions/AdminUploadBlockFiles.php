@@ -13,13 +13,6 @@ class AdminUploadBlockFiles extends PostBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'Доступ запрещен'
-            ]);
-            return;
-        }
         
         try {
             $blockId = $_POST['block_id'] ?? '';

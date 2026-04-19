@@ -10,11 +10,6 @@ class AdminReorderEntries extends FragmentAction {
     public function execute() {
         header('Content-Type: application/json');
         
-        if (!$this->checkAdminAccess()) {
-            echo json_encode(['success' => false, 'message' => 'Доступ запрещен']);
-            return;
-        }
-        
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['success' => false, 'message' => 'Неверный метод запроса']);
             return;

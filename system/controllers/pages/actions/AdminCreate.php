@@ -13,10 +13,6 @@ class AdminCreate extends PageAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            $this->handleAccessDenied();
-            return;
-        }
         
         $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Страницы', ADMIN_URL . '/pages');

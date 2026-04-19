@@ -14,11 +14,6 @@ class AdminGroupCreate extends AdminGroupAction {
     */
     public function execute() {
         try {
-            if (!$this->checkAdminAccess()) {
-                \Notification::error('У вас нет прав доступа');
-                $this->redirect(ADMIN_URL);
-                return;
-            }
 
             $this->addBreadcrumb('Панель управления', ADMIN_URL);
             $this->addBreadcrumb('Группы пользователей', ADMIN_URL . '/user-groups');

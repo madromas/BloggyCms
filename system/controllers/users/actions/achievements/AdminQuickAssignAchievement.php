@@ -15,12 +15,6 @@ class AdminQuickAssignAchievement extends AdminAchievementAction {
     public function execute() {
         try {
 
-            if (!$this->checkAdminAccess()) {
-                \Notification::error('У вас нет прав доступа');
-                $this->redirect(ADMIN_URL);
-                return;
-            }
-
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $userId = $this->params['user_id'] ?? null;
                 if ($userId) {

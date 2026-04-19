@@ -14,15 +14,6 @@ class AdminAchievementUnassign extends AdminAchievementAction {
     */
     public function execute() {
         try {
-            if (!$this->checkAdminAccess()) {
-                if ($this->isAjaxRequest()) {
-                    $this->sendJsonResponse(false, 'У вас нет прав доступа');
-                    return;
-                }
-                \Notification::error('У вас нет прав доступа');
-                $this->redirect(ADMIN_URL);
-                return;
-            }
 
             $userId = $this->params['user_id'] ?? null;
             $achievementId = $this->params['achievement_id'] ?? null;

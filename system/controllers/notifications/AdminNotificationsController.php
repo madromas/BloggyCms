@@ -27,17 +27,6 @@ class AdminNotificationsController extends Controller {
         $this->notificationModel = new NotificationModel($db);
         $this->userModel = new UserModel($db);
         
-        if (!$this->checkAdminAccess()) {
-            $this->handleAccessDenied();
-        }
-    }
-    
-    /**
-    * Проверяет права доступа администратора
-    * @return bool true если пользователь администратор, false в противном случае
-    */
-    private function checkAdminAccess() {
-        return Auth::isAdmin();
     }
     
     /**

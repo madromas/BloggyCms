@@ -24,13 +24,6 @@ class AdminStatsController extends Controller {
     ];
     
     /**
-    * Проверка прав администратора
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Получение данных для графиков
     */
     public function getStatsDataAction() {
@@ -38,11 +31,6 @@ class AdminStatsController extends Controller {
         
         header('Content-Type: application/json');
         header('X-Content-Type-Options: nosniff');
-        
-        if (!$this->checkAdminAccess()) {
-            echo json_encode(['error' => 'Доступ запрещен']);
-            exit;
-        }
         
         $type = $_GET['type'] ?? 'publications';
         $period = $_GET['period'] ?? 'month';
@@ -386,9 +374,6 @@ class AdminStatsController extends Controller {
     * Экспорт в HTML отчет
     */
     public function exportHtmlAction() {
-        if (!$this->checkAdminAccess()) {
-            die('Доступ запрещен');
-        }
         
         $period = $_GET['period'] ?? 'month';
         $type = $_GET['type'] ?? 'full';

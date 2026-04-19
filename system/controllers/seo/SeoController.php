@@ -67,12 +67,6 @@ class SeoController extends Controller {
     * Очистка кэша SEO
     */
     public function adminClearCacheAction() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа');
-            $this->redirect(ADMIN_URL);
-            return;
-        }
-        
         $this->seoModel->clearCache();
         \Notification::success('Кэш SEO очищен');
         $this->redirect(ADMIN_URL . '/seo');

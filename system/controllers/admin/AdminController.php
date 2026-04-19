@@ -41,14 +41,6 @@ class AdminController extends Controller {
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) 
             && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
-    
-    /**
-     * Проверка прав администратора
-     * @return bool
-     */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
 
     /**
     * Определяет текущее действие из URI
@@ -661,11 +653,6 @@ class AdminController extends Controller {
     public function deleteInstallFolderAction() {
         header('Content-Type: application/json');
         
-        if (!$this->checkAdminAccess()) {
-            echo json_encode(['success' => false, 'message' => 'Доступ запрещен']);
-            exit;
-        }
-        
         if (!$this->isAjaxRequest()) {
             echo json_encode(['success' => false, 'message' => 'Только AJAX запросы']);
             exit;
@@ -755,11 +742,6 @@ class AdminController extends Controller {
     * Действие проверки обновлений
     */
     public function checkUpdatesAction() {
-        if (!$this->checkAdminAccess()) {
-            Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Проверка обновлений');

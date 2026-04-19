@@ -13,11 +13,6 @@ class AdminDelete extends HtmlBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         try {
             $this->htmlBlockModel->delete($this->id);

@@ -24,10 +24,6 @@ class AdminEdit extends PageAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            $this->handleAccessDenied();
-            return;
-        }
         
         if (!$this->validatePageId()) {
             return;

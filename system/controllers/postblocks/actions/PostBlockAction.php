@@ -113,14 +113,6 @@ abstract class PostBlockAction {
     }
     
     /**
-    * Проверяет, имеет ли текущий пользователь права администратора
-    * @return bool true если пользователь администратор, false в противном случае
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['user_id']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Отправляет JSON-ответ и завершает выполнение
     * @param array $data Данные для JSON-ответа
     * @return void

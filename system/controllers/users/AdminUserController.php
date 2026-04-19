@@ -17,20 +17,6 @@ class AdminUserController extends Controller {
         parent::__construct($db);
         $this->userModel = new UserModel($db);
         $this->fieldModel = new FieldModel($db);
-        
-        if (!$this->checkAdminAccess()) {
-            Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            exit;
-        }
-    }
-
-    /**
-    * Проверяет, имеет ли текущий пользователь права администратора 
-    * @return bool true если пользователь администратор
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
 
     /**

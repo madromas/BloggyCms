@@ -23,32 +23,6 @@ class DebugController extends Controller {
     public function __construct($db) {
         parent::__construct($db);
         $this->debugModel = new DebugModel($db);
-        
-        $currentAction = $_GET['action'] ?? '';
-        if (strpos($currentAction, 'admin') === 0) {
-            if (!$this->checkAdminAccess()) {
-                if ($this->isAjaxRequest()) {
-                    http_response_code(403);
-                    header('Content-Type: application/json');
-                    die(json_encode([
-                        'success' => false,
-                        'message' => 'Доступ запрещен'
-                    ]));
-                } else {
-                    Notification::error('У вас нет прав доступа к этому разделу');
-                    $this->redirect(ADMIN_URL . '/login');
-                    exit;
-                }
-            }
-        }
-    }
-    
-    /**
-    * Проверка прав администратора
-    * @return bool
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
     
     /**

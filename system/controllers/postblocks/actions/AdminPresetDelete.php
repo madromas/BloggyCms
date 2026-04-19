@@ -18,9 +18,6 @@ class AdminPresetDelete extends PostBlockAction {
         header('Content-Type: application/json');
         
         try {
-            if (!$this->checkAdminAccess()) {
-                throw new \Exception('Доступ запрещен');
-            }
 
             $presetId = $_POST['preset_id'] ?? 0;
 

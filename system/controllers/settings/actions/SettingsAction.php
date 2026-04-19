@@ -101,14 +101,6 @@ abstract class SettingsAction {
     }
     
     /**
-    * Проверяет, имеет ли текущий пользователь права администратора
-    * @return bool true если пользователь администратор, false в противном случае
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['user_id']) && isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Возвращает менеджер хлебных крошек 
     * @return \BreadcrumbsManager
     */

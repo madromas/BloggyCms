@@ -15,12 +15,6 @@ class AdminAchievementToggle extends AdminAchievementAction {
     public function execute() {
         try {
 
-            if (!$this->checkAdminAccess()) {
-                \Notification::error('У вас нет прав доступа');
-                $this->redirect(ADMIN_URL);
-                return;
-            }
-
             $id = $this->params['id'] ?? null;
             if (!$id) {
                 throw new \Exception('ID ачивки не указан');

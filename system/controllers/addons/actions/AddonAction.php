@@ -98,12 +98,4 @@ abstract class AddonAction {
         }
     }
     
-    /**
-     * Проверка прав администратора
-     * 
-     * @return bool
-     */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
 }

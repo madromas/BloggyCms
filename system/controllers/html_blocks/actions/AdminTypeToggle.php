@@ -22,11 +22,6 @@ class AdminTypeToggle extends HtmlBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         if (!$this->systemName) {
             \Notification::error('Системное имя типа блока не указано');

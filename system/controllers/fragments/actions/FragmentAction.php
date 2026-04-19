@@ -104,14 +104,6 @@ abstract class FragmentAction {
     }
     
     /**
-    * Проверка прав администратора
-    * @return bool
-    */
-    protected function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
-    }
-    
-    /**
     * Проверка AJAX-запроса
     * @return bool
     */

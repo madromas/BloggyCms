@@ -22,11 +22,6 @@ class AdminTypeDelete extends HtmlBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Контент-блоки', ADMIN_URL . '/html-blocks');

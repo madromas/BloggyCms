@@ -14,12 +14,6 @@ class AdminIndex extends SettingsAction {
     */
     public function execute() {
 
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('Пожалуйста, авторизуйтесь для доступа к настройкам');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
-
         $this->addBreadcrumb('Панель управления', ADMIN_URL);
         $this->addBreadcrumb('Настройки');
         

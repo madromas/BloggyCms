@@ -14,12 +14,6 @@ class AdminCleanupBackups extends SettingsAction {
     * @return void
     */
     public function execute() {
-
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав для доступа к настройкам');
-            $this->redirect(ADMIN_URL);
-            return;
-        }
         
         $deletedCount = \BackupHelper::cleanupAllBackups();
         

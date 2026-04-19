@@ -170,10 +170,6 @@ class HomeController extends Controller {
     * @return void
     */
     public function adminSettingsAction() {
-        if (!$this->checkAdminAccess()) {
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {

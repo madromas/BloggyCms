@@ -135,14 +135,6 @@ abstract class CommentAction {
     }
     
     /**
-    * Проверка доступа администратора
-    * @return bool true если пользователь имеет административные права
-    */
-    protected function checkAdminAccess() {
-        return \Auth::isAdmin();
-    }
-    
-    /**
     * Проверка типа запроса
     * @return bool true если запрос является AJAX-запросом
     */

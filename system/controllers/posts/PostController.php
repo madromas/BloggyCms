@@ -39,31 +39,7 @@ class PostController extends Controller {
         $this->settingsModel = new SettingsModel($db);
         $this->fieldModel = new FieldModel($db);
         $this->postBlockManager = new PostBlockManager($db);
-        
-        if (strpos($_GET['action'] ?? '', 'admin') === 0) {
-            if (!$this->checkAdminAccess()) {
-                if ($this->isAjaxRequest()) {
-                    http_response_code(403);
-                    header('Content-Type: application/json');
-                    die(json_encode([
-                        'success' => false,
-                        'message' => 'Доступ запрещен'
-                    ]));
-                } else {
-                    Notification::error('У вас нет прав доступа к этому разделу');
-                    $this->redirect(ADMIN_URL . '/login');
-                    exit;
-                }
-            }
-        }
-    }
 
-    /**
-    * Проверяет, имеет ли текущий пользователь права администратора 
-    * @return bool true если пользователь администратор
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
 
     /**

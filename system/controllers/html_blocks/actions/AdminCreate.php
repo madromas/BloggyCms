@@ -13,11 +13,6 @@ class AdminCreate extends HtmlBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
         
         $blockTypeName = $_GET['type'] ?? 'DefaultBlock';
 

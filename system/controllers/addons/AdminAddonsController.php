@@ -15,20 +15,6 @@ class AdminAddonsController extends Controller {
     public function __construct($db) {
         parent::__construct($db);
         $this->addonModel = new AddonModel($db);
-        
-        if (!$this->checkAdminAccess()) {
-            Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            exit;
-        }
-    }
-    
-    /**
-    * Проверка прав администратора
-    * @return bool
-    */
-    private function checkAdminAccess() {
-        return isset($_SESSION['is_admin']) && $_SESSION['is_admin'];
     }
     
     /**

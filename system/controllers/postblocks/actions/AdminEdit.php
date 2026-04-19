@@ -13,11 +13,6 @@ class AdminEdit extends PostBlockAction {
     * @return void
     */
     public function execute() {
-        if (!$this->checkAdminAccess()) {
-            \Notification::error('У вас нет прав доступа к этому разделу');
-            $this->redirect(ADMIN_URL . '/login');
-            return;
-        }
 
         $systemName = $_GET['system_name'] ?? '';
         

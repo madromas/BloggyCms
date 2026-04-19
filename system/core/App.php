@@ -20,13 +20,17 @@ class App {
     * @var array Загруженные хуки
     */
     private $hooks = [];
+
+    /**
+    * @var array Зарегистрированные middleware
+    */
+    private $middlewares = [];
     
     /**
     * Конструктор класса App
-    * Инициализирует сессию, подключение к БД и middleware
     */
     public function __construct() {
-        
+    
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -41,6 +45,26 @@ class App {
 
         $debugEnabled = SettingsHelper::get('general', 'debug_mode', false);
         DebugHandler::init($debugEnabled, $this->db);
+    }
+
+    /**
+    * Регистрация всех middleware
+    */
+    private function registerMiddlewares() {
+        $this->middlewares = [
+            'admin' => new AdminAuthMiddleware($this->db)
+        ];
+    }
+    
+    /**
+    * Запуск всех middleware
+    */
+    private function runMiddlewares() {
+        foreach ($this->middlewares as $name => $middleware) {
+            if (!$middleware->handle()) {
+                exit;
+            }
+        }
     }
 
     /**

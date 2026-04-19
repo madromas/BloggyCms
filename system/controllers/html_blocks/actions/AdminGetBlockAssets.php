@@ -15,9 +15,6 @@ class AdminGetBlockAssets extends HtmlBlockAction {
         header('Content-Type: application/json');
         
         try {
-            if (!$this->checkAdminAccess()) {
-                throw new \Exception('Доступ запрещен');
-            }
             
             $blockType = $_GET['block_type'] ?? '';
             $assetType = $_GET['asset_type'] ?? 'css';

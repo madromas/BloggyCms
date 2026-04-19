@@ -16,11 +16,6 @@ class AdminManageUserGroups extends AdminGroupAction {
         error_log('=== AdminManageUserGroups execute START ===');
     error_log('params: ' . print_r($this->params, true));
         try {
-            if (!$this->checkAdminAccess()) {
-                \Notification::error('У вас нет прав доступа');
-                $this->redirect(ADMIN_URL);
-                return;
-            }
 
             $userId = $this->params['id'] ?? null;
             if (!$userId) {
