@@ -1,6 +1,6 @@
 <?php
 
-define('LANG_FIELD_COLOR_TITLE', 'Choose color');
+define('LANG_FIELD_COLOR_TITLE', 'Color Selection');
 define('LANG_FIELD_COLOR_NOT_SPECIFIED', 'Not specified');
 define('LANG_FIELD_COLOR_PRESET_LABEL', 'Color preset');
 define('LANG_FIELD_COLOR_PRESET_HINT', 'Preset color palette style');
