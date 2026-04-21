@@ -71,6 +71,125 @@ try {
     die("Ошибка подключения к базе данных: " . $e->getMessage());
 }
 
+spl_autoload_register(function ($class) use ($db) {
+    if ($class === 'AchievementTriggers') {
+        $file = ROOT_PATH . '/system/controllers/users/AchievementTriggers.php';
+        if (file_exists($file)) {
+            require_once $file;
+            return;
+        }
+    }
+    
+    $classPath = str_replace('\\', '/', $class);
+
+    $basePaths = [
+        ROOT_PATH . '/system/controllers',
+        ROOT_PATH . '/system',
+        ROOT_PATH . '/system/core',
+        ROOT_PATH . '/system/helpers',
+        ROOT_PATH . '/system/fields',
+        ROOT_PATH . '/system/html_blocks',
+        ROOT_PATH . '/system/post_blocks'
+    ];
+    
+    $helpersDir = ROOT_PATH . '/system/helpers';
+    if (is_dir($helpersDir)) {
+        $helperSubdirs = glob($helpersDir . '/*', GLOB_ONLYDIR);
+        foreach ($helperSubdirs as $subdir) {
+            $basePaths[] = $subdir;
+        }
+    }
+    
+    $controllersDir = ROOT_PATH . '/system/controllers';
+    if (is_dir($controllersDir)) {
+        $modules = glob($controllersDir . '/*', GLOB_ONLYDIR);
+        foreach ($modules as $moduleDir) {
+            $basePaths[] = $moduleDir;
+            
+            $modelsSubdir = $moduleDir . '/models';
+            if (is_dir($modelsSubdir)) {
+                $basePaths[] = $modelsSubdir;
+            }
+            
+            if (is_dir($moduleDir . '/actions')) {
+                $basePaths[] = $moduleDir . '/actions';
+            }
+        }
+    }
+    
+    if (preg_match('/(.+?)Model$/', $class, $matches)) {
+        $baseName = $matches[1];
+        $classNameWithoutModel = str_replace('Model', '', $class);
+        
+        $possibleFiles = [
+            $class . '.php',
+            $classNameWithoutModel . 'Model.php',
+            'Model.php'
+        ];
+        
+        $controllerDirs = glob(ROOT_PATH . '/system/controllers/*', GLOB_ONLYDIR);
+        
+        foreach ($controllerDirs as $controllerDir) {
+            foreach ($possibleFiles as $fileName) {
+                $fullPath = $controllerDir . '/' . $fileName;
+                if (file_exists($fullPath)) {
+                    require_once $fullPath;
+                    if (class_exists($class)) {
+                        return;
+                    }
+                }
+                
+                $modelSubdirPath = $controllerDir . '/models/' . $fileName;
+                if (file_exists($modelSubdirPath)) {
+                    require_once $modelSubdirPath;
+                    if (class_exists($class)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        $modelName = strtolower($baseName);
+        $modelDir = ROOT_PATH . '/system/controllers/' . $modelName;
+        
+        if (is_dir($modelDir)) {
+            foreach ($possibleFiles as $fileName) {
+                $modelFile = $modelDir . '/' . $fileName;
+                if (file_exists($modelFile)) {
+                    require_once $modelFile;
+                    if (class_exists($class)) {
+                        return;
+                    }
+                }
+                
+                $modelSubdirFile = $modelDir . '/models/' . $fileName;
+                if (file_exists($modelSubdirFile)) {
+                    require_once $modelSubdirFile;
+                    if (class_exists($class)) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    $possibleFiles = [
+        $classPath . '.php',
+        $class . '.php',
+        basename($classPath) . '.php',
+    ];
+    
+    foreach ($basePaths as $basePath) {
+        foreach ($possibleFiles as $file) {
+            $fullPath = $basePath . '/' . $file;
+            if (file_exists($fullPath)) {
+                require_once $fullPath;
+                return;
+            }
+        }
+    }
+});
+
 require_once SYSTEM_PATH . '/helpers/Shortcodes.php';
 require_once SYSTEM_PATH . '/helpers/FragmentHelper.php';
 
