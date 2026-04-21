@@ -13,9 +13,9 @@ class Index extends ArchiveAction {
     */
     public function execute() {
         try {
-            $this->addBreadcrumb('Главная', BASE_URL);
-            $this->addBreadcrumb('Архив постов');
-            $this->setPageTitle('Архив постов');
+            $this->addBreadcrumb(LANG_ACTION_ARCHIVE_INDEX_BREADCRUMB_HOME, BASE_URL);
+            $this->addBreadcrumb(LANG_ACTION_ARCHIVE_INDEX_BREADCRUMB_ARCHIVE);
+            $this->setPageTitle(LANG_ACTION_ARCHIVE_INDEX_PAGE_TITLE);
             
             $archiveData = $this->postModel->getArchive();
 

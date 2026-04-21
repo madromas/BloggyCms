@@ -65,7 +65,7 @@ class AdminLogin extends AuthAction {
                         'authSettings' => $authSettings,
                         'currentAttempts' => $newAttempts['attempts'],
                         'maxAttempts' => $maxAttempts,
-                        'error' => 'Пожалуйста, ответьте на контрольный вопрос'
+                        'error' => LANG_ACTION_AUTH_ADMINLOGIN_ANSWER_REQUIRED
                     ]);
                     return;
                 } else {
@@ -83,7 +83,7 @@ class AdminLogin extends AuthAction {
                             'authSettings' => $authSettings,
                             'currentAttempts' => $newAttempts['attempts'],
                             'maxAttempts' => $maxAttempts,
-                            'error' => 'Неверный ответ на контрольный вопрос'
+                            'error' => LANG_ACTION_AUTH_ADMINLOGIN_INVALID_ANSWER
                         ]);
                         return;
                     }
@@ -195,7 +195,7 @@ class AdminLogin extends AuthAction {
     */
     private function getRandomQuestion($wordsArray) {
         if (empty($wordsArray) || !is_array($wordsArray)) {
-            return ['question' => 'Нет доступных вопросов', 'answer' => 'none'];
+            return ['question' => LANG_ACTION_AUTH_ADMINLOGIN_NO_QUESTIONS, 'answer' => 'none'];
         }
         
         $validQuestions = array_filter($wordsArray, function($qa) {
@@ -203,7 +203,7 @@ class AdminLogin extends AuthAction {
         });
         
         if (empty($validQuestions)) {
-            return ['question' => 'Нет доступных вопросов', 'answer' => 'none'];
+            return ['question' => LANG_ACTION_AUTH_ADMINLOGIN_NO_QUESTIONS, 'answer' => 'none'];
         }
         
         $randomIndex = array_rand($validQuestions);
@@ -287,7 +287,7 @@ class AdminLogin extends AuthAction {
             $randomQA = $this->getRandomQuestion($wordsArray);
 
             $this->render('admin/login', [
-                'error' => 'Неверный логин, пароль или недостаточно прав для доступа к админ-панели',
+                'error' => LANG_ACTION_AUTH_ADMINLOGIN_INVALID_CREDENTIALS,
                 'showQuestion' => $shouldShowQA,
                 'question' => $shouldShowQA ? $randomQA['question'] : '',
                 'expectedAnswer' => $shouldShowQA ? $randomQA['answer'] : '',

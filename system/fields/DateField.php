@@ -19,7 +19,7 @@ class DateField extends BaseField {
     * @return string 'Дата'
     */
     public function getName(): string {
-        return 'Дата';
+        return LANG_FIELD_DATE_TITLE;
     }
     
     /**
@@ -63,14 +63,14 @@ class DateField extends BaseField {
     */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Не указана</span>';
+            return '<span class="text-muted">' . LANG_FIELD_DATE_NOT_SPECIFIED . '</span>';
         }
         
         $format = $this->config['format'] ?? 'd.m.Y';
         $timestamp = strtotime($value);
         
         if ($timestamp === false) {
-            return '<span class="text-muted">Неверный формат даты</span>';
+            return '<span class="text-muted">' . LANG_FIELD_DATE_INVALID_FORMAT . '</span>';
         }
         
         $formattedDate = date($format, $timestamp);
@@ -114,16 +114,16 @@ class DateField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Формат даты</label>
+                        <label class='form-label'>" . LANG_FIELD_DATE_FORMAT_LABEL . "</label>
                         <input type='text' class='form-control' name='config[format]' value='{$format}' placeholder='d.m.Y'>
-                        <div class='form-text'>d - день, m - месяц, Y - год</div>
+                        <div class='form-text'>" . LANG_FIELD_DATE_FORMAT_HINT . "</div>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_DATE_DEFAULT_LABEL . "</label>
                         <input type='date' class='form-control' name='config[default_value]' value='{$defaultValue}'>
-                        <div class='form-text'>Дата, которая будет установлена по умолчанию</div>
+                        <div class='form-text'>" . LANG_FIELD_DATE_DEFAULT_HINT . "</div>
                     </div>
                 </div>
             </div>

@@ -13,12 +13,12 @@ class AdminInstall extends AddonAction {
     * Метод выполнения
     */
     public function execute() {
-        $this->addBreadcrumb('Панель управления', ADMIN_URL);
-        $this->addBreadcrumb('Пакеты', ADMIN_URL . '/addons');
-        $this->addBreadcrumb('Установка пакета');
+        $this->addBreadcrumb(LANG_CONTROLLER_ADDONS_ACTION_INSTALL_BREADCRUMB_DASHBOARD, ADMIN_URL);
+        $this->addBreadcrumb(LANG_CONTROLLER_ADDONS_ACTION_INSTALL_BREADCRUMB_ADDONS, ADMIN_URL . '/addons');
+        $this->addBreadcrumb(LANG_CONTROLLER_ADDONS_ACTION_INSTALL_BREADCRUMB_INSTALL);
         
         $this->render('admin/addons/install', [
-            'pageTitle' => 'Установка пакета'
+            'pageTitle' => LANG_CONTROLLER_ADDONS_ACTION_INSTALL_PAGE_TITLE
         ]);
     }
 }

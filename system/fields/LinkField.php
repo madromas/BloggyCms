@@ -19,7 +19,7 @@ class LinkField extends BaseField {
     * @return string 'Ссылка'
     */
     public function getName(): string {
-        return 'Ссылка';
+        return LANG_FIELD_LINK_TITLE;
     }
     
     /**
@@ -57,7 +57,7 @@ class LinkField extends BaseField {
     */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Не указана</span>';
+            return '<span class="text-muted">' . LANG_FIELD_LINK_NOT_SPECIFIED . '</span>';
         }
         
         $safeValue = html($value, ENT_QUOTES, 'UTF-8');
@@ -119,21 +119,21 @@ class LinkField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Плейсхолдер</label>
+                        <label class='form-label'>" . LANG_FIELD_LINK_PLACEHOLDER_LABEL . "</label>
                         <input type='text' class='form-control' name='config[placeholder]' value='{$placeholder}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Текст ссылки</label>
-                        <input type='text' class='form-control' name='config[link_text]' value='{$linkText}' placeholder='Оставить пустым для отображения URL'>
+                        <label class='form-label'>" . LANG_FIELD_LINK_TEXT_LABEL . "</label>
+                        <input type='text' class='form-control' name='config[link_text]' value='{$linkText}' placeholder='" . LANG_FIELD_LINK_TEXT_PLACEHOLDER . "'>
                     </div>
                 </div>
             </div>
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_LINK_DEFAULT_LABEL . "</label>
                         <input type='url' class='form-control' name='config[default_value]' value='{$defaultValue}'>
                     </div>
                 </div>
@@ -142,7 +142,7 @@ class LinkField extends BaseField {
                         <div class='form-check'>
                             <input class='form-check-input' type='checkbox' name='config[new_tab]' id='new_tab' value='1' {$newTab}>
                             <label class='form-check-label' for='new_tab'>
-                                Открывать в новой вкладке
+                                " . LANG_FIELD_LINK_NEW_TAB_LABEL . "
                             </label>
                         </div>
                     </div>

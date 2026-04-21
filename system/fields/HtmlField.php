@@ -21,7 +21,7 @@ class HtmlField extends BaseField {
     * @return string 'HTML-блок'
     */
     public function getName(): string {
-        return 'HTML-блок';
+        return LANG_FIELD_HTML_TITLE;
     }
     
     /**
@@ -70,7 +70,7 @@ class HtmlField extends BaseField {
                           id="' . $editorId . '-textarea"
                           class="form-control d-none"
                           ' . $required . '>' . html($safeValue, ENT_QUOTES, 'UTF-8') . '</textarea>
-                <div class="form-text mt-2">Поддерживается HTML разметка. Используйте редактор для удобного форматирования.</div>
+                <div class="form-text mt-2">' . LANG_FIELD_HTML_HINT . '</div>
             </div>
             <script>
             (function() {
@@ -80,12 +80,10 @@ class HtmlField extends BaseField {
                     var textarea = document.getElementById(editorId + "-textarea");
                     
                     if (!container || !textarea) {
-                        console.warn("Editor container or textarea not found");
                         return;
                     }
                     
                     if (typeof ace === "undefined") {
-                        console.warn("Ace editor not loaded yet, retrying...");
                         setTimeout(initEditor, 100);
                         return;
                     }
@@ -124,7 +122,6 @@ class HtmlField extends BaseField {
                         
                         container.setAttribute("data-ace-initialized", "true");
                         
-                        // Принудительный resize после рендера
                         setTimeout(function() {
                             editor.resize();
                         }, 100);
@@ -185,16 +182,16 @@ class HtmlField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Высота редактора (px)</label>
+                        <label class='form-label'>" . LANG_FIELD_HTML_HEIGHT_LABEL . "</label>
                         <input type='number' class='form-control' name='config[height]' value='{$height}' min='150' max='600' step='50'>
-                        <div class='form-text'>Высота Ace Editor в пикселях</div>
+                        <div class='form-text'>" . LANG_FIELD_HTML_HEIGHT_HINT . "</div>
                     </div>
                 </div>
             </div>
             <div class='mb-3'>
-                <label class='form-label'>Значение по умолчанию</label>
+                <label class='form-label'>" . LANG_FIELD_HTML_DEFAULT_LABEL . "</label>
                 <textarea class='form-control' name='config[default_value]' rows='4'>{$defaultValue}</textarea>
-                <div class='form-text'>HTML-код, который будет предустановлен по умолчанию</div>
+                <div class='form-text'>" . LANG_FIELD_HTML_DEFAULT_HINT . "</div>
             </div>
         ";
     }

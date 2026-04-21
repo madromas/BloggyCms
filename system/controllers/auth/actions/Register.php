@@ -13,16 +13,16 @@ class Register extends AuthAction {
     */
     public function execute() {
         try {
-            $this->addBreadcrumb('Главная', BASE_URL);
-            $this->addBreadcrumb('Регистрация');
-            $this->pageTitle = 'Регистрация';
+            $this->addBreadcrumb(LANG_ACTION_AUTH_REGISTER_BREADCRUMB_HOME, BASE_URL);
+            $this->addBreadcrumb(LANG_ACTION_AUTH_REGISTER_BREADCRUMB_REGISTER);
+            $this->pageTitle = LANG_ACTION_AUTH_REGISTER_PAGE_TITLE;
             
             $authSettings = $this->getFrontAuthSettings();
             
             $enableRegisterSetting = $authSettings['enable_register'] ?? '0';
             
             if ($enableRegisterSetting === '1' || $enableRegisterSetting === 1 || $enableRegisterSetting === true) {
-                $disableRegisterReason = $authSettings['disable_register_reason'] ?? 'Регистрация новых пользователей временно остановлена';
+                $disableRegisterReason = $authSettings['disable_register_reason'] ?? LANG_ACTION_AUTH_REGISTER_DISABLED_DEFAULT;
                 
                 $this->render('front/auth/register', [
                     'csrf_token' => $this->generateCsrfToken(),
@@ -35,31 +35,31 @@ class Register extends AuthAction {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (!$this->validateCsrfToken()) {
-                    throw new \Exception('Неверный CSRF токен');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_INVALID_CSRF);
                 }
 
                 if (empty($_POST['username'])) {
-                    throw new \Exception('Имя пользователя обязательно');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_USERNAME_REQUIRED);
                 }
 
                 if (empty($_POST['email'])) {
-                    throw new \Exception('Email обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_EMAIL_REQUIRED);
                 }
 
                 if (empty($_POST['password'])) {
-                    throw new \Exception('Пароль обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_PASSWORD_REQUIRED);
                 }
 
                 if ($_POST['password'] !== $_POST['password_confirm']) {
-                    throw new \Exception('Пароли не совпадают');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_PASSWORD_MISMATCH);
                 }
 
                 if ($this->userModel->getByUsername($_POST['username'])) {
-                    throw new \Exception('Пользователь с таким именем уже существует');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_USERNAME_EXISTS);
                 }
 
                 if ($this->userModel->getByEmail($_POST['email'])) {
-                    throw new \Exception('Пользователь с таким email уже существует');
+                    throw new \Exception(LANG_ACTION_AUTH_REGISTER_EMAIL_EXISTS);
                 }
 
                 $userData = [
@@ -87,9 +87,9 @@ class Register extends AuthAction {
                 $_SESSION['avatar'] = $user['avatar'];
                 $_SESSION['is_admin'] = false;
 
-                $message = 'Регистрация прошла успешно! Добро пожаловать!';
+                $message = LANG_ACTION_AUTH_REGISTER_SUCCESS;
                 if ($groupName) {
-                    $message .= ' Вы были добавлены в группу "' . $groupName . '".';
+                    $message .= sprintf(LANG_ACTION_AUTH_REGISTER_GROUP_ADDED, $groupName);
                 }
                 
                 \Notification::success($message);
@@ -122,7 +122,7 @@ class Register extends AuthAction {
     private function getFrontAuthSettings() {
         return [
             'enable_register' => \SettingsHelper::get('controller_auth', 'enable_register', '0'),
-            'disable_register_reason' => \SettingsHelper::get('controller_auth', 'disable_register_reason', 'Регистрация новых пользователей временно остановлена')
+            'disable_register_reason' => \SettingsHelper::get('controller_auth', 'disable_register_reason', LANG_ACTION_AUTH_REGISTER_DISABLED_DEFAULT)
         ];
     }
 }

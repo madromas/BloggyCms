@@ -1,0 +1,25 @@
+<?php
+
+define('LANG_TEMPLATE_ADDONS_INDEX_TITLE', 'Управление пакетами');
+define('LANG_TEMPLATE_ADDONS_INDEX_CHECK_UPDATES_BTN', 'Проверить обновления');
+define('LANG_TEMPLATE_ADDONS_INDEX_INSTALL_BTN', 'Установить пакет');
+define('LANG_TEMPLATE_ADDONS_INDEX_NO_PACKAGES_TITLE', 'Нет установленных пакетов');
+define('LANG_TEMPLATE_ADDONS_INDEX_NO_PACKAGES_TEXT', 'Установите первый пакет расширений');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_PACKAGE', 'Пакет');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_VERSION', 'Версия');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_TYPE', 'Тип');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_AUTHOR', 'Автор');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_INSTALLED_AT', 'Дата установки');
+define('LANG_TEMPLATE_ADDONS_INDEX_TABLE_HEADER_ACTIONS', 'Действия');
+define('LANG_TEMPLATE_ADDONS_INDEX_UPDATED', 'обновлен:');
+define('LANG_TEMPLATE_ADDONS_INDEX_TYPE_INSTALL', 'Установка');
+define('LANG_TEMPLATE_ADDONS_INDEX_TYPE_UPDATE', 'Обновление');
+define('LANG_TEMPLATE_ADDONS_INDEX_UPDATED_SHORT', 'обновлен:');
+define('LANG_TEMPLATE_ADDONS_INDEX_INFO_TITLE', 'Информация');
+define('LANG_TEMPLATE_ADDONS_INDEX_DELETE_TITLE', 'Удалить');
+define('LANG_TEMPLATE_ADDONS_INDEX_DELETE_CONFIRM', 'Вы уверены, что хотите удалить пакет «%s»?');
+define('LANG_TEMPLATE_ADDONS_INDEX_TOTAL_PACKAGES', 'Всего пакетов: %s');
+define('LANG_TEMPLATE_ADDONS_INDEX_DELETE_NOTE', 'При удалении пакета файлы остаются на сервере');
+define('LANG_TEMPLATE_ADDONS_INDEX_MODAL_TITLE', 'Информация о пакете');
+define('LANG_TEMPLATE_ADDONS_INDEX_MODAL_LOADING', 'Загрузка...');
+define('LANG_TEMPLATE_ADDONS_INDEX_MODAL_CLOSE', 'Закрыть');

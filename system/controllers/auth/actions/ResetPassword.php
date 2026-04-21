@@ -14,13 +14,13 @@ class ResetPassword extends AuthAction {
     public function execute() {
         try {
 
-            $this->pageTitle = 'Сброс пароля';
+            $this->pageTitle = LANG_ACTION_AUTH_RESETPASSWORD_PAGE_TITLE;
 
             $authSettings = $this->getFrontAuthSettings();
             $disableRestore = $authSettings['disable_restore'] ?? false;
             
             if ($disableRestore) {
-                \Notification::error('Восстановление пароля временно отключено администратором');
+                \Notification::error(LANG_ACTION_AUTH_RESETPASSWORD_DISABLED);
                 $this->redirect(BASE_URL . '/login');
                 return;
             }
@@ -28,30 +28,30 @@ class ResetPassword extends AuthAction {
             $token = $_GET['token'] ?? '';
             
             if (empty($token)) {
-                throw new \Exception('Токен восстановления не указан');
+                throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_MISSING);
             }
 
             $tokenData = $this->validateResetToken($token);
             
             if (!$tokenData) {
-                throw new \Exception('Токен восстановления недействителен или срок его действия истек');
+                throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_INVALID);
             }
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!$this->validateCsrfToken()) {
-                    throw new \Exception('Неверный CSRF токен');
+                    throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_INVALID_CSRF);
                 }
 
                 if (empty($_POST['password'])) {
-                    throw new \Exception('Пароль обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_REQUIRED);
                 }
 
                 if (strlen($_POST['password']) < 6) {
-                    throw new \Exception('Пароль должен содержать не менее 6 символов');
+                    throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MIN_LENGTH);
                 }
 
                 if ($_POST['password'] !== $_POST['password_confirm']) {
-                    throw new \Exception('Пароли не совпадают');
+                    throw new \Exception(LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MISMATCH);
                 }
 
                 $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -62,7 +62,7 @@ class ResetPassword extends AuthAction {
                 $this->markTokenAsUsed($tokenData['id']);
                 $this->sendPasswordChangedEmail($tokenData['email'], $tokenData['username']);
 
-                \Notification::success('Пароль успешно изменен. Теперь вы можете войти в систему с новым паролем.');
+                \Notification::success(LANG_ACTION_AUTH_RESETPASSWORD_SUCCESS);
                 $this->redirect(BASE_URL . '/login');
                 return;
             }
@@ -145,14 +145,14 @@ class ResetPassword extends AuthAction {
             $siteName = \SettingsHelper::get('general', 'site_name', 'BloggyCMS');
             $siteEmail = \SettingsHelper::get('general', 'contact_email', 'noreply@bloggycms.com');
             
-            $subject = 'Пароль успешно изменен - ' . $siteName;
+            $subject = sprintf(LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_SUBJECT, $siteName);
             
             $message = "
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <meta charset='UTF-8'>
-                    <title>Пароль изменен</title>
+                    <title>" . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_TITLE . "</title>
                     <style>
                         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
                         .container { max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; }
@@ -163,20 +163,20 @@ class ResetPassword extends AuthAction {
                 </head>
                 <body>
                     <div class='container'>
-                        <h2 style='color: #333; text-align: center;'>Пароль успешно изменен</h2>
-                        <p>Здравствуйте, <strong>{$username}</strong>!</p>
-                        <p>Это уведомление подтверждает, что пароль для вашего аккаунта на сайте <strong>{$siteName}</strong> был успешно изменен.</p>
+                        <h2 style='color: #333; text-align: center;'>" . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_HEADER . "</h2>
+                        <p>" . sprintf(LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_GREETING, $username) . "</p>
+                        <p>" . sprintf(LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_MESSAGE, $siteName) . "</p>
                         <div class='warning-box'>
-                            <p><strong>Важно:</strong> Если вы не меняли пароль, немедленно свяжитесь с администрацией сайта.</p>
+                            <p><strong>" . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TITLE . "</strong> " . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TEXT . "</p>
                         </div>
-                        <p>Для входа в систему используйте новый пароль:</p>
+                        <p>" . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_LOGIN_INSTRUCTION . "</p>
                         <div style='text-align: center; margin: 20px 0;'>
                             <a href='" . BASE_URL . "/login' class='button'>
-                                Войти в аккаунт
+                                " . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_BUTTON . "
                             </a>
                         </div>
                         <div class='footer'>
-                            <p>Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.</p>
+                            <p>" . LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_FOOTER . "</p>
                         </div>
                     </div>
                 </body>

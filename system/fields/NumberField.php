@@ -19,7 +19,7 @@ class NumberField extends BaseField {
     * @return string 'Число'
     */
     public function getName(): string {
-        return 'Число';
+        return LANG_FIELD_NUMBER_TITLE;
     }
     
     /**
@@ -149,19 +149,19 @@ class NumberField extends BaseField {
             <div class='row'>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Минимальное значение</label>
+                        <label class='form-label'>" . LANG_FIELD_NUMBER_MIN_LABEL . "</label>
                         <input type='number' class='form-control' name='config[min]' value='{$min}'>
                     </div>
                 </div>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Максимальное значение</label>
+                        <label class='form-label'>" . LANG_FIELD_NUMBER_MAX_LABEL . "</label>
                         <input type='number' class='form-control' name='config[max]' value='{$max}'>
                     </div>
                 </div>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Шаг</label>
+                        <label class='form-label'>" . LANG_FIELD_NUMBER_STEP_LABEL . "</label>
                         <input type='number' class='form-control' name='config[step]' value='{$step}' step='0.01'>
                     </div>
                 </div>
@@ -169,13 +169,13 @@ class NumberField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Плейсхолдер</label>
+                        <label class='form-label'>" . LANG_FIELD_NUMBER_PLACEHOLDER_LABEL . "</label>
                         <input type='text' class='form-control' name='config[placeholder]' value='{$placeholder}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_NUMBER_DEFAULT_LABEL . "</label>
                         <input type='number' class='form-control' name='config[default_value]' value='{$defaultValue}'>
                     </div>
                 </div>

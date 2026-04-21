@@ -1,0 +1,22 @@
+<?php
+
+define('LANG_FIELD_ICONSTYLE_TITLE', 'Icon with styles');
+define('LANG_FIELD_ICONSTYLE_ICON_LABEL', 'Icon');
+define('LANG_FIELD_ICONSTYLE_SELECT_BTN', 'Select icon');
+define('LANG_FIELD_ICONSTYLE_CLEAR_BTN', 'Clear');
+define('LANG_FIELD_ICONSTYLE_ICON_HINT', 'Click to select an icon from the library');
+define('LANG_FIELD_ICONSTYLE_COLOR_LABEL', 'Icon color');
+define('LANG_FIELD_ICONSTYLE_SIZE_LABEL', 'Icon size:');
+define('LANG_FIELD_ICONSTYLE_EMPTY', '—');
+define('LANG_FIELD_ICONSTYLE_NO_ICON', 'No icon');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_LABEL', 'Default color');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_HINT', 'Icon color if not specified otherwise');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_LABEL', 'Default size (px)');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_HINT', 'Icon size in pixels');
+define('LANG_FIELD_ICONSTYLE_SIZE_MIN_LABEL', 'Minimum size (px)');
+define('LANG_FIELD_ICONSTYLE_SIZE_MAX_LABEL', 'Maximum size (px)');
+define('LANG_FIELD_ICONSTYLE_SIZE_STEP_LABEL', 'Size change step (px)');
+define('LANG_FIELD_ICONSTYLE_ALLOW_COLOR_LABEL', 'Allow color selection');
+define('LANG_FIELD_ICONSTYLE_ALLOW_COLOR_HINT', 'User can choose icon color');
+define('LANG_FIELD_ICONSTYLE_ALLOW_SIZE_LABEL', 'Allow size selection');
+define('LANG_FIELD_ICONSTYLE_ALLOW_SIZE_HINT', 'User can change icon size');

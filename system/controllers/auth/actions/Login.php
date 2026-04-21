@@ -23,10 +23,10 @@ class Login extends AuthAction {
     */
     public function execute() {
         try {
-            $this->addBreadcrumb('Главная', BASE_URL);
-            $this->addBreadcrumb('Вход в систему');
+            $this->addBreadcrumb(LANG_ACTION_AUTH_LOGIN_BREADCRUMB_HOME, BASE_URL);
+            $this->addBreadcrumb(LANG_ACTION_AUTH_LOGIN_BREADCRUMB_LOGIN);
             
-            $this->pageTitle = 'Вход в систему';
+            $this->pageTitle = LANG_ACTION_AUTH_LOGIN_PAGE_TITLE;
 
             if ($this->loginAttemptModel->isBlocked()) {
                 $this->showBlockedPage();
@@ -42,15 +42,15 @@ class Login extends AuthAction {
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!$this->validateCsrfToken()) {
-                    throw new \Exception('Неверный CSRF токен');
+                    throw new \Exception(LANG_ACTION_AUTH_LOGIN_INVALID_CSRF);
                 }
 
                 if (empty($_POST['email'])) {
-                    throw new \Exception('Email обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_LOGIN_EMAIL_REQUIRED);
                 }
 
                 if (empty($_POST['password'])) {
-                    throw new \Exception('Пароль обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_LOGIN_PASSWORD_REQUIRED);
                 }
 
                 $newAttempts = $this->loginAttemptModel->incrementAttempt(null, $maxAttempts, $blockTime);
@@ -63,11 +63,11 @@ class Login extends AuthAction {
                 $user = $this->userModel->authenticateByEmail($_POST['email'], $_POST['password']);
                 
                 if (!$user) {
-                    throw new \Exception('Неверный email или пароль. Попытка ' . $newAttempts['attempts'] . ' из ' . $maxAttempts);
+                    throw new \Exception(sprintf(LANG_ACTION_AUTH_LOGIN_INVALID_CREDENTIALS, $newAttempts['attempts'], $maxAttempts));
                 }
 
                 if ($user['status'] !== 'active') {
-                    throw new \Exception('Ваш аккаунт заблокирован. Обратитесь к администратору.');
+                    throw new \Exception(LANG_ACTION_AUTH_LOGIN_ACCOUNT_BLOCKED);
                 }
 
                 $this->loginAttemptModel->resetAttempts();
@@ -116,7 +116,7 @@ class Login extends AuthAction {
                 $redirectUrl = $this->getRedirectUrl($user, $authRedirect);
                 unset($_SESSION['redirect_url']);
 
-                \Notification::success('Добро пожаловать, ' . ($user['display_name'] ?: $user['username']) . '!');
+                \Notification::success(sprintf(LANG_ACTION_AUTH_LOGIN_WELCOME, ($user['display_name'] ?: $user['username'])));
                 $this->redirect($redirectUrl);
                 return;
             }
@@ -128,7 +128,7 @@ class Login extends AuthAction {
                 'maxAttempts' => $maxAttempts,
                 'disable_restore' => $disableRestore,
                 'enable_register' => $authSettings['enable_register'] ?? true,
-                'disable_register_reason' => $authSettings['disable_register_reason'] ?? 'Регистрация новых пользователей временно остановлена'
+                'disable_register_reason' => $authSettings['disable_register_reason'] ?? LANG_ACTION_AUTH_LOGIN_REGISTER_DISABLED_DEFAULT
             ]);
 
         } catch (\Exception $e) {
@@ -180,7 +180,7 @@ class Login extends AuthAction {
             'disable_restore' => \SettingsHelper::get('controller_auth', 'disable_restore', false),
             'auth_redirect' => \SettingsHelper::get('controller_auth', 'auth_redirect', 'show_profile'),
             'enable_register' => \SettingsHelper::get('controller_auth', 'enable_register', true),
-            'disable_register_reason' => \SettingsHelper::get('controller_auth', 'disable_register_reason', 'Регистрация новых пользователей временно остановлена')
+            'disable_register_reason' => \SettingsHelper::get('controller_auth', 'disable_register_reason', LANG_ACTION_AUTH_LOGIN_REGISTER_DISABLED_DEFAULT)
         ];
     }
     
@@ -210,11 +210,11 @@ class Login extends AuthAction {
     */
     private function showBlockedPage() {
         $this->clearBreadcrumbs();
-        $this->addBreadcrumb('Главная', BASE_URL);
-        $this->addBreadcrumb('Вход в систему', BASE_URL . '/login');
-        $this->addBreadcrumb('Доступ временно заблокирован');
+        $this->addBreadcrumb(LANG_ACTION_AUTH_LOGIN_BREADCRUMB_HOME, BASE_URL);
+        $this->addBreadcrumb(LANG_ACTION_AUTH_LOGIN_BREADCRUMB_LOGIN, BASE_URL . '/login');
+        $this->addBreadcrumb(LANG_ACTION_AUTH_LOGIN_BREADCRUMB_BLOCKED);
         
-        $this->setPageTitle('Доступ временно заблокирован');
+        $this->setPageTitle(LANG_ACTION_AUTH_LOGIN_BLOCKED_TITLE);
         
         $unlockTime = $this->loginAttemptModel->getUnlockTime();
         $remainingTime = $unlockTime - time();

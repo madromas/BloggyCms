@@ -20,7 +20,7 @@ class TextField extends BaseField {
     * @return string 'Текстовая область'
     */
     public function getName(): string {
-        return 'Текстовая область';
+        return LANG_FIELD_TEXT_TITLE;
     }
     
     /**
@@ -121,19 +121,19 @@ class TextField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Плейсхолдер</label>
+                        <label class='form-label'>" . LANG_FIELD_TEXT_PLACEHOLDER_LABEL . "</label>
                         <input type='text' class='form-control' name='config[placeholder]' value='{$placeholder}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Количество строк</label>
+                        <label class='form-label'>" . LANG_FIELD_TEXT_ROWS_LABEL . "</label>
                         <input type='number' class='form-control' name='config[rows]' value='{$rows}' min='1' max='20'>
                     </div>
                 </div>
             </div>
             <div class='mb-3'>
-                <label class='form-label'>Значение по умолчанию</label>
+                <label class='form-label'>" . LANG_FIELD_TEXT_DEFAULT_LABEL . "</label>
                 <textarea class='form-control' name='config[default_value]' rows='3'>{$defaultValue}</textarea>
             </div>
         ";

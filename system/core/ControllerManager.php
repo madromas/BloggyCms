@@ -77,6 +77,7 @@ class ControllerManager {
     * @param string $controllerFile Путь к файлу контроллера
     */
     private function loadControllerInfo($dirName, $controllerName, $controllerFile) {
+
         if (!file_exists($controllerFile)) return;
         
         require_once $controllerFile;

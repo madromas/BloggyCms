@@ -1,0 +1,27 @@
+<?php
+
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_METHOD', 'Неверный метод запроса');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_NOT_UPLOADED', 'Файл не загружен или произошла ошибка загрузки');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_FORMAT', 'Файл должен быть в формате ZIP');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_TOO_LARGE', 'Размер файла не должен превышать 50MB');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SAVE_ERROR', 'Не удалось сохранить загруженный файл');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SUCCESS', 'Пакет успешно установлен');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NO_ZIPARCHIVE', 'PHP ZipArchive не установлен');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_OPEN_ZIP', 'Не удалось открыть ZIP-архив');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_FILES_DIR', 'Пакет должен содержать папку "files"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_PACKAGE_INI', 'Пакет должен содержать файл package.ini');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_READ_INI', 'Не удалось прочитать package.ini');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INI_FORMAT', 'Неверный формат package.ini');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_TITLE', 'В package.ini отсутствует обязательный блок [info] с полем title');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_TITLE_TOO_LONG', 'Название пакета не должно превышать 64 символа');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_VERSION', 'В package.ini отсутствует обязательный блок [version] с полями major, minor, build');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_INSTALL_OR_UPDATE', 'В package.ini должен быть блок [install] или [update]');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INSTALL_TYPE', 'Для блока [install] поле type должно быть "install"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_UPDATE_TYPE', 'Для блока [update] поле type должно быть "update"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_UPDATE_VERSION', 'Для блока [update] поле version обязательно');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_REQUIRES_INSTALL_PHP', 'Для пакета типа "install" требуется файл install.php');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_ALREADY_INSTALLED', 'Пакет "%s" уже установлен. Для обновления используйте пакет типа "update"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NOT_INSTALLED', 'Пакет "%s" не установлен. Сначала установите пакет типа "install"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_VERSION_MISMATCH', 'Неверная версия для обновления. Установлена версия: %s, требуется: %s');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_FAILED', 'Скрипт установки вернул false');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_ERROR', 'Ошибка выполнения install.php: ');

@@ -1,0 +1,27 @@
+<?php
+
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_METHOD', 'Invalid request method');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_NOT_UPLOADED', 'File not uploaded or upload error occurred');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_FORMAT', 'File must be in ZIP format');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_TOO_LARGE', 'File size must not exceed 50MB');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SAVE_ERROR', 'Failed to save uploaded file');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SUCCESS', 'Package successfully installed');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NO_ZIPARCHIVE', 'PHP ZipArchive not installed');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_OPEN_ZIP', 'Failed to open ZIP archive');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_FILES_DIR', 'Package must contain "files" folder');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_PACKAGE_INI', 'Package must contain package.ini file');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_READ_INI', 'Failed to read package.ini');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INI_FORMAT', 'Invalid package.ini format');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_TITLE', 'package.ini missing required [info] block with title field');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_TITLE_TOO_LONG', 'Package title must not exceed 64 characters');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_VERSION', 'package.ini missing required [version] block with major, minor, build fields');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_INSTALL_OR_UPDATE', 'package.ini must have [install] or [update] block');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INSTALL_TYPE', 'For [install] block type field must be "install"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_UPDATE_TYPE', 'For [update] block type field must be "update"');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_UPDATE_VERSION', 'For [update] block version field is required');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_REQUIRES_INSTALL_PHP', 'Package of type "install" requires install.php file');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_ALREADY_INSTALLED', 'Package "%s" is already installed. Use "update" package type for update');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NOT_INSTALLED', 'Package "%s" is not installed. First install the "install" package type');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_VERSION_MISMATCH', 'Invalid version for update. Installed version: %s, required: %s');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_FAILED', 'Install script returned false');
+define('LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_ERROR', 'Error executing install.php: ');

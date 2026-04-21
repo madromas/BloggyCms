@@ -15,7 +15,7 @@ class Logout extends AuthAction {
         session_destroy();
         session_start();
         
-        \Notification::success('Вы успешно вышли из системы');
+        \Notification::success(LANG_ACTION_AUTH_LOGOUT_SUCCESS);
         
         $this->redirect(BASE_URL);
     }

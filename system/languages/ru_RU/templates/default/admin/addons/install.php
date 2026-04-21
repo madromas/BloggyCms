@@ -1,0 +1,26 @@
+<?php
+
+define('LANG_TEMPLATE_ADDONS_INSTALL_TITLE', 'Установка пакета');
+define('LANG_TEMPLATE_ADDONS_INSTALL_BACK_BTN', 'Назад к пакетам');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_TITLE', 'Информация о пакете');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_DESC', 'Пакет должен иметь следующую структуру:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_FILES', 'папка с файлами (структура соответствует корню сайта)');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_INSTALL', 'скрипт установки (опционально)');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_INI', 'файл с описанием пакета');
+define('LANG_TEMPLATE_ADDONS_INSTALL_DRAG_DROP', 'Перетащите ZIP-архив сюда');
+define('LANG_TEMPLATE_ADDONS_INSTALL_OR', 'или');
+define('LANG_TEMPLATE_ADDONS_INSTALL_SELECT_FILE', 'Выберите файл');
+define('LANG_TEMPLATE_ADDONS_INSTALL_MAX_SIZE', 'Максимальный размер: 50MB');
+define('LANG_TEMPLATE_ADDONS_INSTALL_FILE_SELECTED', 'Файл выбран');
+define('LANG_TEMPLATE_ADDONS_INSTALL_SELECT_OTHER', 'Выбрать другой файл');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_INFO', 'Информация о пакете');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_NAME', 'Название:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_VERSION', 'Версия:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_TYPE', 'Тип:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_AUTHOR', 'Автор:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_EMAIL', 'Email:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_URL', 'Сайт:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_DESCRIPTION', 'Описание:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_READY_STATUS', 'Готов к установке');
+define('LANG_TEMPLATE_ADDONS_INSTALL_UPLOADING', 'Загрузка...');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INSTALL_BTN', 'Установить');

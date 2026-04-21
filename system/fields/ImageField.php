@@ -19,7 +19,7 @@ class ImageField extends BaseField {
     * @return string 'Изображение'
     */
     public function getName(): string {
-        return 'Изображение';
+        return LANG_FIELD_IMAGE_TITLE;
     }
     
     /**
@@ -47,17 +47,18 @@ class ImageField extends BaseField {
                     <img src='" . BASE_URL . "/uploads/images/{$safeValueEscaped}' 
                          class='img-thumbnail' 
                          style='max-height: 100px;'
-                         alt='Превью'>
+                         alt='" . LANG_FIELD_IMAGE_PREVIEW_ALT . "'>
                     <div class='mt-1'>
                         <label class='form-check-label small'>
                             <input type='checkbox' name='{$fieldName}_delete' value='1' class='form-check-input'>
-                            Удалить изображение
+                            " . LANG_FIELD_IMAGE_DELETE_CHECKBOX . "
                         </label>
                     </div>
                 </div>
             ";
         }
         
+        $maxSizeMB = $maxSize / 1024;
         $html .= "
             <input type='file' 
                    name='{$fieldName}' 
@@ -65,7 +66,7 @@ class ImageField extends BaseField {
                    accept='image/*'
                    {$required}>
             <div class='form-text'>
-                Макс. размер: " . ($maxSize / 1024) . "MB, форматы: {$allowedTypes}
+                " . sprintf(LANG_FIELD_IMAGE_HINT, $maxSizeMB, $allowedTypes) . "
             </div>
         ";
         
@@ -85,7 +86,7 @@ class ImageField extends BaseField {
     */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Изображение не загружено</span>';
+            return '<span class="text-muted">' . LANG_FIELD_IMAGE_NOT_UPLOADED . '</span>';
         }
         
         $safeValue = html($value, ENT_QUOTES, 'UTF-8');
@@ -95,7 +96,7 @@ class ImageField extends BaseField {
                 <img src='" . BASE_URL . "/uploads/images/{$safeValue}' 
                      class='img-fluid rounded'
                      style='max-height: 200px;'
-                     alt='Изображение'>
+                     alt='" . LANG_FIELD_IMAGE_ALT . "'>
             </div>
         ";
     }
@@ -109,7 +110,7 @@ class ImageField extends BaseField {
     */
     public function renderList($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Нет</span>';
+            return '<span class="text-muted">' . LANG_FIELD_IMAGE_NO . '</span>';
         }
         
         $safeValue = html($value, ENT_QUOTES, 'UTF-8');
@@ -118,7 +119,7 @@ class ImageField extends BaseField {
             <img src='" . BASE_URL . "/uploads/images/{$safeValue}' 
                  class='rounded'
                  style='width: 30px; height: 30px; object-fit: cover;'
-                 alt='✓'>
+                 alt='" . LANG_FIELD_IMAGE_CHECK_ALT . "'>
         ";
     }
     
@@ -206,16 +207,16 @@ class ImageField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Максимальный размер (КБ)</label>
+                        <label class='form-label'>" . LANG_FIELD_IMAGE_MAX_SIZE_LABEL . "</label>
                         <input type='number' class='form-control' name='config[max_size]' value='{$maxSize}' min='100' max='10240'>
-                        <div class='form-text'>Максимальный размер файла в килобайтах</div>
+                        <div class='form-text'>" . LANG_FIELD_IMAGE_MAX_SIZE_HINT . "</div>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Разрешенные форматы</label>
+                        <label class='form-label'>" . LANG_FIELD_IMAGE_ALLOWED_TYPES_LABEL . "</label>
                         <input type='text' class='form-control' name='config[allowed_types]' value='{$allowedTypes}' placeholder='jpg,jpeg,png,gif,webp'>
-                        <div class='form-text'>Через запятую, без точек</div>
+                        <div class='form-text'>" . LANG_FIELD_IMAGE_ALLOWED_TYPES_HINT . "</div>
                     </div>
                 </div>
             </div>

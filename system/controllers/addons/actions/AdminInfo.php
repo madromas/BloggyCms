@@ -19,7 +19,7 @@ class AdminInfo extends AddonAction {
         if (!$id) {
             echo json_encode([
                 'success' => false,
-                'message' => 'ID пакета не указан'
+                'message' => LANG_CONTROLLER_ADDONS_ACTION_INFO_ID_NOT_SPECIFIED
             ]);
             return;
         }
@@ -28,7 +28,7 @@ class AdminInfo extends AddonAction {
             $addon = $this->addonModel->getById($id);
             
             if (!$addon) {
-                throw new \Exception('Пакет не найден');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_INFO_NOT_FOUND);
             }
             
             echo json_encode([

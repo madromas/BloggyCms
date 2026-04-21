@@ -19,7 +19,7 @@ class MultiSelectField extends BaseField {
     * @return string 'Список: мультивыбор'
     */
     public function getName(): string {
-        return 'Список: мультивыбор';
+        return LANG_FIELD_MULTISELECT_TITLE;
     }
     
     /**
@@ -55,7 +55,7 @@ class MultiSelectField extends BaseField {
         }
         
         $html .= "</select>";
-        $html .= "<div class='form-text'>Зажмите Ctrl (Cmd на Mac) для выбора нескольких опций</div>";
+        $html .= "<div class='form-text'>" . LANG_FIELD_MULTISELECT_HINT . "</div>";
         
         return $html;
     }
@@ -71,7 +71,7 @@ class MultiSelectField extends BaseField {
         $items = $this->getIterableData($value, $entityType, $entityId);
         
         if (empty($items)) {
-            return '<span class="text-muted">Не выбрано</span>';
+            return '<span class="text-muted">' . LANG_FIELD_MULTISELECT_NOT_SELECTED . '</span>';
         }
         
         $html = '<div class="field-multiselect d-flex flex-wrap gap-1">';
@@ -151,9 +151,9 @@ class MultiSelectField extends BaseField {
         
         return "
             <div class='mb-3'>
-                <label class='form-label'>Опции списка</label>
-                <textarea class='form-control' name='config[options_text]' rows='6' placeholder='значение|Название опции'>" . trim($optionsText) . "</textarea>
-                <div class='form-text'>Каждая опция с новой строки в формате: значение|Название<br>Пример:<br>php|PHP<br>js|JavaScript<br>python|Python</div>
+                <label class='form-label'>" . LANG_FIELD_MULTISELECT_OPTIONS_LABEL . "</label>
+                <textarea class='form-control' name='config[options_text]' rows='6' placeholder='" . LANG_FIELD_MULTISELECT_OPTIONS_PLACEHOLDER . "'>" . trim($optionsText) . "</textarea>
+                <div class='form-text'>" . LANG_FIELD_MULTISELECT_OPTIONS_HINT . "</div>
             </div>
         ";
     }
@@ -262,7 +262,7 @@ class MultiSelectField extends BaseField {
         $badgeClass = $attrs['badge_class'] ?? 'badge bg-secondary';
         
         if (empty($selectedValues)) {
-            return $attrs['empty'] ?? 'Не выбрано';
+            return $attrs['empty'] ?? LANG_FIELD_MULTISELECT_NOT_SELECTED;
         }
         
         switch ($format) {

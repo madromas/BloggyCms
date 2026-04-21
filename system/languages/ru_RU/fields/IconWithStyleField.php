@@ -1,0 +1,22 @@
+<?php
+
+define('LANG_FIELD_ICONSTYLE_TITLE', 'Иконка со стилями');
+define('LANG_FIELD_ICONSTYLE_ICON_LABEL', 'Иконка');
+define('LANG_FIELD_ICONSTYLE_SELECT_BTN', 'Выбрать иконку');
+define('LANG_FIELD_ICONSTYLE_CLEAR_BTN', 'Очистить');
+define('LANG_FIELD_ICONSTYLE_ICON_HINT', 'Кликните для выбора иконки из библиотеки');
+define('LANG_FIELD_ICONSTYLE_COLOR_LABEL', 'Цвет иконки');
+define('LANG_FIELD_ICONSTYLE_SIZE_LABEL', 'Размер иконки:');
+define('LANG_FIELD_ICONSTYLE_EMPTY', '—');
+define('LANG_FIELD_ICONSTYLE_NO_ICON', 'Нет иконки');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_LABEL', 'Цвет по умолчанию');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_HINT', 'Цвет иконки, если не указан иной');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_LABEL', 'Размер по умолчанию (px)');
+define('LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_HINT', 'Размер иконки в пикселях');
+define('LANG_FIELD_ICONSTYLE_SIZE_MIN_LABEL', 'Минимальный размер (px)');
+define('LANG_FIELD_ICONSTYLE_SIZE_MAX_LABEL', 'Максимальный размер (px)');
+define('LANG_FIELD_ICONSTYLE_SIZE_STEP_LABEL', 'Шаг изменения размера (px)');
+define('LANG_FIELD_ICONSTYLE_ALLOW_COLOR_LABEL', 'Разрешить выбор цвета');
+define('LANG_FIELD_ICONSTYLE_ALLOW_COLOR_HINT', 'Пользователь сможет выбирать цвет иконки');
+define('LANG_FIELD_ICONSTYLE_ALLOW_SIZE_LABEL', 'Разрешить выбор размера');
+define('LANG_FIELD_ICONSTYLE_ALLOW_SIZE_HINT', 'Пользователь сможет изменять размер иконки');

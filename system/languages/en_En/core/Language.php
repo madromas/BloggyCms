@@ -1,3 +1,5 @@
 <?php
-define('LANG_NAME', 'English');
-define('LANG_CODE', 'en_US');
+return [
+    'name' => 'English',
+    'code' => 'en_En'
+];

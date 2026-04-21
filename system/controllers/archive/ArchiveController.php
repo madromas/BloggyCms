@@ -8,11 +8,11 @@ class ArchiveController extends Controller {
     private $postModel;
 
     protected $controllerInfo = [
-        'name' => 'Архив записей блога',
+        'name' => LANG_CONTROLLER_ARCHIVE_MANIFEST_NAME,
         'author' => 'BloggyCMS',
         'version' => '1.0.0',
         'has_settings' => false,
-        'description' => 'Отображает архив всех постов на сайте'
+        'description' => LANG_CONTROLLER_ARCHIVE_MANIFEST_DESCRIPTION
     ];
     
     /**

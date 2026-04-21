@@ -1,0 +1,31 @@
+<?php
+
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_AUTH', 'Авторизация');
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_REGISTER', 'Регистрация');
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_ADMIN_ACCESS', 'Доступ к админ-панели');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_RESTORE', 'Запретить восстановление пароля');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_RESTORE_HINT', 'Пользователь не сможет восстановить свои учетные данные, если забудет их');
+define('LANG_CONTROLLER_AUTH_SETTINGS_AUTH_REDIRECT', 'После успешной авторизации:');
+define('LANG_CONTROLLER_AUTH_SETTINGS_OPTION_SHOW_PROFILE', 'Открыть профиль');
+define('LANG_CONTROLLER_AUTH_SETTINGS_OPTION_SHOW_INDEX', 'Открыть главную страницу');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ENABLE_REGISTER', 'Отключить регистрацию пользователей на сайте');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_REGISTER_REASON', 'Сообщение о невозможности регистрации');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_REGISTER_REASON_DEFAULT', 'Регистрация новых пользователей временно остановлена');
+define('LANG_CONTROLLER_AUTH_SETTINGS_SHOW_QA', 'Использовать контрольные фразы для дополнительной защиты');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_PARAM', 'Условие для показа');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_PARAM_HINT', 'Выберите, в каких случаях будут отображаться дополнительные вопросы для авторизации');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION1', 'При неверной паре логин/пароль');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION2', 'При смене последнего IP адреса');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION3', 'Отображать всегда');
+define('LANG_CONTROLLER_AUTH_SETTINGS_WORDS_ARRAY', 'Укажите контрольные вопросы и ответы');
+define('LANG_CONTROLLER_AUTH_SETTINGS_WORDS_ARRAY_HINT', 'При авторизации в панели управления будут показаны эти вопросы совместно с парой логин/пароль');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QUESTION', 'Вопрос');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QUESTION_HINT', 'Укажите ваш вопрос');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ANSWER', 'Ответ');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ANSWER_HINT', 'Укажите ваш ответ');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_AUTH', 'Максимальное количество попыток авторизации');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_AUTH_HINT', 'После использования всех попыток авторизации страница станет недоступна для ввода данных');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_TIME', 'Время, в течение которого страница будет недоступна');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_TIME_HINT', 'Укажите значение в минутах');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ALERT_TITLE', 'Важно!');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ALERT_HINT', 'Отнеситесь к этим настройкам с особой осторожностью! Есть вероятность потери доступа, если Вы забудете данные.');

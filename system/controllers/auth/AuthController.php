@@ -8,11 +8,11 @@ class AuthController extends Controller {
     private $userModel;
 
     protected $controllerInfo = [
-        'name' => 'Авторизация / Регистрация',
+        'name' => LANG_CONTROLLER_AUTH_MANIFEST_NAME,
         'author' => 'BloggyCMS', 
         'version' => '1.0.0',
         'has_settings' => true,
-        'description' => 'Настройка авторизации и регистрации'
+        'description' => LANG_CONTROLLER_AUTH_MANIFEST_DESCRIPTION
     ];
     
     /**

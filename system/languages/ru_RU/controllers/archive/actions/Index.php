@@ -1,0 +1,4 @@
+<?php
+define('LANG_ACTION_ARCHIVE_INDEX_BREADCRUMB_HOME', 'Главная');
+define('LANG_ACTION_ARCHIVE_INDEX_BREADCRUMB_ARCHIVE', 'Архив постов');
+define('LANG_ACTION_ARCHIVE_INDEX_PAGE_TITLE', 'Архив постов');

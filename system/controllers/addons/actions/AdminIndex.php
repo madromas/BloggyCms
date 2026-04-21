@@ -13,17 +13,17 @@ class AdminIndex extends AddonAction {
     */
     public function execute() {
         try {
-            $this->addBreadcrumb('Панель управления', ADMIN_URL);
-            $this->addBreadcrumb('Пакеты');
+            $this->addBreadcrumb(LANG_CONTROLLER_ADDONS_ACTION_INDEX_BREADCRUMB_DASHBOARD, ADMIN_URL);
+            $this->addBreadcrumb(LANG_CONTROLLER_ADDONS_ACTION_INDEX_BREADCRUMB_ADDONS);
             
             $addons = $this->addonModel->getAll();
             
             $hints = [
-                "Пакеты должны иметь структуру: files/, install.php, package.ini",
-                "При установке пакета создается резервная копия заменяемых файлов",
-                "Перед удалением пакета рекомендуется сделать полную резервную копию сайта",
-                "Убедитесь, что файлы пакета имеют правильные права доступа (755 для папок, 644 для файлов)",
-                "Пакеты могут быть типов 'install' (установка) или 'update' (обновление)"
+                LANG_CONTROLLER_ADDONS_ACTION_INDEX_HINT_1,
+                LANG_CONTROLLER_ADDONS_ACTION_INDEX_HINT_2,
+                LANG_CONTROLLER_ADDONS_ACTION_INDEX_HINT_3,
+                LANG_CONTROLLER_ADDONS_ACTION_INDEX_HINT_4,
+                LANG_CONTROLLER_ADDONS_ACTION_INDEX_HINT_5
             ];
             
             $randomHint = $hints[array_rand($hints)];
@@ -32,11 +32,11 @@ class AdminIndex extends AddonAction {
                 'addons' => $addons,
                 'randomHint' => $randomHint,
                 'addonCount' => count($addons),
-                'pageTitle' => 'Управление пакетами'
+                'pageTitle' => LANG_CONTROLLER_ADDONS_ACTION_INDEX_PAGE_TITLE
             ]);
             
         } catch (\Exception $e) {
-            \Notification::error('Ошибка при загрузке списка пакетов: ' . $e->getMessage());
+            \Notification::error(LANG_CONTROLLER_ADDONS_ACTION_INDEX_ERROR . $e->getMessage());
             $this->redirect(ADMIN_URL);
         }
     }

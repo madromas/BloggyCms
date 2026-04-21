@@ -20,7 +20,7 @@ class StringField extends BaseField {
     * @return string 'Текстовая строка'
     */
     public function getName(): string {
-        return 'Текстовая строка';
+        return LANG_FIELD_STRING_TITLE;
     }
     
     /**
@@ -166,13 +166,13 @@ class StringField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Плейсхолдер</label>
+                        <label class='form-label'>" . LANG_FIELD_STRING_PLACEHOLDER_LABEL . "</label>
                         <input type='text' class='form-control' name='config[placeholder]' value='{$placeholder}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Максимальная длина</label>
+                        <label class='form-label'>" . LANG_FIELD_STRING_MAXLENGTH_LABEL . "</label>
                         <input type='number' class='form-control' name='config[maxlength]' value='{$maxlength}' min='1'>
                     </div>
                 </div>
@@ -180,13 +180,13 @@ class StringField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Регулярное выражение</label>
-                        <input type='text' class='form-control' name='config[pattern]' value='{$pattern}' placeholder='Например: ^[a-zA-Z0-9]+$'>
+                        <label class='form-label'>" . LANG_FIELD_STRING_PATTERN_LABEL . "</label>
+                        <input type='text' class='form-control' name='config[pattern]' value='{$pattern}' placeholder='" . LANG_FIELD_STRING_PATTERN_PLACEHOLDER . "'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_STRING_DEFAULT_LABEL . "</label>
                         <input type='text' class='form-control' name='config[default_value]' value='{$defaultValue}'>
                     </div>
                 </div>

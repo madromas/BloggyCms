@@ -13,34 +13,34 @@ class ForgotPassword extends AuthAction {
     public function execute() {
         try {
 
-            $this->addBreadcrumb('Главная', BASE_URL);
-            $this->addBreadcrumb('Вход в систему', BASE_URL . '/login');
-            $this->addBreadcrumb('Восстановление пароля');
-            $this->pageTitle = 'Восстановление пароля';
+            $this->addBreadcrumb(LANG_ACTION_AUTH_FORGOTPASSWORD_BREADCRUMB_HOME, BASE_URL);
+            $this->addBreadcrumb(LANG_ACTION_AUTH_FORGOTPASSWORD_BREADCRUMB_LOGIN, BASE_URL . '/login');
+            $this->addBreadcrumb(LANG_ACTION_AUTH_FORGOTPASSWORD_BREADCRUMB_FORGOT);
+            $this->pageTitle = LANG_ACTION_AUTH_FORGOTPASSWORD_PAGE_TITLE;
 
             $authSettings = $this->getFrontAuthSettings();
             $disableRestore = $authSettings['disable_restore'] ?? false;
             
             if ($disableRestore) {
-                \Notification::error('Восстановление пароля временно отключено администратором');
+                \Notification::error(LANG_ACTION_AUTH_FORGOTPASSWORD_DISABLED);
                 $this->redirect(BASE_URL . '/login');
                 return;
             }
 
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!$this->validateCsrfToken()) {
-                    throw new \Exception('Неверный CSRF токен');
+                    throw new \Exception(LANG_ACTION_AUTH_FORGOTPASSWORD_INVALID_CSRF);
                 }
 
                 if (empty($_POST['email'])) {
-                    throw new \Exception('Email обязателен');
+                    throw new \Exception(LANG_ACTION_AUTH_FORGOTPASSWORD_EMAIL_REQUIRED);
                 }
 
                 $email = $_POST['email'];
                 
                 $user = $this->userModel->getByEmail($email);
                 if (!$user) {
-                    throw new \Exception('Пользователь с таким email не найден');
+                    throw new \Exception(LANG_ACTION_AUTH_FORGOTPASSWORD_USER_NOT_FOUND);
                 }
 
                 $resetToken = bin2hex(random_bytes(32));
@@ -49,7 +49,7 @@ class ForgotPassword extends AuthAction {
                 $this->saveResetToken($user['id'], $resetToken, $expiresAt);
                 $this->sendResetEmail($user['email'], $resetToken, $user['username']);
 
-                \Notification::success('На вашу почту отправлена ссылка для восстановления пароля. Ссылка действительна 1 час.');
+                \Notification::success(LANG_ACTION_AUTH_FORGOTPASSWORD_EMAIL_SENT);
                 $this->redirect(BASE_URL . '/login');
                 return;
             }

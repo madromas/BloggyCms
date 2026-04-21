@@ -19,7 +19,7 @@ class FlagField extends BaseField {
     * @return string 'Флаг'
     */
     public function getName(): string {
-        return 'Флаг';
+        return LANG_FIELD_FLAG_TITLE;
     }
     
     /**
@@ -33,7 +33,7 @@ class FlagField extends BaseField {
         $safeValue = ($value === null) ? false : (bool)$value;
         
         $required = isset($this->config['required']) && $this->config['required'] ? 'required' : '';
-        $label = $this->config['label'] ?? 'Включено';
+        $label = $this->config['label'] ?? LANG_FIELD_FLAG_DEFAULT_LABEL;
         
         $checked = $safeValue ? 'checked' : '';
         
@@ -63,8 +63,8 @@ class FlagField extends BaseField {
     public function renderDisplay($value, $entityType, $entityId): string {
         $safeValue = ($value === null) ? false : (bool)$value;
         
-        $trueText = $this->config['true_text'] ?? 'Да';
-        $falseText = $this->config['false_text'] ?? 'Нет';
+        $trueText = $this->config['true_text'] ?? LANG_FIELD_FLAG_TRUE_TEXT;
+        $falseText = $this->config['false_text'] ?? LANG_FIELD_FLAG_FALSE_TEXT;
         
         if ($safeValue) {
             return "<span class='badge bg-success'><i class='bi bi-check-lg'></i> " . html($trueText, ENT_QUOTES, 'UTF-8') . "</span>";
@@ -84,9 +84,9 @@ class FlagField extends BaseField {
         $safeValue = ($value === null) ? false : (bool)$value;
         
         if ($safeValue) {
-            return "<i class='bi bi-check-circle-fill text-success' title='Да'></i>";
+            return "<i class='bi bi-check-circle-fill text-success' title='" . LANG_FIELD_FLAG_YES . "'></i>";
         } else {
-            return "<i class='bi bi-x-circle-fill text-secondary' title='Нет'></i>";
+            return "<i class='bi bi-x-circle-fill text-secondary' title='" . LANG_FIELD_FLAG_NO . "'></i>";
         }
     }
     
@@ -108,26 +108,26 @@ class FlagField extends BaseField {
     * @return string HTML-код формы настроек
     */
     public function getSettingsForm(): string {
-        $label = html($this->config['label'] ?? 'Включено', ENT_QUOTES, 'UTF-8');
-        $trueText = html($this->config['true_text'] ?? 'Да', ENT_QUOTES, 'UTF-8');
-        $falseText = html($this->config['false_text'] ?? 'Нет', ENT_QUOTES, 'UTF-8');
+        $label = html($this->config['label'] ?? LANG_FIELD_FLAG_DEFAULT_LABEL, ENT_QUOTES, 'UTF-8');
+        $trueText = html($this->config['true_text'] ?? LANG_FIELD_FLAG_TRUE_TEXT, ENT_QUOTES, 'UTF-8');
+        $falseText = html($this->config['false_text'] ?? LANG_FIELD_FLAG_FALSE_TEXT, ENT_QUOTES, 'UTF-8');
         $defaultValue = isset($this->config['default_value']) && $this->config['default_value'] ? 'checked' : '';
         
         return "
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Текст переключателя</label>
+                        <label class='form-label'>" . LANG_FIELD_FLAG_LABEL_LABEL . "</label>
                         <input type='text' class='form-control' name='config[label]' value='{$label}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Значение по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_FLAG_DEFAULT_LABEL . "</label>
                         <div class='form-check pt-2'>
                             <input class='form-check-input' type='checkbox' name='config[default_value]' id='default_value' {$defaultValue}>
                             <label class='form-check-label' for='default_value'>
-                                Включено по умолчанию
+                                " . LANG_FIELD_FLAG_DEFAULT_CHECKBOX . "
                             </label>
                         </div>
                     </div>
@@ -136,13 +136,13 @@ class FlagField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Текст для 'Да'</label>
+                        <label class='form-label'>" . LANG_FIELD_FLAG_TRUE_TEXT_LABEL . "</label>
                         <input type='text' class='form-control' name='config[true_text]' value='{$trueText}'>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Текст для 'Нет'</label>
+                        <label class='form-label'>" . LANG_FIELD_FLAG_FALSE_TEXT_LABEL . "</label>
                         <input type='text' class='form-control' name='config[false_text]' value='{$falseText}'>
                     </div>
                 </div>

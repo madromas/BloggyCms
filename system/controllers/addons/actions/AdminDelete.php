@@ -15,7 +15,7 @@ class AdminDelete extends AddonAction {
         $id = $this->params['id'] ?? null;
         
         if (!$id) {
-            \Notification::error('ID пакета не указан');
+            \Notification::error(LANG_CONTROLLER_ADDONS_ACTION_DELETE_ID_NOT_SPECIFIED);
             $this->redirect(ADMIN_URL . '/addons');
             return;
         }
@@ -24,15 +24,15 @@ class AdminDelete extends AddonAction {
             $addon = $this->addonModel->getById($id);
             
             if (!$addon) {
-                throw new \Exception('Пакет не найден');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_DELETE_NOT_FOUND);
             }
             
             $this->addonModel->delete($id);
             
-            \Notification::success('Пакет "' . html($addon['title']) . '" успешно удален');
+            \Notification::success(sprintf(LANG_CONTROLLER_ADDONS_ACTION_DELETE_SUCCESS, html($addon['title'])));
             
         } catch (\Exception $e) {
-            \Notification::error('Ошибка при удалении пакета: ' . $e->getMessage());
+            \Notification::error(LANG_CONTROLLER_ADDONS_ACTION_DELETE_ERROR . $e->getMessage());
         }
         
         $this->redirect(ADMIN_URL . '/addons');

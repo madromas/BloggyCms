@@ -1,0 +1,21 @@
+<?php
+
+define('LANG_ACTION_AUTH_RESETPASSWORD_PAGE_TITLE', 'Reset Password');
+define('LANG_ACTION_AUTH_RESETPASSWORD_DISABLED', 'Password recovery is temporarily disabled by the administrator');
+define('LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_MISSING', 'Reset token not provided');
+define('LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_INVALID', 'Reset token is invalid or has expired');
+define('LANG_ACTION_AUTH_RESETPASSWORD_INVALID_CSRF', 'Invalid CSRF token');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_REQUIRED', 'Password is required');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MIN_LENGTH', 'Password must be at least 6 characters long');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MISMATCH', 'Passwords do not match');
+define('LANG_ACTION_AUTH_RESETPASSWORD_SUCCESS', 'Password has been successfully changed. You can now log in with your new password.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_SUBJECT', 'Password successfully changed - %s');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_TITLE', 'Password Changed');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_HEADER', 'Password Successfully Changed');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_GREETING', 'Hello, <strong>%s</strong>!');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_MESSAGE', 'This notification confirms that the password for your account on <strong>%s</strong> has been successfully changed.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TITLE', 'Important:');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TEXT', 'If you did not change your password, please contact the site administrator immediately.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_LOGIN_INSTRUCTION', 'Use your new password to log in:');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_BUTTON', 'Login to Account');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_FOOTER', 'This email was sent automatically. Please do not reply to it.');

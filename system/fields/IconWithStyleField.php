@@ -22,7 +22,7 @@ class IconWithStyleField extends BaseField {
     * @return string 'Иконка со стилями'
     */
     public function getName(): string {
-        return 'Иконка со стилями';
+        return LANG_FIELD_ICONSTYLE_TITLE;
     }
     
     /**
@@ -149,7 +149,7 @@ class IconWithStyleField extends BaseField {
             
             <div class="row g-3 align-items-end">
                 <div class="col-md-<?= $iconColWidth ?>">
-                    <label class="form-label small fw-semibold">Иконка</label>
+                    <label class="form-label small fw-semibold"><?= LANG_FIELD_ICONSTYLE_ICON_LABEL ?></label>
                     <div class="d-flex gap-2">
                         <div class="icon-preview-wrapper flex-shrink-0">
                             <div id="<?= $previewId ?>" class="icon-preview-box border rounded p-2 text-center bg-light" style="width: 60px; height: 60px;">
@@ -159,20 +159,20 @@ class IconWithStyleField extends BaseField {
                         <div class="flex-grow-1">
                             <button type="button" class="btn btn-outline-primary btn-sm w-100 select-icon-btn">
                                 <i class="bi bi-images me-1"></i>
-                                Выбрать иконку
+                                <?= LANG_FIELD_ICONSTYLE_SELECT_BTN ?>
                             </button>
                             <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-1 clear-icon-btn"
                                     style="display: <?= !empty($iconName) ? 'block' : 'none' ?>;">
                                 <i class="bi bi-trash me-1"></i>
-                                Очистить
+                                <?= LANG_FIELD_ICONSTYLE_CLEAR_BTN ?>
                             </button>
                         </div>
                     </div>
-                    <div class="form-text small">Кликните для выбора иконки из библиотеки</div>
+                    <div class="form-text small"><?= LANG_FIELD_ICONSTYLE_ICON_HINT ?></div>
                 </div>
                 
                 <div class="col-md-<?= $iconColWidth ?> <?= $colorPickerClass ?>">
-                    <label class="form-label small fw-semibold">Цвет иконки</label>
+                    <label class="form-label small fw-semibold"><?= LANG_FIELD_ICONSTYLE_COLOR_LABEL ?></label>
                     <div class="d-flex align-items-center gap-2">
                         <input type="color" class="form-control form-control-color icon-color-input"
                                style="width: 50px; height: 38px;" value="<?= htmlspecialchars($iconColor) ?>">
@@ -182,7 +182,7 @@ class IconWithStyleField extends BaseField {
                 </div>
                 
                 <div class="col-md-<?= $iconColWidth ?> <?= $sizeSliderClass ?>">
-                    <label class="form-label small fw-semibold">Размер иконки: <span class="icon-size-value"><?= $iconSize ?></span>px</label>
+                    <label class="form-label small fw-semibold"><?= LANG_FIELD_ICONSTYLE_SIZE_LABEL ?> <span class="icon-size-value"><?= $iconSize ?></span>px</label>
                     <div class="d-flex align-items-center gap-2">
                         <span class="small text-muted"><?= $sizeMin ?></span>
                         <input type="range" class="form-range icon-size-slider flex-grow-1"
@@ -242,7 +242,7 @@ class IconWithStyleField extends BaseField {
         $iconSize = $decodedValue['size'] ?? 20;
         
         if (empty($iconName) || empty($iconSet)) {
-            return '<span class="text-muted">—</span>';
+            return '<span class="text-muted">' . LANG_FIELD_ICONSTYLE_EMPTY . '</span>';
         }
         
         return $this->getIconPreviewHtml($iconSet, $iconName, $iconColor, $iconSize);
@@ -304,7 +304,7 @@ class IconWithStyleField extends BaseField {
     */
     private function getIconPreviewHtml($set, $name, $color, $size): string {
         if (empty($set) || empty($name)) {
-            return '<div class="text-muted small text-center">Нет иконки</div>';
+            return '<div class="text-muted small text-center">' . LANG_FIELD_ICONSTYLE_NO_ICON . '</div>';
         }
         
         if (function_exists('bloggy_icon')) {
@@ -389,38 +389,38 @@ class IconWithStyleField extends BaseField {
             <div class='row'>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Цвет по умолчанию</label>
+                        <label class='form-label'>" . LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_LABEL . "</label>
                         <div class='d-flex align-items-center gap-2'>
                             <input type='color' class='form-control form-control-color' name='config[default_color]' value='{$defaultColor}' style='width: 50px;'>
                             <input type='text' class='form-control' name='config[default_color]' value='{$defaultColor}' placeholder='#000000'>
                         </div>
-                        <div class='form-text'>Цвет иконки, если не указан иной</div>
+                        <div class='form-text'>" . LANG_FIELD_ICONSTYLE_DEFAULT_COLOR_HINT . "</div>
                     </div>
                 </div>
                 <div class='col-md-6'>
                     <div class='mb-3'>
-                        <label class='form-label'>Размер по умолчанию (px)</label>
+                        <label class='form-label'>" . LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_LABEL . "</label>
                         <input type='number' class='form-control' name='config[default_size]' value='{$defaultSize}' min='8' max='128'>
-                        <div class='form-text'>Размер иконки в пикселях</div>
+                        <div class='form-text'>" . LANG_FIELD_ICONSTYLE_DEFAULT_SIZE_HINT . "</div>
                     </div>
                 </div>
             </div>
             <div class='row'>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Минимальный размер (px)</label>
+                        <label class='form-label'>" . LANG_FIELD_ICONSTYLE_SIZE_MIN_LABEL . "</label>
                         <input type='number' class='form-control' name='config[size_min]' value='{$sizeMin}' min='4' max='64'>
                     </div>
                 </div>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Максимальный размер (px)</label>
+                        <label class='form-label'>" . LANG_FIELD_ICONSTYLE_SIZE_MAX_LABEL . "</label>
                         <input type='number' class='form-control' name='config[size_max]' value='{$sizeMax}' min='16' max='256'>
                     </div>
                 </div>
                 <div class='col-md-4'>
                     <div class='mb-3'>
-                        <label class='form-label'>Шаг изменения размера (px)</label>
+                        <label class='form-label'>" . LANG_FIELD_ICONSTYLE_SIZE_STEP_LABEL . "</label>
                         <input type='number' class='form-control' name='config[size_step]' value='{$sizeStep}' min='1' max='10'>
                     </div>
                 </div>
@@ -431,10 +431,10 @@ class IconWithStyleField extends BaseField {
                         <div class='form-check'>
                             <input class='form-check-input' type='checkbox' name='config[allow_color]' id='allow_color' value='1' {$allowColorChecked}>
                             <label class='form-check-label' for='allow_color'>
-                                Разрешить выбор цвета
+                                " . LANG_FIELD_ICONSTYLE_ALLOW_COLOR_LABEL . "
                             </label>
                         </div>
-                        <div class='form-text'>Пользователь сможет выбирать цвет иконки</div>
+                        <div class='form-text'>" . LANG_FIELD_ICONSTYLE_ALLOW_COLOR_HINT . "</div>
                     </div>
                 </div>
                 <div class='col-md-6'>
@@ -442,10 +442,10 @@ class IconWithStyleField extends BaseField {
                         <div class='form-check'>
                             <input class='form-check-input' type='checkbox' name='config[allow_size]' id='allow_size' value='1' {$allowSizeChecked}>
                             <label class='form-check-label' for='allow_size'>
-                                Разрешить выбор размера
+                                " . LANG_FIELD_ICONSTYLE_ALLOW_SIZE_LABEL . "
                             </label>
                         </div>
-                        <div class='form-text'>Пользователь сможет изменять размер иконки</div>
+                        <div class='form-text'>" . LANG_FIELD_ICONSTYLE_ALLOW_SIZE_HINT . "</div>
                     </div>
                 </div>
             </div>

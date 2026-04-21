@@ -19,7 +19,7 @@ class SelectField extends BaseField {
     * @return string 'Список'
     */
     public function getName(): string {
-        return 'Список';
+        return LANG_FIELD_SELECT_TITLE;
     }
     
     /**
@@ -38,7 +38,7 @@ class SelectField extends BaseField {
         $fieldName = 'field_' . ($this->systemName ?? '');
         
         $html = "<select name='{$fieldName}' class='form-select form-select-sm' {$required}>";
-        $html .= "<option value=''>-- Выберите --</option>";
+        $html .= "<option value=''>" . LANG_FIELD_SELECT_DEFAULT_OPTION . "</option>";
         
         foreach ($options as $optionValue => $optionLabel) {
             $selected = ($safeValue == $optionValue) ? 'selected' : '';
@@ -59,7 +59,7 @@ class SelectField extends BaseField {
     */
     public function renderDisplay($value, $entityType, $entityId): string {
         if (empty($value) && $value !== '0') {
-            return '<span class="text-muted">Не выбрано</span>';
+            return '<span class="text-muted">' . LANG_FIELD_SELECT_NOT_SELECTED . '</span>';
         }
         
         $options = $this->config['options'] ?? [];
@@ -192,14 +192,14 @@ class SelectField extends BaseField {
         
         return "
             <div class='mb-3'>
-                <label class='form-label'>Опции списка</label>
-                <textarea class='form-control' name='config[options_text]' rows='6' placeholder='значение|Название опции'>" . trim($optionsText) . "</textarea>
-                <div class='form-text'>Каждая опция с новой строки в формате: значение|Название<br>Пример:<br>red|Красный<br>green|Зеленый<br>blue|Синий</div>
+                <label class='form-label'>" . LANG_FIELD_SELECT_OPTIONS_LABEL . "</label>
+                <textarea class='form-control' name='config[options_text]' rows='6' placeholder='" . LANG_FIELD_SELECT_OPTIONS_PLACEHOLDER . "'>" . trim($optionsText) . "</textarea>
+                <div class='form-text'>" . LANG_FIELD_SELECT_OPTIONS_HINT . "</div>
             </div>
             <div class='mb-3'>
-                <label class='form-label'>Значение по умолчанию</label>
-                <input type='text' class='form-control' name='config[default_value]' value='{$defaultValue}' placeholder='значение из списка'>
-                <div class='form-text'>Введите одно из значений из списка выше</div>
+                <label class='form-label'>" . LANG_FIELD_SELECT_DEFAULT_LABEL . "</label>
+                <input type='text' class='form-control' name='config[default_value]' value='{$defaultValue}' placeholder='" . LANG_FIELD_SELECT_DEFAULT_PLACEHOLDER . "'>
+                <div class='form-text'>" . LANG_FIELD_SELECT_DEFAULT_HINT . "</div>
             </div>
         ";
     }

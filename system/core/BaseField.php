@@ -38,7 +38,6 @@ abstract class BaseField {
     public function __construct($config = [], $db = null) {
         $this->config = $config;
         $this->db = $db;
-        lang_load(get_class($this));
     }
     
     /**

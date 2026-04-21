@@ -1,0 +1,31 @@
+<?php
+
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_AUTH', 'Login');
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_REGISTER', 'Registration');
+define('LANG_CONTROLLER_AUTH_SETTINGS_FIELDSET_ADMIN_ACCESS', 'Admin Panel Access');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_RESTORE', 'Disable password recovery');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_RESTORE_HINT', 'User will not be able to recover their credentials if forgotten');
+define('LANG_CONTROLLER_AUTH_SETTINGS_AUTH_REDIRECT', 'After successful login:');
+define('LANG_CONTROLLER_AUTH_SETTINGS_OPTION_SHOW_PROFILE', 'Open profile');
+define('LANG_CONTROLLER_AUTH_SETTINGS_OPTION_SHOW_INDEX', 'Open homepage');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ENABLE_REGISTER', 'Disable user registration on the site');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_REGISTER_REASON', 'Registration unavailable message');
+define('LANG_CONTROLLER_AUTH_SETTINGS_DISABLE_REGISTER_REASON_DEFAULT', 'New user registration is temporarily disabled');
+define('LANG_CONTROLLER_AUTH_SETTINGS_SHOW_QA', 'Use security questions for additional protection');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_PARAM', 'Display condition');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_PARAM_HINT', 'Choose when additional questions will be displayed for login');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION1', 'On incorrect username/password pair');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION2', 'On last IP address change');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QA_OPTION3', 'Always display');
+define('LANG_CONTROLLER_AUTH_SETTINGS_WORDS_ARRAY', 'Specify security questions and answers');
+define('LANG_CONTROLLER_AUTH_SETTINGS_WORDS_ARRAY_HINT', 'When logging into the admin panel, these questions will be shown together with username/password');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QUESTION', 'Question');
+define('LANG_CONTROLLER_AUTH_SETTINGS_QUESTION_HINT', 'Enter your question');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ANSWER', 'Answer');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ANSWER_HINT', 'Enter your answer');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_AUTH', 'Maximum login attempts');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_AUTH_HINT', 'After using all login attempts, the page will become unavailable for data entry');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_TIME', 'Time the page will be unavailable');
+define('LANG_CONTROLLER_AUTH_SETTINGS_COUNT_TIME_HINT', 'Enter value in minutes');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ALERT_TITLE', 'Important!');
+define('LANG_CONTROLLER_AUTH_SETTINGS_ALERT_HINT', 'Treat these settings with extreme caution! There is a risk of losing access if you forget your data.');

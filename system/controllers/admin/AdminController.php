@@ -5,11 +5,11 @@ class AdminController extends Controller {
     private $userModel;
 
     protected $controllerInfo = [
-        'name' => 'Панель управления',
+        'name' => LANG_CONTROLLER_ADMIN_MANIFEST_NAME,
         'author' => 'BloggyCMS', 
         'version' => '1.0.0',
         'has_settings' => true,
-        'description' => 'Управление админ-панелью, блоками статистики и многим другим'
+        'description' => LANG_CONTROLLER_ADMIN_MANIFEST_DESCRIPTION
     ];
     
     /**
@@ -26,7 +26,7 @@ class AdminController extends Controller {
         
         if ($currentAction !== 'login') {
             if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] !== true) {
-                Notification::error('Доступ запрещен');
+                Notification::error(LANG_CONTROLLER_ADMIN_ACCESS_DENIED);
                 $this->redirect(BASE_URL);
                 exit;
             }
@@ -105,7 +105,7 @@ class AdminController extends Controller {
                 $recentSearches = $searchModel->getRecentSearchQueries(5);
                 $popularSearches = $searchModel->getPopularSearchQueries(5);
             } catch (Exception $e) {
-                Notification::warning('Не удалось загрузить данные о поисковых запросах');
+                Notification::warning(LANG_CONTROLLER_ADMIN_SEARCH_LOAD_ERROR);
             }
             
             $this->render('admin/dashboard', [
@@ -120,7 +120,7 @@ class AdminController extends Controller {
             ]);
             
         } catch (Exception $e) {
-            Notification::error('Ошибка при загрузке данных панели управления');
+            Notification::error(LANG_CONTROLLER_ADMIN_DASHBOARD_LOAD_ERROR);
             $this->redirect(ADMIN_URL);
         }
     }
@@ -130,7 +130,7 @@ class AdminController extends Controller {
     */
     public function loginAction() {
         if (isset($_SESSION['user_id'])) {
-            Notification::info('Вы уже авторизованы');
+            Notification::info(LANG_CONTROLLER_ADMIN_ALREADY_AUTH);
             $this->redirect(ADMIN_URL);
             return;
         }
@@ -146,15 +146,15 @@ class AdminController extends Controller {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     $_SESSION['is_admin'] = $user['is_admin'];
-                    Notification::success('Добро пожаловать, ' . $user['username'] . '!');
+                    Notification::success(sprintf(LANG_CONTROLLER_ADMIN_WELCOME, $user['username']));
                     $this->redirect(ADMIN_URL);
                     return;
                 } else {
-                    Notification::error('Неверные имя пользователя или пароль');
+                    Notification::error(LANG_CONTROLLER_ADMIN_INVALID_CREDENTIALS);
                     $this->render('admin/login');
                 }
             } catch (Exception $e) {
-                Notification::error('Ошибка при попытке авторизации');
+                Notification::error(LANG_CONTROLLER_ADMIN_AUTH_ERROR);
                 $this->render('admin/login');
             }
         } else {
@@ -167,11 +167,11 @@ class AdminController extends Controller {
     */
     public function logoutAction() {
         try {
-            $username = $_SESSION['username'] ?? 'Пользователь';
+            $username = $_SESSION['username'] ?? LANG_CONTROLLER_ADMIN_USER;
             session_destroy();
-            Notification::success($username . ', вы успешно вышли из системы');
+            Notification::success(sprintf(LANG_CONTROLLER_ADMIN_LOGOUT_SUCCESS, $username));
         } catch (Exception $e) {
-            Notification::error('Ошибка при выходе из системы');
+            Notification::error(LANG_CONTROLLER_ADMIN_LOGOUT_ERROR);
         }
         $this->redirect(ADMIN_URL . '/login');
     }
@@ -180,10 +180,10 @@ class AdminController extends Controller {
     * Управление шаблонами сайта
     */
     public function templatesAction() {
-        $this->pageTitle = 'Управление шаблонами';
+        $this->pageTitle = LANG_CONTROLLER_ADMIN_TEMPLATES_TITLE;
         
-        $this->addBreadcrumb('Панель управления', ADMIN_URL);
-        $this->addBreadcrumb('Управление шаблонами сайта');
+        $this->addBreadcrumb(LANG_CONTROLLER_ADMIN_BREADCRUMB_DASHBOARD, ADMIN_URL);
+        $this->addBreadcrumb(LANG_CONTROLLER_ADMIN_TEMPLATES_BREADCRUMB);
         
         $templates = $this->getAvailableTemplates();
         $currentTemplate = SettingsHelper::get('site', 'site_template', 'default');
@@ -217,7 +217,7 @@ class AdminController extends Controller {
         $filePath = $_GET['file'] ?? '';
         
         if (empty($filePath) || strpos($filePath, '..') !== false) {
-            echo json_encode(['success' => false, 'error' => 'Некорректный путь к файлу']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_INVALID_FILE_PATH]);
             exit;
         }
         
@@ -227,17 +227,17 @@ class AdminController extends Controller {
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
         
         if (strpos($normalizedPath, $templateBasePath) !== 0) {
-            echo json_encode(['success' => false, 'error' => 'Доступ запрещен']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_ACCESS_DENIED]);
             exit;
         }
         
         if (!file_exists($fullPath)) {
-            echo json_encode(['success' => false, 'error' => 'Файл не найден: ' . $fullPath]);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_FILE_NOT_FOUND . $fullPath]);
             exit;
         }
         
         if (!is_file($fullPath)) {
-            echo json_encode(['success' => false, 'error' => 'Это директория, а не файл']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_IS_DIRECTORY]);
             exit;
         }
         
@@ -264,7 +264,7 @@ class AdminController extends Controller {
         $content = $input['content'] ?? '';
         
         if (empty($filePath) || strpos($filePath, '..') !== false) {
-            echo json_encode(['success' => false, 'error' => 'Некорректный путь к файлу']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_INVALID_FILE_PATH]);
             exit;
         }
         
@@ -274,7 +274,7 @@ class AdminController extends Controller {
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
         
         if (strpos($normalizedPath, $templateBasePath) !== 0) {
-            echo json_encode(['success' => false, 'error' => 'Доступ запрещен']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_ACCESS_DENIED]);
             exit;
         }
         
@@ -292,13 +292,13 @@ class AdminController extends Controller {
             $response = ['success' => true];
             if ($backupCreated) {
                 $response['backup_created'] = true;
-                $response['message'] = 'Файл сохранен. Резервная копия создана.';
+                $response['message'] = LANG_CONTROLLER_ADMIN_SAVE_SUCCESS_WITH_BACKUP;
             } else {
-                $response['message'] = 'Файл сохранен.';
+                $response['message'] = LANG_CONTROLLER_ADMIN_SAVE_SUCCESS;
             }
             echo json_encode($response);
         } else {
-            echo json_encode(['success' => false, 'error' => 'Ошибка сохранения файла']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_SAVE_ERROR]);
         }
         exit;
     }
@@ -511,7 +511,7 @@ class AdminController extends Controller {
         $filePath = $_GET['file'] ?? '';
         
         if (empty($filePath) || strpos($filePath, '..') !== false) {
-            die('Некорректный путь к файлу');
+            die(LANG_CONTROLLER_ADMIN_INVALID_FILE_PATH);
         }
         
         $fullPath = TEMPLATES_PATH . '/' . $template . '/front/' . $filePath;
@@ -520,11 +520,11 @@ class AdminController extends Controller {
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
         
         if (strpos($normalizedPath, $templateBasePath) !== 0) {
-            die('Доступ запрещен');
+            die(LANG_CONTROLLER_ADMIN_ACCESS_DENIED);
         }
         
         if (!file_exists($fullPath) || !is_file($fullPath)) {
-            die('Файл не найден');
+            die(LANG_CONTROLLER_ADMIN_FILE_NOT_FOUND_SIMPLE);
         }
         
         header('Content-Type: application/octet-stream');
@@ -541,7 +541,7 @@ class AdminController extends Controller {
         header('Content-Type: application/json');
         
         if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            echo json_encode(['success' => false, 'error' => 'Ошибка загрузки файла']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_UPLOAD_ERROR]);
             exit;
         }
         
@@ -549,7 +549,7 @@ class AdminController extends Controller {
         $uploadPath = $_POST['path'] ?? '';
         
         if (strpos($uploadPath, '..') !== false || strpos($uploadPath, './') !== false) {
-            echo json_encode(['success' => false, 'error' => 'Некорректный путь']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_INVALID_PATH]);
             exit;
         }
         
@@ -558,12 +558,12 @@ class AdminController extends Controller {
         $allowedExtensions = ['php', 'html', 'css', 'js', 'json', 'xml', 'txt', 'svg', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
         
         if (!in_array($extension, $allowedExtensions)) {
-            echo json_encode(['success' => false, 'error' => 'Недопустимый тип файла']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_INVALID_FILE_TYPE]);
             exit;
         }
         
         if ($file['size'] > 10 * 1024 * 1024) {
-            echo json_encode(['success' => false, 'error' => 'Файл слишком большой (максимум 10MB)']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_FILE_TOO_LARGE]);
             exit;
         }
         
@@ -574,7 +574,7 @@ class AdminController extends Controller {
         
         if (!is_dir($targetDir)) {
             if (!mkdir($targetDir, 0755, true)) {
-                echo json_encode(['success' => false, 'error' => 'Не удалось создать директорию']);
+                echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_CANT_CREATE_DIR]);
                 exit;
             }
         }
@@ -585,12 +585,12 @@ class AdminController extends Controller {
         $templateBasePath = $this->normalizePath(TEMPLATES_PATH . '/' . $template);
         
         if (strpos($normalizedTarget, $templateBasePath) !== 0) {
-            echo json_encode(['success' => false, 'error' => 'Доступ запрещен']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_ACCESS_DENIED]);
             exit;
         }
         
         if (file_exists($targetFile)) {
-            echo json_encode(['success' => false, 'error' => 'Файл уже существует']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_FILE_EXISTS]);
             exit;
         }
         
@@ -599,9 +599,9 @@ class AdminController extends Controller {
             
             $relativePath = str_replace(TEMPLATES_PATH . '/' . $template . '/front/', '', $targetFile);
             
-            echo json_encode(['success' => true, 'message' => 'Файл успешно загружен', 'path' => $relativePath]);
+            echo json_encode(['success' => true, 'message' => LANG_CONTROLLER_ADMIN_UPLOAD_SUCCESS, 'path' => $relativePath]);
         } else {
-            echo json_encode(['success' => false, 'error' => 'Ошибка сохранения файла']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_SAVE_ERROR]);
         }
         exit;
     }
@@ -618,14 +618,14 @@ class AdminController extends Controller {
         $frontPath = TEMPLATES_PATH . '/' . $template . '/front';
         
         if (is_dir($frontPath)) {
-            echo json_encode(['success' => true, 'message' => 'Папка уже существует']);
+            echo json_encode(['success' => true, 'message' => LANG_CONTROLLER_ADMIN_FOLDER_EXISTS]);
             exit;
         }
         
         if (mkdir($frontPath, 0755, true)) {
-            echo json_encode(['success' => true, 'message' => 'Папка front успешно создана']);
+            echo json_encode(['success' => true, 'message' => LANG_CONTROLLER_ADMIN_FOLDER_CREATED]);
         } else {
-            echo json_encode(['success' => false, 'error' => 'Не удалось создать папку front']);
+            echo json_encode(['success' => false, 'error' => LANG_CONTROLLER_ADMIN_CANT_CREATE_FOLDER]);
         }
         exit;
     }
@@ -654,7 +654,7 @@ class AdminController extends Controller {
         header('Content-Type: application/json');
         
         if (!$this->isAjaxRequest()) {
-            echo json_encode(['success' => false, 'message' => 'Только AJAX запросы']);
+            echo json_encode(['success' => false, 'message' => LANG_CONTROLLER_ADMIN_AJAX_ONLY]);
             exit;
         }
         
@@ -673,12 +673,12 @@ class AdminController extends Controller {
         error_log("[DEBUG] Trying to delete install folder at: " . $installPath);
         
         if (!is_dir($installPath)) {
-            echo json_encode(['success' => false, 'message' => 'Папка install не найдена по пути: ' . $installPath]);
+            echo json_encode(['success' => false, 'message' => sprintf(LANG_CONTROLLER_ADMIN_INSTALL_NOT_FOUND, $installPath)]);
             exit;
         }
         
         if (!is_writable(dirname($installPath))) {
-            echo json_encode(['success' => false, 'message' => 'Нет прав на запись в родительскую директорию. Обратитесь к хостеру.']);
+            echo json_encode(['success' => false, 'message' => LANG_CONTROLLER_ADMIN_INSTALL_NOT_WRITABLE]);
             exit;
         }
         
@@ -687,11 +687,11 @@ class AdminController extends Controller {
         if ($result) {
             $_SESSION['toast'] = [
                 'type' => 'success',
-                'message' => 'Папка install успешно удалена! Теперь твой сайт в безопасности.'
+                'message' => LANG_CONTROLLER_ADMIN_INSTALL_DELETED_SUCCESS
             ];
-            echo json_encode(['success' => true, 'message' => 'Папка install удалена']);
+            echo json_encode(['success' => true, 'message' => LANG_CONTROLLER_ADMIN_INSTALL_DELETED]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Не удалось удалить папку install. Проверьте права на запись.']);
+            echo json_encode(['success' => false, 'message' => LANG_CONTROLLER_ADMIN_INSTALL_DELETE_FAILED]);
         }
         exit;
     }
@@ -743,10 +743,10 @@ class AdminController extends Controller {
     */
     public function checkUpdatesAction() {
         
-        $this->addBreadcrumb('Панель управления', ADMIN_URL);
-        $this->addBreadcrumb('Проверка обновлений');
+        $this->addBreadcrumb(LANG_CONTROLLER_ADMIN_BREADCRUMB_DASHBOARD, ADMIN_URL);
+        $this->addBreadcrumb(LANG_CONTROLLER_ADMIN_UPDATES_BREADCRUMB);
         
-        $this->pageTitle = 'Проверка обновлений';
+        $this->pageTitle = LANG_CONTROLLER_ADMIN_UPDATES_TITLE;
         
         $updateResult = VersionHelper::checkUpdates();
         
@@ -756,7 +756,7 @@ class AdminController extends Controller {
             'current_version_name' => VersionHelper::getVersionName(),
             'current_version_date' => VersionHelper::getVersionDate(),
             'current_build' => VersionHelper::getBuild(),
-            'pageTitle' => 'Проверка обновлений'
+            'pageTitle' => LANG_CONTROLLER_ADMIN_UPDATES_TITLE
         ]);
     }
 

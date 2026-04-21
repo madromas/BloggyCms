@@ -1,4 +1,5 @@
 <?php
+
 return [
     'admin/addons' => ['controller' => 'AdminAddons', 'action' => 'adminIndex', 'admin' => true],
     'admin/addons/install' => ['controller' => 'AdminAddons', 'action' => 'install', 'admin' => true],

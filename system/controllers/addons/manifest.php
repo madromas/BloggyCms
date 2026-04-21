@@ -1,8 +1,9 @@
 <?php
+
 return [
-    'name' => 'Установщик пакетов',
+    'name' => LANG_CONTROLLER_ADDONS_MANIFEST_NAME,
     'author' => 'BloggyCMS',
     'version' => '1.0.0',
     'has_settings' => false,
-    'description' => 'Установка и управление пакетами расширений (аддонами)'
+    'description' => LANG_CONTROLLER_ADDONS_MANIFEST_DESCRIPTION
 ];

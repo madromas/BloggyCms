@@ -1,0 +1,26 @@
+<?php
+
+define('LANG_TEMPLATE_ADDONS_INSTALL_TITLE', 'Install Package');
+define('LANG_TEMPLATE_ADDONS_INSTALL_BACK_BTN', 'Back to Packages');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_TITLE', 'Package Information');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_DESC', 'Package must have the following structure:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_FILES', 'folder with files (structure matches site root)');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_INSTALL', 'installation script (optional)');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INFO_STRUCTURE_INI', 'package description file');
+define('LANG_TEMPLATE_ADDONS_INSTALL_DRAG_DROP', 'Drag and drop ZIP archive here');
+define('LANG_TEMPLATE_ADDONS_INSTALL_OR', 'or');
+define('LANG_TEMPLATE_ADDONS_INSTALL_SELECT_FILE', 'Select file');
+define('LANG_TEMPLATE_ADDONS_INSTALL_MAX_SIZE', 'Maximum size: 50MB');
+define('LANG_TEMPLATE_ADDONS_INSTALL_FILE_SELECTED', 'File selected');
+define('LANG_TEMPLATE_ADDONS_INSTALL_SELECT_OTHER', 'Choose another file');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_INFO', 'Package Information');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_NAME', 'Name:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_VERSION', 'Version:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_TYPE', 'Type:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_AUTHOR', 'Author:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_EMAIL', 'Email:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_URL', 'Website:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_PACKAGE_DESCRIPTION', 'Description:');
+define('LANG_TEMPLATE_ADDONS_INSTALL_READY_STATUS', 'Ready to install');
+define('LANG_TEMPLATE_ADDONS_INSTALL_UPLOADING', 'Uploading...');
+define('LANG_TEMPLATE_ADDONS_INSTALL_INSTALL_BTN', 'Install');

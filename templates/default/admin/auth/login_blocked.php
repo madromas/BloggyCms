@@ -2,18 +2,18 @@
 
 <div class="blocked-container">
     <div class="blocked-icon">🚫</div>
-    <div class="blocked-title">ДОСТУП ЗАБЛОКИРОВАН</div>
-    <div class="blocked-message">Превышено максимальное количество попыток входа</div>
-    <div class="blocked-message">Страница авторизации временно недоступна</div>
+    <div class="blocked-title"><?php echo LANG_TEMPLATE_AUTH_BLOCKED_TITLE; ?></div>
+    <div class="blocked-message"><?php echo LANG_TEMPLATE_AUTH_BLOCKED_MAX_ATTEMPTS; ?></div>
+    <div class="blocked-message"><?php echo LANG_TEMPLATE_AUTH_BLOCKED_UNAVAILABLE; ?></div>
     <div class="blocked-time">
-        Доступ будет восстановлен:<br>
-        <?= date('d.m.Y в H:i:s', $unlockTime) ?>
+        <?php echo LANG_TEMPLATE_AUTH_BLOCKED_RESTORE_TIME; ?><br>
+        <?= date('d.m.Y ' . LANG_TEMPLATE_AUTH_BLOCKED_AT . ' H:i:s', $unlockTime) ?>
     </div>
     <div class="blocked-message">
-        Осталось времени: <strong><?= $remainingMinutes ?> минут</strong>
+        <?php echo LANG_TEMPLATE_AUTH_BLOCKED_REMAINING; ?> <strong><?= $remainingMinutes ?> <?php echo LANG_TEMPLATE_AUTH_BLOCKED_MINUTES; ?></strong>
     </div>
     <div class="attempts-info">
-        Система безопасности заблокировала доступ для защиты от несанкционированного доступа
+        <?php echo LANG_TEMPLATE_AUTH_BLOCKED_SECURITY_INFO; ?>
     </div>
 </div>
 

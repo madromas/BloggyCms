@@ -4,140 +4,140 @@ namespace admin;
 class AdminSettings {
     public static function getForm($currentSettings) {
         $fieldsets = [
-            new \Fieldset('Блоки статистики', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_STATS, [
                 'icon' => 'bi bi-bar-chart-fill',
                 'columns' => '4',
                 'fields' => [
                     \FieldFactory::checkbox('all_posts', [
-                        'title' => 'Общее количество постов',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ALL_POSTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('categories', [
-                        'title' => 'Общее количество категорий',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_CATEGORIES,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('tags', [
-                        'title' => 'Общее количество тегов',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_TAGS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('comments', [
-                        'title' => 'Общее количество комментариев',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_COMMENTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('users', [
-                        'title' => 'Общее количество пользователей',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_USERS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('pages', [
-                        'title' => 'Общее количество страниц',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_PAGES,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('content_blocks', [
-                        'title' => 'Общее количество контент-блоков',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_CONTENT_BLOCKS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('show_button', [
-                        'title' => 'Показывать кнопку быстрого перехода к контроллеру',
-                        'hint' => 'У каждой карточки появится кнопка для быстрого перехода к контроллеру',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_BUTTON,
+                        'hint' => LANG_CONTROLLER_ADMINSETTINGS_HINT_SHOW_BUTTON,
                         'default' => false,
                         'switch' => true
                     ]),
                 ]
             ]),
 
-            new \Fieldset('Статистика постов', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_POSTS_STATS, [
                 'icon' => 'bi bi-pencil-fill',
                 'columns' => '6',
                 'fields' => [
                     \FieldFactory::checkbox('last_posts', [
-                        'title' => 'Показывать последние опубликованные посты',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_LAST_POSTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('popular_posts', [
-                        'title' => 'Показывать  самые просматриваемые посты',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_POPULAR_POSTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('comments_posts', [
-                        'title' => 'Показывать  самые комментируемые посты',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_COMMENTS_POSTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('show_drafts', [
-                        'title' => 'Показывать черновики',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_DRAFTS,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::number('count_posts', [
-                        'title' => 'Количество постов в блоках статистики',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_COUNT_POSTS,
                         'default' => 4,
                         'max' => 10
                     ]),
                 ]
             ]),
 
-            new \Fieldset('Детальная статистика', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_DETAILED_STATS, [
                 'icon' => 'bi bi-graph-up',
                 'columns' => '12',
                 'fields' => [
                     \FieldFactory::checkbox('show_detailed_stats', [
-                        'title' => 'Показывать детальную статистику на дашборде',
-                        'hint' => 'Отображать интерактивные графики с аналитикой постов, комментариев и активности',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_DETAILED_STATS,
+                        'hint' => LANG_CONTROLLER_ADMINSETTINGS_HINT_SHOW_DETAILED_STATS,
                         'default' => true,
                         'switch' => true
                     ]),
                     
                     \FieldFactory::select('stats_period', [
-                        'title' => 'Период статистики по умолчанию',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_STATS_PERIOD,
                         'default' => 'month',
                         'options' => [
-                            'week' => 'Последние 7 дней',
-                            'month' => 'Последние 30 дней',
-                            'quarter' => 'Последние 90 дней',
-                            'year' => 'Последние 12 месяцев',
-                            'all' => 'За все время'
+                            'week' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_WEEK,
+                            'month' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_MONTH,
+                            'quarter' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_QUARTER,
+                            'year' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_YEAR,
+                            'all' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_ALL
                         ],
                         'show' => 'field:show_detailed_stats'
                     ]),
                     
                     \FieldFactory::checkbox('show_publications_chart', [
-                        'title' => 'График публикаций',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_PUBLICATIONS_CHART,
                         'default' => true,
                         'switch' => true,
                         'show' => 'field:show_detailed_stats'
                     ]),
                     
                     \FieldFactory::checkbox('show_popular_posts_chart', [
-                        'title' => 'Топ популярных постов',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_POPULAR_POSTS_CHART,
                         'default' => true,
                         'switch' => true,
                         'show' => 'field:show_detailed_stats'
                     ]),
                     
                     \FieldFactory::checkbox('show_liked_posts_chart', [
-                        'title' => 'Топ залайканных постов',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_LIKED_POSTS_CHART,
                         'default' => true,
                         'switch' => true,
                         'show' => 'field:show_detailed_stats'
                     ]),
                     
                     \FieldFactory::checkbox('show_comments_chart', [
-                        'title' => 'Статистика комментариев',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_COMMENTS_CHART,
                         'default' => true,
                         'switch' => true,
                         'show' => 'field:show_detailed_stats'
                     ]),
                     
                     \FieldFactory::number('top_posts_limit', [
-                        'title' => 'Количество постов в топах',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_TOP_POSTS_LIMIT,
                         'default' => 5,
                         'min' => 3,
                         'max' => 20,
@@ -145,73 +145,73 @@ class AdminSettings {
                     ]),
                     
                     \FieldFactory::select('chart_theme', [
-                        'title' => 'Цветовая схема графиков',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_CHART_THEME,
                         'default' => 'modern',
                         'options' => [
-                            'modern' => 'Современная',
-                            'pastel' => 'Пастельная',
-                            'dark' => 'Темная',
-                            'corporate' => 'Корпоративная'
+                            'modern' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_MODERN,
+                            'pastel' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_PASTEL,
+                            'dark' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_DARK,
+                            'corporate' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_CORPORATE
                         ],
                         'show' => 'field:show_detailed_stats'
                     ])
                 ]
             ]),
 
-            new \Fieldset('Быстрые действия', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_QUICK_ACTIONS, [
                 'icon' => 'bi bi-lightning-charge-fill',
                 'columns' => '3',
                 'fields' => [
                     \FieldFactory::checkbox('add_post', [
-                        'title' => 'Создать пост',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_POST,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_page', [
-                        'title' => 'Создать страницу',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_PAGE,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_category', [
-                        'title' => 'Создать категорию',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_CATEGORY,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_tag', [
-                        'title' => 'Создать тег',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_TAG,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_user', [
-                        'title' => 'Создать пользователя',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_USER,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_content_block', [
-                        'title' => 'Создать контент-блок',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_CONTENT_BLOCK,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_field', [
-                        'title' => 'Создать поле',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_FIELD,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('add_form', [
-                        'title' => 'Создать форму',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_ADD_FORM,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::select('position_btn', [
-                        'title' => 'Позиция кнопки', 
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_POSITION_BTN, 
                         'default' => 'bottom-right',
                         'options' => [
-                            'bottom-right' => 'Справа снизу',
-                            'bottom-right-center' => 'Снизу по центру'
+                            'bottom-right' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_BOTTOM_RIGHT,
+                            'bottom-right-center' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_BOTTOM_CENTER
                         ]
                     ]),
                     \FieldFactory::select('color_btn', [
-                        'title' => 'Стиль кнопки', 
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_COLOR_BTN, 
                         'default' => 'primary',
                         'options' => [
                             'success text-dark' => 'Success',
@@ -222,8 +222,8 @@ class AdminSettings {
                         ]
                     ]),
                     \FieldFactory::alert('field_name', [
-                        'title' => '<strong>Подсказка</strong>',
-                        'hint' => 'Чтобы вообще не отображать кнопку - отключите все быстрые действия',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_ALERT_TITLE,
+                        'hint' => LANG_CONTROLLER_ADMINSETTINGS_ALERT_HINT,
                         'type' => 'success',
                         'icon' => 'info-circle',
                         'full_width' => true
@@ -231,17 +231,17 @@ class AdminSettings {
                 ]
             ]),
 
-            new \Fieldset('Поисковые запросы', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_SEARCH, [
                 'icon' => 'bi bi-search',
                 'columns' => '6',
                 'fields' => [
                     \FieldFactory::checkbox('show_search', [
-                        'title' => 'Отображать историю поисковых запросов',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_SEARCH,
                         'default' => true,
                         'switch' => true
                     ]),
                     \FieldFactory::checkbox('show_popular_search', [
-                        'title' => 'Отображать популярные поисковые запросы',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_SHOW_POPULAR_SEARCH,
                         'default' => true,
                         'switch' => true,
                         'show' => 'field:show_search'
@@ -249,21 +249,21 @@ class AdminSettings {
                 ]
             ]),
 
-            new \Fieldset('Внешний вид', [
+            new \Fieldset(LANG_CONTROLLER_ADMINSETTINGS_FIELDSET_APPEARANCE, [
                 'icon' => 'bi bi-palette',
                 'columns' => '6',
                 'fields' => [
                     \FieldFactory::image('bg_panel', [
-                        'title' => 'Фоновое изображение боковой панели',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_BG_PANEL,
                         'upload_path' => 'uploads/settings/admin/'
                     ]),
                     \FieldFactory::select('notification_position', [
-                        'title' => 'Положение уведомлений системы',
+                        'title' => LANG_CONTROLLER_ADMINSETTINGS_FIELD_NOTIFICATION_POSITION,
                         'options' => [
-                            'top-left' => 'Сверху слева',
-                            'top-right' => 'Сверху справа',
-                            'bottom-left' => 'Снизу слева',
-                            'bottom-right' => 'Снизу справа'
+                            'top-left' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_TOP_LEFT,
+                            'top-right' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_TOP_RIGHT,
+                            'bottom-left' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_BOTTOM_LEFT,
+                            'bottom-right' => LANG_CONTROLLER_ADMINSETTINGS_OPTION_BOTTOM_RIGHT
                         ],
                         'default' => 'top-right'
                     ]),

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<?php echo Language::getCurrentLocale() == 'ru_RU' ? 'ru' : 'en'; ?>">
+<html lang="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -1,0 +1,21 @@
+<?php
+
+define('LANG_ACTION_AUTH_RESETPASSWORD_PAGE_TITLE', 'Сброс пароля');
+define('LANG_ACTION_AUTH_RESETPASSWORD_DISABLED', 'Восстановление пароля временно отключено администратором');
+define('LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_MISSING', 'Токен восстановления не указан');
+define('LANG_ACTION_AUTH_RESETPASSWORD_TOKEN_INVALID', 'Токен восстановления недействителен или срок его действия истек');
+define('LANG_ACTION_AUTH_RESETPASSWORD_INVALID_CSRF', 'Неверный CSRF токен');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_REQUIRED', 'Пароль обязателен');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MIN_LENGTH', 'Пароль должен содержать не менее 6 символов');
+define('LANG_ACTION_AUTH_RESETPASSWORD_PASSWORD_MISMATCH', 'Пароли не совпадают');
+define('LANG_ACTION_AUTH_RESETPASSWORD_SUCCESS', 'Пароль успешно изменен. Теперь вы можете войти в систему с новым паролем.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_SUBJECT', 'Пароль успешно изменен - %s');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_TITLE', 'Пароль изменен');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_HEADER', 'Пароль успешно изменен');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_GREETING', 'Здравствуйте, <strong>%s</strong>!');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_MESSAGE', 'Это уведомление подтверждает, что пароль для вашего аккаунта на сайте <strong>%s</strong> был успешно изменен.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TITLE', 'Важно:');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_WARNING_TEXT', 'Если вы не меняли пароль, немедленно свяжитесь с администрацией сайта.');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_LOGIN_INSTRUCTION', 'Для входа в систему используйте новый пароль:');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_BUTTON', 'Войти в аккаунт');
+define('LANG_ACTION_AUTH_RESETPASSWORD_EMAIL_FOOTER', 'Это письмо отправлено автоматически. Пожалуйста, не отвечайте на него.');

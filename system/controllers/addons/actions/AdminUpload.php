@@ -18,30 +18,30 @@ class AdminUpload extends AddonAction {
         
         try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new \Exception('Неверный метод запроса');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_METHOD);
             }
             
             if (!isset($_FILES['addon_file']) || $_FILES['addon_file']['error'] !== UPLOAD_ERR_OK) {
-                throw new \Exception('Файл не загружен или произошла ошибка загрузки');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_NOT_UPLOADED);
             }
             
             $file = $_FILES['addon_file'];
             
             $fileInfo = pathinfo($file['name']);
             if (strtolower($fileInfo['extension'] ?? '') !== 'zip') {
-                throw new \Exception('Файл должен быть в формате ZIP');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_FORMAT);
             }
             
             $maxSize = 50 * 1024 * 1024;
             if ($file['size'] > $maxSize) {
-                throw new \Exception('Размер файла не должен превышать 50MB');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_FILE_TOO_LARGE);
             }
             
             $this->createTempDir();
             
             $zipPath = self::TEMP_DIR . 'package.zip';
             if (!move_uploaded_file($file['tmp_name'], $zipPath)) {
-                throw new \Exception('Не удалось сохранить загруженный файл');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SAVE_ERROR);
             }
             
             $extractPath = self::TEMP_DIR . 'extracted/';
@@ -71,7 +71,7 @@ class AdminUpload extends AddonAction {
             
             echo json_encode([
                 'success' => true,
-                'message' => 'Пакет успешно установлен',
+                'message' => LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_SUCCESS,
                 'package' => $packageInfo
             ]);
             
@@ -135,12 +135,12 @@ class AdminUpload extends AddonAction {
     */
     private function extractZip($zipPath, $extractPath) {
         if (!class_exists('ZipArchive')) {
-            throw new \Exception('PHP ZipArchive не установлен');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NO_ZIPARCHIVE);
         }
         
         $zip = new \ZipArchive();
         if ($zip->open($zipPath) !== true) {
-            throw new \Exception('Не удалось открыть ZIP-архив');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_OPEN_ZIP);
         }
         
         $zip->extractTo($extractPath);
@@ -154,11 +154,11 @@ class AdminUpload extends AddonAction {
     */
     private function validatePackageStructure($path) {
         if (!is_dir($path . 'files/')) {
-            throw new \Exception('Пакет должен содержать папку "files"');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_FILES_DIR);
         }
         
         if (!file_exists($path . 'package.ini')) {
-            throw new \Exception('Пакет должен содержать файл package.ini');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_PACKAGE_INI);
         }
     }
     
@@ -171,21 +171,21 @@ class AdminUpload extends AddonAction {
     private function parsePackageIni($iniPath) {
         $content = file_get_contents($iniPath);
         if (!$content) {
-            throw new \Exception('Не удалось прочитать package.ini');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_CANT_READ_INI);
         }
         
         $data = parse_ini_string($content, true, INI_SCANNER_RAW);
         if ($data === false) {
-            throw new \Exception('Неверный формат package.ini');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INI_FORMAT);
         }
         
         if (!isset($data['info']) || empty($data['info']['title'])) {
-            throw new \Exception('В package.ini отсутствует обязательный блок [info] с полем title');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_TITLE);
         }
         
         $title = trim($data['info']['title']);
         if (strlen($title) > 64) {
-            throw new \Exception('Название пакета не должно превышать 64 символа');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_TITLE_TOO_LONG);
         }
         
         $systemName = $this->generateSystemName($title);
@@ -194,7 +194,7 @@ class AdminUpload extends AddonAction {
             !isset($data['version']['major']) || 
             !isset($data['version']['minor']) || 
             !isset($data['version']['build'])) {
-            throw new \Exception('В package.ini отсутствует обязательный блок [version] с полями major, minor, build');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_VERSION);
         }
         
         $versionMajor = (int)$data['version']['major'];
@@ -232,19 +232,19 @@ class AdminUpload extends AddonAction {
             $result['type'] = 'update';
             $result['update_info'] = $data['update'];
         } else {
-            throw new \Exception('В package.ini должен быть блок [install] или [update]');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_INSTALL_OR_UPDATE);
         }
         
         if ($result['type'] === 'install') {
             if (empty($data['install']['type']) || $data['install']['type'] !== 'install') {
-                throw new \Exception('Для блока [install] поле type должно быть "install"');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_INSTALL_TYPE);
             }
         } else {
             if (empty($data['update']['type']) || $data['update']['type'] !== 'update') {
-                throw new \Exception('Для блока [update] поле type должно быть "update"');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INVALID_UPDATE_TYPE);
             }
             if (empty($data['update']['version'])) {
-                throw new \Exception('Для блока [update] поле version обязательно');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_MISSING_UPDATE_VERSION);
             }
         }
         
@@ -288,7 +288,7 @@ class AdminUpload extends AddonAction {
         $hasInstallPhp = file_exists($path . 'install.php');
         
         if ($packageInfo['type'] === 'install' && !$hasInstallPhp) {
-            throw new \Exception('Для пакета типа "install" требуется файл install.php');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_REQUIRES_INSTALL_PHP);
         }
         
         if ($packageInfo['type'] === 'update' && !$hasInstallPhp) {
@@ -304,10 +304,10 @@ class AdminUpload extends AddonAction {
     */
     private function validateVersionForInstall($packageInfo) {
         if ($this->addonModel->exists($packageInfo['system_name'])) {
-            throw new \Exception(
-                'Пакет "' . $packageInfo['title'] . '" уже установлен. ' .
-                'Для обновления используйте пакет типа "update".'
-            );
+            throw new \Exception(sprintf(
+                LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_ALREADY_INSTALLED,
+                $packageInfo['title']
+            ));
         }
     }
     
@@ -320,19 +320,19 @@ class AdminUpload extends AddonAction {
         $installedVersion = $this->addonModel->getInstalledVersion($packageInfo['system_name']);
         
         if (!$installedVersion) {
-            throw new \Exception(
-                'Пакет "' . $packageInfo['title'] . '" не установлен. ' .
-                'Сначала установите пакет типа "install".'
-            );
+            throw new \Exception(sprintf(
+                LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_NOT_INSTALLED,
+                $packageInfo['title']
+            ));
         }
         
         $versionFrom = $packageInfo['update_info']['version'] ?? null;
         if ($versionFrom && $versionFrom !== $installedVersion) {
-            throw new \Exception(
-                'Неверная версия для обновления. ' .
-                'Установлена версия: ' . $installedVersion . ', ' .
-                'требуется: ' . $versionFrom
-            );
+            throw new \Exception(sprintf(
+                LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_VERSION_MISMATCH,
+                $installedVersion,
+                $versionFrom
+            ));
         }
     }
     
@@ -440,12 +440,12 @@ class AdminUpload extends AddonAction {
             }
             
             if ($installResult === false) {
-                throw new \Exception('Скрипт установки вернул false');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_FAILED);
             }
             
         } catch (\Exception $e) {
             ob_end_clean();
-            throw new \Exception('Ошибка выполнения install.php: ' . $e->getMessage());
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_UPLOAD_INSTALL_SCRIPT_ERROR . $e->getMessage());
         }
     }
     

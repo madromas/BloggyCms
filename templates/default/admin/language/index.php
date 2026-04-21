@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="mb-0">
             <?php echo bloggy_icon('bs', 'translate', '24', '#000', 'me-2'); ?>
-            Языковые настройки
+            <?php echo LANG_TEMPLATE_LANGUAGE_TITLE; ?>
         </h4>
     </div>
 
@@ -14,7 +14,7 @@
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
                                 <?php echo bloggy_icon('bs', 'shield-lock', '16', '#0d6efd', 'me-1'); ?>
-                                Язык панели управления
+                                <?php echo LANG_TEMPLATE_LANGUAGE_ADMIN_LABEL; ?>
                             </label>
                             <select name="admin_language" class="form-select">
                                 <?php foreach ($availableLocales as $locale) { ?>
@@ -24,7 +24,7 @@
                                     </option>
                                 <?php } ?>
                             </select>
-                            <div class="form-text">Язык интерфейса административной панели</div>
+                            <div class="form-text"><?php echo LANG_TEMPLATE_LANGUAGE_ADMIN_HINT; ?></div>
                         </div>
                     </div>
                     
@@ -32,7 +32,7 @@
                         <div class="mb-4">
                             <label class="form-label fw-semibold">
                                 <?php echo bloggy_icon('bs', 'globe2', '16', '#198754', 'me-1'); ?>
-                                Язык сайта (фронтенд)
+                                <?php echo LANG_TEMPLATE_LANGUAGE_SITE_LABEL; ?>
                             </label>
                             <select name="site_language" class="form-select">
                                 <?php foreach ($availableLocales as $locale) { ?>
@@ -42,7 +42,7 @@
                                     </option>
                                 <?php } ?>
                             </select>
-                            <div class="form-text">Язык отображения контента для посетителей</div>
+                            <div class="form-text"><?php echo LANG_TEMPLATE_LANGUAGE_SITE_HINT; ?></div>
                         </div>
                     </div>
                 </div>
@@ -54,23 +54,23 @@
                                <?php echo $settings['allow_user_switch'] ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="allow_user_switch">
                             <?php echo bloggy_icon('bs', 'people', '16', '#ffc107', 'me-1'); ?>
-                            Разрешить пользователям изменять язык сайта
+                            <?php echo LANG_TEMPLATE_LANGUAGE_ALLOW_USER_SWITCH; ?>
                         </label>
                     </div>
                     <div class="form-text">
-                        Авторизованные пользователи смогут выбрать язык интерфейса в своём профиле
+                        <?php echo LANG_TEMPLATE_LANGUAGE_ALLOW_USER_SWITCH_HINT; ?>
                     </div>
                 </div>
                 
                 <div class="alert alert-info mt-3">
                     <?php echo bloggy_icon('bs', 'info-circle', '16', '#0d6efd', 'me-2'); ?>
-                    <strong>Важно:</strong> Изменение языка панели управления вступит в силу после перезагрузки страницы.
+                    <strong><?php echo LANG_TEMPLATE_LANGUAGE_IMPORTANT; ?>:</strong> <?php echo LANG_TEMPLATE_LANGUAGE_IMPORTANT_TEXT; ?>
                 </div>
                 
                 <div class="d-flex justify-content-end mt-4">
                     <button type="submit" class="btn btn-primary" id="save-btn">
                         <?php echo bloggy_icon('bs', 'check-lg', '16', '#fff', 'me-2'); ?>
-                        Сохранить настройки
+                        <?php echo LANG_TEMPLATE_LANGUAGE_SAVE_BTN; ?>
                     </button>
                 </div>
             </form>
@@ -84,7 +84,7 @@
         const btn = document.getElementById('save-btn');
         const originalHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Сохранение...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span><?php echo LANG_TEMPLATE_LANGUAGE_SAVING; ?>...';
         
         setTimeout(() => {
             btn.disabled = false;

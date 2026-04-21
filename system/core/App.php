@@ -36,7 +36,6 @@ class App {
         }
         
         $this->db = new Database();
-        Language::init();
         $this->router = new Router();
         
         AdminAuthMiddleware::handle();
@@ -227,7 +226,6 @@ class App {
             $controller = new $controllerName($this->db);
 
             $params = $route['params'] ?? [];
-
 
             $this->callControllerAction($controller, $actionName, $params);
         } else {

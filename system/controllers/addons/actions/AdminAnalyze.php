@@ -7,7 +7,7 @@ namespace addons\actions;
 * @package addons\actions
 */
 class AdminAnalyze extends AddonAction {
-    
+
     /**
     * Временная директория для анализа
     */
@@ -21,18 +21,18 @@ class AdminAnalyze extends AddonAction {
         
         try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new \Exception('Неверный метод запроса');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_INVALID_METHOD);
             }
             
             if (!isset($_FILES['addon_file']) || $_FILES['addon_file']['error'] !== UPLOAD_ERR_OK) {
-                throw new \Exception('Файл не загружен');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_FILE_NOT_UPLOADED);
             }
             
             $file = $_FILES['addon_file'];
             
             $fileInfo = pathinfo($file['name']);
             if (strtolower($fileInfo['extension'] ?? '') !== 'zip') {
-                throw new \Exception('Файл должен быть в формате ZIP');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_INVALID_FORMAT);
             }
             
             if (is_dir(self::TEMP_DIR)) {
@@ -42,14 +42,14 @@ class AdminAnalyze extends AddonAction {
             
             $zipPath = self::TEMP_DIR . 'package.zip';
             if (!move_uploaded_file($file['tmp_name'], $zipPath)) {
-                throw new \Exception('Не удалось сохранить файл');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_SAVE_ERROR);
             }
             
             $extractPath = self::TEMP_DIR . 'extracted/';
             $this->extractZip($zipPath, $extractPath);
             
             if (!file_exists($extractPath . 'package.ini')) {
-                throw new \Exception('Пакет должен содержать файл package.ini');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_NO_PACKAGE_INI);
             }
             
             $packageInfo = $this->parsePackageIni($extractPath . 'package.ini');
@@ -64,13 +64,13 @@ class AdminAnalyze extends AddonAction {
                     $versionFrom = $packageInfo['update_info']['version'] ?? null;
                     if ($versionFrom && $versionFrom !== $installedVersion) {
                         $packageInfo['update_available'] = false;
-                        $packageInfo['update_error'] = "Требуется версия {$versionFrom}, установлена {$installedVersion}";
+                        $packageInfo['update_error'] = sprintf(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_VERSION_REQUIRED, $versionFrom, $installedVersion);
                     } else {
                         $packageInfo['update_available'] = true;
                     }
                 } else {
                     $packageInfo['update_available'] = false;
-                    $packageInfo['update_error'] = 'Пакет уже установлен';
+                    $packageInfo['update_error'] = LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_ALREADY_INSTALLED;
                 }
             } else {
                 $packageInfo['is_installed'] = false;
@@ -98,12 +98,12 @@ class AdminAnalyze extends AddonAction {
     */
     private function extractZip($zipPath, $extractPath) {
         if (!class_exists('ZipArchive')) {
-            throw new \Exception('PHP ZipArchive не установлен');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_NO_ZIPARCHIVE);
         }
         
         $zip = new \ZipArchive();
         if ($zip->open($zipPath) !== true) {
-            throw new \Exception('Не удалось открыть ZIP-архив');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_CANT_OPEN_ZIP);
         }
         
         $zip->extractTo($extractPath);
@@ -136,21 +136,21 @@ class AdminAnalyze extends AddonAction {
     private function parsePackageIni($iniPath) {
         $content = file_get_contents($iniPath);
         if (!$content) {
-            throw new \Exception('Не удалось прочитать package.ini');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_CANT_READ_INI);
         }
         
         $data = parse_ini_string($content, true, INI_SCANNER_RAW);
         if ($data === false) {
-            throw new \Exception('Неверный формат package.ini');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_INVALID_INI_FORMAT);
         }
         
         if (!isset($data['info']) || empty($data['info']['title'])) {
-            throw new \Exception('В package.ini отсутствует обязательный блок [info] с полем title');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_MISSING_TITLE);
         }
         
         $title = trim($data['info']['title']);
         if (strlen($title) > 64) {
-            throw new \Exception('Название пакета не должно превышать 64 символа');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_TITLE_TOO_LONG);
         }
         
         $systemName = $this->generateSystemName($title);
@@ -159,7 +159,7 @@ class AdminAnalyze extends AddonAction {
             !isset($data['version']['major']) || 
             !isset($data['version']['minor']) || 
             !isset($data['version']['build'])) {
-            throw new \Exception('В package.ini отсутствует обязательный блок [version] с полями major, minor, build');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_MISSING_VERSION);
         }
         
         $versionMajor = (int)$data['version']['major'];
@@ -197,16 +197,16 @@ class AdminAnalyze extends AddonAction {
             $result['type'] = 'update';
             $result['update_info'] = $data['update'];
         } else {
-            throw new \Exception('В package.ini должен быть блок [install] или [update]');
+            throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_MISSING_INSTALL_OR_UPDATE);
         }
         
         if ($result['type'] === 'install') {
             if (empty($data['install']['type']) || $data['install']['type'] !== 'install') {
-                throw new \Exception('Для блока [install] поле type должно быть "install"');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_INVALID_INSTALL_TYPE);
             }
         } else {
             if (empty($data['update']['type']) || $data['update']['type'] !== 'update') {
-                throw new \Exception('Для блока [update] поле type должно быть "update"');
+                throw new \Exception(LANG_CONTROLLER_ADDONS_ACTION_ANALYZE_INVALID_UPDATE_TYPE);
             }
         }
         
